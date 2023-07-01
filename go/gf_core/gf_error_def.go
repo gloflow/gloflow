@@ -288,6 +288,12 @@ func errorGetDefs() map[string]ErrorDef {
 		},
 		
 		//---------------
+		// SQL
+		"sql_failed_to_connect": ErrorDef{
+			DescrStr:"failed to establish an initial connection to an SQL server",
+		},
+		
+		//---------------
 		// ELASTICSEARCH
 		"elasticsearch_get_client": ErrorDef{
 			DescrStr:"c.NewClient() failed to get elasticsearch client - package (elastic)",

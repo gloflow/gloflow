@@ -43,6 +43,12 @@ type GFconfig struct {
 	MongoHostStr   string `mapstructure:"mongodb_host"`
 	MongoDBnameStr string `mapstructure:"mongodb_db_name"`
 
+	// SQL
+	SQLuserNameStr string `mapstructure:"sql_user_name"`
+	SQLpassStr     string `mapstructure:"sql_pass"`
+	SQLhostStr     string `mapstructure:"sql_host"`
+	SQLdbNameStr   string `mapstructure:"sql_db_name"`
+
 	// ELASTICSEARCH
 	ElasticsearchHostStr string `mapstructure:"elasticsearch_host"`
 
@@ -73,14 +79,6 @@ type GFconfig struct {
 	CrawlImagesLocalDirPathStr string `mapstructure:"crawl__images_local_dir_path"`
 
 	//--------------------
-	// AWS
-	// DEPRECATED!? - should these be parsed from ENV vars always? and the AWS client
-	//                should acquire these creds on its own instead of getting them passed in directly.
-	AWS_access_key_id_str     string `mapstructure:"aws_access_key_id"`
-	AWS_secret_access_key_str string `mapstructure:"aws_secret_access_key"`
-	AWS_token_str             string `mapstructure:"aws_token"`
-
-	//--------------------
 	// ALCHEMY
 	AlchemyAPIkeyStr string `mapstructure:"alchemy_api_key"`
 
@@ -90,6 +88,16 @@ type GFconfig struct {
 
 	// IPFS
 	IPFSnodeHostStr string `mapstructure:"ipfs_node_host"`
+
+	//--------------------
+	/*
+	// AWS
+	// DEPRECATED!? - should these be parsed from ENV vars always? and the AWS client
+	//                should acquire these creds on its own instead of getting them passed in directly.
+	AWS_access_key_id_str     string `mapstructure:"aws_access_key_id"`
+	AWS_secret_access_key_str string `mapstructure:"aws_secret_access_key"`
+	AWS_token_str             string `mapstructure:"aws_token"`
+	*/
 
 	//--------------------
 }

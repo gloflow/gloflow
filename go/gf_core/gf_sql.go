@@ -35,8 +35,9 @@ import (
 
 func DBsqlConnect(pDBnameStr string,
 	pUserNameStr string,
-	pPassStr   string,
-	pDBhostStr string) (*sql.DB, error) {
+	pPassStr     string,
+	pDBhostStr   string,
+	pRuntimeSys  *RuntimeSys) (*sql.DB, *GFerror) {
 
 	urlStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
 		pUserNameStr,
@@ -44,20 +45,36 @@ func DBsqlConnect(pDBnameStr string,
 		pDBhostStr,
 		pDBnameStr)
 
-	fmt.Println("connecting to SQL DB...")
+	pRuntimeSys.LogNewFun("INFO", "connecting to SQL DB...",
+		map[string]interface{}{
+			"db_host": pDBhostStr,
+		})
 
-	db, err := sql.Open("postgres", urlStr)
+	// connect
+	db, err := sql.Open(pDBnameStr, urlStr)
 	if err != nil {
-		return nil, err
+		gfErr := ErrorCreate("failed to connect to a SQL server at target url",
+			"sql_failed_to_connect",
+			map[string]interface{}{
+				"db_host_str": pDBhostStr,
+				"db_name_str": pDBnameStr,
+			}, err, "gf_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	// test the connection
 	err = db.Ping()
 	if err != nil {
-		return nil, err
+		gfErr := ErrorCreate("failed to connect to a SQL server at target url",
+			"sql_failed_to_connect",
+			map[string]interface{}{
+				"db_host_str": pDBhostStr,
+				"db_name_str": pDBnameStr,
+			}, err, "gf_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	fmt.Println("connected to DB...")
+	fmt.Println("connected to SQL DB...")
 
 	return db, nil
 }

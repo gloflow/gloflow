@@ -7,6 +7,12 @@ port:         1900
 port_admin:   1901
 port_metrics: 9110
 
+# SQL
+sql_user_name: gf
+sql_pass:      password
+sql_host:      "127.0.0.1:5432"
+sql_db_name:   gloflow
+
 # MONGODB
 mongodb_host:    "127.0.0.1:27017"
 mongodb_db_name: "gf"
@@ -49,6 +55,6 @@ crawl__images_local_dir_path: ""
 #--------------------
 # AWS
 # DEPRECATE!!
-aws_access_key_id:     "" # or ENV var
-aws_secret_access_key: "" # or ENV var
-aws_token:             "" # or ENV var
+# aws_access_key_id:     "" # or ENV var
+# aws_secret_access_key: "" # or ENV var
+# aws_token:             "" # or ENV var
