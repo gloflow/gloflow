@@ -90,16 +90,6 @@ type GFconfig struct {
 	IPFSnodeHostStr string `mapstructure:"ipfs_node_host"`
 
 	//--------------------
-	/*
-	// AWS
-	// DEPRECATED!? - should these be parsed from ENV vars always? and the AWS client
-	//                should acquire these creds on its own instead of getting them passed in directly.
-	AWS_access_key_id_str     string `mapstructure:"aws_access_key_id"`
-	AWS_secret_access_key_str string `mapstructure:"aws_secret_access_key"`
-	AWS_token_str             string `mapstructure:"aws_token"`
-	*/
-
-	//--------------------
 }
 
 //-------------------------------------------------------------

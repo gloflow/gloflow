@@ -372,41 +372,6 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 	}
 
 	//--------------------
-	/*
-	// CLI_ARGUMENT - AWS_ACCESS_KEY_ID
-	cmdBase.PersistentFlags().String("aws_access_key_id", "AWS ACCESS_KEY_ID", "AWS access_key_id")
-	err = viper.BindPFlag("aws_access_key_id", cmdBase.PersistentFlags().Lookup("aws_access_key_id"))
-	if err != nil {
-		fmt.Println("failed to bind CLI arg to Viper config")
-		panic(err)
-	}
-
-	// ENV
-	err = viper.BindEnv("aws_access_key_id", "AWS_ACCESS_KEY_ID")
-	if err != nil {
-		fmt.Println("failed to bind ENV var to Viper config")
-		panic(err)
-	}
-
-	//--------------------
-	// DEPRECATE!! - remove this
-	// CLI_ARGUMENT - AWS_SECRET_ACCESS_KEY
-	cmdBase.PersistentFlags().String("aws_secret_access_key", "AWS SECRET_ACCESS_KEY", "AWS secret_access_key")
-	err = viper.BindPFlag("aws_secret_access_key", cmdBase.PersistentFlags().Lookup("aws_secret_access_key"))
-	if err != nil {
-		fmt.Println("failed to bind CLI arg to Viper config")
-		panic(err)
-	}
-
-	// ENV
-	err = viper.BindEnv("aws_secret_access_key", "AWS_SECRET_ACCESS_KEY")
-	if err != nil {
-		fmt.Println("failed to bind ENV var to Viper config")
-		panic(err)
-	}
-	*/
-
-	//--------------------
 
 	return cmdBase
 }

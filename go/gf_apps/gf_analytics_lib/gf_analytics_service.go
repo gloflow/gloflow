@@ -104,12 +104,6 @@ func InitService(pServiceInfo *GFserviceInfo,
 		// pServiceInfo.Crawl__config_file_path_str,
 		pServiceInfo.Media_domain_str,
 		pServiceInfo.Templates_paths_map,
-
-		/*
-		pServiceInfo.AWS_access_key_id_str,
-		pServiceInfo.AWS_secret_access_key_str,
-		pServiceInfo.AWS_token_str,
-		*/
 		
 		esearch_client,
 		p_http_mux,

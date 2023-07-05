@@ -218,13 +218,6 @@ func Run(pConfig *GFconfig,
 		Media_domain_str:                     imagesConfig.Media_domain_str,
 		Images_main_s3_bucket_name_str:       imagesConfig.Main_s3_bucket_name_str,
 
-		/*
-		// DEPRECATE!! - AWS creds are passed in via ENV vars
-		AWS_access_key_id_str:                pConfig.AWS_access_key_id_str,
-		AWS_secret_access_key_str:            pConfig.AWS_secret_access_key_str,
-		AWS_token_str:                        pConfig.AWS_token_str,
-		*/
-
 		Templates_paths_map: pConfig.TemplatesPathsMap,
 
 		// AUTH
@@ -258,13 +251,6 @@ func Run(pConfig *GFconfig,
 		Run_indexer_bool:       pConfig.AnalyticsRunIndexerBool,
 		Elasticsearch_host_str: pConfig.ElasticsearchHostStr,
 
-		/*
-		// DEPRECATE!! - AWS creds are passed in via ENV vars
-		AWS_access_key_id_str:     pConfig.AWS_access_key_id_str,
-		AWS_secret_access_key_str: pConfig.AWS_secret_access_key_str,
-		AWS_token_str:             pConfig.AWS_token_str,
-		*/
-		
 		Templates_paths_map: pConfig.TemplatesPathsMap,
 
 		// IMAGES_STORAGE
@@ -406,7 +392,6 @@ func RuntimeGet(pConfigPathStr string,
 	//--------------------
 	// SQL
 
-
 	sqlDB, gfErr := gf_core.DBsqlConnect(config.SQLdbNameStr,
 		config.SQLuserNameStr,
 		config.SQLpassStr,
@@ -433,9 +418,6 @@ func RuntimeGet(pConfigPathStr string,
 	runtimeSys.Mongo_db   = mongodbDB
 	runtimeSys.Mongo_coll = mongodbDB.Collection("data_symphony")
 	fmt.Printf("mongodb connected...\n")
-
-	
-
 
 	//--------------------
 	return runtimeSys, config, nil
