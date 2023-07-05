@@ -179,7 +179,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			auth0handlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
 
 				
-			
+				
 				appHandlerFun(pResp, pReq)
 			}
 

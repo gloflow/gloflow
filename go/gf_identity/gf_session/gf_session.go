@@ -51,7 +51,7 @@ func ValidateOrRedirectToLogin(pReq *http.Request,
 	pCtx                   context.Context,
 	pRuntimeSys            *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
 
-	validBool, userIdentifierStr, gfErr := gf_identity_core.Validate(pReq,
+	validBool, userIdentifierStr, gfErr := gf_identity_core.SessionValidate(pReq,
 		pKeyServerInfo,
 		pAuthSubsystemTypeStr,
 		pCtx,

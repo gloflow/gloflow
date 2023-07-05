@@ -61,7 +61,6 @@ func Auth0validateSession(pSessionIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
-
 	session, gfErr := dbAuth0GetSession(pSessionIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return false, gfErr
@@ -70,8 +69,6 @@ func Auth0validateSession(pSessionIDstr gf_core.GF_ID,
 	if !session.LoginCompleteBool {
 		return false, nil
 	}
-
-
 
 	return true, nil
 }
@@ -113,6 +110,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	sessionIDstr := pInput.GFsessionIDauth0providedStr
 
 	//---------------------
+	// DB_GET_SESSION
 	// verify that the sessionID (auth0 "state") corresponds to an registered session
 	// created in the previously called login handler, and that a login with that session 
 	// has not already been completed
@@ -124,6 +122,11 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		return nil, gfErr
 	}
 
+	//---------------------
+	
+
+	/*
+	// user is already logged in.
 	if auth0session.LoginCompleteBool {
 		gfErr := gf_core.ErrorCreate("'state' input argument supplied is invalid, it has already been used by the user to login",
 			"verify__invalid_value_error",
@@ -131,7 +134,6 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 			nil, "gf_identity_core", pRuntimeSys)
 		return nil, gfErr
 	}
-	
 
 	if !loginAttemptCheckAgeIsValid(auth0session.CreationUNIXtimeF) {
 		gfErr := gf_core.ErrorCreate("'state' input argument supplied is invalid, too long has passed since it was created and it has expired",
@@ -139,6 +141,22 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 			map[string]interface{}{},
 			nil, "gf_identity_core", pRuntimeSys)
 		return nil, gfErr
+	}
+	
+	*/
+	
+	// user has not already logged in, so check some things first.
+	// a user can be already logged in, and this redirect (login-callback) by the Auth0 system was done in an already logged in state.
+	if !auth0session.LoginCompleteBool {
+
+		// check max-age of a login_attempt
+		if !loginAttemptCheckAgeIsValid(auth0session.CreationUNIXtimeF) {
+			gfErr := gf_core.ErrorCreate("'state' input argument supplied is invalid, too long has passed since it was created and it has expired",
+				"verify__invalid_value_error",
+				map[string]interface{}{},
+				nil, "gf_identity_core", pRuntimeSys)
+			return nil, gfErr
+		}
 	}
 	
 	//---------------------

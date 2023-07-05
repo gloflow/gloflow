@@ -28,7 +28,7 @@ import (
 
 //---------------------------------------------------
 
-func Validate(pReq *http.Request,
+func SessionValidate(pReq *http.Request,
 	pKeyServerInfo         *GFkeyServerInfo,
 	pAuthSubsystemTypeStr  string,
 	pCtx                   context.Context,

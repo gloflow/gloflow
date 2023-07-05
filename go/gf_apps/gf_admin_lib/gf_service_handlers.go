@@ -80,7 +80,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 			if pReq.Method == "GET" {
 
 				//---------------------
-				validBool, _, gfErr := gf_identity_core.Validate(pReq,
+				validBool, _, gfErr := gf_identity_core.SessionValidate(pReq,
 					pKeyServer,
 					rpcHandlerRuntime.AuthSubsystemTypeStr,
 					pCtx,
