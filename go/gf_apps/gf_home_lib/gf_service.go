@@ -31,6 +31,12 @@ import (
 
 type GFserviceInfo struct {
 
+	//--------------------------
+	// AUTH_SUBSYSTEM_TYPE
+	AuthSubsystemTypeStr string
+
+	//--------------------------
+
 	// AUTH_LOGIN_URL - url of the login page to which the system should
 	//                  redirect users after certain operations
 	AuthLoginURLstr string
@@ -57,6 +63,7 @@ func InitService(pTemplatesPathsMap map[string]string,
 	//------------------------
 	// HANDLERS
 	gfErr := initHandlers(pTemplatesPathsMap,
+		pServiceInfo.AuthSubsystemTypeStr,
 		pServiceInfo.AuthLoginURLstr,
 		pServiceInfo.KeyServer,
 		pHTTPmux,

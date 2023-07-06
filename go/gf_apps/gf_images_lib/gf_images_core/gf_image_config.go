@@ -42,22 +42,22 @@ type GFserviceInfo struct {
 	Templates_paths_map                  map[string]string
 	Config_file_path_str                 string
 
+	//------------------------
+	// AUTH_SUBSYSTEM_TYPE
+	AuthSubsystemTypeStr string
+
 	// AUTH_LOGIN_URL - url of the login page to which the system should
 	//                  redirect users when email is confirmed.
 	AuthLoginURLstr string
 	KeyServer       *gf_identity_core.GFkeyServerInfo
+
+	//------------------------
 
 	// NEW_STORAGE_ENGINE - flag indicating if the new image storage engine should be used
 	UseNewStorageEngineBool bool
 
 	// IPFS_NODE_HOST - host/gateway to use to connect to for IPFS operations
 	IPFSnodeHostStr string
-
-	/*
-	AWS_access_key_id_str                string
-	AWS_secret_access_key_str            string
-	AWS_token_str                        string
-	*/
 }
 
 //-------------------------------------------------

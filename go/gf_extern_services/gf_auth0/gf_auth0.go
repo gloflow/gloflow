@@ -205,8 +205,9 @@ func LoadConfig(pRuntimeSys *gf_core.RuntimeSys) *GFconfig {
 }
 
 //-------------------------------------------------------------
-
-func GetJWTtokenFromRequest(pReq *http.Request) (string, error) {
+// JWT
+//-------------------------------------------------------------
+func JWTgetTokenFromRequest(pReq *http.Request) (string, error) {
 
     authHeaderStr := pReq.Header.Get("Authorization")
     if authHeaderStr == "" {

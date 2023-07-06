@@ -35,16 +35,17 @@ import (
 
 //-------------------------------------------------
 
-func InitHandlers(pAuthLoginURLstr string,
-	pKeyServer      *gf_identity_core.GFkeyServerInfo,
-	pHTTPmux        *http.ServeMux,
-	pJobsMngrCh     chan gf_images_jobs_core.JobMsg,
-	pImgConfig      *gf_images_core.GFconfig,
-	pMediaDomainStr string,
-	pStorage        *gf_images_storage.GFimageStorage,
-	pS3info         *gf_aws.GFs3Info,
-	pMetrics        *gf_images_core.GFmetrics,
-	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
+func InitHandlers(pAuthSubsystemTypeStr string,
+	pAuthLoginURLstr string,
+	pKeyServer       *gf_identity_core.GFkeyServerInfo,
+	pHTTPmux         *http.ServeMux,
+	pJobsMngrCh      chan gf_images_jobs_core.JobMsg,
+	pImgConfig       *gf_images_core.GFconfig,
+	pMediaDomainStr  string,
+	pStorage         *gf_images_storage.GFimageStorage,
+	pS3info          *gf_aws.GFs3Info,
+	pMetrics         *gf_images_core.GFmetrics,
+	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_handlers.init_handlers()")
 	
 	//---------------------
@@ -66,8 +67,10 @@ func InitHandlers(pAuthLoginURLstr string,
 		Metrics:         metrics,
 		StoreRunBool:    true,
 		SentryHub:       nil,
-		AuthLoginURLstr: pAuthLoginURLstr,
-		AuthKeyServer:   pKeyServer,
+		
+		AuthSubsystemTypeStr: pAuthSubsystemTypeStr,
+		AuthLoginURLstr:      pAuthLoginURLstr,
+		AuthKeyServer:        pKeyServer,
 	}
 
 	//---------------------

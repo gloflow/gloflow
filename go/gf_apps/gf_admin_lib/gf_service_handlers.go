@@ -95,6 +95,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 				}
 
 				if validBool {
+					
 					// if the user is logged in and accesing login UI, then redirect to admin dashboard
 					http.Redirect(pResp,
 						pReq,
@@ -111,6 +112,9 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 				// email_confirmed - signals that email has been confirmed. appended by the email_confirm handler
 				//                   when the user gets redirected to admin login_ui URL.
 				//                   in admin login this means that MFA_confirmation is next
+				//
+				// FIX!! - IMPORTANT!! - "email_confirmed" should be checked from t he DB, not like this from the HTTP
+				//                       request QS args.
 				if _, ok := qsMap["email_confirmed"]; ok {
 					mfaConfirmBool = true
 				}

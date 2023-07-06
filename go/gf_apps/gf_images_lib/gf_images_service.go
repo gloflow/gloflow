@@ -98,7 +98,8 @@ func InitService(pHTTPmux *http.ServeMux,
 	// IMAGE_FLOWS
 
 	// flows__templates_dir_path_str := pServiceInfo.Templates_dir_paths_map["flows_str"]
-	gfErr = gf_images_flows.InitHandlers(pServiceInfo.AuthLoginURLstr,
+	gfErr = gf_images_flows.InitHandlers(pServiceInfo.AuthSubsystemTypeStr,
+		pServiceInfo.AuthLoginURLstr,
 		pServiceInfo.KeyServer,
 		pHTTPmux,
 		pServiceInfo.Templates_paths_map,
@@ -132,7 +133,8 @@ func InitService(pHTTPmux *http.ServeMux,
 
 	//-------------
 	// HANDLERS
-	gfErr = gf_images_service.InitHandlers(pServiceInfo.AuthLoginURLstr,
+	gfErr = gf_images_service.InitHandlers(pServiceInfo.AuthSubsystemTypeStr,
+		pServiceInfo.AuthLoginURLstr,
 		pServiceInfo.KeyServer,
 		pHTTPmux,
 		jobsMngrCh,
@@ -147,6 +149,8 @@ func InitService(pHTTPmux *http.ServeMux,
 	}
 
 	//------------------------
+	
+	/*
 	// DASHBOARD SERVING
 	static_files__url_base_str := "/images"
 	local_dir_path_str         := "./static"
@@ -154,6 +158,7 @@ func InitService(pHTTPmux *http.ServeMux,
 		local_dir_path_str,
 		pHTTPmux,
 		pRuntimeSys)
+	*/
 
 	//------------------------
 

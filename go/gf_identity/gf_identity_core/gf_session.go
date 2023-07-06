@@ -75,7 +75,7 @@ func SessionValidate(pReq *http.Request,
 		// JWT
 		// FIX!! - this returns a normal golang error instead of gf_error.
 		//         return proper GF JWT error.
-		auth0JWTtokenStr, err := gf_auth0.GetJWTtokenFromRequest(pReq)
+		auth0JWTtokenStr, err := gf_auth0.JWTgetTokenFromRequest(pReq)
 		if err != nil {
 
 			// IMPORTANT!! - return a false validity and not an error, since missing

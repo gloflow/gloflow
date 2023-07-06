@@ -92,7 +92,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 	if pHandlerRuntime.AuthSubsystemTypeStr == gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
 		
 	} else {
-		// USERPASS_AUTH
+		// DEFAULT - USERPASS_AUTH
 		// set the userpass auth_subsystem type as the default value if another value is not set
 		pHandlerRuntime.AuthSubsystemTypeStr = gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__USERPASS
 	}

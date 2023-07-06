@@ -59,8 +59,9 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 		Metrics:         metrics,
 		StoreRunBool:    true,
 		SentryHub:       pLocalHub,
-		AuthLoginURLstr: "/v1/admin/login_ui",
-		AuthKeyServer:   pKeyServer,
+		AuthSubsystemTypeStr: pServiceInfo.AuthSubsystemTypeStr,
+		AuthLoginURLstr: "    /v1/admin/login_ui",
+		AuthKeyServer:        pKeyServer,
 	}
 
 	//---------------------

@@ -40,6 +40,7 @@ type gfTemplates struct {
 //------------------------------------------------
 
 func initHandlers(pTemplatesPathsMap map[string]string,
+	pAuthSubsystemTypeStr string,
 	pAuthLoginURLstr string,
 	pKeyServer       *gf_identity_core.GFkeyServerInfo,
 	pHTTPmux         *http.ServeMux,
@@ -70,6 +71,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		Metrics:         metrics,
 		StoreRunBool:    true,
 		SentryHub:       nil,
+		AuthSubsystemTypeStr: pAuthSubsystemTypeStr,
 		AuthLoginURLstr: pAuthLoginURLstr,
 		AuthKeyServer:   pKeyServer,
 	}

@@ -31,7 +31,8 @@ import (
 
 //-------------------------------------------------
 
-func InitHandlers(pAuthLoginURLstr string,
+func InitHandlers(pAuthSubsystemTypeStr string,
+	pAuthLoginURLstr   string,
 	pKeyServer         *gf_identity_core.GFkeyServerInfo,
 	pHTTPmux           *http.ServeMux,
 	pTemplatesPathsMap map[string]string,
@@ -65,8 +66,11 @@ func InitHandlers(pAuthLoginURLstr string,
 		Metrics:         metrics,
 		StoreRunBool:    true,
 		SentryHub:       nil,
-		AuthLoginURLstr: pAuthLoginURLstr,
-		AuthKeyServer:   pKeyServer,
+
+		// AUTH
+		AuthSubsystemTypeStr: pAuthSubsystemTypeStr,
+		AuthLoginURLstr:      pAuthLoginURLstr,
+		AuthKeyServer:        pKeyServer,
 	}
 
 	//---------------------

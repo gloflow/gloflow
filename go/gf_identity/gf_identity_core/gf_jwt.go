@@ -160,7 +160,9 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 	pCtx                  context.Context,
 	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
-	pRuntimeSys.LogNewFun("DEBUG", "validating JWT token...", nil)
+	pRuntimeSys.LogNewFun("DEBUG", "validating JWT token...", map[string]interface{}{
+		"auth_subsystem_type": pAuthSubsystemTypeStr,
+	})
 
 	// KEY_SERVER
 	publicKey, gfErr := KSclientJWTgetValidationKey(pAuthSubsystemTypeStr, pKeyServerInfo, pRuntimeSys)
@@ -181,7 +183,8 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 		gfErr := gf_core.ErrorCreate("JWT token supplied for validation is invalid",
 			"crypto_jwt_verify_token_invalid_error",
 			map[string]interface{}{
-				"jwt_token_val_str": pJWTtokenVal,
+				"jwt_token_val_str":       pJWTtokenVal,
+				"auth_subsystem_type_str": pAuthSubsystemTypeStr,
 			},
 			nil, "gf_identity_core", pRuntimeSys)
 		return "", gfErr
@@ -196,6 +199,9 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 	pPublicKey  *rsa.PublicKey,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
+
+	//-------------------------
+	// JWT_PARSE
 
 	// token validation
 	jwtToken, err := jwt.Parse(string(pJWTtokenVal), func(pToken *jwt.Token) (interface{}, error) {
@@ -213,12 +219,18 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 		return false, "", gfErr
 	}
 
+	//-------------------------
+	
 	pRuntimeSys.LogNewFun("DEBUG", "token validation has been executed...", nil)
 	if gf_core.LogsIsDebugEnabled() {
 		spew.Dump(jwtToken)
 	}
 
 	validBool := jwtToken.Valid
+	
+	//-------------------------
+	// USER_IDENTIFIER
+	
 	var userIdentifierStr string
 
 	if userIdentifierClaimStr, ok := jwtToken.Claims.(jwt.MapClaims)["user_identifier_str"]; ok {
@@ -232,6 +244,8 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 			err, "gf_identity_core", pRuntimeSys)
 		return false, "", gfErr
 	}
+
+	//-------------------------
 
 	pRuntimeSys.LogNewFun("DEBUG", "validated JWT token", map[string]interface{}{"valid_bool": validBool,})
 
