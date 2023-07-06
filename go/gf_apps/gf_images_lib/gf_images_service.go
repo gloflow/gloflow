@@ -150,15 +150,13 @@ func InitService(pHTTPmux *http.ServeMux,
 
 	//------------------------
 	
-	/*
-	// DASHBOARD SERVING
-	static_files__url_base_str := "/images"
-	local_dir_path_str         := "./static"
-	gf_core.HTTPinitStaticServingWithMux(static_files__url_base_str,
-		local_dir_path_str,
+	// STATIC_FILE SERVING
+	staticFilesURLbaseStr := "/images"
+	localDirPathStr       := "./static"
+	gf_core.HTTPinitStaticServingWithMux(staticFilesURLbaseStr,
+		localDirPathStr,
 		pHTTPmux,
 		pRuntimeSys)
-	*/
 
 	//------------------------
 
