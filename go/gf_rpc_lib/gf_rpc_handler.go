@@ -108,6 +108,60 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		pRuntimeSys)
 
 	
+
+	//-------------------------------------------------
+	// VALIDATE_SESSION
+	validateSessionFun := func(pResp http.ResponseWriter, pReq *http.Request) *context.Context {
+				
+		ctx := pReq.Context()
+		pathStr := pReq.URL.Path
+
+		// SESSION_VALIDATE
+		validBool, userIdentifierStr, gfErr := gf_session.ValidateOrRedirectToLogin(pReq,
+			pResp,
+			pHandlerRuntime.AuthKeyServer,
+			pHandlerRuntime.AuthSubsystemTypeStr,
+			&pHandlerRuntime.AuthLoginURLstr,
+			ctx,
+			pRuntimeSys)
+
+		if gfErr != nil {
+			ErrorInHandler(pathStr,
+				fmt.Sprintf("handler %s failed to execute/validate a auth session", pathStr),
+				nil, pResp, pRuntimeSys)
+			return nil
+		}
+
+		// SESSION_NOT_VALID
+		if !validBool {
+
+			// METRICS
+			if pHandlerRuntime.Metrics != nil {
+				pHandlerRuntime.Metrics.HandlersAuthSessionInvalidCounter.Inc()
+			}
+
+			// if a login_url is not defined then return error, otherwise redirect to this login_url   
+			if pHandlerRuntime.AuthLoginURLstr == "" {
+				ErrorInHandler(pathStr,
+					fmt.Sprintf("user not authenticated to access handler %s", pathStr),
+					nil, pResp, pRuntimeSys)
+			}
+			return nil
+		}
+
+		//-----------------------
+		// USER_ID - attach to HTTP request golang context 
+		ctxAuth := context.WithValue(ctx, "gf_user_id", userIdentifierStr)
+
+		//-----------------------
+
+		return &ctxAuth
+	}
+
+	//-------------------------------------------------
+
+
+
 	switch pHandlerRuntime.AuthSubsystemTypeStr {
 
 	//------------------
@@ -119,6 +173,21 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			//-------------------------------------------------
 			userpassHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
 				
+				//-----------------------
+				// VALIDATE_SESSION
+				ctxAuth := validateSessionFun(pResp, pReq)
+				if ctxAuth == nil {
+					return
+				}
+
+				//-----------------------
+				// APP_HANDLER - external app request handler function, executed with an
+				//               authenticated context.
+				appHandlerFun(pResp, pReq.WithContext(*ctxAuth))
+
+				//-----------------------
+				
+				/*
 				ctx := pReq.Context()
 				pathStr := pReq.URL.Path
 
@@ -155,10 +224,17 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 					return
 				}
 
+				//-----------------------
+				// USER_ID - attach to HTTP request golang context 
 				ctxAuth := context.WithValue(ctx, "gf_user_id", userIdentifierStr)
 
-
+				//-----------------------
+				// APP_HANDLER - external app request handler function, executed with an
+				//               authenticated context.
 				appHandlerFun(pResp, pReq.WithContext(ctxAuth))
+
+				//-----------------------
+				*/
 			}
 
 			//-------------------------------------------------
@@ -178,9 +254,19 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			//-------------------------------------------------
 			auth0handlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
 
-				
-				
-				appHandlerFun(pResp, pReq)
+				//-----------------------
+				// VALIDATE_SESSION
+				ctxAuth := validateSessionFun(pResp, pReq)
+				if ctxAuth == nil {
+					return
+				}
+
+				//-----------------------
+				// APP_HANDLER - external app request handler function, executed with an
+				//               authenticated context.
+				appHandlerFun(pResp, pReq.WithContext(*ctxAuth))
+
+				//-----------------------
 			}
 
 			//-------------------------------------------------

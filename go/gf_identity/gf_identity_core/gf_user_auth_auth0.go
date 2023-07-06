@@ -57,10 +57,14 @@ type GFauth0outputLoginCallback struct {
 
 //---------------------------------------------------
 
+/*
 func Auth0validateSession(pSessionIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+	
 
+
+	
 	session, gfErr := dbAuth0GetSession(pSessionIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return false, gfErr
@@ -72,6 +76,7 @@ func Auth0validateSession(pSessionIDstr gf_core.GF_ID,
 
 	return true, nil
 }
+*/
 
 //---------------------------------------------------
 

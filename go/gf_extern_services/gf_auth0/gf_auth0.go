@@ -24,7 +24,11 @@ import (
 	"fmt"
 	"context"
 	"crypto/rsa"
+	"net/http"
+	"strings"
+	"errors"
 	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/oauth2"
 	jwks "github.com/MicahParks/keyfunc"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -201,3 +205,59 @@ func LoadConfig(pRuntimeSys *gf_core.RuntimeSys) *GFconfig {
 }
 
 //-------------------------------------------------------------
+
+func GetJWTtokenFromRequest(pReq *http.Request) (string, error) {
+
+    authHeaderStr := pReq.Header.Get("Authorization")
+    if authHeaderStr == "" {
+        return "", errors.New("Authorization header missing")
+    }
+
+    authPartsLst := strings.Split(authHeaderStr, " ")
+    if len(authPartsLst) != 2 || strings.ToLower(authPartsLst[0]) != "bearer" {
+        return "", errors.New("Invalid authorization header format")
+    }
+
+    return authPartsLst[1], nil
+}
+
+//-------------------------------------------------------------
+
+func JWTvalidateToken(pTokenStr string,
+	pPubKey     *rsa.PublicKey,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+    token, err := jwt.Parse(pTokenStr, func(pToken *jwt.Token) (interface{}, error) {
+
+        // Retrieve the signing key from Auth0 or any other source
+        // based on the token's kid (key ID) claim.
+        return pPubKey, nil
+    })
+
+    if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to verify a JWT token",
+			"crypto_jwt_verify_token_error",
+			map[string]interface{}{
+				"jwt_token_val_str": pTokenStr,
+			},
+			err, "gf_auth0", pRuntimeSys)
+
+        return gfErr
+    }
+
+	//---------------------------
+	// INVALID_TOKEN
+    if !token.Valid {
+        gfErr := gf_core.ErrorCreate("failed to verify a JWT token",
+			"crypto_jwt_verify_token_error",
+			map[string]interface{}{
+				"jwt_token_val_str": pTokenStr,
+			},
+			err, "gf_auth0", pRuntimeSys)
+		return gfErr
+    }
+
+	//---------------------------
+
+    return nil
+}

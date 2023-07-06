@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 )
 
 //---------------------------------------------------
@@ -34,14 +35,7 @@ func SessionValidate(pReq *http.Request,
 	pCtx                   context.Context,
 	pRuntimeSys            *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
 	
-	cookieNameStr := "gf_sess"
-	cookieFoundBool, sessionDataStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq)
 	
-	if !cookieFoundBool {
-
-		// gf_sess cookie was never found
-		return false, "", nil
-	}
 
 	var userIdentifierStr string
 	switch pAuthSubsystemTypeStr {
@@ -49,6 +43,15 @@ func SessionValidate(pReq *http.Request,
 	//---------------------
 	// USERPASS
 	case GF_AUTH_SUBSYSTEM_TYPE__USERPASS:
+		
+		cookieNameStr := "gf_sess"
+		cookieFoundBool, sessionDataStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq)
+		
+		if !cookieFoundBool {
+
+			// gf_sess cookie was never found
+			return false, "", nil
+		}
 		
 		JWTtokenValStr := sessionDataStr
 
@@ -67,6 +70,30 @@ func SessionValidate(pReq *http.Request,
 	//---------------------
 	// AUTH0
 	case GF_AUTH_SUBSYSTEM_TYPE__AUTH0:
+
+		//---------------------
+		// JWT
+		auth0JWTtokenStr, err := gf_auth0.GetJWTtokenFromRequest(pReq)
+		if err != nil {
+
+		}
+
+		// KEY_SERVER
+		publicKey, gfErr := KSclientJWTgetValidationKey(GF_AUTH_SUBSYSTEM_TYPE__AUTH0,
+			pKeyServerInfo,
+			pRuntimeSys)
+		if gfErr != nil {
+			return false, "", gfErr
+		}
+		
+		gfErr = gf_auth0.JWTvalidateToken(auth0JWTtokenStr, publicKey, pRuntimeSys)
+		if gfErr != nil {
+			return false, "", gfErr
+		}
+
+		//---------------------
+
+		/*
 		sessionIDstr := gf_core.GF_ID(sessionDataStr)
 
 		validBool, gfErr := Auth0validateSession(sessionIDstr, pCtx, pRuntimeSys)
@@ -77,7 +104,8 @@ func SessionValidate(pReq *http.Request,
 		if !validBool {
 			return false, "", nil
 		}
-		
+		*/
+
 	//---------------------
 	}
 
