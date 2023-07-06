@@ -111,9 +111,13 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				return nil, gfErr
 			}
 
+			//------------------
+			// CODE
 			// 45 char length string
 			codeStr := qsMap["code"][0]
 
+			//------------------
+			// STATE
 			// "state" arg - this is the session ID set by GF handler initially via a cookie,
 			//               and Auth0 enforces the "state" symbol name.
 			if _, ok := qsMap["state"]; !ok {
@@ -127,6 +131,8 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			auth0providedStateStr, _ := base64.StdEncoding.DecodeString(auth0providedStateBase64str)
 			gfSessionIDauth0providedStr := gf_core.GF_ID(auth0providedStateStr)
 
+			//------------------
+			
 			input := &gf_identity_core.GFauth0inputLoginCallback{
 				CodeStr:                     codeStr,
 				GFsessionIDauth0providedStr: gfSessionIDauth0providedStr,

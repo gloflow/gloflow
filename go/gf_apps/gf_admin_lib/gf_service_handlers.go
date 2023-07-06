@@ -80,6 +80,11 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 			if pReq.Method == "GET" {
 
 				//---------------------
+				// SESSION_VALIDATE - try to validate an auth session to see if the user is already authenticated.
+				//                    if it is redirect them to the admin dashboard, otherwise render the login_ui
+				//                    interface.
+				// FIX!! - this should be moved elsewhere, and not custom
+				//         and direct like this specifically in the admin/login_ui handler which is a non-auth handler.
 				validBool, _, gfErr := gf_identity_core.SessionValidate(pReq,
 					pKeyServer,
 					rpcHandlerRuntime.AuthSubsystemTypeStr,

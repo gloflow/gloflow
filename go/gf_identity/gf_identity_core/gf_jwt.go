@@ -101,7 +101,19 @@ func jwtGenerate(pUserIdentifierStr string,
 		// standard claims
 		"aud": "",                     // audience
 		"exp": expirationUNIXtimeInt,  // expires_at
-		"jti": "",                     // id
+
+		//-----------
+		// ID
+		// unique identifier for the token, often referred to as the "JWT ID".
+		// optional and can be used to uniquely identify a specific token.
+		// way to prevent token replay attacks, where an attacker tries to reuse a previously issued token
+		
+		// ADD!! - pass in a GF session ID here to be used as the unique JWT ID,
+		//         to be able to reference sessions with JWT tokens directly. 
+		"jti": "", // ID
+
+		//-----------
+		
 		"iat": int(creationUNIXtimeF), // issued_at
 		"iss": issuerStr,              // issuer
 		"nbf": int(creationUNIXtimeF), // not_before

@@ -61,10 +61,7 @@ type GFauth0outputLoginCallback struct {
 func Auth0validateSession(pSessionIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
-	
-
-
-	
+		
 	session, gfErr := dbAuth0GetSession(pSessionIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return false, gfErr
@@ -83,12 +80,21 @@ func Auth0validateSession(pSessionIDstr gf_core.GF_ID,
 func Auth0loginPipeline(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
 
+	//---------------------
+	// SESSION_ID
 	sessionIDstr := generateSessionID()
+	
+	//---------------------
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 	auth0session := &GFauth0session{
 		IDstr:             sessionIDstr,
 		CreationUNIXtimeF: creationUNIXtimeF,
+
+		// indicate if the user already passed the initial login process,
+		// and is now logged in.
+		// this is a new Auth0 session, so the login is marked as not-complete.
+		LoginCompleteBool: false,
 	}
 
 	//---------------------
@@ -129,7 +135,6 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 
 	//---------------------
 	
-
 	/*
 	// user is already logged in.
 	if auth0session.LoginCompleteBool {
@@ -150,6 +155,8 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	
 	*/
 	
+	//---------------------
+	// USER_NOT_LOGGED_IN
 	// user has not already logged in, so check some things first.
 	// a user can be already logged in, and this redirect (login-callback) by the Auth0 system was done in an already logged in state.
 	if !auth0session.LoginCompleteBool {
@@ -180,6 +187,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		spew.Dump(oauth2bearerToken)
 	}
 
+	// ACCESS_TOKEN
 	accessTokenStr := oauth2bearerToken.AccessToken
 
 	//---------------------
@@ -199,6 +207,9 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	pRuntimeSys.LogNewFun("DEBUG", "Auth0 verified openID ID_token/JWT", nil)
 
 	//---------------------
+	// EXTERNAL_USER_PROFILE
+	// JWT_CLAIMS - user_profile information coming from a third-party identity provider
+	//              is encoded in JWT claims section of the token.
 
 	var profileMap map[string]interface{}
 	if err := JWTtoken.Claims(&profileMap); err != nil {
@@ -233,6 +244,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		}
 	}
 
+	//---------------------
 	// mark the session as successfuly logged in, so that the login_callback handler
 	// cant be invoked again
 	loginCompleteBool := true
