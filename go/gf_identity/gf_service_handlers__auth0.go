@@ -158,6 +158,19 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			sessionDataStr := string(sessionIDstr)
 			gf_session.CreateCookie(sessionDataStr, pResp)
 
+
+			// JWT_HEADER
+			// current GF Auth0 implementation fetches the JWT on each auth request
+			// in order to verify it, from this header.
+			// so we're setting it here. to be integrated more into the gf_session functions,
+			// not called directly here.
+			http.SetCookie(pResp, &http.Cookie{
+				Name:     "Authorization",
+				Value:    output.JWTtokenStr,
+				HttpOnly: true,
+				Secure:   true, // Set this to false if you're not using HTTPS in development
+			})
+
 			//------------------
 			// HTTP_REDIRECT - redirect user to logged in page
 			

@@ -63,13 +63,16 @@ func ValidateOrRedirectToLogin(pReq *http.Request,
 
 	if !validBool {
 		if pAuthLoginURLstr != nil {
-
-			// redirect user to login url
+			
+			//-------------------------
+			// HTTP_REDIRECT - redirect user to login url
 			http.Redirect(pResp,
 				pReq,
 				*pAuthLoginURLstr,
 				301)
-
+			
+			//-------------------------
+			
 			return false, "", nil
 		} else {
 			return false, "", nil

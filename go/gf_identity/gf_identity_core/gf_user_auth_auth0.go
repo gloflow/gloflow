@@ -53,6 +53,7 @@ type GFauth0inputLoginCallback struct {
 }
 type GFauth0outputLoginCallback struct {
 	SessionIDstr gf_core.GF_ID
+	JWTtokenStr  string     
 }
 
 //---------------------------------------------------
@@ -263,8 +264,13 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 
 	//---------------------
 
+	JWTtokenStr := accessTokenStr // oauth2bearerToken.RawToken
+
+
+
 	output := &GFauth0outputLoginCallback{
 		SessionIDstr: sessionIDstr,
+		JWTtokenStr:  JWTtokenStr,
 	}
 	return output, nil
 }
