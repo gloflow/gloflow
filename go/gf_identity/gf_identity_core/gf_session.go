@@ -52,8 +52,14 @@ func SessionValidate(pReq *http.Request,
 			// gf_sess cookie was never found
 			return false, "", nil
 		}
-		
+
+		//---------------------
+		// JWT_TOKEN
+		// CHECK!! - make sure its actually the jwt_token value thats stored in the session_data,
+		//           and not the session_id
 		JWTtokenValStr := sessionDataStr
+
+		//---------------------
 
 		// JWT_VALIDATE
 		JWTuserIdentifierStr, gfErr := JWTpipelineValidate(GFjwtTokenVal(JWTtokenValStr),

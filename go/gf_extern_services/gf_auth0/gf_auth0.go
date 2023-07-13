@@ -125,7 +125,17 @@ func Init(pRuntimeSys *gf_core.RuntimeSys) (*GFauthenticator, *GFconfig, *gf_cor
 		ClientSecret: config.Auth0clientSecretStr,
 		RedirectURL:  config.Auth0callbackURLstr,
 		Endpoint:     provider.Endpoint(),
-		Scopes:       []string{oidc.ScopeOpenID, "profile"},
+
+		Scopes: []string{
+
+			// OPENID_SCOPE
+			// requesting OpenID Connect authentication and authorization capabilities.
+			// It is typically included to indicate that you want to authenticate the user and receive an ID token.
+			oidc.ScopeOpenID,
+			
+			// app_specific scopes
+			"profile",
+		},
 	}
 
 	authenticator := &GFauthenticator{
@@ -145,8 +155,11 @@ func VerifyIDtoken(pOauth2bearerToken *oauth2.Token,
 	pRuntimeSys    *gf_core.RuntimeSys) (*oidc.IDToken, *gf_core.GFerror) {
 
 	pRuntimeSys.LogNewFun("DEBUG", "verifying OpenID id_token...", nil)
-
-	// not making a network request, gets id_token from pOauth2bearerToken.raw.id_token
+	
+	//----------------------
+	// Extra() - Extra returns an extra field. Extra fields are key-value pairs
+	//           returned by the server as a part of the token retrieval response.
+	//           not making a network request, gets id_token from pOauth2bearerToken.raw.id_token
 	IDtokenEncodedStr, ok := pOauth2bearerToken.Extra("id_token").(string)
 	if !ok {
 		gfErr := gf_core.ErrorCreate("failed to get an id_token from oauth2 Token in auth0 flow",
@@ -160,6 +173,8 @@ func VerifyIDtoken(pOauth2bearerToken *oauth2.Token,
 		"id_token_encoded_str": IDtokenEncodedStr,
 	})
 
+	//----------------------
+	
 	oidcConfig := &oidc.Config{
 		ClientID: pAuthenticator.ClientID,
 	}

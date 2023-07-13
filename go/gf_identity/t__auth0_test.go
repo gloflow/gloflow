@@ -22,10 +22,47 @@ package gf_identity
 import (
 	"fmt"
 	"testing"
+	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 	// "github.com/davecgh/go-spew/spew"
 )
+
+//-------------------------------------------------
+
+/*
+func TestAuth0Login(pTest *testing.T) {
+	fmt.Println(" TEST__IDENTITY_AUTH0_LOGIN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+	serviceNameStr := "gf_identity_test"
+	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	runtimeSys := Tinit(serviceNameStr, mongoHostStr)
+
+
+
+	authSubsystemTypeStr := "auth0"
+	portInt := 2000
+	TestStartService(authSubsystemTypeStr, portInt, runtimeSys)
+
+
+
+
+
+	HTTPagent   := gorequest.New()
+
+
+
+
+
+	urlStr := "/v1/identity/auth0/login"
+	_, bodyStr, errs := HTTPagent.Get(urlStr).
+		End()
+	if (len(errs) > 0) {
+		runtimeSys.LogNewFun("DEBUG", "eth preflight HTTP failed", map[string]interface{}{"errs": errs,})
+		pTest.FailNow()
+	}
+}
+*/
 
 //-------------------------------------------------
 
@@ -56,3 +93,4 @@ func TestAuth0(pTest *testing.T) {
 
 
 }
+

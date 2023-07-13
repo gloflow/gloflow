@@ -260,8 +260,16 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	// DB
 	gfErr = dbAuth0UpdateSession(sessionIDstr,
 		loginCompleteBool,
-		accessTokenStr,
+
+		// should this be stored in the DB at all?
+		"", // accessTokenStr,
+
+		//---------------
+		// currently active profile is stored in the DB.
 		profileMap,
+
+		//---------------
+		
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
