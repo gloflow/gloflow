@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity
 
 import (
-	// "fmt"
+	"fmt"
 	"net/http"
 	"context"
 	"encoding/base64"
@@ -127,8 +127,10 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 					nil, "gf_identity", pRuntimeSys)
 				return nil, gfErr
 			}
+
+			// state is base64 encoded session_id, so it needs to be decoded and casted into an GF_ID 
 			auth0providedStateBase64str := qsMap["state"][0]
-			auth0providedStateStr, _ := base64.StdEncoding.DecodeString(auth0providedStateBase64str)
+			auth0providedStateStr, _    := base64.StdEncoding.DecodeString(auth0providedStateBase64str)
 			gfSessionIDauth0providedStr := gf_core.GF_ID(auth0providedStateStr)
 
 			//------------------
@@ -164,9 +166,12 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			// in order to verify it, from this header.
 			// so we're setting it here. to be integrated more into the gf_session functions,
 			// not called directly here.
+			//
+			// RFC6750
+			// https://stackoverflow.com/questions/33265812/best-http-authorization-header-type-for-jwt
 			http.SetCookie(pResp, &http.Cookie{
 				Name:     "Authorization",
-				Value:    output.JWTtokenStr,
+				Value:    fmt.Sprintf("Bearer %s", output.JWTtokenStr),
 				HttpOnly: true,
 				Secure:   true, // Set this to false if you're not using HTTPS in development
 			})

@@ -119,6 +119,7 @@ func Init(pRuntimeSys *gf_core.RuntimeSys) (*GFauthenticator, *GFconfig, *gf_cor
 		return nil, nil, gfErr
 	}
 
+	// OAuth2 Auth0 provider 
 	conf := oauth2.Config{
 		ClientID:     config.Auth0clientIDstr,
 		ClientSecret: config.Auth0clientSecretStr,
@@ -131,7 +132,6 @@ func Init(pRuntimeSys *gf_core.RuntimeSys) (*GFauthenticator, *GFconfig, *gf_cor
 		Provider: provider,
 		Config:   conf,
 	}
-
 
 	return authenticator, config, nil
 }
@@ -207,8 +207,13 @@ func LoadConfig(pRuntimeSys *gf_core.RuntimeSys) *GFconfig {
 //-------------------------------------------------------------
 // JWT
 //-------------------------------------------------------------
+
+// extract JWT token from a http request and return it as a string
 func JWTgetTokenFromRequest(pReq *http.Request) (string, error) {
 
+	// AUTHORIZATION_HEADER - set by a GF http handler /v1/identity/auth0/login_callback
+	//                        on successful completion of login at the end of the handler.
+	//                        this is the standard Oauth2 header symbol.
     authHeaderStr := pReq.Header.Get("Authorization")
     if authHeaderStr == "" {
         return "", errors.New("Authorization header missing")
@@ -224,6 +229,9 @@ func JWTgetTokenFromRequest(pReq *http.Request) (string, error) {
 
 //-------------------------------------------------------------
 
+// validate given JWT token. a public key used for JWT signature validation
+// is passed as the argument. function either fails or succeeds and returns if the 
+// key is valid.
 func JWTvalidateToken(pTokenStr string,
 	pPubKey     *rsa.PublicKey,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {

@@ -263,6 +263,8 @@ function create_eth_address(p_address_str :string,
 	$(eth_address_element).on("click", ()=>{
 
 		if (!added_bool) {
+
+			// ETH_ADDRESS - UI control that represents an ETH address and actions supported on it
 			info_container_element = $(`
 				<div class="info">
 					<div class="index_nfts_for_owner_btn">
@@ -461,6 +463,8 @@ function create_eth_address_input(p_address_type_str :string,
 }
 
 //--------------------------------------------------------
+// INDEX_ADDRESS_NFTS
+
 function index_address_nfts(p_address_str :string,
 	p_http_api_map) {
 	
@@ -470,6 +474,8 @@ function index_address_nfts(p_address_str :string,
 
 
 		const chain_str = "eth";
+
+		// HTTP_CALL - NFT_INDEX - for a given ETH address
 		const output_map = await p_http_api_map["home"]["web3_nft_index_for_address_fun"](p_address_str,
 			chain_str)
 

@@ -173,7 +173,13 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	}
 	
 	//---------------------
-	// exchange an authorization code for a token.
+	// EXCHANGE_CODE_FOR_TOKEN
+	// IMPORTANT!! - the code parameter returned by Auth0 supplied as an HTTP QS argument "code".
+	//               this auth code gets exchanged with Auth0 servers for an Oauth2 bearer token.
+	//
+	// "...exchange the authorization code (obtained after the user authenticates 
+	// and grants authorization) with the provider, which returns an OAuth2 token.
+	// This token can be used to make authenticated API requests to the provider's resources."
 	oauth2bearerToken, err := pAuthenticator.Exchange(pCtx, pInput.CodeStr)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to exchange an authorization code for a token",
@@ -188,7 +194,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		spew.Dump(oauth2bearerToken)
 	}
 
-	// ACCESS_TOKEN
+	// ACCESS_TOKEN - Oauth2 bearer_token is the same thing as the access_token
 	accessTokenStr := oauth2bearerToken.AccessToken
 
 	//---------------------
@@ -264,6 +270,9 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 
 	//---------------------
 
+
+
+	// TEST!! - if this works then delete above line: "JWTtoken := idToken"
 	JWTtokenStr := accessTokenStr // oauth2bearerToken.RawToken
 
 
