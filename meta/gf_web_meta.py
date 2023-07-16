@@ -144,6 +144,17 @@ def get():
 		#-------------
 	}
 
+	gf_identity__pages_map = {
+		#-------------
+		"gf_login": {
+			"build_dir_str":      f"{modd_str}/../web/build/gf_identity",
+			"main_html_path_str": f"{modd_str}/../web/src/gf_identity/templates/gf_login/gf_login.html",
+			"url_base_str":       "/v1/identity/static",
+		},
+
+		#-------------
+	}
+
 	apps_map = {
 		#-----------------------------
 		# GF_SOLO
@@ -184,13 +195,15 @@ def get():
 
 	gf_solo__pages_map = {}
 
+	gf_solo__pages_map.update(copy.deepcopy(gf_identity__pages_map))
+	gf_solo__pages_map.update(copy.deepcopy(gf_admin__pages_map))
+	gf_solo__pages_map.update(copy.deepcopy(gf_home__pages_map))
+
 	gf_solo__pages_map.update(copy.deepcopy(gf_landing_page__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_images__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_publisher__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_analytics__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_tagger__pages_map))
-	gf_solo__pages_map.update(copy.deepcopy(gf_admin__pages_map))
-	gf_solo__pages_map.update(copy.deepcopy(gf_home__pages_map))
 
 	for _, page_info_map in gf_solo__pages_map.items():
 
