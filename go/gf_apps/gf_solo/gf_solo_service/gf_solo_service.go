@@ -107,7 +107,7 @@ func Run(pConfig *GFconfig,
 
 		AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
 
-		AuthLoginURLstr:                       "/landing/main", // on email confirm redirect user to this
+		AuthLoginURLstr:                       "/v1/identity/login_ui", // on email confirm redirect user to this
 		AuthLoginSuccessRedirectURLstr:        "/v1/home/main", // on login success redirecto to home
 		EnableEventsAppBool:                   true,
 		EnableUserCredsInSecretsStoreBool:     true,
@@ -186,7 +186,7 @@ func Run(pConfig *GFconfig,
 
 	homeServiceInfo := &gf_home_lib.GFserviceInfo{
 		AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
-		AuthLoginURLstr:      "/landing/main", // if not logged in redirect users to this
+		AuthLoginURLstr:      "/v1/identity/login_ui", // if not logged in redirect users to this
 		KeyServer:            keyServer,
 	}
 
@@ -228,7 +228,7 @@ func Run(pConfig *GFconfig,
 
 		// AUTH
 		// on user trying to access authed endpoint while not logged in, redirect to this
-		AuthLoginURLstr: "/landing/main",
+		AuthLoginURLstr: "/v1/identity/login_ui",
 		KeyServer:       keyServer,
 		
 		//-------------------------
