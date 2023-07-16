@@ -75,13 +75,18 @@ func HTTPsetCookieOnReq(pCookieNameStr string,
 	expire := time.Now().Add(ttl)
 	
 	cookie := http.Cookie{
-		Name:    pCookieNameStr,
-		Value:   pDataStr,
+		Name:  pCookieNameStr,
+		Value: pDataStr,
+
+		// if not set the cookie would be a session cookie and would be
+		// deleted on restart of the browser.
 		Expires: expire,
 
 		// IMPORTANT!! - session cookie should be set for all paths
 		//               on the same domain, not just the /v1/identity/...
-		//               paths, because session is verified on all of them
+		//               paths, because session is verified on all of them.
+		//               otherwise the cookie will only be set requests
+		//               that are on some subset of urls relative to the root.
 		Path: "/", 
 		
 		// ADD!! - ability to specify multiple domains that the session is

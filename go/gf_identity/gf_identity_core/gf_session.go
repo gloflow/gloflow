@@ -142,7 +142,13 @@ func generateSessionID() gf_core.GF_ID {
 //---------------------------------------------------
 
 func GetSessionTTL() (int, int64) {
-	sessionTTLhoursInt   := 24 * 30 // 1 month
+
+	//---------------------
+	// FIX!! - this should be configurable
+	sessionTTLhoursInt := 24 * 30 // 1 month
+
+	//---------------------
+	
 	sessionTTLsecondsInt := int64(60*60*24*7)
 	return sessionTTLhoursInt, sessionTTLsecondsInt
 }

@@ -24,7 +24,7 @@ import (
 	"net/http"
 	"context"
 	"encoding/base64"
-	"time"
+	// "time"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
@@ -164,8 +164,9 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 			//---------------------
 			// COOKIE - AUTHORIZATION
-			headerValue := pReq.Header.Get("Authorization")
+			auth0suppliedJWTstr := pReq.Header.Get("Authorization")
 
+			/*
 			// JWT_HEADER
 			// current GF Auth0 implementation fetches the JWT on each auth request
 			// in order to verify it, from this header.
@@ -176,7 +177,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			// https://stackoverflow.com/questions/33265812/best-http-authorization-header-type-for-jwt
 			http.SetCookie(pResp, &http.Cookie{
 				Name:     "Authorization",
-				Value:    headerValue, // fmt.Sprintf("Bearer %s", output.JWTtokenStr),
+				Value:    auth0suppliedJWTstr, // fmt.Sprintf("Bearer %s", output.JWTtokenStr),
 				HttpOnly: true,
 				Secure:   true, // Set this to false if you're not using HTTPS in development
 
@@ -192,6 +193,16 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				//               that will expire after the user closes their browser.
 				Expires: time.Now().AddDate(0, 0, 2), // 2 days
 			})
+			*/
+
+			auth0JWTttlHoursInt, _ := gf_identity_core.GetSessionTTL()
+
+			cookieNameStr := "Authorization"
+			cookieDataStr := auth0suppliedJWTstr
+			gf_core.HTTPsetCookieOnReq(cookieNameStr,
+				cookieDataStr,
+				pResp,
+				auth0JWTttlHoursInt)
 
 			//------------------
 			// HTTP_REDIRECT - redirect user to logged in page
