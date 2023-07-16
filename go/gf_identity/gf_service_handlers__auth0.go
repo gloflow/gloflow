@@ -20,10 +20,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity
 
 import (
-	"fmt"
+	// "fmt"
 	"net/http"
 	"context"
 	"encoding/base64"
+	"time"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
@@ -163,7 +164,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 			//---------------------
 			// COOKIE - AUTHORIZATION
-			headerValue := r.Header.Get("Authorization")
+			headerValue := pReq.Header.Get("Authorization")
 
 			// JWT_HEADER
 			// current GF Auth0 implementation fetches the JWT on each auth request
