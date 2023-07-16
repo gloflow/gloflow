@@ -19,6 +19,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../d/jquery.d.ts" />
 
+import * as gf_identity from "./gf_identity";
+import * as gf_identity_http  from "./gf_identity_http";
+
 //--------------------------------------------------------
 $(document).ready(()=>{
 	//-------------------------------------------------
@@ -48,6 +51,16 @@ function init(p_log_fun) {
 
 	console.log("gf login UI")
 
+	//---------------------
+	// META
+	const notifications_meta_map = {
+		"login_first_stage_success": "login success"
+	};
+	
+	//---------------------
+	// IDENTITY
+	const urls_map = gf_identity_http.get_standard_http_urls();
+	gf_identity.init_with_http(notifications_meta_map, urls_map);
 
     
 }
