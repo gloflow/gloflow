@@ -46,15 +46,12 @@ func TestMain(m *testing.M) {
 
 	templatesPathsMap := map[string]string{
 		"gf_home_main": "./../../../web/src/gf_apps/gf_home/templates/gf_home_main/gf_home_main.html",
+		"gf_login":     "./../../../web/src/gf_identity/templates/gf_login/gf_login.html",
 	}
 
 	// GF_IDENTITY_SERVICE
 	authSubsystemTypeStr := "userpass"
 	testIdentityServicePortInt := 2001
-
-	templatesPathsMap := map[string]string {
-		"gf_login": "./../../web/src/gf_identity/templates/gf_login/gf_login.html",
-	}
 
 	keyServer := gf_identity.TestStartService(authSubsystemTypeStr,
 		templatesPathsMap,

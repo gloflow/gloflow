@@ -53,17 +53,26 @@ func TestTemplates(pTest *testing.T) {
 	runtimeSys.LogFun    = logFun
 	runtimeSys.LogNewFun = logNewFun
 
-	authSubsystemTypeStr := "auth0"
-	portInt := 3000
-	keyServer := gf_identity.TestStartService(authSubsystemTypeStr, portInt, runtimeSys) 
-
 	// TEMPLATES
-	templatesPathsMap := map[string]string{
+	
+
+	authSubsystemTypeStr := "auth0"
+	portInt := 3550
+
+	// GF_IDENTITY - start test tester
+	identityTemplatesPathsMap := map[string]string{
+		"gf_login": "./../../../web/src/gf_identity/templates/gf_login/gf_login.html",
+	}
+	keyServer := gf_identity.TestStartService(authSubsystemTypeStr, identityTemplatesPathsMap, portInt, runtimeSys) 
+
+				
+	//------------------
+	adminTemplatesPathsMap := map[string]string{
 		"gf_admin_login":     "./../../../web/src/gf_apps/gf_admin/templates/gf_admin_login/gf_admin_login.html",
 		"gf_admin_dashboard": "./../../../web/src/gf_apps/gf_admin/templates/gf_admin_dashboard/gf_admin_dashboard.html",
-	}			
-	
-	templates, gfErr := templatesLoad(templatesPathsMap, runtimeSys)
+	}
+
+	templates, gfErr := templatesLoad(adminTemplatesPathsMap, runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}
