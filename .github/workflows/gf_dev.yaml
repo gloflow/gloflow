@@ -234,7 +234,7 @@ jobs:
         with:
           name: web_build_artifacts
           path: |
-            /home/gf/web/build/gf_apps
+            /home/gf/web/build
           retention-days: 1
 
       #-------------------------------
@@ -288,7 +288,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: web_build_artifacts
-          path: /home/gf/web/build/gf_apps
+          path: /home/gf/web/build
 
       #-------------------------------
       # BUILD_CONTAINER

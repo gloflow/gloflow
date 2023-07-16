@@ -29,7 +29,7 @@ image   = "0.21.1"
 #-------------------------------
 [dependencies.pyo3]
 
-# FIX!! - upgrade to latest version of pyo3
+# FIX!! - upgrade to latest version of pyo3 - 0.19.1
 version  = "0.15.1" # "0.10.1"
 
 features = ["extension-module"]
