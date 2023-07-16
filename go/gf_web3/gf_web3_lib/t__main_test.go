@@ -47,7 +47,13 @@ func TestMain(m *testing.M) {
 	// GF_IDENTITY_SERVICE
 	authSubsystemTypeStr := "userpass"
 	testIdentityServicePortInt := 2001
+
+	templatesPathsMap := map[string]string {
+		"gf_login": "./../../../web/src/gf_identity/templates/gf_login/gf_login.html",
+	}
+
 	keyServer := gf_identity.TestStartService(authSubsystemTypeStr,
+		templatesPathsMap,
 		testIdentityServicePortInt,
 		runtime.RuntimeSys)
 
