@@ -229,10 +229,17 @@ func JWTgetTokenFromRequest(pReq *http.Request) (string, error) {
 	// AUTHORIZATION_HEADER - set by a GF http handler /v1/identity/auth0/login_callback
 	//                        on successful completion of login at the end of the handler.
 	//                        this is the standard Oauth2 header symbol.
-    authHeaderStr := pReq.Header.Get("Authorization")
-    if authHeaderStr == "" {
+    authCookie, err := pReq.Cookie("Authorization") // pReq.Header.Get("Authorization")
+    if err != nil {
+		return "", errors.New("Authorization header missing")
+	}
+	/*
+	if authHeaderStr == "" {
         return "", errors.New("Authorization header missing")
     }
+	*/
+
+	authHeaderStr := authCookie.Value
 
     authPartsLst := strings.Split(authHeaderStr, " ")
     if len(authPartsLst) != 2 || strings.ToLower(authPartsLst[0]) != "bearer" {

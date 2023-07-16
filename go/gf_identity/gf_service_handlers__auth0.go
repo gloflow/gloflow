@@ -62,7 +62,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 		AuthSubsystemTypeStr: pServiceInfo.AuthSubsystemTypeStr,
 		
 		// url redirected too if user not logged in and tries to access auth handler
-		AuthLoginURLstr: "/landing/main",
+		AuthLoginURLstr: "/v1/identity/login_ui",
 		AuthKeyServer:   pKeyServer,
 	}
 
@@ -135,7 +135,25 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			gfSessionIDauth0providedStr := gf_core.GF_ID(auth0providedStateStr)
 
 			//------------------
-			
+			// AUTH_TOKEN - JWT token thats set by Auth0.
+			//              this is set as a cookie and read off here.
+			auth0coookie, err := pReq.Cookie("Authorization")
+
+			// check if header is supplied at all
+			// if auth0suppliedJWTstr == "" {
+			if err != nil {
+
+				// if jwt token is not supplied by Auth0 redirect the user to the GF login page
+				loginUIurlStr := "/v1/identity/login_ui"
+				http.Redirect(pResp,
+					pReq,
+					loginUIurlStr,
+					301)
+			}
+
+			auth0suppliedJWTstr := auth0coookie.Value
+
+			//------------------
 			input := &gf_identity_core.GFauth0inputLoginCallback{
 				CodeStr:                     codeStr,
 				GFsessionIDauth0providedStr: gfSessionIDauth0providedStr,
@@ -164,7 +182,6 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 			//---------------------
 			// COOKIE - AUTHORIZATION
-			auth0suppliedJWTstr := pReq.Header.Get("Authorization")
 
 			/*
 			// JWT_HEADER
