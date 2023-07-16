@@ -119,7 +119,8 @@ func Run(pConfig *GFconfig,
 		//         individually if they so desire.
 		EnableMFArequireConfirmForLoginBool: false,
 	}
-	keyServer, gfErr := gf_identity.InitService(gfSoloHTTPmux,
+	keyServer, gfErr := gf_identity.InitService(pConfig.TemplatesPathsMap,
+		gfSoloHTTPmux,
 		gfIdentityServiceInfo,
 		pRuntimeSys)
 	if gfErr != nil {

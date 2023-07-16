@@ -30,10 +30,11 @@ import (
 
 //-------------------------------------------------
 
-func InitService(pHTTPmux *http.ServeMux,
+func InitService(pTemplatesPathsMap map[string]string,
+	pHTTPmux     *http.ServeMux,
 	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) (*gf_identity_core.GFkeyServerInfo, *gf_core.GFerror) {
-
+	
 	pRuntimeSys.LogNewFun("INFO", "initializing gf_identity service...", map[string]interface{}{
 		"auth_subsystem_type_str": pServiceInfo.AuthSubsystemTypeStr,
 	})
@@ -52,8 +53,20 @@ func InitService(pHTTPmux *http.ServeMux,
 	}
 	
 	//------------------------
+	// STATIC FILES SERVING
+	staticFilesURLbaseStr := "/v1/identity"
+	localDirPathStr       := "./static"
+
+	gf_core.HTTPinitStaticServingWithMux(staticFilesURLbaseStr,
+		localDirPathStr,
+		pHTTPmux,
+		pRuntimeSys)
+
+	//------------------------
 	// HANDLERS
-	gfErr = initHandlers(pServiceInfo.AuthLoginURLstr,
+	gfErr = initHandlers(
+		pServiceInfo.AuthLoginURLstr,
+		pTemplatesPathsMap,
 		keyServerInfo,
 		pHTTPmux, pServiceInfo, pRuntimeSys)
 	if gfErr != nil {

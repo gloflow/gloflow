@@ -34,15 +34,25 @@ import (
 //------------------------------------------------
 
 func initHandlers(pAuthLoginURLstr string,
+	pTemplatesPathsMap map[string]string,
 	pKeyServer   *gf_identity_core.GFkeyServerInfo,
 	pHTTPmux     *http.ServeMux,
 	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
+	// TEMPLATES
+
+	gfTemplates, gfErr := templatesLoad(pTemplatesPathsMap, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//---------------------
 	// METRICS
 	handlersEndpointsLst := []string{
 		"/v1/identity/policy/update",
+		"/v1/identity/login_ui",
 		"/v1/identity/email_confirm",
 		"/v1/identity/mfa_confirm",
 		"/v1/identity/update",
@@ -119,6 +129,40 @@ func initHandlers(pAuthLoginURLstr string,
 
 	//---------------------
 	// VAR
+	//---------------------
+	// LOGIN_UI
+	// NO_AUTH
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/login_ui",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+			if pReq.Method == "GET" {
+
+				//---------------------
+				// INPUT
+				// qsMap := pReq.URL.Query()
+
+				//---------------------
+
+				templateRenderedStr, gfErr := viewRenderTemplateLogin(pServiceInfo.AuthSubsystemTypeStr,
+					gfTemplates.loginTmpl,
+					gfTemplates.loginSubtemplatesNamesLst,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+
+				pResp.Write([]byte(templateRenderedStr))
+			}
+
+			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
+			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
+			//               from returning it.
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
+
 	//---------------------
 	// EMAIL_CONFIRM
 	// NO_AUTH

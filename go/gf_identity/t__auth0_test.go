@@ -22,7 +22,7 @@ package gf_identity
 import (
 	"fmt"
 	"testing"
-	"github.com/parnurzeal/gorequest"
+	// "github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 	// "github.com/davecgh/go-spew/spew"

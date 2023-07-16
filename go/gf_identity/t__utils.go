@@ -86,6 +86,7 @@ func TestCreateAndLoginNewUser(pTest *testing.T,
 //-------------------------------------------------
 
 func TestStartService(pAuthSubsystemTypeStr string,
+	pTemplatesPathsMap map[string]string,
 	pPortInt    int,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_identity_core.GFkeyServerInfo {
 
@@ -95,6 +96,7 @@ func TestStartService(pAuthSubsystemTypeStr string,
 
 		HTTPmux := http.NewServeMux()
 
+		
 		serviceInfo := &gf_identity_core.GFserviceInfo{
 
 			AuthSubsystemTypeStr: pAuthSubsystemTypeStr, // "userpass",
@@ -107,7 +109,7 @@ func TestStartService(pAuthSubsystemTypeStr string,
 		// spew.Dump(pRuntimeSys)
 
 		var gfErr *gf_core.GFerror
-		keyServer, gfErr = InitService(HTTPmux, serviceInfo, pRuntimeSys)
+		keyServer, gfErr = InitService(pTemplatesPathsMap, HTTPmux, serviceInfo, pRuntimeSys)
 		if gfErr != nil {
 			panic("failed to initialize gf_identity service")
 		}

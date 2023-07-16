@@ -24,6 +24,7 @@ sentry_endpoint: "" # or ENV var
 # TEMPLATES_DIR_PATHS
 
 templates_paths:
+  gf_login:                "./templates/gf_login.html"
   gf_admin_login:          "./templates/gf_admin_login/gf_admin_login.html"
   gf_admin_dashboard:      "./templates/gf_admin_dashboard/gf_admin_dashboard.html"
   gf_analytics_dashboard:  "./templates/gf_analytics_dashboard/gf_analytics_dashboard.html"

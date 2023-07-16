@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2022 Ivan Trajkovic
+Copyright (C) 2023 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,34 +20,44 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity
 
 import (
-	"os"
+	"fmt"
 	"testing"
-	"github.com/gloflow/gloflow/go/gf_core"
+	// "github.com/gloflow/gloflow/go/gf_core"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
 
-func TestMain(m *testing.M) {
-
-	logFun, logNewFun = gf_core.LogsInitNew(true, "debug")
-	cliArgsMap = CLIparseArgs(logFun)
+func TestTemplates(pTest *testing.T) {
 
 	serviceNameStr := "gf_identity_test"
-	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
-	runtimeSys := Tinit(serviceNameStr, mongoHostStr)
+	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	runtimeSys   := Tinit(serviceNameStr, mongoHostStr)
+	runtimeSys.LogFun    = logFun
+	runtimeSys.LogNewFun = logNewFun
 
-	authSubsystemTypeStr := "userpass"
-	portInt := 2000
+	authSubsystemTypeStr := "auth0"
 
-	templatesPathsMap := map[string]string {
+	// TEMPLATES
+	templatesPathsMap := map[string]string{
 		"gf_login": "./../../web/src/gf_identity/templates/gf_login/gf_login.html",
+	}			
+	
+	templates, gfErr := templatesLoad(templatesPathsMap, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
 	}
 
-	TestStartService(authSubsystemTypeStr,
-		templatesPathsMap,
-		portInt,
+	//------------------
+	templateRenderedStr, gfErr := viewRenderTemplateLogin(authSubsystemTypeStr,
+		templates.loginTmpl,
+		templates.loginSubtemplatesNamesLst,
 		runtimeSys)
+	if gfErr != nil {
+		pTest.FailNow()
+	}
 
-	v := m.Run()
-	os.Exit(v)
+	fmt.Println(templateRenderedStr)
+
+	//------------------
 }
