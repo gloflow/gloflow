@@ -41,39 +41,6 @@ func SessionValidate(pReq *http.Request,
 	switch pAuthSubsystemTypeStr {
 	
 	//---------------------
-	// USERPASS
-	case GF_AUTH_SUBSYSTEM_TYPE__USERPASS:
-		
-		cookieNameStr := "gf_sess"
-		cookieFoundBool, sessionDataStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq)
-		
-		if !cookieFoundBool {
-
-			// gf_sess cookie was never found
-			return false, "", nil
-		}
-
-		//---------------------
-		// JWT_TOKEN
-		// CHECK!! - make sure its actually the jwt_token value thats stored in the session_data,
-		//           and not the session_id
-		JWTtokenValStr := sessionDataStr
-
-		//---------------------
-
-		// JWT_VALIDATE
-		JWTuserIdentifierStr, gfErr := JWTpipelineValidate(GFjwtTokenVal(JWTtokenValStr),
-			pAuthSubsystemTypeStr,
-			pKeyServerInfo,
-			pCtx,
-			pRuntimeSys)
-		if gfErr != nil {
-			return false, "", gfErr
-		}
-
-		userIdentifierStr = JWTuserIdentifierStr
-
-	//---------------------
 	// AUTH0
 	case GF_AUTH_SUBSYSTEM_TYPE__AUTH0:
 
@@ -117,6 +84,39 @@ func SessionValidate(pReq *http.Request,
 			return false, "", nil
 		}
 		*/
+
+	//---------------------
+	// USERPASS
+	case GF_AUTH_SUBSYSTEM_TYPE__USERPASS:
+		
+		cookieNameStr := "gf_sess"
+		cookieFoundBool, sessionDataStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq)
+		
+		if !cookieFoundBool {
+
+			// gf_sess cookie was never found
+			return false, "", nil
+		}
+
+		//---------------------
+		// JWT_TOKEN
+		// CHECK!! - make sure its actually the jwt_token value thats stored in the session_data,
+		//           and not the session_id
+		JWTtokenValStr := sessionDataStr
+
+		//---------------------
+
+		// JWT_VALIDATE
+		JWTuserIdentifierStr, gfErr := JWTpipelineValidate(GFjwtTokenVal(JWTtokenValStr),
+			pAuthSubsystemTypeStr,
+			pKeyServerInfo,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return false, "", gfErr
+		}
+
+		userIdentifierStr = JWTuserIdentifierStr
 
 	//---------------------
 	}

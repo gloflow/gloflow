@@ -241,6 +241,7 @@ func JWTgetTokenFromRequest(pReq *http.Request) (string, error) {
 
 	authHeaderStr := authCookie.Value
 
+	// remove the "Bearer" header in the token
     authPartsLst := strings.Split(authHeaderStr, " ")
     if len(authPartsLst) != 2 || strings.ToLower(authPartsLst[0]) != "bearer" {
         return "", errors.New("Invalid authorization header format")
