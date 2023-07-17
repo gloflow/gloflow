@@ -20,10 +20,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_core
 
 import (
-	// "fmt"
+	"fmt"
 	"time"
 	"context"
 	"strings"
+	"github.com/golang-jwt/jwt"
 	// "github.com/auth0/go-jwt-middleware/v2"
 	// "github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -194,8 +195,45 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		spew.Dump(oauth2bearerToken)
 	}
 
+
+
+
+
+
+	// extract the ID token from OAuth2 token.
+	rawIDTokenStr, ok := oauth2bearerToken.Extra("id_token").(string)
+	if !ok {
+		gfErr := gf_core.ErrorCreate("failed find OpenID token in returned Oauth2 Bearer token",
+			"library_error",
+			map[string]interface{}{
+				"oauth2_bearer_token_str": fmt.Sprint(oauth2bearerToken),
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	// parse the raw ID token without validating the signature so that the JWT token can be extracted
+	JWTtmpToken, _, err := new(jwt.Parser).ParseUnverified(rawIDTokenStr, &jwt.StandardClaims{})
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to parse unverified OpenID Token as JWT",
+			"library_error",
+			map[string]interface{}{
+				"raw_id_token_str": rawIDTokenStr,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	JWTtokenStr := JWTtmpToken.Raw
+
+
+
+
+
+
+	//---------------------
 	// ACCESS_TOKEN - Oauth2 bearer_token is the same thing as the access_token
-	accessTokenStr := oauth2bearerToken.AccessToken
+	// accessTokenStr := oauth2bearerToken.AccessToken
 
 	//---------------------
 	// verify token - get ID token
@@ -281,7 +319,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 
 
 	// TEST!! - if this works then delete above line: "JWTtoken := idToken"
-	JWTtokenStr := accessTokenStr // oauth2bearerToken.RawToken
+	// JWTtokenStr := accessTokenStr // oauth2bearerToken.RawToken
 
 
 

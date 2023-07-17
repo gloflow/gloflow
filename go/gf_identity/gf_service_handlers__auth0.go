@@ -135,6 +135,8 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			gfSessionIDauth0providedStr := gf_core.GF_ID(auth0providedStateStr)
 
 			//------------------
+
+			/*
 			// AUTH_TOKEN - JWT token thats set by Auth0.
 			//              this is set as a cookie and read off here.
 			auth0coookie, err := pReq.Cookie("Authorization")
@@ -152,7 +154,8 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			}
 
 			auth0suppliedJWTstr := auth0coookie.Value
-
+			*/
+			
 			//------------------
 			input := &gf_identity_core.GFauth0inputLoginCallback{
 				CodeStr:                     codeStr,
@@ -215,7 +218,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			auth0JWTttlHoursInt, _ := gf_identity_core.GetSessionTTL()
 
 			cookieNameStr := "Authorization"
-			cookieDataStr := auth0suppliedJWTstr
+			cookieDataStr := output.JWTtokenStr // auth0suppliedJWTstr
 			gf_core.HTTPsetCookieOnReq(cookieNameStr,
 				cookieDataStr,
 				pResp,
