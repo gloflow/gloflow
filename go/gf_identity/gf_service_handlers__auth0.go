@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity
 
 import (
-	// "fmt"
+	"fmt"
 	"net/http"
 	"context"
 	"encoding/base64"
@@ -218,7 +218,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			auth0JWTttlHoursInt, _ := gf_identity_core.GetSessionTTL()
 
 			cookieNameStr := "Authorization"
-			cookieDataStr := output.JWTtokenStr // auth0suppliedJWTstr
+			cookieDataStr := fmt.Sprintf("Bearer %s", output.JWTtokenStr) // auth0suppliedJWTstr
 			gf_core.HTTPsetCookieOnReq(cookieNameStr,
 				cookieDataStr,
 				pResp,
