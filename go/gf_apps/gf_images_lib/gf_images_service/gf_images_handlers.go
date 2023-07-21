@@ -190,6 +190,9 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				//------------------
 				// INPUT
 				qsMap := pReq.URL.Query()
+				
+				// USER_ID
+				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
 				// IMAGE_FORMAT
 				var imageFormatStr string
@@ -222,6 +225,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					imageFormatStr,
 					flowsNamesLst,
 					clientTypeStr,
+					userID,
 					pStorage,
 					pS3info,
 					pImgConfig,
@@ -264,6 +268,10 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 				//------------------
 				// INPUT
+
+				// USER_ID
+				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
 				qsMap := pReq.URL.Query()
 
 				iMap, gfErr :=  gf_core.HTTPgetInput(pReq, pRuntimeSys)
@@ -289,6 +297,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				// COMPLETE
 				runningJob, gfErr := UploadComplete(uploadImageIDstr,
 					metaMap,
+					userID,
 					pJobsMngrCh,
 					pCtx,
 					pRuntimeSys)
@@ -330,6 +339,10 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 				//------------------
 				// INPUT
+
+				// USER_ID
+				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
 				qsMap := pReq.URL.Query()
 
 				iMap, gfErr :=  gf_core.HTTPgetInput(pReq, pRuntimeSys)
@@ -357,6 +370,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				gfErr = UploadMetricsCreate(uploadImageIDstr,
 					clientTypeStr,
 					metricsDataMap,
+					userID,
 					pMetrics,
 					pCtx,
 					pRuntimeSys)

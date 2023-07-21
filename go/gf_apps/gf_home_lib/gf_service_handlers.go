@@ -85,11 +85,13 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 				//---------------------
 				// INPUT
-				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
+				// USER_ID
+				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 				
 				//---------------------
 				
-				homeViz, gfErr := PipelineVizPropsGet(userIDstr, pCtx, pRuntimeSys)
+				homeViz, gfErr := PipelineVizPropsGet(userID, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

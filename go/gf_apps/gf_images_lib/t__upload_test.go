@@ -54,6 +54,8 @@ func TestUpload(pTest *testing.T) {
 	testVideosLocalDirPathStr              := "./tests_data/videos"
 	// test__s3_bucket_name_str               := "gf--test--img"
 
+	userID := "test_user"
+
 	//-------------
 	
 	mongodbDB, _, gfErr := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, logFun)
@@ -96,6 +98,7 @@ func TestUpload(pTest *testing.T) {
 		"jpeg", // image_format_str,
 		testImageFlowsNamesLst,
 		"browser", // client_type_str,
+		userID,
 		s3testInfo.Gf_s3_info,
 		img_config,
 		runtime_sys)
@@ -148,6 +151,7 @@ func TestUpload(pTest *testing.T) {
 	// UPLOAD_COMPLETE
 	running_job, gfErr := Upload__complete(uploadInfo.Upload_gf_image_id_str,
 		jobsMngr,
+		userID,
 		s3testInfo.Gf_s3_info,
 		runtime_sys)
 	if gfErr != nil {
