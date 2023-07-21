@@ -67,7 +67,6 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		Metrics:         metrics,
 		StoreRunBool:    true,
 		SentryHub:       nil,
-		
 		AuthSubsystemTypeStr: pAuthSubsystemTypeStr,
 		AuthLoginURLstr:      pAuthLoginURLstr,
 		AuthKeyServer:        pKeyServer,
@@ -174,8 +173,9 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	//---------------------
 	// UPLOAD_INIT - client calls this to get the presigned URL to then upload the image to directly.
 	//               this is done mainly to save on bandwidth and avoid one extra hop.
-	
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/upload_init",
+	// AUTH
+
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/upload_init",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
@@ -243,17 +243,14 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 			}
 			return nil, nil
 		},
-		pHTTPmux,
-		metrics,
-		true, // pStoreRunBool
-		nil,
+		rpcHandlerRuntime,
 		pRuntimeSys)
 
 	//---------------------
 	// UPLOAD_COMPLETE - client calls this to get the presigned URL to then upload the image to directly.
 	//                   this is done mainly to save on bandwidth and avoid one extra hop.
 	
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/upload_complete",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/upload_complete",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -313,16 +310,13 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 			}
 			return nil, nil
 		},
-		pHTTPmux,
-		metrics,
-		true, // pStoreRunBool
-		nil,
+		rpcHandlerRuntime,
 		pRuntimeSys)
 
 	//---------------------
 	// UPLOAD_METRICS - client reports upload metrics from its own perspective
 	
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/upload_metrics",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/upload_metrics",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -380,10 +374,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 			}
 			return nil, nil
 		},
-		pHTTPmux,
-		metrics,
-		true, // pStoreRunBool
-		nil,
+		rpcHandlerRuntime,
 		pRuntimeSys)
 
 	//---------------------
