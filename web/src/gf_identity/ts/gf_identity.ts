@@ -29,6 +29,48 @@ declare const window: any;
 declare var Web3;
 
 //-------------------------------------------------
+export async function init_me_control(p_parent_node,
+    p_auth_http_api_map,
+    p_home_url_str) {
+    
+
+    const me_user_map = await p_auth_http_api_map["general"]["get_me"]();
+
+
+    const user_profile_img_url_str = me_user_map["profile_image_url_str"];
+    const user_name_str            = me_user_map["user_name_str"];
+
+    const auth_container = $(`
+        <div id="auth">
+            <div id="current_user">
+                
+            </div>
+        </div>`);
+    $(p_parent_node).append(auth_container);
+    
+    // IMG
+    if (user_profile_img_url_str != "") { 
+        $(auth_container).find("#current_user").append(`
+            <img>${user_profile_img_url_str}</img>
+        `);
+    }
+
+    // TEXT_SHORTHAND
+    else {
+
+        const shorthand_str = user_name_str[0];
+        $(auth_container).find("#current_user").append(`
+            <div id="shorthand_username">${shorthand_str}</div>
+        `);
+    }
+
+    // HOME_REDIRECT
+    $("#current_user").on("click", ()=>{
+
+        window.location.href = p_home_url_str;
+    });
+}
+//-------------------------------------------------
 // INIT_WITH_HTTP
 // p_notifications_meta_map - map of notifications metadata.
 //                            allows external users of gf_identity functionality

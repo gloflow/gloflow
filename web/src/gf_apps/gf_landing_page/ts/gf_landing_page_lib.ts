@@ -25,15 +25,12 @@ import * as gf_images         from "./gf_images";
 import * as gf_procedural_art from "./procedural_art/gf_procedural_art";
 import * as gf_image_colors   from "./../../../gf_core/ts/gf_image_colors";
 
-// import * as gf_calc from "./gf_calc";
-// import * as gf_email_registration from "./gf_email_registration";
-
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
 declare var gf_upload__init;
 
 //--------------------------------------------------------
 // INIT
-export function init(p_log_fun) {
+export async function init(p_log_fun) {
 	
     $("time.timeago").timeago();
     
@@ -44,16 +41,8 @@ export function init(p_log_fun) {
 	};
 
 	//---------------------
-	// IDENTITY
-	const urls_map = gf_identity_http.get_standard_http_urls();
-	gf_identity.init_with_http(notifications_meta_map, urls_map);
-	
-	//---------------------
-	
-	// const featured_elements_infos_lst = load_static_data(p_log_fun);
 	
 	gf_procedural_art.init(p_log_fun);
-	// gf_email_registration.init(p_register_user_email_fun, p_log_fun);
 
 	posts_init();
 	gf_images.init(p_log_fun);
@@ -105,6 +94,22 @@ export function init(p_log_fun) {
 		(p_upload_gf_image_id_str)=>{
 
 		});
+
+	//---------------------
+	// IDENTITY
+	// first complete main initialization and only then initialize gf_identity
+	const urls_map = gf_identity_http.get_standard_http_urls();
+	const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
+	gf_identity.init_with_http(notifications_meta_map, urls_map);
+	
+
+	
+	const parent_node = $("#right_section");
+	const home_url_str = urls_map["home"];
+
+	gf_identity.init_me_control(parent_node,
+		auth_http_api_map,
+		home_url_str);
 
 	//---------------------
 

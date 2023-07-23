@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	width:    50px;
 	height:   50px;
 	background-color: rgb(255, 203, 203);
-	/*right: 16px;*/
+	/* right: 16px; */
 }
 
 #sys_panel #view_handle img {
@@ -47,7 +47,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #sys_panel #controls {
     position: relative;
 
-    /*IMPORTANT!! - centers the div horizontaly on the sys_panel*/
+    /* IMPORTANT!! - centers the div horizontaly on the sys_panel */
     margin: auto;
 
     width: 643px;
@@ -55,7 +55,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 }
 
 /*------------------------------------------------------------------*/
-/*HOME_BTN*/
+/* HOME_BTN */
 #sys_panel #controls #home_btn {
 	position: fixed;
 	width:    71px;
@@ -68,7 +68,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 }
 
 /*------------------------------------------------------------------*/
-/*IMAGES_APP_BTN*/
+/* IMAGES_APP_BTN */
 #sys_panel #images_app_btn {
 	position   : absolute;
 	top        : 0px;
@@ -92,7 +92,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	text-decoration: none;
 }
 /*------------------------------------------------------------------*/
-/*PUBLISHER_APP_BTN*/
+/* PUBLISHER_APP_BTN */
 #sys_panel #publisher_app_btn {
 	position   : absolute;
 	top        : 0px;
@@ -117,7 +117,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 }
 
 /*------------------------------------------------------------------*/
-/*DOMAINS_APP_BTN*/
+/* DOMAINS_APP_BTN */
 #sys_panel #domains_app_btn {
 	position   : absolute;
 	top        : 0px;
@@ -142,7 +142,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 }
 
 /*------------------------------------------------------------------*/
-/*BOOKMARKS_APP_BTN*/
+/* BOOKMARKS_APP_BTN */
 #sys_panel #bookmarks_app_btn {
 	position   : absolute;
 	top        : 0px;

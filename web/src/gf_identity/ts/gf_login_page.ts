@@ -60,7 +60,19 @@ function init(p_log_fun) {
 	//---------------------
 	// IDENTITY
 	const urls_map = gf_identity_http.get_standard_http_urls();
+	const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
+	
 	gf_identity.init_with_http(notifications_meta_map, urls_map);
 
     
+
+
+	const parent_node = $("#right_section")[0];
+	const home_url_str = urls_map["home"];
+
+	gf_identity.init_me_control(parent_node,
+		auth_http_api_map,
+		home_url_str);
+
+
 }

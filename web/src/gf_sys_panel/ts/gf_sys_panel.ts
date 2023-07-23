@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="./../../d/jquery.d.ts" />
 
+import * as gf_identity      from "./../../gf_identity/ts/gf_identity";
 import * as gf_identity_http from "./../../gf_identity/ts/gf_identity_http";
 
 //-----------------------------------------------------
@@ -81,6 +82,15 @@ export async function init(p_auth_http_api_map,
 	//--------------------------
 	// AUTH
 	if (p_auth_http_api_map != null) {
+
+		const parent_node  = $(sys_panel_element).find("#controls")[0];
+		const home_url_str = p_urls_map["home"];
+
+		gf_identity.init_me_control(parent_node,
+			p_auth_http_api_map,
+			home_url_str);
+
+		/*
 		const me_user_map = await p_auth_http_api_map["general"]["get_me"]();
 
 
@@ -116,6 +126,7 @@ export async function init(p_auth_http_api_map,
 			const home_url_str   = p_urls_map["home"];
 			window.location.href = home_url_str;
 		});
+		*/
 	}
 
 	//--------------------------

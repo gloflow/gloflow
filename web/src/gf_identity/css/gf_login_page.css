@@ -27,6 +27,26 @@ body {
     padding-top: 13px;
 }
 
+/*------------------------------------------------------------*/
+/* AUTH */
+#auth {
+	position: absolute;
+	top:    0px;
+	left:   536px;
+	width:  44px;
+	height: 44px;
+	text-align:       center;
+	background-color: rgb(198, 196, 195);
+	cursor:           pointer;
+	color:            gray;
+}
+
+#auth #current_user {
+	width: 44px;
+	height: 40px;
+	padding-top: 14px;
+}
+
 /*----------------------------------------------------------*/
 #sys_debug_info {
     position: absolute;
