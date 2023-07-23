@@ -24,11 +24,22 @@ import (
 	"context"
 	"math"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
+
+//-------------------------------------------------
+
+type GFflowMongo struct {
+	Vstr              string             `bson:"v_str"` // schema_version
+	Id                primitive.ObjectID `bson:"_id,omitempty"`
+	IDstr             gf_core.GF_ID      `bson:"id_str"`
+	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
+	NameStr           string             `bson:"name_str"`
+}
 
 //-------------------------------------------------
 

@@ -1,0 +1,171 @@
+/*
+GloFlow application and media management/publishing platform
+Copyright (C) 2023 Ivan Trajkovic
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+package gf_images_flows
+
+import (
+	"github.com/gloflow/gloflow/go/gf_core"
+)
+
+//---------------------------------------------------
+// CREATE_FLOW
+
+func DBsqlCreateFlow(pFlowNameStr string,
+	pOwnerUserID gf_core.GF_ID,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	db := pRuntimeSys.SQLdb
+
+	tx, err := db.Begin()
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to begin the SQL transaction to create a flow",
+			"sql_transaction_begin",
+			map[string]interface{}{
+				"flow_name_str":     pFlowNameStr,
+				"owner_user_id_str": pOwnerUserID,
+			},
+			err, "gf_images_flows", pRuntimeSys)
+		return gfErr
+	}
+
+	// The rollback will be ignored commit is successful
+	defer tx.Rollback()
+
+	row := tx.QueryRow(`
+		INSERT INTO gf_images_flows (flow_name, creator_user_id)
+		VALUES ($1, $2) RETURNING id
+		`,
+		pFlowNameStr,
+		pOwnerUserID)
+
+
+		
+
+
+	var id int
+	err = row.Scan(&id)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to  a new images flow in the DB",
+			"sql_row_insert",
+			map[string]interface{}{
+				"flow_name_str": pFlowNameStr,
+				"user_id_str":   pOwnerUserID,
+			},
+			err, "gf_images_flows", pRuntimeSys)
+		return gfErr
+	}
+
+	/*
+	// EDITORS
+	for _, editorID := range pFlow.EditorUserIDs {
+		_, err := tx.Exec(
+			"INSERT INTO gf_images_flows_editors (flow_id, user_id) VALUES ($1, $2)",
+			id,
+			editorID,
+		)
+
+		if err != nil {
+			gfErr := gf_core.ErrorCreate("failed create a new images flow in the DB",
+				"sql_row_insert",
+				map[string]interface{}{
+					"flow_name_str": pFlowNameStr,
+					"user_id_str":   pOwnerUserID,
+				},
+				err, "gf_images_flows", pRuntimeSys)
+			return gfErr
+		}
+	}
+	*/
+	
+	// TX_COMMIT
+	err = tx.Commit()
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to commit the SQL transaction to create a flow",
+			"sql_transaction_commit",
+			map[string]interface{}{
+				"flow_name_str":     pFlowNameStr,
+				"owner_user_id_str": pOwnerUserID,
+			},
+			err, "gf_images_flows", pRuntimeSys)
+		return gfErr
+	}
+
+	
+	return nil
+}
+
+//---------------------------------------------------
+// CREATE_FLOWS_TABLES
+
+func DBsqlCreateFlowsTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	sqlStr := `
+	CREATE TABLE IF NOT EXISTS gf_images_flows (
+		v               VARCHAR(255),
+		id              SERIAL PRIMARY KEY,
+		creation_time   TIMESTAMP DEFAULT NOW(),
+		name            TEXT NOT NULL,
+		creator_user_id TEXT NOT NULL,
+		public          BOOLEAN,
+		description     TEXT
+	);
+
+	CREATE TABLE IF NOT EXISTS gf_images_flows_editors (
+		v       VARCHAR(255),
+		flow_id INT REFERENCES image_flow(id),
+		user_id TEXT NOT NULL,
+		
+		PRIMARY KEY(flow_id, user_id)
+	);
+	`
+
+	_, err := pRuntimeSys.SQLdb.Exec(sqlStr)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to create flow related tables in the DB",
+			"sql_table_creation",
+			map[string]interface{}{},
+			err, "gf_images_flows", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+// CHECK_FLOW_EXISTS
+
+func DBsqlCheckFlowExists(pFlowNameStr string,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+
+	db := pRuntimeSys.SQLdb
+
+	var existsBool bool
+	sqlStr := `SELECT exists(SELECT 1 FROM gf_images_flows WHERE name=$1)`
+	err := db.QueryRow(sqlStr, pFlowNameStr).Scan(&existsBool)
+
+	if err != nil {
+
+		gfErr := gf_core.ErrorCreate("failed to check if a flow exists in the DB",
+			"sql_query_execute",
+			map[string]interface{}{},
+			err, "gf_images_flows", pRuntimeSys)
+		return false, gfErr
+	}
+	return existsBool, nil
+}

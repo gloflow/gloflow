@@ -135,8 +135,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					imageOriginPageURLstr,
 					flowsNamesLst,
 					clientTypeStr,
-					pJobsMngrCh,
 					userIDstr,
+					pJobsMngrCh,
 					pCtx,
 					pRuntimeSys)
 
@@ -166,12 +166,15 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	// DEPRECATED!! - switch to using the v1/auth based add_img handler
 
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/add_img",
-		func(p_ctx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
 				//--------------------------
 				// INPUT
+
+				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
 				iMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
@@ -193,7 +196,9 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					imageOriginPageURLstr,
 					flowsNamesLst,
 					clientTypeStr,
+					userIDstr,
 					pJobsMngrCh,
+					pCtx,
 					pRuntimeSys)
 
 				if gfErr != nil {
@@ -225,7 +230,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	//                          if the image url has already been fetched/transformed and gf_image exists for it
 
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/imgs_exist",
-		func(p_ctx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 				

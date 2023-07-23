@@ -39,11 +39,12 @@ import (
 //               over time adds images to it... 
 
 type GFflow struct {
-	Vstr              string             `bson:"v_str"` // schema_version
-	Id                primitive.ObjectID `bson:"_id,omitempty"`
-	IDstr             gf_core.GF_ID      `bson:"id_str"`
-	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
-	NameStr           string             `bson:"name_str"`
+	Vstr              string
+	IDstr             gf_core.GF_ID
+	CreationUNIXtimeF float64
+	NameStr           string
+	OwnerUserID       gf_core.GF_ID
+	EditorUserIDs     []gf_core.GF_ID
 }
 
 type GFimageExistsCheck struct {
@@ -214,8 +215,8 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 	pImageOriginPageURLstr string,
 	pFlowsNamesLst         []string,
 	pClientTypeStr         string,
-	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
 	pUserIDstr             gf_core.GF_ID,
+	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
 	pCtx                   context.Context,
 	pRuntimeSys            *gf_core.RuntimeSys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GFerror) {
 
@@ -235,7 +236,9 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 		pImageOriginPageURLstr,
 		pFlowsNamesLst,
 		pClientTypeStr,
+		pUserIDstr,
 		pJobsMngrCh,
+		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gf_images_core.GF_image_id(""), gfErr
@@ -303,9 +306,36 @@ func FlowsAddExternImage(pImageExternURLstr string,
 	pImageOriginPageURLstr string,
 	pFlowsNamesLst         []string,
 	pClientTypeStr         string,
+	pUserIDstr             gf_core.GF_ID,
 	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
-	pRuntimeSys            *gf_core.RuntimeSys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_flows.FlowsAddExternImage()")
+	pCtx                   context.Context,
+	pRuntimeSys            *gf_core.RuntimeSys) (*string, *string, gf_images_core.GFimageID, *gf_core.GFerror) {
+
+	//------------------
+	// FLOWS
+	// check if each flow that was specified for this new image exists,
+	// and if it doesnt create it first, before processing images.
+
+	for _, flowNameStr := range pFlowsNamesLst {
+		
+		// check flow exists
+		existsBool, gfErr := DBsqlCheckFlowExists(flowNameStr, pRuntimeSys)
+		if gfErr != nil {
+			return nil, nil, gf_images_core.GFimageID(""), gfErr
+		}
+
+		// if it doesnt exist, create it... 
+		if !existsBool {
+
+			// FLOW_CREATE
+			_, gfErr := flowsCreate(flowNameStr, pUserIDstr,
+				pCtx,
+				pRuntimeSys)
+			if gfErr != nil {
+				return nil, nil, gf_images_core.GFimageID(""), gfErr
+			}
+		}
+	}
 
 	//------------------
 	imagesURLsToProcessLst := []gf_images_jobs_core.GFimageExternToProcess{
@@ -346,33 +376,57 @@ func flowsCreate(pFlowNameStr string,
 	idStr             := gf_core.GF_ID(fmt.Sprintf("img_flow:%f", creationUNIXtimeF))
 	
 
+
+
 	flow := &GFflow{
-		Vstr:              "0",
 		IDstr:             idStr,
 		NameStr:           pFlowNameStr,
 		CreationUNIXtimeF: creationUNIXtimeF,
+		OwnerUserID:       pOwnerUserIDstr,
 	}
 
+	//------------------
 	// DB
-	coll_name_str := pRuntimeSys.Mongo_coll.Name()
-	gfErr := gf_core.MongoInsert(flow,
-		coll_name_str,
-		map[string]interface{}{
-			"images_flow_name_str": pFlowNameStr,
-			"caller_err_msg_str":   "failed to insert a image Flow into the DB",
-		},
-		pCtx,
-		pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
+
+	// SQL
+	if pRuntimeSys.SQLdb != nil {
+
+
+		gfErr := DBsqlCreateFlow(pFlowNameStr,
+			pOwnerUserIDstr,
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+
+
+	// MONGODB
+	} else {
+		collNameStr := pRuntimeSys.Mongo_coll.Name()
+		gfErr := gf_core.MongoInsert(flow,
+			collNameStr,
+			map[string]interface{}{
+				"images_flow_name_str": pFlowNameStr,
+				"caller_err_msg_str":   "failed to insert a image Flow into the DB",
+			},
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
 	}
 	
-
+	//------------------
 	// POLICY_CREATE
+	
+	/*
 	gfErr = gf_policy.PipelineCreate(idStr, pOwnerUserIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
+	*/
+
+	//------------------
 
 	return flow, nil
 }

@@ -292,6 +292,21 @@ func errorGetDefs() map[string]ErrorDef {
 		"sql_failed_to_connect": ErrorDef{
 			DescrStr:"failed to establish an initial connection to an SQL server",
 		},
+		"sql_table_creation": ErrorDef{
+			DescrStr:"failed to create an SQL table",
+		},
+		"sql_row_insert": ErrorDef{
+			DescrStr:"failed to insert a new row into a SQL table",
+		},
+		"sql_transaction_begin": ErrorDef{
+			DescrStr:"failed to begin a transaction to an SQL server",
+		},
+		"sql_transaction_commit": ErrorDef{
+			DescrStr:"failed to commit a transaction to an SQL server",
+		},
+		"sql_query_execute": ErrorDef{
+			DescrStr:"failed to execute a query in a SQL server",
+		},
 		
 		//---------------
 		// ELASTICSEARCH
