@@ -37,6 +37,10 @@ func CLIparseArgs(pLogFun func(string,string)) map[string]interface{} {
 	images_s3_bucket_name_str                  := flag.String("images_s3_bucket_name",                  "gf--img",             "AWS S3 bucket name where to store/serve images")
 
 	//-------------------
+	// SQL
+	sql_host_str := flag.String("sql_host", "127.0.0.1", "host of SQL to use")
+
+	//-------------------
 	// MONGODB
 	mongodb_host_str    := flag.String("mongodb_host",    "127.0.0.1", "host of mongodb to use")
 	mongodb_db_name_str := flag.String("mongodb_db_name", "prod_db",   "DB name to use")
@@ -93,11 +97,14 @@ func CLIparseArgs(pLogFun func(string,string)) map[string]interface{} {
 		"images_thumbnails_store_local_dir_path_str": *images_thumbnails_store_local_dir_path_str,
 		"images_s3_bucket_name_str":                  *images_s3_bucket_name_str,
 
-		//MONGODB
+		// SQL
+		"sql_host_str": *sql_host_str,
+
+		// MONGODB
 		"mongodb_host_str":    *mongodb_host_str,
 		"mongodb_db_name_str": *mongodb_db_name_str,
 
-		//AWS
+		// AWS
 		"aws_access_key_id_str":     aws_access_key_id_str,
 		"aws_secret_access_key_str": aws_secret_access_key_str,
 		"aws_token_str":             aws_token_str,

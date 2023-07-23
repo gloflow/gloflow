@@ -52,7 +52,7 @@ func TestMain(m *testing.M) {
 
 //-------------------------------------------------
 
-func Test__basic_image_ops(p_test *testing.T) {
+func TestBasicImageOps(p_test *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{
 		ServiceNameStr: "gf_images_ops_tests",

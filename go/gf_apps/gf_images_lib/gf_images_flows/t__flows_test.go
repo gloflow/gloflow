@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_flows
 
 import (
+	"os"
 	"fmt"
 	"testing"
 	"context"
@@ -29,9 +30,80 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
+var logFun func(string,string)
+var logNewFun gf_core.GFlogFun
+var cliArgsMap map[string]interface{}
+
+//---------------------------------------------------
+
+func TestMain(m *testing.M) {
+	logFun, logNewFun  = gf_core.LogsInit()
+	cliArgsMap = gf_images_core.CLIparseArgs(logFun)
+	v := m.Run()
+	os.Exit(v)
+}
+
+//---------------------------------------------------
+
+func TestCreate(pTest *testing.T) {
+
+	ctx := context.Background()
+	runtimeSys := &gf_core.RuntimeSys{
+		ServiceNameStr: "gf_images_flows_tests",
+		LogFun:         logFun,
+		LogNewFun:      logNewFun,
+	}
+
+	dbNameStr := "gf_tests"
+	dbUserStr := "gf"
+
+	flowNameStr := "test"
+	userID := gf_core.GF_ID("test")
+
+	//--------------------
+	// SQL
+
+	dbHostStr := cliArgsMap["sql_host_str"].(string)
+
+	sqlDB, gfErr := gf_core.DBsqlConnect(dbNameStr,
+		dbUserStr,
+		"", // config.SQLpassStr,
+		dbHostStr,
+		runtimeSys)
+
+	runtimeSys.SQLdb = sqlDB
+
+	//--------------------
+	
+
+
+
+	gfErr = DBsqlCreateFlowsTables(runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	//--------------------
+	flow, gfErr := Create(flowNameStr,
+		userID,
+		ctx,
+		runtimeSys)
+
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+
+	spew.Dump(flow)
+
+	//--------------------
+}
+
 //---------------------------------------------------
 
 func TestGetAll(pTest *testing.T) {
+
+	ctx := context.Background()
 
 	runtimeSys := &gf_core.RuntimeSys{
 		ServiceNameStr: "gf_images_flows_tests",
@@ -39,6 +111,7 @@ func TestGetAll(pTest *testing.T) {
 		LogNewFun:      logNewFun,
 	}
 
+	//------------------
 	// MONGODB
 	testMongodbHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	testMongodbURLstr    := fmt.Sprintf("mongodb://%s", testMongodbHostStr)
@@ -52,9 +125,6 @@ func TestGetAll(pTest *testing.T) {
 	runtimeSys.Mongo_db   = mongodbDB
 	runtimeSys.Mongo_coll = mongodbColl
 	
-	//------------------
-	ctx := context.Background()
-
 	//------------------
 	// CREATE_TEST_IMAGES
 	testImg0 := &gf_images_core.GFimage{

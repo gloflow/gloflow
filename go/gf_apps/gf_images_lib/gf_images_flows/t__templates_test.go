@@ -20,26 +20,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_flows
 
 import (
-	"os"
 	"fmt"
 	"testing"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	// "github.com/davecgh/go-spew/spew"
 )
-
-var logFun func(string,string)
-var logNewFun gf_core.GFlogFun
-var cliArgsMap map[string]interface{}
-
-//---------------------------------------------------
-
-func TestMain(m *testing.M) {
-	logFun, logNewFun  = gf_core.LogsInit()
-	cliArgsMap = gf_images_core.CLIparseArgs(logFun)
-	v := m.Run()
-	os.Exit(v)
-}
 
 //---------------------------------------------------
 

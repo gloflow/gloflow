@@ -38,7 +38,8 @@ func DBsqlConnect(pDBnameStr string,
 	pPassStr     string,
 	pDBhostStr   string,
 	pRuntimeSys  *RuntimeSys) (*sql.DB, *GFerror) {
-
+	
+	// FIX!! - make "sslmode=disable" configurable, dont hardcode it
 	urlStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
 		pUserNameStr,
 		pPassStr,
