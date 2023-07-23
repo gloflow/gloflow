@@ -49,8 +49,8 @@ type GFauth0session struct {
 }
 
 type GFauth0inputLoginCallback struct {
-	CodeStr                     string
-	GFsessionIDauth0providedStr gf_core.GF_ID
+	CodeStr        string
+	GFsessionIDstr gf_core.GF_ID
 }
 type GFauth0outputLoginCallback struct {
 	SessionIDstr gf_core.GF_ID
@@ -114,13 +114,14 @@ func Auth0loginPipeline(pCtx context.Context,
 }
 
 //---------------------------------------------------
+// LOGIN_CALLBACK
 
 func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	pAuthenticator *gf_auth0.GFauthenticator,
 	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) (*GFauth0outputLoginCallback, *gf_core.GFerror) {
 	
-	sessionIDstr := pInput.GFsessionIDauth0providedStr
+	sessionIDstr := pInput.GFsessionIDstr
 
 	//---------------------
 	// DB_GET_SESSION

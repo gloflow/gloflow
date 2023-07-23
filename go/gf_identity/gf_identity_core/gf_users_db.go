@@ -49,6 +49,7 @@ type GFloginAttemptUpdateOp struct {
 //---------------------------------------------------
 // AUTH0
 //---------------------------------------------------
+// CREATE_NEW_SESSION
 
 func dbAuth0createNewSession(pAuth0session *GFauth0session,
 	pCtx        context.Context,
@@ -70,7 +71,7 @@ func dbAuth0createNewSession(pAuth0session *GFauth0session,
 }
 
 //---------------------------------------------------
-
+// GET_SESSION
 
 func dbAuth0GetSession(pGFsessionIDstr gf_core.GF_ID,
 	pCtx        context.Context,
@@ -101,6 +102,7 @@ func dbAuth0GetSession(pGFsessionIDstr gf_core.GF_ID,
 }
 
 //---------------------------------------------------
+// UPDATE_SESSION
 
 func dbAuth0UpdateSession(pGFsessionIDstr gf_core.GF_ID,
 	pLoginCompleteBool bool,
