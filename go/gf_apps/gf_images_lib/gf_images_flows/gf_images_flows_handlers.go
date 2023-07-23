@@ -131,7 +131,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 				//--------------------------
 
-				runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, gfErr := FlowsAddExternImageWithPolicy(imageExternURLstr,
+				runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, gfErr := AddExternImageWithPolicy(imageExternURLstr,
 					imageOriginPageURLstr,
 					flowsNamesLst,
 					clientTypeStr,
@@ -192,7 +192,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 				//--------------------------
 
-				runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, gfErr := FlowsAddExternImage(imageExternURLstr,
+				runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, gfErr := AddExternImage(imageExternURLstr,
 					imageOriginPageURLstr,
 					flowsNamesLst,
 					clientTypeStr,
@@ -253,7 +253,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 				//--------------------------
 					
-				existing_images_lst, gfErr := flowsImagesExistCheck(images_extern_urls_lst, flow_name_str, client_type_str, pRuntimeSys)
+				existing_images_lst, gfErr := imagesExistCheck(images_extern_urls_lst, flow_name_str, client_type_str, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

@@ -29,7 +29,7 @@ import (
 //-------------------------------------------------
 // VERIFY_POLICY
 
-func flowsVerifyPolicy(pOpStr string,
+func VerifyPolicy(pOpStr string,
 	pFlowsNamesLst []string,
 	pUserIDstr     gf_core.GF_ID,
 	pCtx           context.Context,

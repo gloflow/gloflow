@@ -55,19 +55,6 @@ type GFimageExistsCheck struct {
 	ImagesExternURLsLst []string           `bson:"images_extern_urls_lst"`
 }
 
-// //-------------------------------------------------
-// // GET_MAPPING_TO_S3_BUCKETS
-// func flows__get_mapping_to_s3_buckets() map[string]string {
-// 	// FLOW_TO_S3_BUCKET_MAPPING - maps which image flows are going to use which S3 buckets
-// 	//                             to store their images.
-// 	flow_to_s3_bucket_map := map[string]string{
-// 		"general":    "gf--img",
-// 		"discovered": "gf--discovered--img", // "gf--img--discover"
-// 	}
-//
-// 	return flow_to_s3_bucket_map
-// }
-
 //-------------------------------------------------
 
 func pipelineGetAll(pCtx context.Context,
@@ -162,7 +149,7 @@ func pipelineGetPage(p_req *http.Request,
 //-------------------------------------------------
 // IMAGES_EXIST_CHECK
 
-func flowsImagesExistCheck(pImagesExternURLsLst []string,
+func imagesExistCheck(pImagesExternURLsLst []string,
 	pFlowNameStr   string,
 	pClientTypeStr string,
 	pRuntimeSys  *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
@@ -211,7 +198,7 @@ func flowsImagesExistCheck(pImagesExternURLsLst []string,
 //-------------------------------------------------
 // ADD_EXTERN_IMAGE_WITH_POLICY
 
-func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
+func AddExternImageWithPolicy(pImageExternURLstr string,
 	pImageOriginPageURLstr string,
 	pFlowsNamesLst         []string,
 	pClientTypeStr         string,
@@ -223,16 +210,16 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 	//-------------------------
 	// POLICY_VERIFY - raises error if policy rejects the op
 	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
-	gfErr := flowsVerifyPolicy(opStr,
+	gfErr := VerifyPolicy(opStr,
 		pFlowsNamesLst,
 		pUserIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
-		return nil, nil, gf_images_core.GF_image_id(""), gfErr
+		return nil, nil, gf_images_core.GFimageID(""), gfErr
 	}
 
 	//-------------------------
 
-	runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, gfErr := FlowsAddExternImage(pImageExternURLstr,
+	runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, gfErr := AddExternImage(pImageExternURLstr,
 		pImageOriginPageURLstr,
 		pFlowsNamesLst,
 		pClientTypeStr,
@@ -241,7 +228,7 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
-		return nil, nil, gf_images_core.GF_image_id(""), gfErr
+		return nil, nil, gf_images_core.GFimageID(""), gfErr
 	}
 
 	return runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, nil
@@ -250,7 +237,7 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 //-------------------------------------------------
 // ADD_EXTERN_IMAGES - BATCH
 
-func FlowsAddExternImages(pImagesExternURLsLst []string,
+func AddExternImages(pImagesExternURLsLst []string,
 	pImagesOriginPagesURLsStr []string,
 	pFlowsNamesLst            []string,
 	pClientTypeStr            string,
@@ -302,7 +289,7 @@ func FlowsAddExternImages(pImagesExternURLsLst []string,
 //-------------------------------------------------
 // ADD_EXTERN_IMAGE
 
-func FlowsAddExternImage(pImageExternURLstr string,
+func AddExternImage(pImageExternURLstr string,
 	pImageOriginPageURLstr string,
 	pFlowsNamesLst         []string,
 	pClientTypeStr         string,
@@ -328,7 +315,7 @@ func FlowsAddExternImage(pImageExternURLstr string,
 		if !existsBool {
 
 			// FLOW_CREATE
-			_, gfErr := flowsCreate(flowNameStr, pUserIDstr,
+			_, gfErr := Create(flowNameStr, pUserIDstr,
 				pCtx,
 				pRuntimeSys)
 			if gfErr != nil {
@@ -358,7 +345,7 @@ func FlowsAddExternImage(pImageExternURLstr string,
 
 	//------------------
 
-	imageIDstr                       := gf_images_core.GF_image_id(jobExpectedOutputsLst[0].Image_id_str)
+	imageIDstr                       := gf_images_core.GFimageID(jobExpectedOutputsLst[0].Image_id_str)
 	thumbnail_small_relative_url_str := jobExpectedOutputsLst[0].Thumbnail_small_relative_url_str
 
 	return &runningJob.Id_str, &thumbnail_small_relative_url_str, imageIDstr, nil
@@ -367,7 +354,7 @@ func FlowsAddExternImage(pImageExternURLstr string,
 //-------------------------------------------------
 // CREATE
 
-func flowsCreate(pFlowNameStr string,
+func Create(pFlowNameStr string,
 	pOwnerUserIDstr gf_core.GF_ID,
 	pCtx            context.Context,
 	pRuntimeSys     *gf_core.RuntimeSys) (*GFflow, *gf_core.GFerror) {

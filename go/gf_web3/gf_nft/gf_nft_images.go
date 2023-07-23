@@ -54,7 +54,7 @@ func createAsImagesInFlows(pNFTsLst []*GFnft,
 		imagesOriginPagesURLsStr = append(imagesOriginPagesURLsStr, "nft")
 	}
 
-	_, imagesThumbSmallRelativeURLlst, imagesIDsLst, gfErr := gf_images_flows.FlowsAddExternImages(imagesExternURLsLst,
+	_, imagesThumbSmallRelativeURLlst, imagesIDsLst, gfErr := gf_images_flows.AddExternImages(imagesExternURLsLst,
 		imagesOriginPagesURLsStr,
 		pFlowsNamesLst,
 		clientTypeStr,

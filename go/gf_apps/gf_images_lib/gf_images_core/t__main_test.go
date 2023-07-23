@@ -30,6 +30,7 @@ var logFun func(string,string)
 var cliArgsMap map[string]interface{}
 
 //---------------------------------------------------
+
 func TestMain(m *testing.M) {
 	logFun, _  = gf_core.LogsInit()
 	cliArgsMap = CLIparseArgs(logFun)
@@ -38,6 +39,7 @@ func TestMain(m *testing.M) {
 }
 
 //---------------------------------------------------
+
 func TestImageTransform(pTest *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{
