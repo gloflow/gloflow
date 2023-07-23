@@ -33,9 +33,16 @@ export async function init_me_control(p_parent_node,
     p_auth_http_api_map,
     p_home_url_str) {
     
+    var me_user_map;
+    try {
+        me_user_map = await p_auth_http_api_map["general"]["get_me"]();
 
-    const me_user_map = await p_auth_http_api_map["general"]["get_me"]();
+    } catch (error_map) {
 
+        // failed to run the /me endpoint.
+        // user is likely not logged in.
+        return
+    }
 
     const user_profile_img_url_str = me_user_map["profile_image_url_str"];
     const user_name_str            = me_user_map["user_name_str"];
