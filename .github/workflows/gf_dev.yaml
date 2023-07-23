@@ -74,6 +74,15 @@ jobs:
     services:
       mongo:
         image: mongo
+      postgres:
+        image: postgres
+        env:
+
+          # disable auth on SQL server
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: gf_tests
+          POSTGRES_USER: gf
+
 
     steps:
 
@@ -122,7 +131,7 @@ jobs:
       - name: test gf_images_flows
         run: |
           cd /home/gf/go/gf_apps/gf_images_lib/gf_images_flows
-          go test -v -mongodb_host=mongo
+          go test -v -mongodb_host=mongo -sql_host=postgres
 
       # GF_IMAGES_SERVICE
       - name: test gf_images_service
