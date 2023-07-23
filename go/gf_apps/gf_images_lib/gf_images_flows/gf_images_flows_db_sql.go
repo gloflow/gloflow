@@ -48,7 +48,7 @@ func DBsqlCreateFlow(pFlowNameStr string,
 	defer tx.Rollback()
 
 	row := tx.QueryRow(`
-		INSERT INTO gf_images_flows (flow_name, creator_user_id)
+		INSERT INTO gf_images_flows (name, creator_user_id)
 		VALUES ($1, $2) RETURNING id
 		`,
 		pFlowNameStr,
@@ -61,7 +61,7 @@ func DBsqlCreateFlow(pFlowNameStr string,
 	var id int
 	err = row.Scan(&id)
 	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to  a new images flow in the DB",
+		gfErr := gf_core.ErrorCreate("failed to create a new images flow in the DB",
 			"sql_row_insert",
 			map[string]interface{}{
 				"flow_name_str": pFlowNameStr,
@@ -128,7 +128,7 @@ func DBsqlCreateFlowsTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	CREATE TABLE IF NOT EXISTS gf_images_flows_editors (
 		v       VARCHAR(255),
-		flow_id INT REFERENCES image_flow(id),
+		flow_id INT REFERENCES gf_images_flows(id),
 		user_id TEXT NOT NULL,
 		
 		PRIMARY KEY(flow_id, user_id)
