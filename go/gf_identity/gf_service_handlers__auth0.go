@@ -158,8 +158,9 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			
 			//------------------
 			input := &gf_identity_core.GFauth0inputLoginCallback{
-				CodeStr:        codeStr,
-				GFsessionIDstr: gfSessionIDstr,
+				CodeStr:           codeStr,
+				GFsessionIDstr:    gfSessionIDstr,
+				Auth0appDomainStr: pConfig.Auth0domainStr,
 			}
 
 			//------------------

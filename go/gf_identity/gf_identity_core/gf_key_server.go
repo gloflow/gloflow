@@ -129,7 +129,7 @@ func KSinit(pAuth0initBool bool,
 
 		auth0config := gf_auth0.LoadConfig(pRuntimeSys)
 
-		_, auth0publicKey, gfErr = gf_auth0.GetJWTpublicKeyForTenant(auth0config, pRuntimeSys)
+		_, auth0publicKey, gfErr = gf_auth0.JWTgetPublicKeyForTenant(auth0config, pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}

@@ -27,10 +27,12 @@ import (
 	"net/http"
 	"strings"
 	"errors"
+	"encoding/json"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/oauth2"
 	jwks "github.com/MicahParks/keyfunc"
+	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_core"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -58,37 +60,89 @@ type GFauthenticator struct {
 }
 
 //-------------------------------------------------------------
+// GET_USER_INFO
 
-func GetJWTpublicKeyForTenant(pConfig *GFconfig,
-	pRuntimeSys *gf_core.RuntimeSys) (string, *rsa.PublicKey, *gf_core.GFerror) {
+// pAccessTokenStr - Auth0 Access Token obtained during login
+func GetUserInfo(pAccessTokenStr string,
+	pAuth0domainStr string,
+	pRuntimeSys     *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 
-	jwksURLstr := fmt.Sprintf("https://%s/.well-known/jwks.json", pConfig.Auth0domainStr)
+
+
+	/*
+	This endpoint will work only if openid was granted as a scope for the Access Token.
+	The user profile information included in the response depends on the scopes requested.
+	For example, a scope of just openid may return
+	less information than a a scope of openid profile email.
+	*/
+	urlStr := fmt.Sprintf("https://%s/userinfo", pAuth0domainStr)
+
+
 	
-	jwks, err := jwks.Get(jwksURLstr, jwks.Options{}) // See recommended options in the examples directory.
-	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to get the JWKS from the given Auth0 URL",
-			"library_error",
+	/*
+	GET https://{yourDomain}/userinfo
+	Authorization: 'Bearer {ACCESS_TOKEN}'
+	
+	RESPONSE SAMPLE:
+	{
+	"sub": "248289761001",
+	"name": "Jane Josephine Doe",
+	"given_name": "Jane",
+	"family_name": "Doe",
+	"middle_name": "Josephine",
+	"nickname": "JJ",
+	"preferred_username": "j.doe",
+	"profile": "http://exampleco.com/janedoe",
+	"picture": "http://exampleco.com/janedoe/me.jpg",
+	"website": "http://exampleco.com",
+	"email": "janedoe@exampleco.com",
+	"email_verified": true,
+	"gender": "female",
+	"birthdate": "1972-03-31",
+	"zoneinfo": "America/Los_Angeles",
+	"locale": "en-US",
+	"phone_number": "+1 (111) 222-3434",
+	"phone_number_verified": false,
+	"address": {
+		"country": "us"
+	},
+	"updated_at": "1556845729"
+	}
+	*/
+	_, body, errs := gorequest.New().
+		Get(urlStr).
+		Set("Authorization", fmt.Sprintf("Bearer %s", pAccessTokenStr)).
+		End()
+	if len(errs) > 0 {
+		err   := errs[0]
+		gfErr := gf_core.ErrorCreate("failed to get user info from Auth0",
+			"http_client_req_error",
 			map[string]interface{}{
-				"jwks_url_str": jwksURLstr,
+				"url_str": urlStr,
 			},
 			err, "gf_auth0", pRuntimeSys)
-		return "", nil, gfErr
+		return nil, gfErr
 	}
 
-	var auth0keyIDstr  string
-	var auth0publicKey *rsa.PublicKey
-
-	// auth0 always returns a list of keys in the JWKS, where the first one is the active key
-	// used for signing, and all subsequent keys are pending (next in queue) keys.
-	for k, v := range jwks.ReadOnlyKeys() {
-		
-		auth0keyIDstr  = k
-		auth0publicKey = v.(*rsa.PublicKey)
-
-		break
+	rMap := map[string]interface{}{}
+	err := json.Unmarshal([]byte(body), &rMap)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from Auth0 API"), 
+			"json_unmarshal_error",
+			map[string]interface{}{
+				"url_str": urlStr,
+			},
+			err, "gf_auth0", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	return auth0keyIDstr, auth0publicKey, nil
+
+
+
+
+
+
+	return rMap, nil
 }
 
 //-------------------------------------------------------------
@@ -221,6 +275,41 @@ func LoadConfig(pRuntimeSys *gf_core.RuntimeSys) *GFconfig {
 
 //-------------------------------------------------------------
 // JWT
+//-------------------------------------------------------------
+// GET_JWT_PUBLIC_KEY_FOR_TENANT
+
+func JWTgetPublicKeyForTenant(pConfig *GFconfig,
+	pRuntimeSys *gf_core.RuntimeSys) (string, *rsa.PublicKey, *gf_core.GFerror) {
+
+	jwksURLstr := fmt.Sprintf("https://%s/.well-known/jwks.json", pConfig.Auth0domainStr)
+	
+	jwks, err := jwks.Get(jwksURLstr, jwks.Options{}) // See recommended options in the examples directory.
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to get the JWKS from the given Auth0 URL",
+			"library_error",
+			map[string]interface{}{
+				"jwks_url_str": jwksURLstr,
+			},
+			err, "gf_auth0", pRuntimeSys)
+		return "", nil, gfErr
+	}
+
+	var auth0keyIDstr  string
+	var auth0publicKey *rsa.PublicKey
+
+	// auth0 always returns a list of keys in the JWKS, where the first one is the active key
+	// used for signing, and all subsequent keys are pending (next in queue) keys.
+	for k, v := range jwks.ReadOnlyKeys() {
+		
+		auth0keyIDstr  = k
+		auth0publicKey = v.(*rsa.PublicKey)
+
+		break
+	}
+
+	return auth0keyIDstr, auth0publicKey, nil
+}
+
 //-------------------------------------------------------------
 
 // extract JWT token from a http request and return it as a string

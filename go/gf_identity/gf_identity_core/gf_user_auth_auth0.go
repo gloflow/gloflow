@@ -49,8 +49,9 @@ type GFauth0session struct {
 }
 
 type GFauth0inputLoginCallback struct {
-	CodeStr        string
-	GFsessionIDstr gf_core.GF_ID
+	CodeStr           string
+	GFsessionIDstr    gf_core.GF_ID
+	Auth0appDomainStr string
 }
 type GFauth0outputLoginCallback struct {
 	SessionIDstr gf_core.GF_ID
@@ -290,13 +291,29 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		}
 	}
 
+
+
 	//---------------------
+	// GET_USER_INFO - from Auth0
+
+	auth0userInfoMap, gfErr := gf_auth0.GetUserInfo(JWTtokenStr,
+		pInput.Auth0appDomainStr,
+		pRuntimeSys)
+
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+
+	spew.Dump(auth0userInfoMap)
+
+	//---------------------
+	// DB
+
 	// mark the session as successfuly logged in, so that the login_callback handler
 	// cant be invoked again
 	loginCompleteBool := true
 
-	//---------------------
-	// DB
 	gfErr = dbAuth0UpdateSession(sessionIDstr,
 		loginCompleteBool,
 

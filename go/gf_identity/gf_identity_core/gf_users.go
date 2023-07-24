@@ -96,6 +96,7 @@ type GFuserOutputGet struct {
 }
 
 //---------------------------------------------------
+// CREATE_ID
 
 func usersCreateID(pUserIdentifierStr string,
 	pCreationUNIXtimeF float64) gf_core.GF_ID {
