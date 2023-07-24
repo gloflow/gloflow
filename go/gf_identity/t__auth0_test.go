@@ -30,6 +30,36 @@ import (
 
 //-------------------------------------------------
 
+func TestAuth0(pTest *testing.T) {
+
+	fmt.Println(" TEST__IDENTITY_AUTH0 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+	serviceNameStr := "gf_identity_test"
+	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	runtimeSys := Tinit(serviceNameStr, mongoHostStr)
+
+
+
+	auth0config := gf_auth0.LoadConfig(runtimeSys)
+
+	auth0keyIDstr, auth0publicKey, gfErr := gf_auth0.JWTgetPublicKeyForTenant(auth0config, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	pubKeyPEMstr := gf_core.CryptoConvertPubKeyToPEM(auth0publicKey)
+
+	runtimeSys.LogNewFun("INFO", "Auth0 keys...", map[string]interface{}{
+		"auth0_key_id":  auth0keyIDstr,
+		"auth0_pub_key": auth0publicKey,
+		"auth0_pub_key_pem": pubKeyPEMstr,
+	})
+
+
+}
+
+//-------------------------------------------------
+
 /*
 func TestAuth0Login(pTest *testing.T) {
 	fmt.Println(" TEST__IDENTITY_AUTH0_LOGIN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
@@ -63,34 +93,3 @@ func TestAuth0Login(pTest *testing.T) {
 	}
 }
 */
-
-//-------------------------------------------------
-
-func TestAuth0(pTest *testing.T) {
-
-	fmt.Println(" TEST__IDENTITY_AUTH0 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
-	serviceNameStr := "gf_identity_test"
-	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
-	runtimeSys := Tinit(serviceNameStr, mongoHostStr)
-
-
-
-	auth0config := gf_auth0.LoadConfig(runtimeSys)
-
-	auth0keyIDstr, auth0publicKey, gfErr := gf_auth0.GetJWTpublicKeyForTenant(auth0config, runtimeSys)
-	if gfErr != nil {
-		pTest.Fail()
-	}
-
-	pubKeyPEMstr := gf_core.CryptoConvertPubKeyToPEM(auth0publicKey)
-
-	runtimeSys.LogNewFun("INFO", "Auth0 keys...", map[string]interface{}{
-		"auth0_key_id":  auth0keyIDstr,
-		"auth0_pub_key": auth0publicKey,
-		"auth0_pub_key_pem": pubKeyPEMstr,
-	})
-
-
-}
-

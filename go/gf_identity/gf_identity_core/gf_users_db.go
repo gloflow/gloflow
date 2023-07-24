@@ -370,6 +370,37 @@ func dbUserGetByETHaddr(pUserAddressETHstr GFuserAddressETH,
 }
 
 //---------------------------------------------------
+// USER_EXISTS
+//---------------------------------------------------
+// EXISTS_BY_ID
+
+func DBuserExistsByID(pUserID gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+
+	collNameStr := "gf_users"
+	countInt, gfErr := gf_core.MongoCount(bson.M{
+			"id_str":       pUserID,
+			"deleted_bool": false,
+		},
+		map[string]interface{}{
+			"id_str":         pUserID,
+			"caller_err_msg": "failed to check if there is a user in the DB with a given ID",
+		},
+		pRuntimeSys.Mongo_db.Collection(collNameStr),
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return false, gfErr
+	}
+
+	if countInt > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+//---------------------------------------------------
 // EXISTS_BY_USERNAME
 
 func DBuserExistsByUsername(pUserNameStr GFuserName,
@@ -398,6 +429,8 @@ func DBuserExistsByUsername(pUserNameStr GFuserName,
 	return false, nil
 }
 
+//---------------------------------------------------
+// 
 //---------------------------------------------------
 // EXISTS_BY_ETH_ADDR
 
@@ -465,7 +498,8 @@ func dbUserEmailIsConfirmed(pUserNameStr GFuserName,
 	return emailConfirmedBool, nil
 }
 
-
+//---------------------------------------------------
+// GET
 //---------------------------------------------------
 
 func DBgetUserNameByID(pUserIDstr gf_core.GF_ID,

@@ -59,26 +59,57 @@ type GFauth0outputLoginCallback struct {
 }
 
 //---------------------------------------------------
+// CREATE_GF_USER_IF_NONE
 
-/*
-func Auth0validateSession(pSessionIDstr gf_core.GF_ID,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
-		
-	session, gfErr := dbAuth0GetSession(pSessionIDstr, pCtx, pRuntimeSys)
+// check if the Auth0 user exists in the DB, and if not create it.
+// a user would not exist in the DB if it signed-up/logged-in for the first time.
+func Auth0createGFuserIfNone(pJWTtokenStr string,
+	pAuth0appDomainStr string,
+	pCtx               context.Context,
+	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
+
+
+	// GET_USER_INFO - from Auth0
+
+	auth0userInfoMap, gfErr := gf_auth0.GetUserInfo(pJWTtokenStr,
+		pAuth0appDomainStr,
+		pRuntimeSys)
+
 	if gfErr != nil {
-		return false, gfErr
+		return gfErr
 	}
 
-	if !session.LoginCompleteBool {
-		return false, nil
+
+	spew.Dump(auth0userInfoMap)
+
+	// the user_info returned by Auth0 contains the "sub" claim
+	// which is the user_id assigned to the user in the Auth0 system
+	auth0userID := gf_core.GF_ID(auth0userInfoMap["sub"].(string))
+
+
+	//---------------------
+	// DB
+	existsBool, gfErr := DBuserExistsByID(auth0userID,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
-	return true, nil
+	//---------------------
+
+	// user doesnt exist in the GF DB
+	if !existsBool {
+
+	}
+
+
+	return nil
+
 }
-*/
 
 //---------------------------------------------------
+// LOGIN
 
 func Auth0loginPipeline(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
@@ -294,18 +325,14 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 
 
 	//---------------------
-	// GET_USER_INFO - from Auth0
-
-	auth0userInfoMap, gfErr := gf_auth0.GetUserInfo(JWTtokenStr,
+	
+	gfErr = Auth0createGFuserIfNone(JWTtokenStr,
 		pInput.Auth0appDomainStr,
+		pCtx,
 		pRuntimeSys)
-
 	if gfErr != nil {
 		return nil, gfErr
 	}
-
-
-	spew.Dump(auth0userInfoMap)
 
 	//---------------------
 	// DB
