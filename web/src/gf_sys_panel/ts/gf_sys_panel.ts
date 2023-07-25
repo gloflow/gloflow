@@ -89,44 +89,6 @@ export async function init(p_auth_http_api_map,
 		gf_identity.init_me_control(parent_node,
 			p_auth_http_api_map,
 			home_url_str);
-
-		/*
-		const me_user_map = await p_auth_http_api_map["general"]["get_me"]();
-
-
-		const user_profile_img_url_str = me_user_map["profile_image_url_str"];
-		const user_name_str            = me_user_map["user_name_str"];
-
-		const auth_container = $(`
-			<div id="auth">
-				<div id="current_user">
-					
-				</div>
-			</div>`);
-		$(sys_panel_element).find("#controls").append(auth_container);
-		
-		// IMG
-		if (user_profile_img_url_str != "") { 
-			$(auth_container).find("#current_user").append(`
-				<img>${user_profile_img_url_str}</img>
-			`);
-		}
-
-		// TEXT_SHORTHAND
-		else {
-
-			const shorthand_str = user_name_str[0];
-			$(auth_container).find("#current_user").append(`
-				<div id="shorthand_username">${shorthand_str}</div>
-			`);
-		}
-
-		// HOME_REDIRECT
-		$("#current_user").on("click", ()=>{
-			const home_url_str   = p_urls_map["home"];
-			window.location.href = home_url_str;
-		});
-		*/
 	}
 
 	//--------------------------

@@ -44,12 +44,13 @@ func CreateCookie(pSessionDataStr string,
 //---------------------------------------------------
 
 func ValidateOrRedirectToLogin(pReq *http.Request,
-	pResp                  http.ResponseWriter,
-	pKeyServerInfo         *gf_identity_core.GFkeyServerInfo,
-	pAuthSubsystemTypeStr  string,
-	pAuthLoginURLstr       *string,
-	pCtx                   context.Context,
-	pRuntimeSys            *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
+	pResp                   http.ResponseWriter,
+	pKeyServerInfo          *gf_identity_core.GFkeyServerInfo,
+	pAuthSubsystemTypeStr   string,
+	pAuthLoginURLstr        *string,
+	pAuthRedirectOnFailBool bool,
+	pCtx                    context.Context,
+	pRuntimeSys             *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
 
 	validBool, userIdentifierStr, gfErr := gf_identity_core.SessionValidate(pReq,
 		pKeyServerInfo,
@@ -59,7 +60,7 @@ func ValidateOrRedirectToLogin(pReq *http.Request,
 
 	//---------------------------------------------------
 	redirectFun := func() {
-		if pAuthLoginURLstr != nil {
+		if pAuthRedirectOnFailBool && pAuthLoginURLstr != nil {
 			
 			//-------------------------
 			// HTTP_REDIRECT - redirect user to login url
@@ -89,24 +90,6 @@ func ValidateOrRedirectToLogin(pReq *http.Request,
 
 		redirectFun()
 		return false, "", nil
-
-		/*
-		if pAuthLoginURLstr != nil {
-			
-			//-------------------------
-			// HTTP_REDIRECT - redirect user to login url
-			http.Redirect(pResp,
-				pReq,
-				*pAuthLoginURLstr,
-				301)
-			
-			//-------------------------	
-
-			return false, "", nil
-		} else {
-			return false, "", nil
-		}
-		*/
 	}
 
 	return validBool, userIdentifierStr, nil

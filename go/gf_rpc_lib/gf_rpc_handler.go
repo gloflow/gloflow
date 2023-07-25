@@ -116,12 +116,26 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		ctx := pReq.Context()
 		pathStr := pReq.URL.Path
 
+		//-----------------------
+		// AUTH_REDIRECT_ON_FAIL - QS that can toggle if the user should be redirected to the auth login url
+		//                         on failure to validate auth.
+		authRedirectOnFailBool := true
+		valuesMap := pReq.URL.Query()
+		if vLst, ok := valuesMap["auth_r"]; ok {
+			if vLst[0] == "0" {
+				authRedirectOnFailBool = false
+			}
+		}
+
+		//-----------------------
+		
 		// SESSION_VALIDATE
 		validBool, userIdentifierStr, gfErr := gf_session.ValidateOrRedirectToLogin(pReq,
 			pResp,
 			pHandlerRuntime.AuthKeyServer,
 			pHandlerRuntime.AuthSubsystemTypeStr,
 			&pHandlerRuntime.AuthLoginURLstr,
+			authRedirectOnFailBool,
 			ctx,
 			pRuntimeSys)
 
@@ -186,55 +200,6 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 				appHandlerFun(pResp, pReq.WithContext(*ctxAuth))
 
 				//-----------------------
-				
-				/*
-				ctx := pReq.Context()
-				pathStr := pReq.URL.Path
-
-				// SESSION_VALIDATE
-				validBool, userIdentifierStr, gfErr := gf_session.ValidateOrRedirectToLogin(pReq,
-					pResp,
-					pHandlerRuntime.AuthKeyServer,
-					pHandlerRuntime.AuthSubsystemTypeStr,
-					&pHandlerRuntime.AuthLoginURLstr,
-					ctx,
-					pRuntimeSys)
-
-				if gfErr != nil {
-					ErrorInHandler(pathStr,
-						fmt.Sprintf("handler %s failed to execute/validate a auth session", pathStr),
-						nil, pResp, pRuntimeSys)
-					return
-				}
-
-				// SESSION_NOT_VALID
-				if !validBool {
-
-					// METRICS
-					if pHandlerRuntime.Metrics != nil {
-						pHandlerRuntime.Metrics.HandlersAuthSessionInvalidCounter.Inc()
-					}
-
-					// if a login_url is not defined then return error, otherwise redirect to this login_url   
-					if pHandlerRuntime.AuthLoginURLstr == "" {
-						ErrorInHandler(pathStr,
-							fmt.Sprintf("user not authenticated to access handler %s", pathStr),
-							nil, pResp, pRuntimeSys)
-					}
-					return
-				}
-
-				//-----------------------
-				// USER_ID - attach to HTTP request golang context 
-				ctxAuth := context.WithValue(ctx, "gf_user_id", userIdentifierStr)
-
-				//-----------------------
-				// APP_HANDLER - external app request handler function, executed with an
-				//               authenticated context.
-				appHandlerFun(pResp, pReq.WithContext(ctxAuth))
-
-				//-----------------------
-				*/
 			}
 
 			//-------------------------------------------------
@@ -399,48 +364,6 @@ func getHandler(pAuthBool bool,
 		defer spanRoot.Finish()
 
 		ctxRoot := spanRoot.Context()
-
-		/*//------------------
-		// AUTH
-
-		var ctxAuth context.Context
-		if pAuthBool {
-
-			// SESSION_VALIDATE
-			validBool, userIdentifierStr, gfErr := gf_session.ValidateOrRedirectToLogin(pReq,
-				pResp,
-				pAuthLoginURLstr,
-				ctx,
-				pRuntimeSys)
-			if gfErr != nil {
-				ErrorInHandler(pathStr,
-					fmt.Sprintf("handler %s failed to execute/validate a auth session", pathStr),
-					nil, pResp, pRuntimeSys)
-				return
-			}
-
-			// SESSION_NOT_VALID
-			if !validBool {
-
-				// METRICS
-				if pMetrics != nil {
-					pMetrics.HandlersAuthSessionInvalidCounter.Inc()
-				}
-
-				// if a login_url is not defined then return error, otherwise redirect to this
-				// login_url   
-				if pAuthLoginURLstr == nil {
-					ErrorInHandler(pathStr,
-						fmt.Sprintf("user not authenticated to access handler %s", pathStr),
-						nil, pResp, pRuntimeSys)
-				}
-				return
-			}
-
-			ctxAuth = context.WithValue(ctxRoot, "gf_user_id", userIdentifierStr)
-		} else {
-			ctxAuth = ctxRoot
-		}*/
 
 		//------------------
 		// HANDLER
