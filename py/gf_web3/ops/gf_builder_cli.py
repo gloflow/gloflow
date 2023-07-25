@@ -201,11 +201,11 @@ def build_go(p_name_str,
 	cwd_str = os.getcwd()
 	os.chdir(p_go_dir_path_str) # change into the target main package dir
 
-	# GO_GET
-	print("go get")
-	_, _, exit_code_int = gf_core_cli.run("go get -u")
-	print("")
-	print("")
+	# # GO_GET
+	# print("go get")
+	# _, _, exit_code_int = gf_core_cli.run("go get -u")
+	# print("")
+	# print("")
 
 	# STATIC_LINKING - when deploying to containers it is not always guaranteed that all
 	#                  required libraries are present. so its safest to compile to a statically
