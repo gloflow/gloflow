@@ -118,7 +118,8 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 		//-----------------------
 		// AUTH_REDIRECT_ON_FAIL - QS that can toggle if the user should be redirected to the auth login url
-		//                         on failure to validate auth.
+		//                         on failure to validate auth. by default we always redirect, and the user
+		//                         has the ability to turn that behavior off.
 		authRedirectOnFailBool := true
 		valuesMap := pReq.URL.Query()
 		if vLst, ok := valuesMap["auth_r"]; ok {
