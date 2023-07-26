@@ -26,11 +26,23 @@ SOFTWARE.
 package gf_core
 
 import (
+	"fmt"
 	"crypto/rand"
 	"crypto/rsa"
 	"encoding/pem"
 	"crypto/x509"
 )
+
+//-------------------------------------------------
+
+func GetTokenShorthand(pTokenStr string) string {
+
+	lenInt := len(pTokenStr)
+	firstStr := pTokenStr[:4]            // first 4 characters
+	lastStr  := pTokenStr[(lenInt-1)-4:] // last 4 characters
+	transformedStr := fmt.Sprintf("%s...%s", firstStr, lastStr)
+	return transformedStr
+}
 
 //-------------------------------------------------
 

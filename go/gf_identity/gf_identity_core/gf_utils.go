@@ -193,3 +193,5 @@ func HTTPgetEmailConfirmInput(pReq *http.Request,
 
 	return input, nil
 }
+
+//---------------------------------------------------

@@ -65,10 +65,10 @@ func initHandlers(pAuthLoginURLstr string,
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:             pHTTPmux,
-		Metrics:         metrics,
-		StoreRunBool:    true,
-		SentryHub:       nil,
+		Mux:                  pHTTPmux,
+		Metrics:              metrics,
+		StoreRunBool:         true,
+		SentryHub:            nil,
 		AuthSubsystemTypeStr: pServiceInfo.AuthSubsystemTypeStr,
 		AuthLoginURLstr:      pAuthLoginURLstr,
 		AuthKeyServer:        pKeyServer,
@@ -150,8 +150,7 @@ func initHandlers(pAuthLoginURLstr string,
 				if gfErr != nil {
 					return nil, gfErr
 				}
-
-
+				
 				pResp.Write([]byte(templateRenderedStr))
 			}
 

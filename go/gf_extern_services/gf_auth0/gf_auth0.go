@@ -124,6 +124,8 @@ func GetUserInfo(pAccessTokenStr string,
 		return nil, gfErr
 	}
 
+	accessTokenShortStr := gf_core.GetTokenShorthand(pAccessTokenStr)
+	
 	rMap := map[string]interface{}{}
 	err := json.Unmarshal([]byte(body), &rMap)
 	if err != nil {
@@ -132,6 +134,7 @@ func GetUserInfo(pAccessTokenStr string,
 			map[string]interface{}{
 				"url_str": urlStr,
 				"body":    body,
+				"access_token_str": accessTokenShortStr,
 			},
 			err, "gf_auth0", pRuntimeSys)
 		return nil, gfErr
