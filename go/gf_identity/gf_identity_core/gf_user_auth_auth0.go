@@ -103,9 +103,7 @@ func Auth0createGFuserIfNone(pJWTtokenStr string,
 
 	}
 
-
 	return nil
-
 }
 
 //---------------------------------------------------
@@ -259,11 +257,6 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 
 	JWTtokenStr := JWTtmpToken.Raw
 
-
-
-
-
-
 	//---------------------
 	// ACCESS_TOKEN - Oauth2 bearer_token is the same thing as the access_token
 	// accessTokenStr := oauth2bearerToken.AccessToken
@@ -322,8 +315,6 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		}
 	}
 
-
-
 	//---------------------
 	
 	gfErr = Auth0createGFuserIfNone(JWTtokenStr,
@@ -344,9 +335,6 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	gfErr = dbAuth0UpdateSession(sessionIDstr,
 		loginCompleteBool,
 
-		// should this be stored in the DB at all?
-		"", // accessTokenStr,
-
 		//---------------
 		// currently active profile is stored in the DB.
 		profileMap,
@@ -360,13 +348,6 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	}
 
 	//---------------------
-
-
-
-	// TEST!! - if this works then delete above line: "JWTtoken := idToken"
-	// JWTtokenStr := accessTokenStr // oauth2bearerToken.RawToken
-
-
 
 	output := &GFauth0outputLoginCallback{
 		SessionIDstr: sessionIDstr,

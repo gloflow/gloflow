@@ -87,6 +87,10 @@ func HTTPsetCookieOnReq(pCookieNameStr string,
 		//               paths, because session is verified on all of them.
 		//               otherwise the cookie will only be set requests
 		//               that are on some subset of urls relative to the root.
+		// IMPORTANT!! - In Go (and in HTTP cookies in general), if the Path for a cookie is
+		//               not explicitly set the cookie's path will default to the path of 
+		//               the URL where the Set-Cookie HTTP response header was received from.
+		//               This means that the cookie will be sent only for requests to this path and its subpaths.
 		Path: "/", 
 		
 		// ADD!! - ability to specify multiple domains that the session is

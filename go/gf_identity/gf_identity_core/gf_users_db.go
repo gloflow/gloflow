@@ -106,7 +106,6 @@ func dbAuth0GetSession(pGFsessionIDstr gf_core.GF_ID,
 
 func dbAuth0UpdateSession(pGFsessionIDstr gf_core.GF_ID,
 	pLoginCompleteBool bool,
-	pAccessTokenStr    string,
 	pAuth0profileMap   map[string]interface{},
 	pCtx               context.Context,
 	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -115,8 +114,7 @@ func dbAuth0UpdateSession(pGFsessionIDstr gf_core.GF_ID,
 	// FIELDS
 	fieldsTargets := bson.M{}
 	fieldsTargets["login_complete_bool"] = pLoginCompleteBool
-	fieldsTargets["access_token_str"] = pAccessTokenStr
-	fieldsTargets["profile_map"]      = pAuth0profileMap
+	fieldsTargets["profile_map"]         = pAuth0profileMap
 
 	//------------------------
 	collNameStr := "gf_auth0_session"

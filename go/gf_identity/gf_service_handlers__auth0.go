@@ -133,28 +133,6 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			auth0providedStateBase64str := qsMap["state"][0]
 			auth0providedStateStr, _    := base64.StdEncoding.DecodeString(auth0providedStateBase64str)
 			gfSessionIDstr              := gf_core.GF_ID(auth0providedStateStr)
-
-			//------------------
-
-			/*
-			// AUTH_TOKEN - JWT token thats set by Auth0.
-			//              this is set as a cookie and read off here.
-			auth0coookie, err := pReq.Cookie("Authorization")
-
-			// check if header is supplied at all
-			// if auth0suppliedJWTstr == "" {
-			if err != nil {
-
-				// if jwt token is not supplied by Auth0 redirect the user to the GF login page
-				loginUIurlStr := "/v1/identity/login_ui"
-				http.Redirect(pResp,
-					pReq,
-					loginUIurlStr,
-					301)
-			}
-
-			auth0suppliedJWTstr := auth0coookie.Value
-			*/
 			
 			//------------------
 			input := &gf_identity_core.GFauth0inputLoginCallback{
@@ -185,41 +163,20 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 
 			//---------------------
-			// COOKIE - AUTHORIZATION
+			// COOKIE - JWT
 
 			/*
-			// JWT_HEADER
-			// current GF Auth0 implementation fetches the JWT on each auth request
-			// in order to verify it, from this header.
-			// so we're setting it here. to be integrated more into the gf_session functions,
-			// not called directly here.
-			//
-			// RFC6750
-			// https://stackoverflow.com/questions/33265812/best-http-authorization-header-type-for-jwt
-			http.SetCookie(pResp, &http.Cookie{
-				Name:     "Authorization",
-				Value:    auth0suppliedJWTstr, // fmt.Sprintf("Bearer %s", output.JWTtokenStr),
-				HttpOnly: true,
-				Secure:   true, // Set this to false if you're not using HTTPS in development
-
-				// set the request paths that can access the cookie, in this case all of urls on the domain.
-				//
-				// IMPORTANT!! - In Go (and in HTTP cookies in general), if the Path for a cookie is not explicitly set the cookie's path
-				//               will default to the path of the URL where the Set-Cookie HTTP response header was received from.
-				//               This means that the cookie will be sent only for requests to this path and its subpaths.
-				// NOTE!! - by not setting it explicitly to "/" this cookie would only be accessible to sub-urls of "/v1/identity/auth0"
-				Path:  "/",
-
-				// IMPORTANT!! - not setting this will cause the cookie to be a session-cookie
-				//               that will expire after the user closes their browser.
-				Expires: time.Now().AddDate(0, 0, 2), // 2 days
-			})
+			JWT_HEADER
+			current GF Auth0 implementation fetches the JWT on each auth request
+			in order to verify it, from this header.
+			so we're setting it here. to be integrated more into the gf_session functions,
+			not called directly here.
 			*/
 
 			auth0JWTttlHoursInt, _ := gf_identity_core.GetSessionTTL()
 
 			cookieNameStr := "Authorization"
-			cookieDataStr := fmt.Sprintf("Bearer %s", output.JWTtokenStr) // auth0suppliedJWTstr
+			cookieDataStr := fmt.Sprintf("Bearer %s", output.JWTtokenStr)
 			gf_core.HTTPsetCookieOnReq(cookieNameStr,
 				cookieDataStr,
 				pResp,

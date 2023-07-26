@@ -124,16 +124,19 @@ func GetUserInfo(pAccessTokenStr string,
 		return nil, gfErr
 	}
 
-	accessTokenShortStr := gf_core.GetTokenShorthand(pAccessTokenStr)
+	
 	
 	rMap := map[string]interface{}{}
 	err := json.Unmarshal([]byte(body), &rMap)
 	if err != nil {
+
+		accessTokenShortStr := gf_core.GetTokenShorthand(pAccessTokenStr)
+
 		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from Auth0 API"), 
 			"json_decode_error",
 			map[string]interface{}{
-				"url_str": urlStr,
-				"body":    body,
+				"url_str":  urlStr,
+				"body_str": body,
 				"access_token_str": accessTokenShortStr,
 			},
 			err, "gf_auth0", pRuntimeSys)
