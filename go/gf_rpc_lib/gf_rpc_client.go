@@ -89,7 +89,7 @@ func ClientRequestSSE(pURLstr string,
 			err     := json.Unmarshal([]byte(msg_str), &msgMap)
 			if err != nil {
 				gfErr := gf_core.ErrorCreate("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
-					"json_unmarshal_error",
+					"json_decode_error",
 					map[string]interface{}{
 						"url_str":  pURLstr,
 						"line_str": lineStr,

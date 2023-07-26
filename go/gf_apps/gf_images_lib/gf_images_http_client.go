@@ -138,7 +138,7 @@ func clientStartJob(pInputImagesURLsLst []string,
 	jErr := json.Unmarshal([]byte(body), &rMap)
 	if jErr != nil {
 		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from gf_images_client start_job HTTP REST API - %s", urlStr), 
-			"json_unmarshal_error",
+			"json_decode_error",
 			map[string]interface{}{
 				"url_str": urlStr,
 				"body":    body,
@@ -258,7 +258,7 @@ func clientParseSSEresponse(pBodyStr string,
 			if err != nil {
 
 				gfErr := gf_core.ErrorCreate("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
-					"json_unmarshal_error",
+					"json_decode_error",
 					map[string]interface{}{"line_str": line_str,},
 					err, "gf_images_lib", pRuntimeSys)
 

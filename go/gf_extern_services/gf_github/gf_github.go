@@ -140,7 +140,7 @@ func RunGraphQLquery(pGraphQLqueryStr string,
 	err := json.Unmarshal([]byte(body), &rMap)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from github HTTP GraphQL API"), 
-			"json_unmarshal_error",
+			"json_decode_error",
 			map[string]interface{}{
 				"url_str": urlStr,
 				"body":    body,
@@ -187,7 +187,7 @@ func GetIssues(pRepoOwnerAndNameStr string,
 	err := json.Unmarshal([]byte(body), &rLst)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from github HTTP REST API"), 
-			"json_unmarshal_error",
+			"json_decode_error",
 			map[string]interface{}{
 				"url_str": urlStr,
 				"body":    body,
@@ -324,7 +324,7 @@ func GetIPs(pRuntimeSys *gf_core.RuntimeSys) ([]string, []string, *gf_core.GFerr
 	err := json.Unmarshal([]byte(body), &rMap)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from github HTTP REST API"), 
-			"json_unmarshal_error",
+			"json_decode_error",
 			map[string]interface{}{
 				"url_str": urlStr,
 				"body":    body,

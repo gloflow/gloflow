@@ -197,7 +197,7 @@ func clientParseResponseSSE(p_body_str string,
 			if err != nil {
 
 				gf_err := gf_core.ErrorCreate("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
-					"json_unmarshal_error",
+					"json_decode_error",
 					map[string]interface{}{"line_str": line_str,},
 					err, "gf_images_lib", pRuntimeSys)
 

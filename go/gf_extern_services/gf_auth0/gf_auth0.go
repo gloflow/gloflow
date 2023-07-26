@@ -128,9 +128,10 @@ func GetUserInfo(pAccessTokenStr string,
 	err := json.Unmarshal([]byte(body), &rMap)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from Auth0 API"), 
-			"json_unmarshal_error",
+			"json_decode_error",
 			map[string]interface{}{
 				"url_str": urlStr,
+				"body":    body,
 			},
 			err, "gf_auth0", pRuntimeSys)
 		return nil, gfErr
