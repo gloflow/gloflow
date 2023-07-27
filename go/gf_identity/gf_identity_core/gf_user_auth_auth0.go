@@ -63,7 +63,7 @@ type GFauth0outputLoginCallback struct {
 
 // check if the Auth0 user exists in the DB, and if not create it.
 // a user would not exist in the DB if it signed-up/logged-in for the first time.
-func Auth0createGFuserIfNone(pJWTtokenStr string,
+func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 	pAuth0appDomainStr string,
 	pCtx               context.Context,
 	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -71,7 +71,7 @@ func Auth0createGFuserIfNone(pJWTtokenStr string,
 
 	// GET_USER_INFO - from Auth0
 
-	auth0userInfoMap, gfErr := gf_auth0.GetUserInfo(pJWTtokenStr,
+	auth0userInfoMap, gfErr := gf_auth0.GetUserInfo(pAuth0accessTokenStr,
 		pAuth0appDomainStr,
 		pRuntimeSys)
 
@@ -80,7 +80,12 @@ func Auth0createGFuserIfNone(pJWTtokenStr string,
 	}
 
 
-	spew.Dump(auth0userInfoMap)
+
+	pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		Auth0 /userinfo response recieved (for fetching user info for the current user)...`,
+		map[string]interface{}{
+			"auth0_user_info_map": auth0userInfoMap,
+		})
 
 	// the user_info returned by Auth0 contains the "sub" claim
 	// which is the user_id assigned to the user in the Auth0 system
@@ -185,7 +190,6 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 			nil, "gf_identity_core", pRuntimeSys)
 		return nil, gfErr
 	}
-	
 	*/
 	
 	//---------------------
@@ -258,10 +262,6 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	JWTtokenStr := JWTtmpToken.Raw
 
 	//---------------------
-	// ACCESS_TOKEN - Oauth2 bearer_token is the same thing as the access_token
-	// accessTokenStr := oauth2bearerToken.AccessToken
-
-	//---------------------
 	// verify token - get ID token
 	// https://auth0.com/docs/secure/tokens/id-tokens
 	// ID token is used to get user profile information.
@@ -317,7 +317,9 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 
 	//---------------------
 	
-	gfErr = Auth0createGFuserIfNone(JWTtokenStr,
+	auth0accessTokenStr := oauth2bearerToken.AccessToken
+
+	gfErr = Auth0createGFuserIfNone(auth0accessTokenStr,
 		pInput.Auth0appDomainStr,
 		pCtx,
 		pRuntimeSys)

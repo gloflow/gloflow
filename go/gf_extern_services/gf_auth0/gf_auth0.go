@@ -63,7 +63,7 @@ type GFauthenticator struct {
 // GET_USER_INFO
 
 // pAccessTokenStr - Auth0 Access Token obtained during login
-func GetUserInfo(pAccessTokenStr string,
+func GetUserInfo(pAuth0accessTokenStr string,
 	pAuth0domainStr string,
 	pRuntimeSys     *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 
@@ -111,7 +111,7 @@ func GetUserInfo(pAccessTokenStr string,
 	*/
 	_, body, errs := gorequest.New().
 		Get(urlStr).
-		Set("Authorization", fmt.Sprintf("Bearer %s", pAccessTokenStr)).
+		Set("Authorization", fmt.Sprintf("Bearer %s", pAuth0accessTokenStr)).
 		End()
 	if len(errs) > 0 {
 		err   := errs[0]
@@ -130,7 +130,7 @@ func GetUserInfo(pAccessTokenStr string,
 	err := json.Unmarshal([]byte(body), &rMap)
 	if err != nil {
 
-		accessTokenShortStr := gf_core.GetTokenShorthand(pAccessTokenStr)
+		accessTokenShortStr := gf_core.GetTokenShorthand(pAuth0accessTokenStr)
 
 		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from Auth0 API"), 
 			"json_decode_error",
@@ -142,12 +142,6 @@ func GetUserInfo(pAccessTokenStr string,
 			err, "gf_auth0", pRuntimeSys)
 		return nil, gfErr
 	}
-
-
-
-
-
-
 
 	return rMap, nil
 }

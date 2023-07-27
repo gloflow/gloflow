@@ -165,7 +165,8 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 	})
 
 	// KEY_SERVER
-	publicKey, gfErr := KSclientJWTgetValidationKey(pAuthSubsystemTypeStr, pKeyServerInfo, pRuntimeSys)
+	publicKey, gfErr := KSclientJWTgetValidationKey(pAuthSubsystemTypeStr,
+		pKeyServerInfo, pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}
