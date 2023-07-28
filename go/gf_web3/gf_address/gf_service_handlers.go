@@ -29,7 +29,8 @@ import (
 
 //-------------------------------------------------
 
-func InitHandlers(pKeyServer *gf_identity_core.GFkeyServerInfo,
+func InitHandlers(pAuthSubsystemTypeStr string,
+	pKeyServer  *gf_identity_core.GFkeyServerInfo,
 	pHTTPmux    *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -49,6 +50,8 @@ func InitHandlers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 		Metrics:       metrics,
 		StoreRunBool:  true,
 		SentryHub:     nil,
+
+		AuthSubsystemTypeStr: pAuthSubsystemTypeStr,
 
 		// url redirected too if user not logged in and tries to access auth handler
 		AuthLoginURLstr: "/v1/identity/login_ui",

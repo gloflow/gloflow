@@ -304,7 +304,8 @@ func Run(pConfig *GFconfig,
 	web3Config := &gf_eth_core.GF_config{
 		AlchemyAPIkeyStr: pConfig.AlchemyAPIkeyStr,
 	}
-	gf_web3_lib.InitService(keyServer,
+	gf_web3_lib.InitService(pConfig.AuthSubsystemTypeStr,
+		keyServer,
 		gfSoloHTTPmux,
 		web3Config,
 		imagesJobsMngrCh,

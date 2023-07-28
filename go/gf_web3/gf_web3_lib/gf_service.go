@@ -38,7 +38,8 @@ import (
 )
 
 //-------------------------------------------------
-func InitService(pKeyServer *gf_identity_core.GFkeyServerInfo,
+func InitService(pAuthSubsystemTypeStr string,
+	pKeyServer        *gf_identity_core.GFkeyServerInfo,
 	pHTTPmux          *http.ServeMux,
 	pConfig           *gf_eth_core.GF_config,
 	pImagesJobsMngrCh chan gf_images_jobs_core.JobMsg,
@@ -46,7 +47,8 @@ func InitService(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 	//-------------
 	// ADDRESS
-	gfErr := gf_address.InitHandlers(pKeyServer,
+	gfErr := gf_address.InitHandlers(pAuthSubsystemTypeStr,
+		pKeyServer,
 		pHTTPmux,
 		pRuntimeSys)
 	if gfErr != nil {
