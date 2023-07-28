@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_session
 
 import (
+	"fmt"
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -28,7 +29,7 @@ import (
 
 //---------------------------------------------------
 
-func CreateCookie(pSessionDataStr string,
+func CreateSessionIDcookie(pSessionDataStr string,
 	pResp http.ResponseWriter) {
 	
 	sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
@@ -39,6 +40,20 @@ func CreateCookie(pSessionDataStr string,
 		cookieDataStr,
 		pResp,
 		sessionTTLhoursInt)
+}
+
+func CreateAuthCookie(pJWTtokenStr string,
+	pResp http.ResponseWriter) {
+
+	sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
+
+	cookieNameStr := "Authorization"
+	cookieDataStr := fmt.Sprintf("Bearer %s", pJWTtokenStr)
+	gf_core.HTTPsetCookieOnReq(cookieNameStr,
+		cookieDataStr,
+		pResp,
+		sessionTTLhoursInt)
+
 }
 
 //---------------------------------------------------

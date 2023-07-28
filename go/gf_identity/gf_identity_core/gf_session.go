@@ -149,6 +149,6 @@ func GetSessionTTL() (int, int64) {
 
 	//---------------------
 	
-	sessionTTLsecondsInt := int64(60*60*24*7)
+	sessionTTLsecondsInt := int64(60*60*sessionTTLhoursInt)
 	return sessionTTLhoursInt, sessionTTLsecondsInt
 }

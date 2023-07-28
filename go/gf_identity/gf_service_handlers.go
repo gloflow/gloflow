@@ -227,7 +227,7 @@ func initHandlers(pAuthLoginURLstr string,
 						//---------------------
 						// SET_SESSION_ID - sets gf_sess cookie on all future requests
 						jwtTokenValStr := string(loginFinalizeOutput.JWTtokenVal)
-						gf_session.CreateCookie(jwtTokenValStr, pResp)
+						gf_session.CreateSessionIDcookie(jwtTokenValStr, pResp)
 
 						//---------------------
 
@@ -313,7 +313,7 @@ func initHandlers(pAuthLoginURLstr string,
 					//---------------------	
 					// SET_SESSION_ID - sets gf_sess cookie on all future requests
 					jwtTokenValStr := string(loginFinalizeOutput.JWTtokenVal)
-					gf_session.CreateCookie(jwtTokenValStr, pResp)
+					gf_session.CreateSessionIDcookie(jwtTokenValStr, pResp)
 
 					//---------------------
 				}

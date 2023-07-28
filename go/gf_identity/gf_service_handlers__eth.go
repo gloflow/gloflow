@@ -133,7 +133,7 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				//---------------------
 				// SET_SESSION_ID - sets gf_sess cookie on all future requests
 				jwtTokenValStr := string(output.JWTtokenVal)
-				gf_session.CreateCookie(jwtTokenValStr, pResp)
+				gf_session.CreateSessionIDcookie(jwtTokenValStr, pResp)
 
 				//---------------------
 

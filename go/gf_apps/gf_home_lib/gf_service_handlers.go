@@ -101,10 +101,6 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 				}
 				return outputMap, nil
 			}
-
-			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
-			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
-			//               from returning it.
 			return nil, nil
 		},
 		rpcHandlerRuntime,
@@ -136,10 +132,6 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 				outputMap := map[string]interface{}{}
 				return outputMap, nil
 			}
-
-			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
-			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
-			//               from returning it.
 			return nil, nil
 		},
 		rpcHandlerRuntime,
@@ -162,11 +154,12 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 				}
 
 				pResp.Write([]byte(templateRenderedStr))
-			}
 
-			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
-			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
-			//               from returning it.
+				// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
+				//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
+				//               from returning it.
+				return nil, nil
+			}
 			return nil, nil
 		},
 		rpcHandlerRuntime,

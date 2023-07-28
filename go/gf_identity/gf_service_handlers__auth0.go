@@ -20,11 +20,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity
 
 import (
-	"fmt"
 	"net/http"
 	"context"
 	"encoding/base64"
-	// "time"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
@@ -157,31 +155,15 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			sessionIDstr := output.SessionIDstr
 
 			//---------------------
-			// COOKIE - SESSION_ID - sets gf_sess cookie on all future requests
+			// COOKIES 
+			
+			// SESSION_ID - sets gf_sess cookie
 			sessionDataStr := string(sessionIDstr)
-			gf_session.CreateCookie(sessionDataStr, pResp)
+			gf_session.CreateSessionIDcookie(sessionDataStr, pResp)
 
-
-			//---------------------
-			// COOKIE - JWT
-
-			/*
-			JWT_HEADER
-			current GF Auth0 implementation fetches the JWT on each auth request
-			in order to verify it, from this header.
-			so we're setting it here. to be integrated more into the gf_session functions,
-			not called directly here.
-			*/
-
-			auth0JWTttlHoursInt, _ := gf_identity_core.GetSessionTTL()
-
-			cookieNameStr := "Authorization"
-			cookieDataStr := fmt.Sprintf("Bearer %s", output.JWTtokenStr)
-			gf_core.HTTPsetCookieOnReq(cookieNameStr,
-				cookieDataStr,
-				pResp,
-				auth0JWTttlHoursInt)
-
+			// JWT - sets "Authorization" cookie
+			gf_session.CreateAuthCookie(output.JWTtokenStr, pResp)
+			
 			//------------------
 			// HTTP_REDIRECT - redirect user to logged in page
 			
