@@ -131,11 +131,10 @@ func CryptoConvertKeysToPEM(pPrivateKey *rsa.PrivateKey,
 	// PRIVATE_KEY
 	privKeyBytesLst := x509.MarshalPKCS1PrivateKey(pPrivateKey)
 	privKeyPEM := pem.EncodeToMemory(
-			&pem.Block{
-					Type:  "RSA PRIVATE KEY",
-					Bytes: privKeyBytesLst,
-			},
-	)
+		&pem.Block{
+			Type:  "RSA PRIVATE KEY",
+			Bytes: privKeyBytesLst,
+		},)
 
 	privKeyPEMstr := string(privKeyPEM)
 
@@ -148,11 +147,10 @@ func CryptoConvertKeysToPEM(pPrivateKey *rsa.PrivateKey,
 func CryptoConvertPubKeyToPEM(pPublicKey *rsa.PublicKey) string {
 	pubKeyBytesLst := x509.MarshalPKCS1PublicKey(pPublicKey)
 	pubKeyPEM := pem.EncodeToMemory(
-			&pem.Block{
-					Type:  "RSA PUBLIC KEY",
-					Bytes: pubKeyBytesLst,
-			},
-	)
+		&pem.Block{
+			Type:  "RSA PUBLIC KEY",
+			Bytes: pubKeyBytesLst,
+		},)
 
 	pubKeyPEMstr := string(pubKeyPEM)
 	return pubKeyPEMstr

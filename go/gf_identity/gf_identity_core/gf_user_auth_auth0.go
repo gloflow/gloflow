@@ -81,8 +81,7 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 
 
 
-	pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		Auth0 /userinfo response recieved (for fetching user info for the current user)...`,
+	pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> Auth0 /userinfo response recieved...`,
 		map[string]interface{}{
 			"auth0_user_info_map": auth0userInfoMap,
 		})

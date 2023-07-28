@@ -149,7 +149,9 @@ func KSinit(pAuth0initBool bool,
 			case req := <- getJWTvalidationKeyCh:
 
 				pRuntimeSys.LogNewFun("DEBUG", "key_server - received request for JWT validation key...",
-					map[string]interface{}{"auth_subsystem_type_str": req.authSubsystemTypeStr,})
+					map[string]interface{}{
+						"auth_subsystem_type_str": req.authSubsystemTypeStr,
+					})
 
 				switch req.authSubsystemTypeStr {
 				case GF_AUTH_SUBSYSTEM_TYPE__USERPASS:

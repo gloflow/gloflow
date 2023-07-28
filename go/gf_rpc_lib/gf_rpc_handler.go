@@ -175,76 +175,41 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 	//-------------------------------------------------
 
+	if pAuthBool {
 
+		//-------------------------------------------------
+		authHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
+			
+			pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> auth http handler...`,
+				map[string]interface{}{
+					"path_str":                pReq.URL.Path,
+					"auth_subsystem_type_str": pHandlerRuntime.AuthSubsystemTypeStr,
+				})
 
-	switch pHandlerRuntime.AuthSubsystemTypeStr {
-
-	//------------------
-	// USERPASS
-	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__USERPASS:
-
-		if pAuthBool {
-
-			//-------------------------------------------------
-			userpassHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
-				
-				//-----------------------
-				// VALIDATE_SESSION
-				ctxAuth := validateSessionFun(pResp, pReq)
-				if ctxAuth == nil {
-					return
-				}
-
-				//-----------------------
-				// APP_HANDLER - external app request handler function, executed with an
-				//               authenticated context.
-				appHandlerFun(pResp, pReq.WithContext(*ctxAuth))
-
-				//-----------------------
+			//-----------------------
+			// VALIDATE_SESSION
+			ctxAuth := validateSessionFun(pResp, pReq)
+			if ctxAuth == nil {
+				return
 			}
 
-			//-------------------------------------------------
+			//-----------------------
+			// APP_HANDLER - external app request handler function, executed with an
+			//               authenticated context.
 
-			pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(userpassHandlerFun))
+			appHandlerFun(pResp, pReq.WithContext(*ctxAuth))
 
-		} else {
-			pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(appHandlerFun))
+			//-----------------------
 		}
 
-	//------------------
-	// AUTH0
-	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0:
+		//-------------------------------------------------
 
-		if pAuthBool {
+		pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(authHandlerFun))
 
-			//-------------------------------------------------
-			auth0handlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
+	} else {
 
-				//-----------------------
-				// VALIDATE_SESSION
-				ctxAuth := validateSessionFun(pResp, pReq)
-				if ctxAuth == nil {
-					return
-				}
-
-				//-----------------------
-				// APP_HANDLER - external app request handler function, executed with an
-				//               authenticated context.
-				appHandlerFun(pResp, pReq.WithContext(*ctxAuth))
-
-				//-----------------------
-			}
-
-			//-------------------------------------------------
-
-			pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(auth0handlerFun))
-
-		} else {
-			pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(appHandlerFun))
-		}
+		pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(appHandlerFun))
 	}
-
-	//------------------
 }
 
 //-------------------------------------------------
