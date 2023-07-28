@@ -28,10 +28,11 @@ import (
 	"strings"
 	"errors"
 	"encoding/json"
+	"io/ioutil"
+	"gopkg.in/square/go-jose.v2"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/oauth2"
-	jwks "github.com/MicahParks/keyfunc"
 	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_core"
 	// "github.com/davecgh/go-spew/spew"
@@ -284,7 +285,7 @@ func JWTgetPublicKeyForTenant(pConfig *GFconfig,
 
 	jwksURLstr := fmt.Sprintf("https://%s/.well-known/jwks.json", pConfig.Auth0domainStr)
 	
-	jwks, err := jwks.Get(jwksURLstr, jwks.Options{}) // See recommended options in the examples directory.
+	resp, err := http.Get(jwksURLstr)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to get the JWKS from the given Auth0 URL",
 			"library_error",
@@ -294,21 +295,42 @@ func JWTgetPublicKeyForTenant(pConfig *GFconfig,
 			err, "gf_auth0", pRuntimeSys)
 		return "", nil, gfErr
 	}
+	defer resp.Body.Close()
 
-	var auth0keyIDstr  string
-	var auth0publicKey *rsa.PublicKey
-
-	// auth0 always returns a list of keys in the JWKS, where the first one is the active key
-	// used for signing, and all subsequent keys are pending (next in queue) keys.
-	for k, v := range jwks.ReadOnlyKeys() {
-		
-		auth0keyIDstr  = k
-		auth0publicKey = v.(*rsa.PublicKey)
-
-		break
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to read the JWKS JSON from the given Auth0 URL",
+			"library_error",
+			map[string]interface{}{
+				"jwks_url_str": jwksURLstr,
+			},
+			err, "gf_auth0", pRuntimeSys)
+		return "", nil, gfErr
 	}
 
-	return auth0keyIDstr, auth0publicKey, nil
+	jwks := &jose.JSONWebKeySet{}
+	if err := json.Unmarshal(body, jwks); err != nil {
+		gfErr := gf_core.ErrorCreate("failed to parse the JWKS JSON from the given Auth0 URL",
+			"library_error",
+			map[string]interface{}{
+				"jwks_url_str": jwksURLstr,
+			},
+			err, "gf_auth0", pRuntimeSys)
+		return "", nil, gfErr
+	}
+
+	for _, key := range jwks.Keys {
+
+		return key.KeyID, key.Key.(*rsa.PublicKey), nil	
+	}
+
+	gfErr := gf_core.ErrorCreate("no RSA key found in JWKS from the given Auth0 URL",
+		"library_error",
+		map[string]interface{}{
+			"jwks_url_str": jwksURLstr,
+		},
+		err, "gf_auth0", pRuntimeSys)
+	return "", nil, gfErr
 }
 
 //-------------------------------------------------------------
@@ -351,6 +373,11 @@ func JWTvalidateToken(pTokenStr string,
 
     token, err := jwt.Parse(pTokenStr, func(pToken *jwt.Token) (interface{}, error) {
 
+		pRuntimeSys.LogNewFun("DEBUG", "auth0 validating JWT token...",
+			map[string]interface{}{
+				"pub_key": gf_core.CryptoConvertPubKeyToPEM(pPubKey),
+			})
+			
         // Retrieve the signing key from Auth0 or any other source
         // based on the token's kid (key ID) claim.
         return pPubKey, nil
