@@ -79,7 +79,8 @@ func TestMain(m *testing.M) {
 			AlchemyAPIkeyStr: os.Getenv("GF_ALCHEMY_SERVICE_ACC__API_KEY"),
 		}
 
-		InitService(keyServer,
+		InitService(authSubsystemTypeStr,
+			keyServer,
 			HTTPmux,
 			config,
 			jobsMngr,
