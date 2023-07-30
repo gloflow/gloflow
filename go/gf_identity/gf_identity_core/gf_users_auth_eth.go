@@ -50,7 +50,7 @@ type GFethOutputLogin struct {
 
 // io_create
 type GFethInputCreate struct {
-	UserTypeStr       string                            `validate:"required"` // "admin" | "standard"
+	UserTypeStr       string           `validate:"required"` // "admin" | "standard"
 	UserAddressETHstr GFuserAddressETH `validate:"required,eth_addr"`
 	AuthSignatureStr  GFauthSignature  `validate:"required,len=132"` // singature length with "0x"
 }

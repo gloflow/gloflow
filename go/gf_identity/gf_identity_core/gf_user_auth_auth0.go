@@ -105,6 +105,23 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 	// user doesnt exist in the GF DB
 	if !existsBool {
 
+		creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+
+		user := &GFuser{
+			Vstr:              "0",
+			IDstr:             auth0userID,
+			CreationUNIXtimeF: creationUNIXtimeF,
+			UserTypeStr:       "standard",
+		}
+	
+		//------------------------
+		// DB
+		gfErr = dbUserCreate(user, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+	
+		//------------------------
 	}
 
 	return nil
