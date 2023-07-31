@@ -75,6 +75,44 @@ func initHandlers(pAuthLoginURLstr string,
 	}
 
 	//---------------------
+	// USERS_GET_ME
+	// AUTH
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/me",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+			if pReq.Method == "GET" {
+
+				//---------------------
+				// INPUT
+
+				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
+				input := &gf_identity_core.GFuserInputGet{
+					UserIDstr: userIDstr,
+				}
+
+				//---------------------
+
+				output, gfErr := gf_identity_core.UsersPipelineGet(input, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				outputMap := map[string]interface{}{
+					"user_name_str":         output.UserNameStr,
+					"email_str":             output.EmailStr,
+					"description_str":       output.DescriptionStr,
+					"profile_image_url_str": output.ProfileImageURLstr,
+					"banner_image_url_str":  output.BannerImageURLstr,
+				}
+				return outputMap, nil
+			}
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
+		
+	//---------------------
 	// POLICY
 	//---------------------
 	// POLICY_UPDATE
@@ -373,44 +411,6 @@ func initHandlers(pAuthLoginURLstr string,
 				}
 
 				outputMap := map[string]interface{}{}
-				return outputMap, nil
-			}
-			return nil, nil
-		},
-		rpcHandlerRuntime,
-		pRuntimeSys)
-
-	//---------------------
-	// USERS_GET_ME
-	// AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/me",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
-
-			if pReq.Method == "GET" {
-
-				//---------------------
-				// INPUT
-
-				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
-
-				input := &gf_identity_core.GFuserInputGet{
-					UserIDstr: userIDstr,
-				}
-
-				//---------------------
-
-				output, gfErr := gf_identity_core.UsersPipelineGet(input, pCtx, pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr
-				}
-
-				outputMap := map[string]interface{}{
-					"user_name_str":         output.UserNameStr,
-					"email_str":             output.EmailStr,
-					"description_str":       output.DescriptionStr,
-					"profile_image_url_str": output.ProfileImageURLstr,
-					"banner_image_url_str":  output.BannerImageURLstr,
-				}
 				return outputMap, nil
 			}
 			return nil, nil

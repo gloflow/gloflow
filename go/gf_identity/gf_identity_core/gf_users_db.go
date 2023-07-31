@@ -73,7 +73,7 @@ func dbAuth0createNewSession(pAuth0session *GFauth0session,
 //---------------------------------------------------
 // GET_SESSION
 
-func dbAuth0GetSession(pGFsessionIDstr gf_core.GF_ID,
+func dbAuth0getSession(pGFsessionIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFauth0session, *gf_core.GFerror) {
 
@@ -104,7 +104,7 @@ func dbAuth0GetSession(pGFsessionIDstr gf_core.GF_ID,
 //---------------------------------------------------
 // UPDATE_SESSION
 
-func dbAuth0UpdateSession(pGFsessionIDstr gf_core.GF_ID,
+func dbAuth0updateSession(pGFsessionIDstr gf_core.GF_ID,
 	pLoginCompleteBool bool,
 	pAuth0profileMap   map[string]interface{},
 	pCtx               context.Context,
@@ -427,8 +427,6 @@ func DBuserExistsByUsername(pUserNameStr GFuserName,
 	return false, nil
 }
 
-//---------------------------------------------------
-// 
 //---------------------------------------------------
 // EXISTS_BY_ETH_ADDR
 

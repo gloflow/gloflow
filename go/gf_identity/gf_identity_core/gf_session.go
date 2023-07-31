@@ -57,6 +57,8 @@ func SessionValidate(pReq *http.Request,
 			return false, "", nil
 		}
 
+		//---------------------
+
 		// KEY_SERVER
 		publicKey, gfErr := KSclientJWTgetValidationKey(GF_AUTH_SUBSYSTEM_TYPE__AUTH0,
 			pKeyServerInfo,
@@ -65,25 +67,12 @@ func SessionValidate(pReq *http.Request,
 			return false, "", gfErr
 		}
 		
-		gfErr = gf_auth0.JWTvalidateToken(auth0JWTtokenStr, publicKey, pRuntimeSys)
+		userIdentifierFromJWTstr, gfErr := gf_auth0.JWTvalidateToken(auth0JWTtokenStr, publicKey, pRuntimeSys)
 		if gfErr != nil {
 			return false, "", gfErr
 		}
 
-		//---------------------
-
-		/*
-		sessionIDstr := gf_core.GF_ID(sessionDataStr)
-
-		validBool, gfErr := Auth0validateSession(sessionIDstr, pCtx, pRuntimeSys)
-		if gfErr != nil {
-			return false, "", gfErr
-		}
-
-		if !validBool {
-			return false, "", nil
-		}
-		*/
+		userIdentifierStr = userIdentifierFromJWTstr
 
 	//---------------------
 	// USERPASS
@@ -107,7 +96,7 @@ func SessionValidate(pReq *http.Request,
 		//---------------------
 
 		// JWT_VALIDATE
-		JWTuserIdentifierStr, gfErr := JWTpipelineValidate(GFjwtTokenVal(JWTtokenValStr),
+		userIdentifierFromJWTstr, gfErr := JWTpipelineValidate(GFjwtTokenVal(JWTtokenValStr),
 			pAuthSubsystemTypeStr,
 			pKeyServerInfo,
 			pCtx,
@@ -116,7 +105,7 @@ func SessionValidate(pReq *http.Request,
 			return false, "", gfErr
 		}
 
-		userIdentifierStr = JWTuserIdentifierStr
+		userIdentifierStr = userIdentifierFromJWTstr
 
 	//---------------------
 	}

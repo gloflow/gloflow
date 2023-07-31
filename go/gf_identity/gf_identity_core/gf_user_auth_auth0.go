@@ -180,7 +180,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	// created in the previously called login handler, and that a login with that session 
 	// has not already been completed
 
-	auth0session, gfErr := dbAuth0GetSession(sessionIDstr,
+	auth0session, gfErr := dbAuth0getSession(sessionIDstr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -350,7 +350,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	// cant be invoked again
 	loginCompleteBool := true
 
-	gfErr = dbAuth0UpdateSession(sessionIDstr,
+	gfErr = dbAuth0updateSession(sessionIDstr,
 		loginCompleteBool,
 
 		//---------------

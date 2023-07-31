@@ -28,6 +28,8 @@ import (
 )
 
 //---------------------------------------------------
+// COOKIES
+//---------------------------------------------------
 
 func CreateSessionIDcookie(pSessionDataStr string,
 	pResp http.ResponseWriter) {
@@ -42,6 +44,8 @@ func CreateSessionIDcookie(pSessionDataStr string,
 		sessionTTLhoursInt)
 }
 
+//---------------------------------------------------
+
 func CreateAuthCookie(pJWTtokenStr string,
 	pResp http.ResponseWriter) {
 
@@ -53,9 +57,10 @@ func CreateAuthCookie(pJWTtokenStr string,
 		cookieDataStr,
 		pResp,
 		sessionTTLhoursInt)
-
 }
 
+//---------------------------------------------------
+// VALIDATION
 //---------------------------------------------------
 
 func ValidateOrRedirectToLogin(pReq *http.Request,

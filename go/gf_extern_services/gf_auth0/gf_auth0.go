@@ -369,7 +369,7 @@ func JWTgetTokenFromRequest(pReq *http.Request) (string, error) {
 // key is valid.
 func JWTvalidateToken(pTokenStr string,
 	pPubKey     *rsa.PublicKey,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
     token, err := jwt.Parse(pTokenStr, func(pToken *jwt.Token) (interface{}, error) {
 
@@ -391,7 +391,7 @@ func JWTvalidateToken(pTokenStr string,
 			},
 			err, "gf_auth0", pRuntimeSys)
 
-        return gfErr
+        return "", gfErr
     }
 
 	//---------------------------
@@ -403,10 +403,13 @@ func JWTvalidateToken(pTokenStr string,
 				"jwt_token_val_str": pTokenStr,
 			},
 			err, "gf_auth0", pRuntimeSys)
-		return gfErr
+		return "", gfErr
     }
 
 	//---------------------------
 
-    return nil
+	userIdentifierClaimStr := token.Claims.(jwt.MapClaims)["sub"].(string)
+	userIdentifierStr := userIdentifierClaimStr
+
+    return userIdentifierStr, nil
 }
