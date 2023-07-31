@@ -139,7 +139,15 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			authRedirectOnFailBool,
 			ctx,
 			pRuntimeSys)
-
+		
+		pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> session validation...`,
+			map[string]interface{}{
+				"path_str":            pathStr,
+				"valid_bool":          validBool,
+				"user_identifier_str": userIdentifierStr,
+				"auth_redirect_on_failure_bool": authRedirectOnFailBool,
+			})
+			
 		if gfErr != nil {
 			ErrorInHandler(pathStr,
 				fmt.Sprintf("handler %s failed to execute/validate a auth session", pathStr),
@@ -155,7 +163,8 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 				pHandlerRuntime.Metrics.HandlersAuthSessionInvalidCounter.Inc()
 			}
 
-			// if a login_url is not defined then return error, otherwise redirect to this login_url   
+			// if a login_url is not defined then return error, otherwise redirect to this login_url,
+			// which happens in ValidateOrRedirectToLogin()
 			if pHandlerRuntime.AuthLoginURLstr == "" {
 				ErrorInHandler(pathStr,
 					fmt.Sprintf("user not authenticated to access handler %s", pathStr),

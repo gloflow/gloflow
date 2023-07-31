@@ -53,15 +53,31 @@ type Gf_http_fetch struct {
 //---------------------------------------------------
 
 func HTTPgetCookieFromReq(pCookieNameStr string,
-	pReq *http.Request) (bool, string) {
+	pReq        *http.Request,
+	pRuntimeSys *RuntimeSys) (bool, string) {
+
+	pRuntimeSys.LogNewFun("DEBUG", `cookies in request...`,
+		HTTPgetAllCookies(pReq))
 
 	for _, cookie := range pReq.Cookies() {
 		if (cookie.Name == pCookieNameStr) {
-			sessionDataStr := cookie.Value
-			return true, sessionDataStr
+			dataStr := cookie.Value
+			return true, dataStr
 		}
 	}
 	return false, ""
+}
+
+//---------------------------------------------------
+
+func HTTPgetAllCookies(pReq *http.Request) map[string]interface{} {
+
+	cookies := pReq.Cookies()
+	cookiesMap := map[string]interface{}{}
+	for _, cookie := range cookies {
+		cookiesMap[cookie.Name] = cookie.Value
+	}
+	return cookiesMap
 }
 
 //---------------------------------------------------

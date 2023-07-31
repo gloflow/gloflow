@@ -196,6 +196,9 @@ func errorGetDefs() map[string]ErrorDef {
 		"http_client_gf_status_error": ErrorDef{
 			DescrStr:"http_client received a non-OK GF error",
 		},
+		"http_cookie": ErrorDef{
+			DescrStr:"failed to handle a http cookie",
+		},
 		
 		//---------------
 		// WEBSOCKETS
