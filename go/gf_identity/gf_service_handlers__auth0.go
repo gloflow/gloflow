@@ -167,7 +167,19 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			//------------------
 			// HTTP_REDIRECT - redirect user to logged in page
 			
-			homeUrlStr := "/v1/home/view"
+			/*
+			IMPORTANT!! - currently in the Auth0 login_callback, once all login initialization is complete,
+						the client is redirected to the login_page with a QS arg "login_success" set to 1.
+						this indicates to the login page that it should not initialize into its standard login state,
+						but instead should indicate to the user that login has succeeded and then via JS
+						(with a time delay) redirect to Home.
+						this is needed to handle a race condition where if user was redirected to home via a
+						server redirect (HTTP 3xx response) the browser wouldnt have time to set the needed
+						auth cookies that are necessary for the Home handler to authenticate.
+						the recommended solution for this is to do the redirection via client/JS code with a slight
+						time delay, giving the browser time to set the cookies.
+			*/
+			homeUrlStr := "/v1/identity/login_ui?login_success=1"
 			http.Redirect(pResp,
 				pReq,
 				homeUrlStr,
