@@ -113,7 +113,10 @@ func HTTPsetCookieOnReq(pCookieNameStr string,
 		//         set for in case the GF services and API endpoints are spread
 		//         across multiple domains.
 		// Domain: "", 
-		
+
+		// force cookie to only be accessible over HTTPS connections
+		Secure: true,
+
 		// IMPORTANT!! - make cookie http_only, disabling browser js context
 		//               from being able to read its value
 		HttpOnly: true,
