@@ -67,7 +67,7 @@ function init(p_log_fun) {
     
 
 
-	const parent_node = $("#right_section")[0];
+	const parent_node = $("#welcome")[0];
 	const home_url_str = urls_map["home"];
 
 	gf_identity.init_me_control(parent_node,
