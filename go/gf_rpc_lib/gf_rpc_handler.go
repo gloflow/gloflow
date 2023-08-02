@@ -146,6 +146,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 				"valid_bool":          validBool,
 				"user_identifier_str": userIdentifierStr,
 				"auth_redirect_on_failure_bool": authRedirectOnFailBool,
+				"auth_method_str":               pHandlerRuntime.AuthSubsystemTypeStr,
 			})
 			
 		if gfErr != nil {

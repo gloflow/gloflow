@@ -117,12 +117,8 @@ func jwtGenerate(pUserIdentifierStr string,
 		"iat": int(creationUNIXtimeF), // issued_at
 		"iss": issuerStr,              // issuer
 		"nbf": int(creationUNIXtimeF), // not_before
-		"sub": "",                     // subject
+		"sub": pUserIdentifierStr,     // subject
 
-		//----------------------
-		// GF claims
-		"user_identifier_str": pUserIdentifierStr,
-		
 		//----------------------
 	}
 	
@@ -234,10 +230,10 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 	
 	var userIdentifierStr string
 
-	if userIdentifierClaimStr, ok := jwtToken.Claims.(jwt.MapClaims)["user_identifier_str"]; ok {
+	if userIdentifierClaimStr, ok := jwtToken.Claims.(jwt.MapClaims)["sub"]; ok {
 		userIdentifierStr = userIdentifierClaimStr.(string)
 	} else {
-		gfErr := gf_core.ErrorCreate("validated JWT token is missing an expected 'user_identifier_str' claim",
+		gfErr := gf_core.ErrorCreate("validated JWT token is missing an expected 'sub' claim",
 			"crypto_jwt_verify_token_error",
 			map[string]interface{}{
 				"jwt_token_val_str": pJWTtokenVal,
