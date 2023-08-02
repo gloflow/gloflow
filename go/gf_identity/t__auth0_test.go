@@ -57,39 +57,3 @@ func TestAuth0(pTest *testing.T) {
 
 
 }
-
-//-------------------------------------------------
-
-/*
-func TestAuth0Login(pTest *testing.T) {
-	fmt.Println(" TEST__IDENTITY_AUTH0_LOGIN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
-	serviceNameStr := "gf_identity_test"
-	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
-	runtimeSys := Tinit(serviceNameStr, mongoHostStr)
-
-
-
-	authSubsystemTypeStr := "auth0"
-	portInt := 2000
-	TestStartService(authSubsystemTypeStr, portInt, runtimeSys)
-
-
-
-
-
-	HTTPagent   := gorequest.New()
-
-
-
-
-
-	urlStr := "/v1/identity/auth0/login"
-	_, bodyStr, errs := HTTPagent.Get(urlStr).
-		End()
-	if (len(errs) > 0) {
-		runtimeSys.LogNewFun("DEBUG", "eth preflight HTTP failed", map[string]interface{}{"errs": errs,})
-		pTest.FailNow()
-	}
-}
-*/

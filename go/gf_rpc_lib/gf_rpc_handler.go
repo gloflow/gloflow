@@ -164,11 +164,12 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 				pHandlerRuntime.Metrics.HandlersAuthSessionInvalidCounter.Inc()
 			}
 
-			// if a login_url is not defined then return error, otherwise redirect to this login_url,
-			// which happens in ValidateOrRedirectToLogin()
-			if pHandlerRuntime.AuthLoginURLstr == "" {
+			// if no redirection of auth failure is specified (which happens in ValidateOrRedirectToLogin())
+			// return an error
+			if !authRedirectOnFailBool {
+				msgStr := "unauthorized access"
 				ErrorInHandler(pathStr,
-					fmt.Sprintf("user not authenticated to access handler %s", pathStr),
+					msgStr,
 					nil, pResp, pRuntimeSys)
 			}
 			return nil

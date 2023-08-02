@@ -157,7 +157,8 @@ func testUserHTTPupdate(pTest *testing.T,
 	fmt.Println("====================================")
 	fmt.Println("test user UPDATE")
 
-	urlStr := fmt.Sprintf("http://localhost:%d/v1/identity/update", pTestPortInt)
+	// auth_r=0 - this is a auth-ed call, but API only, so dont redirect on failure to auth
+	urlStr := fmt.Sprintf("http://localhost:%d/v1/identity/update?auth_r=0", pTestPortInt)
 	dataMap := map[string]string{
 		"user_name_str":   "new username",
 		"email_str":       "ivan@gloflow.com",
@@ -191,7 +192,8 @@ func testUserHTTPgetMe(pTest *testing.T,
 	pHTTPagent   *gorequest.SuperAgent,
 	pTestPortInt int) {
 
-	urlStr := fmt.Sprintf("http://localhost:%d/v1/identity/me", pTestPortInt)
+	// auth_r=0 - this is a auth-ed call, but API only, so dont redirect on failure to auth
+	urlStr := fmt.Sprintf("http://localhost:%d/v1/identity/me?auth_r=0", pTestPortInt)
 	_, bodyStr, errs := pHTTPagent.Get(urlStr).
 		End()
 

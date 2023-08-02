@@ -88,7 +88,8 @@ func TesUsersHTTPuserpass(pTest *testing.T) {
 	fmt.Println("====================================")
 	fmt.Println("test user UPDATE")
 
-	urlStr := fmt.Sprintf("http://localhost:%d/v1/identity/update", testPortInt)
+	// FIX!! - use testUserHTTPupdate() for this instead of calling endpoint explicitly.
+	urlStr := fmt.Sprintf("http://localhost:%d/v1/identity/update?auth_r=0", testPortInt)
 	data_map := map[string]string{
 		"user_name_str":   "ivan_t_new",
 		"email_str":       "ivan_t_new@gloflow.com",
@@ -120,7 +121,8 @@ func TesUsersHTTPuserpass(pTest *testing.T) {
 	fmt.Println("====================================")
 	fmt.Println("test user GET ME")
 	
-	urlStr = fmt.Sprintf("http://localhost:%d/v1/identity/me", testPortInt)
+	// FIX!! - use testUserHTTPgetMe()
+	urlStr = fmt.Sprintf("http://localhost:%d/v1/identity/me?auth_r=0", testPortInt)
 	_, bodyStr, errs = HTTPagent.Get(urlStr).
 		End()
 

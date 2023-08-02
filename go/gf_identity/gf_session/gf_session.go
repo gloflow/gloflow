@@ -79,18 +79,15 @@ func ValidateOrRedirectToLogin(pReq *http.Request,
 		pRuntimeSys)
 
 	//---------------------------------------------------
-	redirectFun := func() {
-		if pAuthRedirectOnFailBool && pAuthLoginURLstr != nil {
-			
-			//-------------------------
-			// HTTP_REDIRECT - redirect user to login url
-			http.Redirect(pResp,
-				pReq,
-				*pAuthLoginURLstr,
-				301)
-			
-			//-------------------------
-		}
+	redirectFun := func() {			
+		//-------------------------
+		// HTTP_REDIRECT - redirect user to login url
+		http.Redirect(pResp,
+			pReq,
+			*pAuthLoginURLstr,
+			301)
+		
+		//-------------------------
 	}
 
 	//---------------------------------------------------
@@ -100,15 +97,19 @@ func ValidateOrRedirectToLogin(pReq *http.Request,
 		// if the JWT supplied by the user to auth is invalid,
 		// redirect the user to the login page so that they can auth.
 		if gfErr.Type_str == "crypto_jwt_verify_token_error" {
-			redirectFun()			
+			if pAuthRedirectOnFailBool && pAuthLoginURLstr != nil {
+				redirectFun()
+			}
 		}
 
 		return false, "", gfErr
 	}
 
 	if !validBool {
+		if pAuthRedirectOnFailBool && pAuthLoginURLstr != nil {
+			redirectFun()
+		}
 
-		redirectFun()
 		return false, "", nil
 	}
 
