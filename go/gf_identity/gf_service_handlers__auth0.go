@@ -130,12 +130,12 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			// state is base64 encoded session_id, so it needs to be decoded and casted into an GF_ID 
 			auth0providedStateBase64str := qsMap["state"][0]
 			auth0providedStateStr, _    := base64.StdEncoding.DecodeString(auth0providedStateBase64str)
-			gfSessionIDstr              := gf_core.GF_ID(auth0providedStateStr)
+			sessionID                := gf_core.GF_ID(auth0providedStateStr)
 			
 			//------------------
 			input := &gf_identity_core.GFauth0inputLoginCallback{
 				CodeStr:           codeStr,
-				GFsessionIDstr:    gfSessionIDstr,
+				SessionID:         sessionID,
 				Auth0appDomainStr: pConfig.Auth0domainStr,
 			}
 
@@ -152,14 +152,11 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				return nil, gfErr
 			}
 
-			sessionIDstr := output.SessionIDstr
-
 			//---------------------
 			// COOKIES 
 			
 			// SESSION_ID - sets gf_sess cookie
-			sessionDataStr := string(sessionIDstr)
-			gf_session.CreateSessionIDcookie(sessionDataStr, pResp)
+			gf_session.CreateSessionIDcookie(string(sessionID), pResp)
 
 			// JWT - sets "Authorization" cookie
 			gf_session.CreateAuthCookie(output.JWTtokenStr, pResp)

@@ -50,12 +50,11 @@ type GFauth0session struct {
 
 type GFauth0inputLoginCallback struct {
 	CodeStr           string
-	GFsessionIDstr    gf_core.GF_ID
+	SessionID         gf_core.GF_ID
 	Auth0appDomainStr string
 }
 type GFauth0outputLoginCallback struct {
-	SessionIDstr gf_core.GF_ID
-	JWTtokenStr  string     
+	JWTtokenStr string     
 }
 
 //---------------------------------------------------
@@ -135,13 +134,13 @@ func Auth0loginPipeline(pCtx context.Context,
 
 	//---------------------
 	// SESSION_ID
-	sessionIDstr := generateSessionID()
+	sessionID := generateSessionID()
 	
 	//---------------------
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 	auth0session := &GFauth0session{
-		IDstr:             sessionIDstr,
+		IDstr:             sessionID,
 		CreationUNIXtimeF: creationUNIXtimeF,
 
 		// indicate if the user already passed the initial login process,
@@ -161,7 +160,7 @@ func Auth0loginPipeline(pCtx context.Context,
 
 	//---------------------
 
-	return sessionIDstr, nil
+	return sessionID, nil
 }
 
 //---------------------------------------------------
@@ -172,7 +171,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) (*GFauth0outputLoginCallback, *gf_core.GFerror) {
 	
-	sessionIDstr := pInput.GFsessionIDstr
+	sessionID := pInput.SessionID
 
 	//---------------------
 	// DB_GET_SESSION
@@ -180,7 +179,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	// created in the previously called login handler, and that a login with that session 
 	// has not already been completed
 
-	auth0session, gfErr := dbAuth0getSession(sessionIDstr,
+	auth0session, gfErr := dbAuth0getSession(sessionID,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -350,7 +349,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	// cant be invoked again
 	loginCompleteBool := true
 
-	gfErr = dbAuth0updateSession(sessionIDstr,
+	gfErr = dbAuth0updateSession(sessionID,
 		loginCompleteBool,
 
 		//---------------
@@ -368,8 +367,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	//---------------------
 
 	output := &GFauth0outputLoginCallback{
-		SessionIDstr: sessionIDstr,
-		JWTtokenStr:  JWTtokenStr,
+		JWTtokenStr: JWTtokenStr,
 	}
 	return output, nil
 }

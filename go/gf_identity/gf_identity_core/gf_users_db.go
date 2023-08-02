@@ -73,7 +73,7 @@ func dbAuth0createNewSession(pAuth0session *GFauth0session,
 //---------------------------------------------------
 // GET_SESSION
 
-func dbAuth0getSession(pGFsessionIDstr gf_core.GF_ID,
+func dbAuth0getSession(pGFsessionID gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFauth0session, *gf_core.GFerror) {
 
@@ -83,7 +83,7 @@ func dbAuth0getSession(pGFsessionIDstr gf_core.GF_ID,
 	collNameStr := "gf_auth0_session"
 
 	err := pRuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx, bson.M{
-			"id_str":       pGFsessionIDstr,
+			"id_str":       pGFsessionID,
 			"deleted_bool": false,
 		},
 		findOpts).Decode(&session)
@@ -92,7 +92,7 @@ func dbAuth0getSession(pGFsessionIDstr gf_core.GF_ID,
 		gfErr := gf_core.MongoHandleError("failed to find Auth0 session by ID in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
-				"auth0_session_id_str": pGFsessionIDstr,
+				"auth0_session_id_str": pGFsessionID,
 			},
 			err, "gf_identity", pRuntimeSys)
 		return nil, gfErr

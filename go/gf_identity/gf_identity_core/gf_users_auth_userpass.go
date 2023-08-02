@@ -49,6 +49,7 @@ type GFuserpassOutputLogin struct {
 	PassValidBool      bool
 	UserIDstr          gf_core.GF_ID 
 	JWTtokenVal        GFjwtTokenVal
+	SessionID          gf_core.GF_ID
 }
 
 // io_login_finalize
@@ -64,9 +65,9 @@ type GFuserpassOutputLoginFinalize struct {
 // io_create
 type GFuserpassInputCreate struct {
 	UserNameStr GFuserName `validate:"required,min=3,max=50"`
-	PassStr     string                      `validate:"required,min=8,max=50"`
-	EmailStr    string                      `validate:"required,email"`
-	UserTypeStr string                      `validate:"required"` // "admin"|"standard"
+	PassStr     string     `validate:"required,min=8,max=50"`
+	EmailStr    string     `validate:"required,email"`
+	UserTypeStr string     `validate:"required"` // "admin"|"standard"
 }
 type GFserpassOutputCreateRegular struct {
 	UserExistsBool       bool
@@ -97,6 +98,11 @@ func UserpassPipelineLogin(pInput *GFuserpassInputLogin,
 	//------------------------
 
 	output := &GFuserpassOutputLogin{}
+
+	//------------------------
+	// SESSION_ID
+	sessionID := generateSessionID()
+	output.SessionID = sessionID
 
 	//------------------------
 	// VERIFY

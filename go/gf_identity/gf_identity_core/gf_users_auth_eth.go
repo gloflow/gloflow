@@ -45,7 +45,8 @@ type GFethOutputLogin struct {
 	NonceExistsBool        bool
 	AuthSignatureValidBool bool
 	JWTtokenVal            GFjwtTokenVal
-	UserIDstr              gf_core.GF_ID 
+	UserIDstr              gf_core.GF_ID
+	SessionID              gf_core.GF_ID
 }
 
 // io_create
@@ -136,6 +137,11 @@ func ETHpipelineLogin(pInput *GFethInputLogin,
 	//------------------------
 
 	output := &GFethOutputLogin{}
+
+	//------------------------
+	// SESSION_ID
+	sessionID := generateSessionID()
+	output.SessionID = sessionID
 
 	//------------------------
 	userNonceVal, userNonceExistsBool, gfErr := dbNonceGet(pInput.UserAddressETHstr,
