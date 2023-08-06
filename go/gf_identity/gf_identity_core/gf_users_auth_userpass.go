@@ -305,9 +305,9 @@ func UserpassPipelineCreateRegular(pInput *GFuserpassInputCreate,
 	// EVENT
 	if pServiceInfo.EnableEventsAppBool {
 		eventMeta := map[string]interface{}{
-			"user_id_str":     output.UserIDstr,
-			"user_name_str":   pInput.UserNameStr,
-			"domain_base_str": pServiceInfo.DomainBaseStr,
+			"user_id":     output.UserIDstr,
+			"user_name":   pInput.UserNameStr,
+			"domain_base": pServiceInfo.DomainBaseStr,
 		}
 		gf_events.EmitApp(GF_EVENT_APP__USER_CREATE_REGULAR,
 			eventMeta,

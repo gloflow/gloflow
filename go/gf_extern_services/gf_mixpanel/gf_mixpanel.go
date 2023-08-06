@@ -27,6 +27,7 @@ import (
 )
 
 //-------------------------------------------------------------
+
 type GFmixpanelInfo struct {
 	Username_str   string
 	Secret_str     string
@@ -34,6 +35,7 @@ type GFmixpanelInfo struct {
 }
 
 //-------------------------------------------------------------
+
 func Event_send(pEventTypeStr string,
 	pEventMetaMap map[string]interface{},
 	pInfo         *GFmixpanelInfo,

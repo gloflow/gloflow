@@ -229,8 +229,8 @@ func AdminPipelineUserAddToInviteList(pInput *GFadminInputAddToInviteList,
 		}
 
 		eventMetaMap := map[string]interface{}{
-			"user_id_str":                pInput.AdminUserIDstr,
-			"user_name_str":              adminUserNameStr,
+			"user_id":                    pInput.AdminUserIDstr,
+			"user_name":                  adminUserNameStr,
 			"email_added_to_invite_list": pInput.EmailStr,
 		}
 		gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_ADDED_USER_TO_INVITE_LIST,
@@ -273,8 +273,8 @@ func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListIn
 		}
 
 		eventMetaMap := map[string]interface{}{
-			"user_id_str":                pInput.AdminUserIDstr,
-			"user_name_str":              adminUserNameStr,
+			"user_id":                    pInput.AdminUserIDstr,
+			"user_name":                  adminUserNameStr,
 			"email_added_to_invite_list": pInput.EmailStr,
 		}
 		gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_REMOVED_USER_FROM_INVITE_LIST,
@@ -437,9 +437,9 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 			// EVENT
 			if pServiceInfo.EnableEventsAppBool {
 				eventMeta := map[string]interface{}{
-					"user_id_str":     userID,
-					"user_name_str":   pInput.UserNameStr,
-					"domain_base_str": pServiceInfo.DomainBaseStr,
+					"user_id":     userID,
+					"user_name":   pInput.UserNameStr,
+					"domain_base": pServiceInfo.DomainBaseStr,
 				}
 				gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_LOGIN_PASS_CONFIRMED,
 					eventMeta,
@@ -469,9 +469,9 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 			// EVENT
 			if pServiceInfo.EnableEventsAppBool {
 				eventMeta := map[string]interface{}{
-					"user_id_str":     userID,
-					"user_name_str":   pInput.UserNameStr,
-					"domain_base_str": pServiceInfo.DomainBaseStr,
+					"user_id":     userID,
+					"user_name":   pInput.UserNameStr,
+					"domain_base": pServiceInfo.DomainBaseStr,
 				}
 				gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_LOGIN_EMAIL_VERIFICATION_SENT,
 					eventMeta,
@@ -508,10 +508,10 @@ func adminPipelineCreateAdmin(pInput *gf_identity_core.GFuserpassInputCreate,
 	// EVENT
 	if pServiceInfo.EnableEventsAppBool {
 		eventMeta := map[string]interface{}{
-			"user_id_str":     output.UserIDstr,
-			"user_name_str":   pInput.UserNameStr,
-			"user_type_str":   pInput.UserTypeStr,
-			"domain_base_str": pServiceInfo.DomainBaseStr,
+			"user_id":     output.UserIDstr,
+			"user_name":   pInput.UserNameStr,
+			"user_type":   pInput.UserTypeStr,
+			"domain_base": pServiceInfo.DomainBaseStr,
 		}
 		gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_CREATE,
 			eventMeta,
