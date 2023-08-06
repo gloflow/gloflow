@@ -24,6 +24,7 @@ import (
 	"testing"
 	"encoding/json"
 	"strings"
+	"net/http"
 	"github.com/stretchr/testify/assert"
 	"github.com/parnurzeal/gorequest"
 	"github.com/davecgh/go-spew/spew"
@@ -151,6 +152,7 @@ func TestUserHTTPlogin(pTestUserNameStr string,
 //-------------------------------------------------
 
 func testUserHTTPupdate(pTest *testing.T,
+	pCookiesLst  []*http.Cookie,
 	pHTTPagent   *gorequest.SuperAgent,
 	pTestPortInt int) {
 
@@ -167,6 +169,9 @@ func testUserHTTPupdate(pTest *testing.T,
 	dataBytesLst, _ := json.Marshal(dataMap)
 	_, bodyStr, errs := pHTTPagent.Post(urlStr).
 		Send(string(dataBytesLst)).
+
+		// IMPORTANT!! - auth info is in cookies
+		AddCookies(pCookiesLst).
 		End()
 
 	if len(errs) > 0 {
@@ -189,12 +194,16 @@ func testUserHTTPupdate(pTest *testing.T,
 // TEST_USER_GET_ME
 
 func testUserHTTPgetMe(pTest *testing.T,
+	pCookiesLst  []*http.Cookie,
 	pHTTPagent   *gorequest.SuperAgent,
 	pTestPortInt int) {
 
 	// auth_r=0 - this is a auth-ed call, but API only, so dont redirect on failure to auth
 	urlStr := fmt.Sprintf("http://localhost:%d/v1/identity/me?auth_r=0", pTestPortInt)
 	_, bodyStr, errs := pHTTPagent.Get(urlStr).
+
+		// IMPORTANT!! - auth info is in cookies
+		AddCookies(pCookiesLst).
 		End()
 
 	if len(errs) > 0 {

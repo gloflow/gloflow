@@ -25,6 +25,9 @@ import (
 	"context"
 	"strings"
 	"encoding/json"
+	"net/http"
+	// "net/http/cookiejar"
+	// "net/url"
 	"github.com/stretchr/testify/assert"
 	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -37,14 +40,33 @@ import (
 
 func TestUsersHTTPeth(pTest *testing.T) {
 
+
 	serviceNameStr := "gf_identity_test"
 	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	runtimeSys := Tinit(serviceNameStr, mongoHostStr)
 	runtimeSys.LogNewFun("INFO", "TEST_USERS_HTTP_ETH >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", nil)
 
-	testPortInt := 2000
-	HTTPagent   := gorequest.New()
 
+	//---------------------------------
+	// START_SERVICE
+	authSubsystemTypeStr := "eth"
+	portInt := 2001
+
+	templatesPathsMap := map[string]string {
+		"gf_login": "./../../web/src/gf_identity/templates/gf_login/gf_login.html",
+	}
+
+	TestStartService(authSubsystemTypeStr,
+		templatesPathsMap,
+		portInt,
+		runtimeSys)
+
+	testPortInt := portInt
+	
+	//---------------------------------
+
+	HTTPagent := gorequest.New()
+	
 	//---------------------------------
 	// GENERATE_WALLET
 	privateKeyHexStr, publicKeyHexStr, addressStr, err := gf_eth_core.EthGenerateKeys()
@@ -178,20 +200,36 @@ func TestUsersHTTPeth(pTest *testing.T) {
 	}
 
 	// check if the login response sets a cookie for all future auth requests
+	sessionIDcookiePresentBool := false
 	authCookiePresentBool := false
 	for k, v := range resp.Header {
 		if (k == "Set-Cookie") {
+
 			for _, vv := range v {
 				o := strings.Split(vv, "=")[0]
 				if o == "gf_sess" {
+					sessionIDcookiePresentBool = true
+				}
+				if o == "Authorization" {
 					authCookiePresentBool = true
 				}
 			}
 		}
 	}
-	assert.True(pTest, authCookiePresentBool,
-		"login response does not contain the expected 'gf_sess' cookie")
 
+	cookiesInRespLst := (*http.Response)(resp).Cookies()
+
+    // Print all of the current cookies
+    fmt.Println("RESPONSE COOKIES =====================================:")
+    for _, cookie := range cookiesInRespLst {
+        fmt.Printf("%s=%s\n", cookie.Name, cookie.Value)
+    }
+
+	assert.True(pTest, sessionIDcookiePresentBool,
+		"login response does not contain the expected 'gf_sess' cookie")
+	assert.True(pTest, authCookiePresentBool,
+		"login response does not contain the expected 'Authorization' cookie")
+	
 	bodyMap = map[string]interface{}{}
 	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
 		fmt.Println(err)
@@ -224,11 +262,11 @@ func TestUsersHTTPeth(pTest *testing.T) {
 
 	//---------------------------------
 	// TEST_USER_HTTP_UPDATE
-	testUserHTTPupdate(pTest, HTTPagent, testPortInt)
+	testUserHTTPupdate(pTest, cookiesInRespLst, HTTPagent, testPortInt)
 
 	//---------------------------------
 	// TEST_USER_HTTP_GET_ME
-	testUserHTTPgetMe(pTest, HTTPagent, testPortInt)
+	testUserHTTPgetMe(pTest, cookiesInRespLst, HTTPagent, testPortInt)
 
 	//---------------------------------
 }

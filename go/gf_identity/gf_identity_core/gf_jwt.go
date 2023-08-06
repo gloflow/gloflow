@@ -20,9 +20,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_core
 
 import (
-	// "fmt"
+	"fmt"
 	"time"
 	"context"
+	"strings"
+	"net/http"
 	"crypto/rsa"
 	"github.com/golang-jwt/jwt"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -129,7 +131,7 @@ func jwtGenerate(pUserIdentifierStr string,
 
 	//----------------------
 
-	jwtToken := jwt.NewWithClaims(jwt.GetSigningMethod("RS256"), jwt.MapClaims(claimsMap))
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims(claimsMap))
 
 	jwtTokenSignedStr, err := jwtToken.SignedString(pSigningKey)
 	if err != nil {
@@ -247,4 +249,45 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 	pRuntimeSys.LogNewFun("DEBUG", "validated JWT token", map[string]interface{}{"valid_bool": validBool,})
 
 	return validBool, userIdentifierStr, nil
+}
+
+//-------------------------------------------------------------
+
+// extract JWT token from a http request and return it as a string
+func JWTgetTokenFromRequest(pReq *http.Request,
+	pRuntimeSys *gf_core.RuntimeSys) (string, bool, *gf_core.GFerror) {
+	
+	// AUTHORIZATION_HEADER - set by a GF http handler /v1/identity/auth0/login_callback
+	//                        on successful completion of login at the end of the handler.
+	//                        this is the standard Oauth2 header symbol.
+
+	cookieNameStr := "Authorization"
+	cookieFoundBool, cookieValueStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq, pRuntimeSys)
+	
+	pRuntimeSys.LogNewFun("DEBUG", `auth0 Authorization cookie fetch attempt from incoming request...`,
+		map[string]interface{}{
+			"cookie_found_bool": cookieFoundBool,
+		})
+		
+    // authCookie, err := pReq.Cookie("Authorization")
+    if !cookieFoundBool {
+		return "", false, nil
+	}
+
+	authHeaderStr := cookieValueStr
+
+	// remove the "Bearer" header in the token
+    authPartsLst := strings.Split(authHeaderStr, " ")
+    if len(authPartsLst) != 2 || strings.ToLower(authPartsLst[0]) != "bearer" {
+		gfErr := gf_core.ErrorCreate("Authorization cookie is not in a valid format (not composed of 2 components, starting with 'Bearer ...')",
+			"http_cookie",
+			map[string]interface{}{
+				"path_str":        pReq.URL.Path,
+				"auth_header_str": authHeaderStr,
+			},
+			nil, "gf_auth0", pRuntimeSys)
+		return "", false, gfErr
+    }
+
+    return authPartsLst[1], true, nil
 }

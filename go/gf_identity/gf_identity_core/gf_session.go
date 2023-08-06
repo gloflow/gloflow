@@ -46,7 +46,7 @@ func SessionValidate(pReq *http.Request,
 
 		//---------------------
 		// JWT
-		auth0JWTtokenStr, foundBool, gfErr := gf_auth0.JWTgetTokenFromRequest(pReq, pRuntimeSys)
+		auth0JWTtokenStr, foundBool, gfErr := JWTgetTokenFromRequest(pReq, pRuntimeSys)
 		if gfErr != nil {
 			return false, "", gfErr
 		}
@@ -80,25 +80,25 @@ func SessionValidate(pReq *http.Request,
 	// USERPASS
 	case GF_AUTH_SUBSYSTEM_TYPE__USERPASS:
 		
-		cookieNameStr := "gf_sess"
-		cookieFoundBool, sessionDataStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq, pRuntimeSys)
+		//---------------------
+		// JWT
+		JWTtokenStr, foundBool, gfErr := JWTgetTokenFromRequest(pReq, pRuntimeSys)
+		if gfErr != nil {
+			return false, "", gfErr
+		}
 		
-		if !cookieFoundBool {
-
-			// gf_sess cookie was never found
+		if !foundBool {
+			
+			// IMPORTANT!! - return a false validity and not an error, since missing
+			//               JWT in request is not an ubnormal situation (an error), and 
+			//               it means that the user is not authenticated yet.
 			return false, "", nil
 		}
 
 		//---------------------
-		// JWT_TOKEN
-		// CHECK!! - make sure its actually the jwt_token value thats stored in the session_data,
-		//           and not the session_id
-		JWTtokenValStr := sessionDataStr
-
-		//---------------------
 
 		// JWT_VALIDATE
-		userIdentifierFromJWTstr, gfErr := JWTpipelineValidate(GFjwtTokenVal(JWTtokenValStr),
+		userIdentifierFromJWTstr, gfErr := JWTpipelineValidate(GFjwtTokenVal(JWTtokenStr),
 			pAuthSubsystemTypeStr,
 			pKeyServerInfo,
 			pCtx,

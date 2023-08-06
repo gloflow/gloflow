@@ -30,7 +30,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -105,7 +105,7 @@ func TestStartService(pAuthSubsystemTypeStr string,
 			EnableEmailBool: false,
 		}
 
-		spew.Dump(serviceInfo)
+		// spew.Dump(serviceInfo)
 		// spew.Dump(pRuntimeSys)
 
 		var gfErr *gf_core.GFerror

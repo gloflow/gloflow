@@ -25,7 +25,6 @@ import (
 	"context"
 	"crypto/rsa"
 	"net/http"
-	"strings"
 	"encoding/json"
 	"io/ioutil"
 	"gopkg.in/square/go-jose.v2"
@@ -330,49 +329,6 @@ func JWTgetPublicKeyForTenant(pConfig *GFconfig,
 		},
 		err, "gf_auth0", pRuntimeSys)
 	return "", nil, gfErr
-}
-
-//-------------------------------------------------------------
-
-// extract JWT token from a http request and return it as a string
-func JWTgetTokenFromRequest(pReq *http.Request,
-	pRuntimeSys *gf_core.RuntimeSys) (string, bool, *gf_core.GFerror) {
-	
-	
-
-	// AUTHORIZATION_HEADER - set by a GF http handler /v1/identity/auth0/login_callback
-	//                        on successful completion of login at the end of the handler.
-	//                        this is the standard Oauth2 header symbol.
-
-	cookieNameStr := "Authorization"
-	cookieFoundBool, cookieValueStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq, pRuntimeSys)
-	
-	pRuntimeSys.LogNewFun("DEBUG", `auth0 Authorization cookie fetch attempt from incoming request...`,
-		map[string]interface{}{
-			"cookie_found_bool": cookieFoundBool,
-		})
-		
-    // authCookie, err := pReq.Cookie("Authorization")
-    if !cookieFoundBool {
-		return "", false, nil
-	}
-
-	authHeaderStr := cookieValueStr
-
-	// remove the "Bearer" header in the token
-    authPartsLst := strings.Split(authHeaderStr, " ")
-    if len(authPartsLst) != 2 || strings.ToLower(authPartsLst[0]) != "bearer" {
-		gfErr := gf_core.ErrorCreate("Authorization cookie is not in a valid format (not composed of 2 components, starting with 'Bearer ...')",
-			"http_cookie",
-			map[string]interface{}{
-				"path_str":        pReq.URL.Path,
-				"auth_header_str": authHeaderStr,
-			},
-			nil, "gf_auth0", pRuntimeSys)
-		return "", false, gfErr
-    }
-
-    return authPartsLst[1], true, nil
 }
 
 //-------------------------------------------------------------

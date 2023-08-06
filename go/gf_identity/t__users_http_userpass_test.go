@@ -36,13 +36,31 @@ func TesUsersHTTPuserpass(pTest *testing.T) {
 
 	fmt.Println(" TEST_USERS_HTTP_USERPASS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	testPortInt := 2000
-	ctx         := context.Background()
+	ctx := context.Background()
 
 	serviceNameStr := "gf_identity_test"
 	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 
 	runtimeSys  := Tinit(serviceNameStr, mongoHostStr)
+
+	//---------------------------------
+	// START_SERVICE
+	authSubsystemTypeStr := "userpass"
+	portInt := 200
+
+	templatesPathsMap := map[string]string {
+		"gf_login": "./../../web/src/gf_identity/templates/gf_login/gf_login.html",
+	}
+
+	TestStartService(authSubsystemTypeStr,
+		templatesPathsMap,
+		portInt,
+		runtimeSys)
+
+	testPortInt := portInt
+
+	//---------------------------------
+
 	HTTPagent   := gorequest.New()
 
 	testUserNameStr := "ivan_t"
