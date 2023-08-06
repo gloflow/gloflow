@@ -96,11 +96,12 @@ func TestHomeViz(pTest *testing.T) {
 	
 	
 	// CREATE_AND_LOGIN_NEW_USER
-	gf_identity.TestCreateAndLoginNewUser(pTest,
+	cookiesInRespLst := gf_identity.TestUserpassCreateAndLoginNewUser(pTest,
 		HTTPagent,
 		testIdentityServicePortInt,
 		ctx,
 		runtimeSys)
+
 
 	/*//---------------------------------
 	// CLEANUP
@@ -137,6 +138,9 @@ func TestHomeViz(pTest *testing.T) {
 	fmt.Println("======== HOME_VIZ GET HTTP")
 	urlStr := fmt.Sprintf("http://localhost:%d/v1/home/viz/get", testPortInt)
 	_, bodyStr, errs := HTTPagent.Get(urlStr).
+
+		// IMPORTANT!! - auth info is in cookies
+		AddCookies(cookiesInRespLst).
 		End()
 
 	spew.Dump(bodyStr)
