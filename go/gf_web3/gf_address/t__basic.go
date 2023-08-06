@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"testing"
 	"encoding/json"
+	"net/http"
 	"github.com/parnurzeal/gorequest"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
@@ -33,6 +34,7 @@ import (
 func TaddAddress(pAddressStr string,
 	pTypeStr     string,
 	pChainStr    string,
+	pCookiesLst  []*http.Cookie,
 	pHTTPagent   *gorequest.SuperAgent,
 	pTestPortInt int,
 	pTest        *testing.T) {
@@ -53,6 +55,9 @@ func TaddAddress(pAddressStr string,
 
 	_, bodyStr, errs := pHTTPagent.Post(urlStr).
 		Send(string(dataBytesLst)).
+		
+		// IMPORTANT!! - auth info is in cookies
+		AddCookies(pCookiesLst).
 		End()
 
 
@@ -77,6 +82,7 @@ func TaddAddress(pAddressStr string,
 
 func TgetAllAddresses(pTypeStr string,
 	pChainStr    string,
+	pCookiesLst  []*http.Cookie,
 	pHTTPagent   *gorequest.SuperAgent,
 	pTestPortInt int,
 	pTest        *testing.T) {
@@ -94,6 +100,9 @@ func TgetAllAddresses(pTypeStr string,
 	
 
 	_, bodyStr, errs := pHTTPagent.Get(urlStr).
+		
+		// IMPORTANT!! - auth info is in cookies
+		AddCookies(pCookiesLst).
 		End()
 
 

@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"testing"
 	"encoding/json"
+	"net/http"
 	"github.com/parnurzeal/gorequest"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
@@ -30,8 +31,10 @@ import (
 )
 
 //-------------------------------------------------
+
 func TindexAddress(pAddressStr string,
 	pChainStr    string,
+	pCookiesLst  []*http.Cookie,
 	pHTTPagent   *gorequest.SuperAgent,
 	pTestPortInt int,
 	pTest        *testing.T) {
@@ -52,6 +55,9 @@ func TindexAddress(pAddressStr string,
 
 	_, bodyStr, errs := pHTTPagent.Post(urlStr).
 		Send(string(dataBytesLst)).
+
+		// IMPORTANT!! - auth info is in cookies
+		AddCookies(pCookiesLst).
 		End()
 
 	if (len(errs) > 0) {
@@ -68,17 +74,13 @@ func TindexAddress(pAddressStr string,
 	spew.Dump(bodyMap)
 
 	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "nft address indexing http request failed")
-	
-
-
-	// responseDataMap := bodyMap["data"].(map[string]interface{})
-
-
 }
 
 //-------------------------------------------------
+
 func TgetByOwner(pAddressStr string,
 	pChainStr    string,
+	pCookiesLst  []*http.Cookie,
 	pHTTPagent   *gorequest.SuperAgent,
 	pTestPortInt int,
 	pTest        *testing.T) {
@@ -97,6 +99,9 @@ func TgetByOwner(pAddressStr string,
 
 	_, bodyStr, errs := pHTTPagent.Post(urlStr).
 		Send(string(dataBytesLst)).
+
+		// IMPORTANT!! - auth info is in cookies
+		AddCookies(pCookiesLst).
 		End()
 
 	if (len(errs) > 0) {
@@ -119,6 +124,4 @@ func TgetByOwner(pAddressStr string,
 	responseDataMap := bodyMap["data"].(map[string]interface{})
 	nftsLst := responseDataMap["nfts_lst"].([]interface{})
 	assert.True(pTest, len(nftsLst) > 0, "list of nft's that were returned is empty")
-
-
 }

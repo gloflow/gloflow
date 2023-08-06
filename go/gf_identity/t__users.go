@@ -89,22 +89,26 @@ func TestUserHTTPcreate(pTestUserNameStr string,
 
 //-------------------------------------------------
 
-func TestUserHTTPlogin(pTestUserNameStr string,
+func TestUserHTTPuserpassLogin(pTestUserNameStr string,
 	pTestUserPassStr string,
 	pHTTPagent       *gorequest.SuperAgent,
 	pTestPortInt     int,
-	pTest            *testing.T) {
+	pTest            *testing.T) []*http.Cookie {
 
 
 	fmt.Println("====================================")
 	fmt.Println("test user LOGIN USERPASS")
 
-	urlStr  := fmt.Sprintf("http://localhost:%d/v1/identity/userpass/login", pTestPortInt)
+	urlStr := fmt.Sprintf("http://localhost:%d/v1/identity/userpass/login",
+		pTestPortInt)
+
 	dataMap := map[string]string{
 		"user_name_str": pTestUserNameStr,
 		"pass_str":      pTestUserPassStr,
 	}
+	
 	dataBytesLst, _ := json.Marshal(dataMap)
+
 	resp, bodyStr, errs := pHTTPagent.Post(urlStr).
 		Send(string(dataBytesLst)).
 		End()
@@ -114,20 +118,39 @@ func TestUserHTTPlogin(pTestUserNameStr string,
 		pTest.FailNow()
 	}
 
+	//-----------------------------------
+	// COOKIES
 	// check if the login response sets a cookie for all future auth requests
+	sessionIDcookiePresentBool := false
 	authCookiePresentBool := false
 	for k, v := range resp.Header {
 		if (k == "Set-Cookie") {
+
 			for _, vv := range v {
 				o := strings.Split(vv, "=")[0]
 				if o == "gf_sess" {
+					sessionIDcookiePresentBool = true
+				}
+				if o == "Authorization" {
 					authCookiePresentBool = true
 				}
 			}
 		}
 	}
-	assert.True(pTest, authCookiePresentBool,
+	cookiesInRespLst := (*http.Response)(resp).Cookies()
+
+    // Print all of the current cookies
+    fmt.Println("RESPONSE COOKIES =====================================:")
+    for _, cookie := range cookiesInRespLst {
+        fmt.Printf("%s=%s\n", cookie.Name, cookie.Value)
+    }
+
+	assert.True(pTest, sessionIDcookiePresentBool,
 		"login response does not contain the expected 'gf_sess' cookie")
+	assert.True(pTest, authCookiePresentBool,
+		"login response does not contain the expected 'Authorization' cookie")
+
+	//-----------------------------------
 
 	bodyMap := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
@@ -147,6 +170,8 @@ func TestUserHTTPlogin(pTestUserNameStr string,
 	fmt.Println("user_exists_bool", userExistsBool)
 	fmt.Println("pass_valid_bool",  passValidBool)
 	fmt.Println("user_id_str",      userIDstr)
+
+	return cookiesInRespLst
 }
 
 //-------------------------------------------------

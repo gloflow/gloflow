@@ -41,11 +41,11 @@ var cliArgsMap map[string]interface{}
 
 //-------------------------------------------------
 
-func TestCreateAndLoginNewUser(pTest *testing.T,
+func TestUserpassCreateAndLoginNewUser(pTest *testing.T,
 	pHTTPagent              *gorequest.SuperAgent,
 	pIdentityServicePortInt int,
 	pCtx                    context.Context,
-	pRuntimeSys             *gf_core.RuntimeSys) {
+	pRuntimeSys             *gf_core.RuntimeSys) []*http.Cookie {
 
 	testUserNameStr := "ivan_t"
 	testUserPassStr := "pass_lksjds;lkdj"
@@ -74,13 +74,15 @@ func TestCreateAndLoginNewUser(pTest *testing.T,
 		pIdentityServicePortInt,
 		pTest)
 
-	TestUserHTTPlogin(testUserNameStr,
+	cookiesInRespLst := TestUserHTTPuserpassLogin(testUserNameStr,
 		testUserPassStr,
 		pHTTPagent,
 		pIdentityServicePortInt,
 		pTest)
 		
 	//---------------------------------
+
+	return cookiesInRespLst
 }
 
 //-------------------------------------------------

@@ -23,11 +23,11 @@ import (
 	"fmt"
 	"testing"
 	"context"
-	"strings"
 	"encoding/json"
-	"net/http"
 	// "net/http/cookiejar"
 	// "net/url"
+	"strings"
+	"net/http"
 	"github.com/stretchr/testify/assert"
 	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -43,6 +43,7 @@ func TestUsersHTTPeth(pTest *testing.T) {
 
 	serviceNameStr := "gf_identity_test"
 	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+
 	runtimeSys := Tinit(serviceNameStr, mongoHostStr)
 	runtimeSys.LogNewFun("INFO", "TEST_USERS_HTTP_ETH >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", nil)
 
@@ -184,11 +185,13 @@ func TestUsersHTTPeth(pTest *testing.T) {
 	fmt.Println("address",   addressStr, len(addressStr))
 	fmt.Println("signature", signatureStr, len(signatureStr))
 
-	urlStr = fmt.Sprintf("http://localhost:%d/v1/identity/eth/login", testPortInt)
+	
 	dataMap = map[string]string{
 		"user_address_eth_str": addressStr,
 		"auth_signature_str":   signatureStr,
 	}
+
+	urlStr = fmt.Sprintf("http://localhost:%d/v1/identity/eth/login", testPortInt)
 	dataBytesLst, _ = json.Marshal(dataMap)
 	resp, bodyStr, errs := HTTPagent.Post(urlStr).
 		Send(string(dataBytesLst)).
@@ -199,6 +202,8 @@ func TestUsersHTTPeth(pTest *testing.T) {
 		pTest.FailNow()
 	}
 
+	
+	
 	// check if the login response sets a cookie for all future auth requests
 	sessionIDcookiePresentBool := false
 	authCookiePresentBool := false
@@ -230,6 +235,8 @@ func TestUsersHTTPeth(pTest *testing.T) {
 	assert.True(pTest, authCookiePresentBool,
 		"login response does not contain the expected 'Authorization' cookie")
 	
+	
+
 	bodyMap = map[string]interface{}{}
 	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
 		fmt.Println(err)

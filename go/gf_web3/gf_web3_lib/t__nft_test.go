@@ -48,17 +48,18 @@ func TestNFT(pTest *testing.T) {
 	ctx       := context.Background()
 
 	// CREATE_AND_LOGIN_NEW_USER
-	gf_identity.TestCreateAndLoginNewUser(pTest,
+	cookiesInRespLst := gf_identity.TestUserpassCreateAndLoginNewUser(pTest,
 		HTTPagent,
 		testIdentityServicePortInt,
 		ctx,
-		runtime.RuntimeSys)
+		runtime.RuntimeSys)	
 
 	//--------------------
 	// NFT_INDEX_ADDRESS
 	
 	gf_nft.TindexAddress(testUserAddressEthStr,
 		chainStr,
+		cookiesInRespLst,
 		HTTPagent,
 		testWeb3MonitorServicePortInt,
 		pTest)
@@ -71,6 +72,7 @@ func TestNFT(pTest *testing.T) {
 
 	gf_nft.TgetByOwner(testUserAddressEthStr,
 		chainStr,
+		cookiesInRespLst,
 		HTTPagent,
 		testWeb3MonitorServicePortInt,
 		pTest)

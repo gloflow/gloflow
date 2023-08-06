@@ -44,7 +44,7 @@ func TestAddresses(pTest *testing.T) {
 	ctx       := context.Background()
 
 	// CREATE_AND_LOGIN_NEW_USER
-	gf_identity.TestCreateAndLoginNewUser(pTest,
+	cookiesInRespLst := gf_identity.TestUserpassCreateAndLoginNewUser(pTest,
 		HTTPagent,
 		testIdentityServicePortInt,
 		ctx,
@@ -61,6 +61,7 @@ func TestAddresses(pTest *testing.T) {
 	gf_address.TaddAddress(testUserAddressEthStr,
 		testAddressTypeStr,
 		chainStr,
+		cookiesInRespLst,
 		HTTPagent,
 		testGFserviceInt,
 		pTest)
@@ -68,6 +69,7 @@ func TestAddresses(pTest *testing.T) {
 	// GET_ALL_ADDRESSES
 	gf_address.TgetAllAddresses(testAddressTypeStr,
 		chainStr,
+		cookiesInRespLst,
 		HTTPagent,
 		testGFserviceInt,
 		pTest)

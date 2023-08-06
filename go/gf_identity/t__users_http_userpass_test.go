@@ -94,7 +94,7 @@ func TesUsersHTTPuserpass(pTest *testing.T) {
 	//---------------------------------
 	// TEST_USER_LOGIN
 
-	TestUserHTTPlogin(testUserNameStr,
+	TestUserHTTPuserpassLogin(testUserNameStr,
 		testUserPassStr,
 		HTTPagent,
 		testPortInt,
