@@ -41,6 +41,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	pHTTPmux         *http.ServeMux,
 	pJobsMngrCh      chan gf_images_jobs_core.JobMsg,
 	pImgConfig       *gf_images_core.GFconfig,
+	pServiceInfo     *gf_images_core.GFserviceInfo,
 	pMediaDomainStr  string,
 	pStorage         *gf_images_storage.GFimageStorage,
 	pS3info          *gf_aws.GFs3Info,
@@ -229,6 +230,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					pStorage,
 					pS3info,
 					pImgConfig,
+					pServiceInfo,
 					pCtx,
 					pRuntimeSys)
 
@@ -299,6 +301,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					metaMap,
 					userID,
 					pJobsMngrCh,
+					pServiceInfo,
 					pCtx,
 					pRuntimeSys)
 

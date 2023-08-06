@@ -27,6 +27,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_storage"
@@ -75,6 +76,7 @@ func UploadInit(pImageNameStr string,
 	pStorage        *gf_images_storage.GFimageStorage,
 	pS3info         *gf_aws.GFs3Info,
 	pConfig         *gf_images_core.GFconfig,
+	pServiceInfo    *gf_images_core.GFserviceInfo,
 	pCtx            context.Context,
 	pRuntimeSys     *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GFerror) {
 	
@@ -169,6 +171,22 @@ func UploadInit(pImageNameStr string,
 	}
 
 	//------------------
+
+
+	//------------------------
+	// EVENT
+	if pServiceInfo.EnableEventsAppBool {
+		eventMeta := map[string]interface{}{
+			"user_id": pUserID,
+		}
+		gf_events.EmitApp(gf_images_core.GF_EVENT_APP__IMAGE_UPLOAD_INIT,
+			eventMeta,
+			pRuntimeSys)
+	}
+
+	//------------------------
+
+
 	return uploadInfo, nil
 }
 
@@ -178,11 +196,12 @@ func UploadInit(pImageNameStr string,
 // It is run after the initialization stage, and after the client/caller conducts
 // the upload operation.
 func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
-	pMetaMap    map[string]interface{},
-	pUserID     gf_core.GF_ID,
-	pJobsMngrCh chan gf_images_jobs_core.JobMsg,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
+	pMetaMap     map[string]interface{},
+	pUserID      gf_core.GF_ID,
+	pJobsMngrCh  chan gf_images_jobs_core.JobMsg,
+	pServiceInfo *gf_images_core.GFserviceInfo,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
 	
 	// DB
 	uploadInfo, gfErr := dbGetUploadInfo(pUploadImageIDstr, pCtx, pRuntimeSys)
@@ -209,6 +228,19 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
 		return nil, gfErr
 	}
 	
+	//------------------------
+	// EVENT
+	if pServiceInfo.EnableEventsAppBool {
+		eventMeta := map[string]interface{}{
+			"user_id": pUserID,
+		}
+		gf_events.EmitApp(gf_images_core.GF_EVENT_APP__IMAGE_UPLOAD_COMPLETE,
+			eventMeta,
+			pRuntimeSys)
+	}
+
+	//------------------------
+
 	return runningJob, nil
 }
 

@@ -109,7 +109,10 @@ func Run(pConfig *GFconfig,
 
 		AuthLoginURLstr:                       "/v1/identity/login_ui", // on email confirm redirect user to this
 		AuthLoginSuccessRedirectURLstr:        "/v1/home/main", // on login success redirecto to home
-		EnableEventsAppBool:                   true,
+		
+		// EVENTS
+		EnableEventsAppBool: true,
+
 		EnableUserCredsInSecretsStoreBool:     true,
 		EnableEmailBool:                       true,
 		EnableEmailRequireConfirmForLoginBool: true,
@@ -238,6 +241,9 @@ func Run(pConfig *GFconfig,
 
 		// IPFS
 		IPFSnodeHostStr: imagesConfig.IPFSnodeHostStr,
+
+		// EVENTS
+		EnableEventsAppBool: true,
 	}
 
 	imagesJobsMngrCh := gf_images_lib.InitService(gfSoloHTTPmux,

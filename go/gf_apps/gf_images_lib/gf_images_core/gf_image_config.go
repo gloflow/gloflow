@@ -58,6 +58,9 @@ type GFserviceInfo struct {
 
 	// IPFS_NODE_HOST - host/gateway to use to connect to for IPFS operations
 	IPFSnodeHostStr string
+
+	// EVENTS_APP - enable sending of app events from various functions
+	EnableEventsAppBool bool
 }
 
 //-------------------------------------------------
