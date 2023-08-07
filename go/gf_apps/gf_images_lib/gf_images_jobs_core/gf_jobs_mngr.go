@@ -87,6 +87,7 @@ type GFimageLocalToProcess struct {
 
 type JobMsg struct {
 	Job_id_str                     string // if its an existing job. for new jobs the mngr creates a new job ID
+	UserID                         gf_core.GF_ID
 	Client_type_str                string 
 	Cmd_str                        string // "start_job" | "get_running_job_ids"
 	
@@ -307,10 +308,13 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 						metricsPlugins:          metrics.ImagesPluginsMetrics,
 					}
 
+					userID := jobMsg.UserID
+
 					runJobErrsLst := runJobUploadedImages(jobMsg.Images_uploaded_to_process_lst,
 						jobMsg.Flows_names_lst,
 						pImagesStoreLocalDirPathStr,
 						pImagesThumbnailsStoreLocalDirPathStr,
+						userID,
 						// imageStorage.S3.UploadsSourceS3bucketNameStr, // source_s3_bucket_name_str,
 						// imageStorage.S3.UploadsTargetS3bucketNameStr, // target_s3_bucket_name_str,
 						pS3info,

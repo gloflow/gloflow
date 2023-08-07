@@ -52,6 +52,7 @@ type GFimageUploadInfo struct {
 	FlowsNamesLst     []string                 `json:"flows_names_lst"        bson:"flows_names_lst"`
 	ClientTypeStr     string                   `json:"-"                      bson:"client_type_str"`  // internal data, dont send to clients
 	PresignedURLstr   string                   `json:"presigned_url_str"      bson:"presigned_url_str"`
+	UserID            gf_core.GF_ID            `json:"user_id_str"            bson:"user_id_str"`      // ID of the user starting this upload
 }
 
 type GFimageUploadMetrics struct {
@@ -86,8 +87,10 @@ func UploadInit(pImageNameStr string,
 	if !ok {
 		gfErr := gf_core.ErrorCreate("image format is invalid that specified for image thats being prepared for uploading via upload__init",
 			"verify__invalid_value_error",
-			map[string]interface{}{"image_format_str": pImageFormatStr,},
-			nil, "gf_images_lib", pRuntimeSys)
+			map[string]interface{}{
+				"image_format": pImageFormatStr,
+				"user_id":      pUserID},
+			nil, "gf_images_service", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -161,6 +164,7 @@ func UploadInit(pImageNameStr string,
 		FlowsNamesLst:     pFlowsNamesLst,
 		ClientTypeStr:     pClientTypeStr,
 		PresignedURLstr:   presignedURLstr,
+		UserID:            pUserID,
 	}
 
 	//------------------
@@ -221,6 +225,7 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
 	runningJob, gfErr := gf_images_jobs_client.RunUploadedImages(uploadInfo.ClientTypeStr,
 		imageToProcessLst,
 		uploadInfo.FlowsNamesLst,
+		pUserID,
 		pJobsMngrCh,
 		pRuntimeSys)
 
@@ -258,7 +263,9 @@ func UploadMetricsCreate(pUploadImageIDstr gf_images_core.GFimageID,
 	if _, ok := pMetricsDataMap["upload_client_duration_sec_f"]; !ok {
 		gfErr := gf_core.MongoHandleError("image upload metrics data is missing the 'upload_client_duration_sec_f' key",
 			"verify__missing_key_error",
-			map[string]interface{}{"upload_gf_image_id_str": pUploadImageIDstr,},
+			map[string]interface{}{
+				"upload_gf_image_id_str": pUploadImageIDstr,
+				"user_id":                pUserID},
 			nil, "gf_images_service", pRuntimeSys)
 		return gfErr
 	}
@@ -266,7 +273,9 @@ func UploadMetricsCreate(pUploadImageIDstr gf_images_core.GFimageID,
 	if _, ok := pMetricsDataMap["upload_client_transfer_duration_sec_f"]; !ok {
 		gfErr := gf_core.MongoHandleError("image upload metrics data is missing the 'upload_client_transfer_duration_sec_f' key",
 			"verify__missing_key_error",
-			map[string]interface{}{"upload_gf_image_id_str": pUploadImageIDstr,},
+			map[string]interface{}{
+				"upload_gf_image_id_str": pUploadImageIDstr,
+				"user_id":                pUserID},
 			nil, "gf_images_service", pRuntimeSys)
 		return gfErr
 	}

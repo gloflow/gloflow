@@ -124,6 +124,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 	pImagesStoreLocalDirPathStr  string,
 	pImagesThumbsLocalDirPathStr string,
 	pFlowsNamesLst               []string,
+	pUserID                      gf_core.GF_ID,
 	// pSourceS3bucketNameStr       string, // S3_bucket to which the image was uploaded to
 	// pTargetS3bucketNameStr       string, // S3 bucket to which processed images are stored in after this pipeline processing
 	pS3info                      *gf_aws.GFs3Info,
@@ -249,6 +250,9 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 		
 	}
 
+	//-----------------------
+	// THUMBNAILS
+
 	// NEW_STORAGE
 	if pJobRuntime.useNewStorageEngineBool {
 
@@ -276,7 +280,6 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 	}
 
 	
-
 	update_msg := JobUpdateMsg{
 		Name_str:             "image_persist",
 		Type_str:             JOB_UPDATE_TYPE__OK,
