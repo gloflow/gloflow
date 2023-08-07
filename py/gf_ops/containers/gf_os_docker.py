@@ -323,7 +323,9 @@ def build_image(p_image_names_lst,
 	p_exit_on_fail_bool = False,
 	p_docker_sudo_bool  = False,
 	p_pull_base_bool    = False):
-	p_log_fun("FUN_ENTER", "gf_os_docker.build_image()")
+	
+	# p_log_fun("FUN_ENTER", "gf_os_docker.build_image()")
+	
 	assert isinstance(p_image_names_lst, list)
 	print(p_dockerfile_path_str)
 	assert os.path.isfile(p_dockerfile_path_str)
@@ -347,8 +349,8 @@ def build_image(p_image_names_lst,
 		cmd_lst.append("sudo")
 		
 	cmd_lst.extend([
-		"docker build",
-		"-f %s"%(p_dockerfile_path_str),
+		"docker", "build",
+		"-f", p_dockerfile_path_str,
 	])
 
 	# pull base image
@@ -362,7 +364,7 @@ def build_image(p_image_names_lst,
 	# BUILD_ARGS
 	if not p_build_args_map == None:
 		for k, v in p_build_args_map.items():
-			cmd_lst.append("--build-arg %s=%s"%(k, v))
+			cmd_lst.extend(["--build-arg", "%s=%s"%(k, v)])
 
 	# CONTEXT_DIR
 	cmd_lst.append(context_dir_path_str)
@@ -388,26 +390,14 @@ def build_image(p_image_names_lst,
 
 	#---------------------------------------------------
 
-	p = subprocess.Popen(c_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=1)
-	
-	# image_id_str = ""
-	for line in iter(p.stdout.readline, b''):	
-		line_str = line.strip().decode("utf-8")
-		
-		print(line_str)
+	# IMPORTANT!! - outputs stdout/stderr of the command shell run in realtime via
+	#               threads that are spawned to print to screen.
+	p = gf_core_cli.run__view_realtime(cmd_lst, {},
+        "gf_build_cont", "green")
+	p.wait()
 
-		# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
-		if "Cannot connect to the Docker daemon" in line_str:
-			exit(1)
-	
-	for line in iter(p.stderr.readline, b''):	
-		line_str = line.strip().decode("utf-8")
-		
-		print(line_str)
-	
-	p.communicate()
 	exit_code_int = p.returncode
-	
+
 
 	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
     #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.

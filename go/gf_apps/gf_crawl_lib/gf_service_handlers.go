@@ -38,6 +38,7 @@ func initHandlers(pMediaDomainStr string,
 	pRuntimeSys                         *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	//----------------
+	// CRAWL_IMAGES_RECENT
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/crawl/image/recent",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
@@ -67,6 +68,7 @@ func initHandlers(pMediaDomainStr string,
 		pRuntimeSys)
 
 	//----------------
+	// CRAWL_IMAGE_ADD_TO_FLOW
 	// FIX!! - move out of the crawler
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/crawl/image/add_to_flow",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
@@ -88,6 +90,7 @@ func initHandlers(pMediaDomainStr string,
 				}
 
 				//--------------------------
+				
 				gfErr = gf_crawl_core.FlowsAddExternImage(gf_crawl_core.GFcrawlerPageImageID(crawler_page_image_id_str),
 					flows_names_lst,
 					pMediaDomainStr,
@@ -116,6 +119,7 @@ func initHandlers(pMediaDomainStr string,
 		pRuntimeSys)
 
 	//----------------
+	// CRAWL_SEARCH
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/crawl/search",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 

@@ -110,8 +110,9 @@ func User_event__create(p_input *Gf_user_event_input,
 		Event_data_map:       p_input.Data_map,
 		Session_id_str:       p_session_id_str,
 		Req_ctx:              *p_gf_req_ctx,
-	}
+	}	
 
+	// DB - insert event
 	ctx           := context.Background()
 	coll_name_str := pRuntimeSys.Mongo_coll.Name()
 	gfErr         := gf_core.MongoInsert(gf_user_event,
@@ -124,15 +125,6 @@ func User_event__create(p_input *Gf_user_event_input,
 	if gfErr != nil {
 		return gfErr
 	}
-
-	/*err := pRuntimeSys.Mongodb_coll.Insert(gf_user_event)
-	if err != nil {
-		gfErr := gf_core.MongoHandleError("failed to insert a user_event in mongodb",
-			"mongodb_insert_error",
-			map[string]interface{}{},
-			err, "gf_analytics", pRuntimeSys)
-		return gfErr
-	}*/
 		
 	return nil
 }
