@@ -37,7 +37,7 @@ type GFpolicy struct {
 	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
 	
 	// policy can be asssociated with multiple resources
-	TargetResourceIDsLst  []gf_core.GF_ID `bson:"target_resource_ids_lst"`
+	TargetResourceIDsLst  []string        `bson:"target_resource_ids_lst"`
 	TargetResourceTypeStr string          `bson:"target_resource_type_str"`
 	OwnerUserID           gf_core.GF_ID   `bson:"owner_user_id_str"`
 
@@ -48,13 +48,13 @@ type GFpolicy struct {
 	// PRINCIPALS
 
 	// viewers are users that can view if PublicViewBool is false
-	ViewersUserIDsLst []gf_core.GF_ID `bson:"viewers_user_ids_lst"`
+	ViewersUserIDsLst []string `bson:"viewers_user_ids_lst"`
 
 	// taggers are users that can attach tags/notes to flows
-	TaggersUserIDsLst []gf_core.GF_ID `bson:"taggers_user_ids_lst"`
+	TaggersUserIDsLst []string `bson:"taggers_user_ids_lst"`
 
 	// editors are users that are allowed by the owner to update/add/remove items to the flow
-	EditorsUserIDsLst []gf_core.GF_ID `bson:"editors_user_ids_lst"`
+	EditorsUserIDsLst []string `bson:"editors_user_ids_lst"`
 
 	//-----------------------
 }
@@ -134,17 +134,17 @@ func policySingleVerify(pRequestedOpStr string,
 			//               thats why not only viewer user_ids are checked
 			//               but also tagging and editing ones.
 			for _, allowedUserIDstr := range pPolicy.ViewersUserIDsLst {
-				if pUserID == allowedUserIDstr {
+				if pUserID == gf_core.GF_ID(allowedUserIDstr) {
 					return true
 				}
 			}
 			for _, allowedUserIDstr := range pPolicy.TaggersUserIDsLst {
-				if pUserID == allowedUserIDstr {
+				if pUserID == gf_core.GF_ID(allowedUserIDstr) {
 					return true
 				}
 			}
 			for _, allowedUserIDstr := range pPolicy.EditorsUserIDsLst {
-				if pUserID == allowedUserIDstr {
+				if pUserID == gf_core.GF_ID(allowedUserIDstr) {
 					return true
 				}
 			}
@@ -159,12 +159,12 @@ func policySingleVerify(pRequestedOpStr string,
 			// for each allowed viwing user_id check if it equals to the
 			// user_id requesting the operation permission.
 			for _, allowedUserIDstr := range pPolicy.TaggersUserIDsLst {
-				if pUserID == allowedUserIDstr {
+				if pUserID == gf_core.GF_ID(allowedUserIDstr) {
 					return true
 				}
 			}
 			for _, allowedUserIDstr := range pPolicy.EditorsUserIDsLst {
-				if pUserID == allowedUserIDstr {
+				if pUserID == gf_core.GF_ID(allowedUserIDstr) {
 					return true
 				}
 			}
@@ -180,7 +180,7 @@ func policySingleVerify(pRequestedOpStr string,
 			// for each allowed viwing user_id check if it equals to the
 			// user_id requesting the operation permission.
 			for _, allowedUserIDstr := range pPolicy.EditorsUserIDsLst {
-				if pUserID == allowedUserIDstr {
+				if pUserID == gf_core.GF_ID(allowedUserIDstr) {
 					return true
 				}
 			}
@@ -244,7 +244,7 @@ func PipelineCreate(pTargetResourceID gf_core.GF_ID,
 	policy := &GFpolicy{
 		ID:                    ID,     
 		CreationUNIXtimeF:     creationUNIXtimeF,
-		TargetResourceIDsLst:  []gf_core.GF_ID{pTargetResourceID, },
+		TargetResourceIDsLst:  []string{string(pTargetResourceID), },
 		TargetResourceTypeStr: pTargetResourceTypeStr,
 		OwnerUserID:           pOwnerUserID,
 		PublicViewBool:        true,

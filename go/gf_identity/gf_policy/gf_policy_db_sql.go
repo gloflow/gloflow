@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"context"
 	"strings"
+	"github.com/lib/pq"
 	// "go.mongodb.org/mongo-driver/bson"
 	// "go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -201,22 +202,22 @@ func DBsqlCreatePolicy(pPolicy *GFpolicy,
 		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
 	`
 
-	err := pRuntimeSys.SQLdb.QueryRowContext(
+	_, err := pRuntimeSys.SQLdb.ExecContext(
 		pCtx,
 		sqlStr,
 		pPolicy.ID,
-		pPolicy.TargetResourceIDsLst,
+		pq.Array(pPolicy.TargetResourceIDsLst),
 		pPolicy.TargetResourceTypeStr,
 		pPolicy.OwnerUserID,
 		pPolicy.PublicViewBool,
-		pPolicy.ViewersUserIDsLst,
-		pPolicy.TaggersUserIDsLst,
-		pPolicy.EditorsUserIDsLst,
-	).Scan()
+		pq.Array(pPolicy.ViewersUserIDsLst),
+		pq.Array(pPolicy.TaggersUserIDsLst),
+		pq.Array(pPolicy.EditorsUserIDsLst),
+	)
 
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to insert policy into the DB",
-			"sql_insert_policy",
+			"sql_row_insert",
 			map[string]interface{}{
 				"policy": pPolicy,
 			},
