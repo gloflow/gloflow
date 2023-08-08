@@ -38,19 +38,30 @@ export async function init(p_log_fun) {
         </div>`);
     $('body').append(all_flows_container);
 
-
+    //------------------
     // allow for the flow-picker to be toggled in visibility,
     // displayed/hidden by clicking this button.
+
+    // flow-picker not initially visible
     var visible_bool = false;
+    $(all_flows_container).find("#flows").css("display", "none");
+    $(all_flows_container).find("#flows_experimental").css("display", "none");
+
+    //------------------
+
     $(all_flows_container).find("#expand_btn").click(()=>{
 
 
         if (visible_bool) {
+
+            // hide
             $(all_flows_container).find("#flows").css("display", "none");
             $(all_flows_container).find("#flows_experimental").css("display", "none");
             visible_bool = false;
         }
         else {
+
+            // show
             $(all_flows_container).find("#flows").css("display", "block");
             $(all_flows_container).find("#flows_experimental").css("display", "block");
             visible_bool = true;

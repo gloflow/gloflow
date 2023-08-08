@@ -123,10 +123,20 @@ body {
 
 #flows_picker #expand_btn {
 	position: fixed;
-	top: 40px;
-	background-color: rgb(122, 122, 122);
-	width:  60px;
-	height: 60px;
+    top: 106px;
+    background-color: rgb(122, 122, 122);
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    cursor: pointer;
+
+}
+
+#flows_picker #flows {
+	display: block;
+    right: 60px;
+    position: fixed;
+    top: 106px;
 }
 
 #flows_picker .flow_info {
@@ -135,8 +145,10 @@ body {
 	margin-bottom: 4px;
     padding: 4px;
 
+	/*
 	border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
+	*/
 }
 #flows_picker .flow_imgs_count {
 	color: gray;
