@@ -49,6 +49,10 @@ func CLIparseArgs(pLogFun func(string, string)) map[string]interface{} {
 	}
 
 	//-------------------
+	// SQL
+	sqlHostStr := flag.String("sql_host", "127.0.0.1", "host of SQL to use")
+
+	//-------------------
 	flag.Parse()
 
 	return map[string]interface{}{
@@ -56,5 +60,6 @@ func CLIparseArgs(pLogFun func(string, string)) map[string]interface{} {
 		"port_str":                *port_str,
 		"mongodb_host_str":        *mongodb_host_str,
 		"mongodb_db_name_str":     *mongodb_db_name_str,
+		"sql_host_str":            *sqlHostStr,
 	}
 }

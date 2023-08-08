@@ -25,6 +25,7 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib/gf_tagger_core"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -50,35 +51,17 @@ func TestBookmarks(pTest *testing.T) {
 
 	fmt.Println(" TEST__MAIN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	testMongodbHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
-	testMongodbDBnameStr := "gf_tests"
-	testMongodbURLstr    := fmt.Sprintf("mongodb://%s", testMongodbHostStr)
+	serviceNameStr := "gf_landing_page_test"
+	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	sqlHostStr   := cliArgsMap["sql_host_str"].(string)
+	runtimeSys   := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
 
-	logFun, _ := gf_core.LogsInit()
-
-
-	runtimeSys := &gf_core.RuntimeSys{
-		ServiceNameStr: "gf_landing_page_test",
-		LogFun:         logFun,
-		LogNewFun:      logNewFun,
-		Validator:      gf_core.ValidateInit(),
-	}
-
-	mongoDB, _, gfErr := gf_core.MongoConnectNew(testMongodbURLstr, testMongodbDBnameStr, nil, runtimeSys)
-	if gfErr != nil {
-		panic(-1)
-	}
-
-	mongoColl := mongoDB.Collection("data_symphony")
-	runtimeSys.Mongo_db   = mongoDB
-	runtimeSys.Mongo_coll = mongoColl
-
-	testBookmarkingFlow(pTest, runtimeSys)
+	testLandingPage(pTest, runtimeSys)
 }
 
 //-------------------------------------------------
 
-func testBookmarkingFlow(pTest *testing.T,
+func testLandingPage(pTest *testing.T,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	
