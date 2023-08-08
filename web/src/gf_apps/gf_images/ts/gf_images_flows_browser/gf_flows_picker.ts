@@ -28,6 +28,7 @@ export async function init(p_log_fun) {
     // <div id="flows_experimental_label">experimental:</div>
     const all_flows_container = $(`
         <div id="flows_picker">
+            <div id="expand_btn"></div>
             <div id="flows">
             </div>
 
@@ -36,6 +37,26 @@ export async function init(p_log_fun) {
             </div>
         </div>`);
     $('body').append(all_flows_container);
+
+
+    // allow for the flow-picker to be toggled in visibility,
+    // displayed/hidden by clicking this button.
+    var visible_bool = false;
+    $(all_flows_container).find("#expand_btn").click(()=>{
+
+
+        if (visible_bool) {
+            $(all_flows_container).find("#flows").css("display", "none");
+            $(all_flows_container).find("#flows_experimental").css("display", "none");
+            visible_bool = false;
+        }
+        else {
+            $(all_flows_container).find("#flows").css("display", "block");
+            $(all_flows_container).find("#flows_experimental").css("display", "block");
+            visible_bool = true;
+        }
+    });
+
 
 
     const experimental_flows_lst = [

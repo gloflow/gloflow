@@ -120,6 +120,15 @@ body {
 	top: 50px;
 	right: 0px;
 }
+
+#flows_picker #expand_btn {
+	position: fixed;
+	top: 40px;
+	background-color: rgb(122, 122, 122);
+	width:  60px;
+	height: 60px;
+}
+
 #flows_picker .flow_info {
 	display: flex;
 	background-color: rgb(247 247 247);
