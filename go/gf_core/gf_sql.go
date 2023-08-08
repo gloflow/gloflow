@@ -45,7 +45,7 @@ func DBsqlConnect(pDBnameStr string,
 		pPassStr,
 		pDBhostStr,
 		pDBnameStr)
-
+	
 	pRuntimeSys.LogNewFun("INFO", "connecting to SQL DB...",
 		map[string]interface{}{
 			"db_host": pDBhostStr,

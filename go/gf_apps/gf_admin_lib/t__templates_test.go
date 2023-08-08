@@ -49,12 +49,8 @@ func TestTemplates(pTest *testing.T) {
 
 	serviceNameStr := "gf_admin_test"
 	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
-	runtimeSys   := gf_identity.Tinit(serviceNameStr, mongoHostStr)
-	runtimeSys.LogFun    = logFun
-	runtimeSys.LogNewFun = logNewFun
-
-	// TEMPLATES
-	
+	sqlHostStr   := cliArgsMap["sql_host_str"].(string)
+	runtimeSys   := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
 
 	authSubsystemTypeStr := "auth0"
 	portInt := 3550

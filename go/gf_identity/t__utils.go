@@ -129,7 +129,9 @@ func TestStartService(pAuthSubsystemTypeStr string,
 
 func Tinit(pServiceNameStr string,
 	pMongoHostStr string,
-	pSQLhostStr   string) *gf_core.RuntimeSys {
+	pSQLhostStr   string,
+	pLogNewFun    gf_core.GFlogFun,
+	pLogFun       func(string, string)) *gf_core.RuntimeSys {
 
 	testMongodbHostStr   := pMongoHostStr // cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	testMongodbDBnameStr := "gf_tests"
@@ -137,8 +139,8 @@ func Tinit(pServiceNameStr string,
 
 	runtimeSys := &gf_core.RuntimeSys{
 		ServiceNameStr: pServiceNameStr, // "gf_identity_tests",
-		LogFun:         logFun,
-		LogNewFun:      logNewFun,
+		LogFun:         pLogFun,
+		LogNewFun:      pLogNewFun,
 		Validator:      gf_core.ValidateInit(),
 	}
 

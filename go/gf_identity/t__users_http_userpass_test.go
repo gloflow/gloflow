@@ -41,7 +41,7 @@ func TesUsersHTTPuserpass(pTest *testing.T) {
 	serviceNameStr := "gf_identity_test"
 	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	sqlHostStr     := cliArgsMap["sql_host_str"].(string)
-	runtimeSys     := Tinit(serviceNameStr, mongoHostStr, sqlHostStr)
+	runtimeSys     := Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
 
 	//---------------------------------
 	// START_SERVICE
