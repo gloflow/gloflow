@@ -51,7 +51,17 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 	} else {
 		mongoDBhostPortStr = "localhost:27017"
 	}
-	
+
+	//-----------------------
+	// MONGODB_HOST
+	var sqlHostStr string
+	envSQLhostStr := os.Getenv("GF_TEST_SQL_HOST_PORT")
+	if envSQLhostStr != "" {
+		sqlHostStr = envSQLhostStr
+	} else {
+		sqlHostStr = "localhost:5432"
+	}
+
 	//-----------------------
 	// RUNTIME_SYS
 	logFun, logNewFun  := gf_core.LogsInit()
@@ -88,6 +98,27 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 		return nil, nil, err
 	}
 	
+
+	//--------------------
+	// SQL
+
+	dbNameStr := "gf_tests"
+	dbUserStr := "gf"
+
+	dbHostStr := sqlHostStr
+
+	sqlDB, gfErr := gf_core.DBsqlConnect(dbNameStr,
+		dbUserStr,
+		"", // config.SQLpassStr,
+		dbHostStr,
+		runtimeSys)
+	if gfErr != nil {
+		panic(-1)
+	}
+
+	runtimeSys.SQLdb = sqlDB
+
+	//--------------------
 
 	// SENTRY
 	

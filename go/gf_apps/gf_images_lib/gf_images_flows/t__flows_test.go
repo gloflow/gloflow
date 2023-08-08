@@ -78,7 +78,7 @@ func TestCreate(pTest *testing.T) {
 
 
 
-	gfErr = DBsqlCreateFlowsTables(runtimeSys)
+	gfErr = DBsqlCreateTables(runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}
