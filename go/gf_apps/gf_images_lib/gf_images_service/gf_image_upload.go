@@ -28,11 +28,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_policy"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_storage"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_client"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_flows"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -82,6 +84,20 @@ func UploadInit(pImageNameStr string,
 	pRuntimeSys     *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GFerror) {
 	
 	//------------------
+	// POLICY_VERIFY - verify user is allowed to upload an image into the specified flows.
+	//                 raises error if policy rejects the op.
+	//
+	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
+	gfErr := gf_images_flows.VerifyPolicy(opStr,
+		pFlowsNamesLst,
+		pUserID, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	//------------------
+
+	//------------------
 	// CHECK_IMAGE_FORMAT
 	ok := gf_images_core.CheckImageFormat(pImageFormatStr, pRuntimeSys)
 	if !ok {
@@ -107,7 +123,6 @@ func UploadInit(pImageNameStr string,
 
 	var presignedURLstr   string
 	var targetFilePathStr string
-	var gfErr             *gf_core.GFerror
 
 	// NEW_STORAGE
 	if  pConfig.UseNewStorageEngineBool {
@@ -200,13 +215,28 @@ func UploadInit(pImageNameStr string,
 // It is run after the initialization stage, and after the client/caller conducts
 // the upload operation.
 func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
-	pMetaMap     map[string]interface{},
-	pUserID      gf_core.GF_ID,
-	pJobsMngrCh  chan gf_images_jobs_core.JobMsg,
-	pServiceInfo *gf_images_core.GFserviceInfo,
-	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
+	pFlowsNamesLst []string,
+	pMetaMap       map[string]interface{},
+	pUserID        gf_core.GF_ID,
+	pJobsMngrCh    chan gf_images_jobs_core.JobMsg,
+	pServiceInfo   *gf_images_core.GFserviceInfo,
+	pCtx           context.Context,
+	pRuntimeSys    *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
 	
+	//------------------
+	// POLICY_VERIFY - verify user is allowed to upload an image into the specified flows.
+	//                 raises error if policy rejects the op.
+	//
+	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
+	gfErr := gf_images_flows.VerifyPolicy(opStr,
+		pFlowsNamesLst,
+		pUserID, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	//------------------
+
 	// DB
 	uploadInfo, gfErr := dbGetUploadInfo(pUploadImageIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {

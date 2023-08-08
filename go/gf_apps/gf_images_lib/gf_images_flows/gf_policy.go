@@ -31,17 +31,20 @@ import (
 
 func VerifyPolicy(pOpStr string,
 	pFlowsNamesLst []string,
-	pUserIDstr     gf_core.GF_ID,
+	pUserID        gf_core.GF_ID,
 	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	// POLICY_VERIFY
-	flowsIDsLst, gfErr := DBgetFlowsIDs(pFlowsNamesLst, pCtx, pRuntimeSys)
+	flowsIDsLst, gfErr := DBsqlGetFlowsIDs(pFlowsNamesLst, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
 	for _, flowIDstr := range flowsIDsLst {
-		gfErr = gf_policy.Verify(pOpStr, flowIDstr, pUserIDstr, pCtx, pRuntimeSys)
+		gfErr = gf_policy.Verify(pOpStr,
+			flowIDstr, // target_resource_id
+			pUserID,
+			pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}

@@ -289,6 +289,13 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					uploadImageIDstr = gf_images_core.GFimageID(aLst[0])
 				}
 				
+				// FLOWS_NAMES - names of flows to which this image should be added
+				var flowsNamesLst []string
+				if aLst, ok := qsMap["f"]; ok {
+					flowsNamesStr := aLst[0]
+					flowsNamesLst = strings.Split(flowsNamesStr, ",")
+				}
+
 				// image metadata (optional)
 				var metaMap map[string]interface{}
 				if metaMap, ok := iMap["meta_map"]; ok {
@@ -298,6 +305,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				//------------------
 				// COMPLETE
 				runningJob, gfErr := UploadComplete(uploadImageIDstr,
+					flowsNamesLst,
 					metaMap,
 					userID,
 					pJobsMngrCh,

@@ -20,8 +20,52 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_flows
 
 import (
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
+//---------------------------------------------------
+// GET_FLOWS_IDS
+
+func DBsqlGetFlowsIDs(pFlowsNamesLst []string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) ([]gf_core.GF_ID, *gf_core.GFerror) {
+
+	flowsIDsLst := []gf_core.GF_ID{}
+	for _, flowNameStr := range pFlowsNamesLst {
+		flowIDstr, gfErr := DBsqlGetID(flowNameStr, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+		flowsIDsLst = append(flowsIDsLst, flowIDstr)
+	}
+	return flowsIDsLst, nil
+}
+
+//---------------------------------------------------
+// GET_ID
+
+func DBsqlGetID(pFlowNameStr string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
+
+	db := pRuntimeSys.SQLdb
+	const sqlStr = `SELECT id FROM gf_images_flows WHERE name = $1 LIMIT 1`
+
+	var flowIDstr string
+	err := db.QueryRowContext(pCtx, sqlStr, pFlowNameStr).Scan(&flowIDstr)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to check if flow exists in SQL DB, might not exist...",
+			"sql_query_execute",
+			map[string]interface{}{
+				"flow_name_str": pFlowNameStr,
+			},
+			err, "gf_images_flows", pRuntimeSys)
+		return "", gfErr
+	}
+
+	return gf_core.GF_ID(flowIDstr), nil
+}
 
 //---------------------------------------------------
 // CREATE_FLOW
@@ -111,14 +155,15 @@ func DBsqlCreateFlow(pFlowNameStr string,
 }
 
 //---------------------------------------------------
-// CREATE_FLOWS_TABLES
+// CREATE_TABLES
 
-func DBsqlCreateFlowsTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+func DBsqlCreateTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	sqlStr := `
 	CREATE TABLE IF NOT EXISTS gf_images_flows (
 		v               VARCHAR(255),
 		id              SERIAL PRIMARY KEY,
+		deleted         BOOLEAN DEFAULT FALSE,
 		creation_time   TIMESTAMP DEFAULT NOW(),
 		name            TEXT NOT NULL,
 		creator_user_id TEXT NOT NULL,

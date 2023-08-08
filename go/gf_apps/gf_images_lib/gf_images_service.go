@@ -97,6 +97,11 @@ func InitService(pHTTPmux *http.ServeMux,
 	//-------------
 	// IMAGE_FLOWS
 
+	gfErr = gf_images_flows.DBsqlCreateTables(pRuntimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
+
 	// flows__templates_dir_path_str := pServiceInfo.Templates_dir_paths_map["flows_str"]
 	gfErr = gf_images_flows.InitHandlers(pServiceInfo.AuthSubsystemTypeStr,
 		pServiceInfo.AuthLoginURLstr,
