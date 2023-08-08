@@ -46,11 +46,14 @@ func TestPolicy(pTest *testing.T) {
 	}
 
 
-	targetResourceID := gf_core.GF_ID("test_resource")
-	ownerUserID := gf_core.GF_ID("test_user")
+	targetResourceID      := gf_core.GF_ID("test_resource")
+	targetResourceTypeStr := "flow"
+	ownerUserID           := gf_core.GF_ID("test_user")
+	
 
 	// CREATE
 	policy, gfErr := PipelineCreate(targetResourceID,
+		targetResourceTypeStr,
 		ownerUserID,
 		ctx,
 		runtimeSys)

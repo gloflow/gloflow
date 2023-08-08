@@ -32,14 +32,14 @@ import (
 
 type GFpolicy struct {
 	Id                primitive.ObjectID `bson:"_id,omitempty"`
-	IDstr             gf_core.GF_ID      `bson:"id_str"`
+	ID                gf_core.GF_ID      `bson:"id_str"`
 	DeletedBool       bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
 	
 	// policy can be asssociated with multiple resources
 	TargetResourceIDsLst  []gf_core.GF_ID `bson:"target_resource_ids_lst"`
 	TargetResourceTypeStr string          `bson:"target_resource_type_str"`
-	OwnerUserIDstr        gf_core.GF_ID   `bson:"owner_user_id_str"`
+	OwnerUserID           gf_core.GF_ID   `bson:"owner_user_id_str"`
 
 	// if the flow is fully public and all users (including anonymous) can view it
 	PublicViewBool bool `bson:"public_view_bool"`
@@ -117,7 +117,7 @@ func policySingleVerify(pRequestedOpStr string,
 	pPoliciesDefsMap map[string][]string) bool {
 
 	// if its the owner of the policy all operations are permitted
-	if pUserID == pPolicy.OwnerUserIDstr {
+	if pUserID == pPolicy.OwnerUserID {
 		return true
 	}
 	
@@ -233,19 +233,21 @@ func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
 // PIPELINE__CREATE
 
 func PipelineCreate(pTargetResourceID gf_core.GF_ID,
-	pOwnerUserID gf_core.GF_ID,
-	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GFpolicy, *gf_core.GFerror) {
+	pTargetResourceTypeStr string,
+	pOwnerUserID           gf_core.GF_ID,
+	pCtx                   context.Context,
+	pRuntimeSys            *gf_core.RuntimeSys) (*GFpolicy, *gf_core.GFerror) {
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	IDstr             := createID(pTargetResourceID, creationUNIXtimeF)
+	ID                := createID(pTargetResourceID, creationUNIXtimeF)
 
 	policy := &GFpolicy{
-		IDstr:                IDstr,     
-		CreationUNIXtimeF:    creationUNIXtimeF,
-		TargetResourceIDsLst: []gf_core.GF_ID{pTargetResourceID, },
-		OwnerUserIDstr:       pOwnerUserID,
-		PublicViewBool:       true,
+		ID:                    ID,     
+		CreationUNIXtimeF:     creationUNIXtimeF,
+		TargetResourceIDsLst:  []gf_core.GF_ID{pTargetResourceID, },
+		TargetResourceTypeStr: pTargetResourceTypeStr,
+		OwnerUserID:           pOwnerUserID,
+		PublicViewBool:        true,
 	}
 
 	// DB

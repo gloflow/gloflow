@@ -35,7 +35,7 @@ func DBsqlCreateTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	sqlStr := `
 	CREATE TABLE IF NOT EXISTS gf_policy (
-		id            SERIAL PRIMARY KEY,
+		id            TEXT,
 		deleted       BOOLEAN DEFAULT FALSE,
 		creation_time TIMESTAMP DEFAULT NOW(),
 		
@@ -47,7 +47,9 @@ func DBsqlCreateTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 		viewers_user_ids TEXT[],
 		taggers_user_ids TEXT[],
-		editors_user_ids TEXT[]
+		editors_user_ids TEXT[],
+
+		PRIMARY KEY(id)
 	);
 	`
 
@@ -89,12 +91,12 @@ func DBsqlGetPolicyByID(pPolicyID gf_core.GF_ID,
 
 	policy := &GFpolicy{}
 	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pPolicyID).Scan(
-		&policy.IDstr,
+		&policy.ID,
 		&policy.DeletedBool,
 		&policy.CreationUNIXtimeF,
 		&policy.TargetResourceIDsLst,
 		&policy.TargetResourceTypeStr,
-		&policy.OwnerUserIDstr,
+		&policy.OwnerUserID,
 		&policy.PublicViewBool,
 		&policy.ViewersUserIDsLst,
 		&policy.TaggersUserIDsLst,
@@ -148,12 +150,12 @@ func DBsqlGetPolicies(pTargetResourceID gf_core.GF_ID,
 	for rows.Next() {
 		policy := &GFpolicy{}
 		err := rows.Scan(
-			&policy.IDstr,
+			&policy.ID,
 			&policy.DeletedBool,
 			&policy.CreationUNIXtimeF,
 			&policy.TargetResourceIDsLst,
 			&policy.TargetResourceTypeStr,
-			&policy.OwnerUserIDstr,
+			&policy.OwnerUserID,
 			&policy.PublicViewBool,
 			&policy.ViewersUserIDsLst,
 			&policy.TaggersUserIDsLst,
@@ -185,6 +187,42 @@ func DBsqlGetPolicies(pTargetResourceID gf_core.GF_ID,
 func DBsqlCreatePolicy(pPolicy *GFpolicy,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	sqlStr := `
+		INSERT INTO gf_policy (
+			id,
+			target_resource_ids,
+			target_resource_type,
+			owner_user_id,
+			public_view,
+			viewers_user_ids,
+			taggers_user_ids,
+			editors_user_ids
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+	`
+
+	err := pRuntimeSys.SQLdb.QueryRowContext(
+		pCtx,
+		sqlStr,
+		pPolicy.ID,
+		pPolicy.TargetResourceIDsLst,
+		pPolicy.TargetResourceTypeStr,
+		pPolicy.OwnerUserID,
+		pPolicy.PublicViewBool,
+		pPolicy.ViewersUserIDsLst,
+		pPolicy.TaggersUserIDsLst,
+		pPolicy.EditorsUserIDsLst,
+	).Scan()
+
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to insert policy into the DB",
+			"sql_insert_policy",
+			map[string]interface{}{
+				"policy": pPolicy,
+			},
+			err, "gf_policy", pRuntimeSys)
+		return gfErr
+	}
 
 	return nil
 }
