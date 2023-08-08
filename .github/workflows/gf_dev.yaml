@@ -107,31 +107,31 @@ jobs:
       - name: test gf_identity
         run: |
           cd /home/gf/go/gf_identity
-          go test -v -mongodb_host=mongo
+          go test -v -mongodb_host=mongo -sql_host=postgres
           
       # GF_WEB3
       - name: test gf_web3
         run: |
           cd /home/gf/go/gf_web3/gf_web3_lib
-          go test -v
+          go test -v -sql_host=postgres
       
       # GF_HOME
       - name: test gf_home
         run: |
           cd /home/gf/go/gf_apps/gf_home_lib
-          go test -v -mongodb_host=mongo
+          go test -v -mongodb_host=mongo -sql_host=postgres
 
       # GF_ADMIN
       - name: test gf_admin
         run: |
           cd /home/gf/go/gf_apps/gf_admin_lib
-          go test -v -mongodb_host=mongo
+          go test -v -mongodb_host=mongo -sql_host=postgres
 
       # GF_IMAGES_CORE
       - name: test gf_images_core
         run: |
           cd /home/gf/go/gf_apps/gf_images_lib/gf_images_core
-          go test -v -mongodb_host=mongo
+          go test -v -mongodb_host=mongo -sql_host=postgres
 
       # GF_IMAGES_FLOWS
       - name: test gf_images_flows
@@ -143,19 +143,19 @@ jobs:
       - name: test gf_images_service
         run: |
           cd /home/gf/go/gf_apps/gf_images_lib/gf_images_service
-          go test -v -mongodb_host=mongo
+          go test -v -mongodb_host=mongo -sql_host=postgres
 
       # GF_BOOKMARKS
       - name: test gf_bookmarks
         run: |
           cd /home/gf/go/gf_apps/gf_tagger_lib/gf_bookmarks
-          go test -v -mongodb_host=mongo
+          go test -v -mongodb_host=mongo -sql_host=postgres
       
       # GF_LANDING_PAGE
       - name: test gf_landing_page
         run: |
           cd /home/gf/go/gf_apps/gf_landing_page_lib
-          go test -v -mongodb_host=mongo
+          go test -v -mongodb_host=mongo -sql_host=postgres
 
       #-------------------------------
 
