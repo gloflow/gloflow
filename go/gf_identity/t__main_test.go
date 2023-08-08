@@ -23,6 +23,7 @@ import (
 	"os"
 	"testing"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
 
 //---------------------------------------------------
@@ -30,7 +31,7 @@ import (
 func TestMain(m *testing.M) {
 
 	logFun, logNewFun = gf_core.LogsInitNew(true, "debug")
-	cliArgsMap = CLIparseArgs(logFun)
+	cliArgsMap = gf_identity_core.CLIparseArgs(logFun)
 
 	v := m.Run()
 	os.Exit(v)

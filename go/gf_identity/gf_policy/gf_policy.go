@@ -226,8 +226,6 @@ func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
 
 	//------------------------
 
-	// getDefs()
-
 	return output, nil
 }
 
