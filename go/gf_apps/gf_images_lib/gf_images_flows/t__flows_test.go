@@ -26,6 +26,7 @@ import (
 	"context"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/davecgh/go-spew/spew"
 )
@@ -48,42 +49,25 @@ func TestMain(m *testing.M) {
 func TestCreate(pTest *testing.T) {
 
 	ctx := context.Background()
-	runtimeSys := &gf_core.RuntimeSys{
-		ServiceNameStr: "gf_images_flows_tests",
-		LogFun:         logFun,
-		LogNewFun:      logNewFun,
-	}
 
-	dbNameStr := "gf_tests"
-	dbUserStr := "gf"
-
+	serviceNameStr := "gf_images_flows_test"
+	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	sqlHostStr   := cliArgsMap["sql_host_str"].(string)
+	runtimeSys   := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
+	
+	
 	flowNameStr := "test"
 	userID := gf_core.GF_ID("test")
 
 	//--------------------
-	// SQL
-
-	dbHostStr := cliArgsMap["sql_host_str"].(string)
-
-	sqlDB, gfErr := gf_core.DBsqlConnect(dbNameStr,
-		dbUserStr,
-		"", // config.SQLpassStr,
-		dbHostStr,
-		runtimeSys)
-
-	runtimeSys.SQLdb = sqlDB
-
-	//--------------------
-	
-
-
-
-	gfErr = DBsqlCreateTables(runtimeSys)
+	// INIT
+	gfErr := Init(runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}
 
 	//--------------------
+	// CREATE_FLOW
 	flow, gfErr := Create(flowNameStr,
 		userID,
 		ctx,

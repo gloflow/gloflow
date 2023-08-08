@@ -214,7 +214,8 @@ func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
 	}
 
 	//------------------------
-	// DB - GET_POLICY_BY_ID
+	// DB - UPDATE_POLICY_BY_ID
+	
 	publicViewBool := true
 	updateOp := &GFpolicyUpdateOp{
 		PublicViewBool: &publicViewBool,

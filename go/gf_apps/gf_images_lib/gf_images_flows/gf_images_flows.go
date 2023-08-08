@@ -57,6 +57,90 @@ type GFimageExistsCheck struct {
 
 //-------------------------------------------------
 
+func Init(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+
+	ctx := context.Background()
+
+
+	// SQL_CREATE_TABLES
+	gfErr := DBsqlCreateTables(pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	// CREATE_DISCOVERED_FLOWS
+	gfErr = pipelineCreateDiscoveredFlows(ctx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	return nil
+}
+
+//-------------------------------------------------
+/*
+TEMPORARY - this is mainly needed while flows are held as a property of images
+        	and discovered there in aggregate to get the total list.
+			going forward flows are held in the SQL db and this function
+			migrates/creates them in SQL if they dont already exist.
+
+			in the future this function wont be necessary, unless there's some
+			need for copying of flows from DB to DB.
+*/
+
+// consistency function that discovers all flows listed in images
+// under their "flows" attribute, and creates them as explicit entities
+// in the main GF DB if they dont already exist.
+func pipelineCreateDiscoveredFlows(pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	
+
+
+
+	// get all flows from the current Mongodb
+	allFlowsLst, gfErr := DBgetAll(pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+
+
+	// SQL
+	for _, flowMap := range allFlowsLst {
+
+
+		nameStr := flowMap["_id"].(string)
+
+		existsBool, gfErr := DBsqlCheckFlowExists(nameStr, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+
+		// create flow if it doesnt exist
+		if !existsBool {
+
+			//----------------------
+			// IMPORTANT!! - system user "gf" is assigned as the owner of this flow
+			ownerUserID := gf_core.GF_ID("gf")
+
+			//----------------------
+
+			gfErr := DBsqlCreateFlow(nameStr, ownerUserID, pRuntimeSys)
+			if gfErr != nil {
+				return gfErr
+			}
+		}
+
+	}
+
+
+
+	return nil
+}
+
+//-------------------------------------------------
+
 func pipelineGetAll(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 

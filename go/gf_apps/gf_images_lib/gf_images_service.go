@@ -97,7 +97,7 @@ func InitService(pHTTPmux *http.ServeMux,
 	//-------------
 	// IMAGE_FLOWS
 
-	gfErr = gf_images_flows.DBsqlCreateTables(pRuntimeSys)
+	gfErr = gf_images_flows.Init(pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}

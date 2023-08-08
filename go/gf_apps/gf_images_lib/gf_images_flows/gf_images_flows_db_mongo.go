@@ -94,7 +94,7 @@ func DBgetID(pFlowNameStr string,
 //---------------------------------------------------
 // GET_ALL
 
-func DBgetAll(p_ctx context.Context,
+func DBgetAll(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	pipeline := mongo.Pipeline{
@@ -126,7 +126,7 @@ func DBgetAll(p_ctx context.Context,
 			}},
 		},
 	}
-	cursor, err := pRuntimeSys.Mongo_coll.Aggregate(p_ctx, pipeline)
+	cursor, err := pRuntimeSys.Mongo_coll.Aggregate(pCtx, pipeline)
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to run DB aggregation to get all flows names",
 			"mongodb_aggregation_error",
@@ -134,10 +134,10 @@ func DBgetAll(p_ctx context.Context,
 			err, "gf_images_flows", pRuntimeSys)
 		return nil, gfErr
 	}
-	defer cursor.Close(p_ctx)
+	defer cursor.Close(pCtx)
 	
-	all_flows_lst := []map[string]interface{}{}
-	err = cursor.All(p_ctx, &all_flows_lst)
+	allFlowsLst := []map[string]interface{}{}
+	err = cursor.All(pCtx, &allFlowsLst)
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to get mongodb results of query to get all flows names",
 			"mongodb_cursor_all",
@@ -146,7 +146,7 @@ func DBgetAll(p_ctx context.Context,
 		return nil, gfErr
 	}
 	
-	return all_flows_lst, nil
+	return allFlowsLst, nil
 }
 
 //---------------------------------------------------
