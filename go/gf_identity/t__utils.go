@@ -128,7 +128,8 @@ func TestStartService(pAuthSubsystemTypeStr string,
 //-------------------------------------------------
 
 func Tinit(pServiceNameStr string,
-	pMongoHostStr string) *gf_core.RuntimeSys {
+	pMongoHostStr string,
+	pSQLhostStr   string) *gf_core.RuntimeSys {
 
 	testMongodbHostStr   := pMongoHostStr // cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	testMongodbDBnameStr := "gf_tests"
@@ -141,6 +142,9 @@ func Tinit(pServiceNameStr string,
 		Validator:      gf_core.ValidateInit(),
 	}
 
+	//--------------------
+	// MONGODB
+
 	mongoDB, _, gfErr := gf_core.MongoConnectNew(testMongodbURLstr,
 		testMongodbDBnameStr,
 		nil,
@@ -152,6 +156,27 @@ func Tinit(pServiceNameStr string,
 	mongoColl := mongoDB.Collection("data_symphony")
 	runtimeSys.Mongo_db   = mongoDB
 	runtimeSys.Mongo_coll = mongoColl
+
+	//--------------------
+	// SQL
+
+	dbNameStr := "gf_tests"
+	dbUserStr := "gf"
+
+	dbHostStr := pSQLhostStr
+
+	sqlDB, gfErr := gf_core.DBsqlConnect(dbNameStr,
+		dbUserStr,
+		"", // config.SQLpassStr,
+		dbHostStr,
+		runtimeSys)
+	if gfErr != nil {
+		panic(-1)
+	}
+
+	runtimeSys.SQLdb = sqlDB
+
+	//--------------------
 
 	return runtimeSys
 }

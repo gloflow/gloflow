@@ -85,5 +85,7 @@ func Tinit(pServiceNameStr string,
 
 	runtimeSys.SQLdb = sqlDB
 
+	//--------------------
+	
 	return runtimeSys
 }
