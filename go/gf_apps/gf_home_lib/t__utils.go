@@ -38,6 +38,7 @@ func Tinit() *gf_core.RuntimeSys {
 	test__mongodb_db_name_str := "gf_tests"
 	test__mongodb_url_str := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
 
+	testSQLhostStr := cliArgsMap["sql_host_str"].(string)
 
 	runtimeSys := &gf_core.RuntimeSys{
 		ServiceNameStr: "gf_home_tests",
@@ -46,9 +47,8 @@ func Tinit() *gf_core.RuntimeSys {
 		Validator:      gf_core.ValidateInit(),
 	}
 
-
-
-
+	//--------------------
+	// MONGODB
 	mongoDB, _, gfErr := gf_core.MongoConnectNew(test__mongodb_url_str,
 		test__mongodb_db_name_str,
 		nil,
@@ -57,12 +57,30 @@ func Tinit() *gf_core.RuntimeSys {
 		panic(-1)
 	}
 
-
 	mongoColl := mongoDB.Collection("data_symphony")
 	runtimeSys.Mongo_db   = mongoDB
 	runtimeSys.Mongo_coll = mongoColl
 
+	//--------------------
+	// SQL
 
+	dbNameStr := "gf_tests"
+	dbUserStr := "gf"
+
+	dbHostStr := testSQLhostStr
+
+	sqlDB, gfErr := gf_core.DBsqlConnect(dbNameStr,
+		dbUserStr,
+		"", // config.SQLpassStr,
+		dbHostStr,
+		runtimeSys)
+	if gfErr != nil {
+		panic(-1)
+	}
+
+	runtimeSys.SQLdb = sqlDB
+
+	//--------------------
 
 
 	return runtimeSys
