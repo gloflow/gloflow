@@ -20,11 +20,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity
 
 import (
-	"os"
-	"flag"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_policy"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 )
 
@@ -48,6 +47,14 @@ func InitService(pTemplatesPathsMap map[string]string,
 	}
 
 	keyServerInfo, gfErr := gf_identity_core.KSinit(auth0initBool, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+	
+	//------------------------
+	// POLICIES
+
+	gfErr = gf_policy.DBsqlCreateTables(pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -118,6 +125,7 @@ func InitService(pTemplatesPathsMap map[string]string,
 
 //-------------------------------------------------
 
+/*
 func CLIparseArgs(pLogFun func(string, string)) map[string]interface{} {
 
 	//-------------------
@@ -145,3 +153,4 @@ func CLIparseArgs(pLogFun func(string, string)) map[string]interface{} {
 		"mongodb_db_name_str": *mongodb_db_name_str,
 	}
 }
+*/

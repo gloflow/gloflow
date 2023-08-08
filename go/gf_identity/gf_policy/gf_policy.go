@@ -67,13 +67,13 @@ type GFpolicyUpdateOutput struct {
 // VERIFY
 
 func Verify(pRequestedOpStr string,
-	pTargetResourceIDstr gf_core.GF_ID,
-	pUserIDstr           gf_core.GF_ID,
-	pCtx                 context.Context,
-	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GFerror {
+	pTargetResourceID gf_core.GF_ID,
+	pUserID           gf_core.GF_ID,
+	pCtx              context.Context,
+	pRuntimeSys       *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	// GET_POLICIES
-	policiesLst, gfErr := DBgetPolicies(pTargetResourceIDstr, pCtx, pRuntimeSys)
+	policiesLst, gfErr := DBsqlGetPolicies(pTargetResourceID, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -88,7 +88,7 @@ func Verify(pRequestedOpStr string,
 
 		verifiedBool := policySingleVerify(pRequestedOpStr,
 			policy,
-			pUserIDstr,
+			pUserID,
 			policiesDefsMap)
 		if verifiedBool {
 
@@ -97,10 +97,11 @@ func Verify(pRequestedOpStr string,
 		}
 	}
 
-	gfErr = gf_core.MongoHandleError("policy has failed to be validated",
+	gfErr = gf_core.ErrorCreate("policy has failed to be validated",
 		"policy__op_denied",
 		map[string]interface{}{
-			"target_resource_id_str": pTargetResourceIDstr,
+			"user_id":            pUserID,
+			"target_resource_id": pTargetResourceID,
 		},
 		nil, "gf_policy", pRuntimeSys)
 
@@ -111,12 +112,12 @@ func Verify(pRequestedOpStr string,
 // POLICY_SINGLE_VERIFY
 
 func policySingleVerify(pRequestedOpStr string,
-	pPolicy           *GFpolicy,
-	pCurrentUserIDstr gf_core.GF_ID,
-	pPoliciesDefsMap  map[string][]string) bool {
+	pPolicy          *GFpolicy,
+	pUserID          gf_core.GF_ID,
+	pPoliciesDefsMap map[string][]string) bool {
 
 	// if its the owner of the policy all operations are permitted
-	if pCurrentUserIDstr == pPolicy.OwnerUserIDstr {
+	if pUserID == pPolicy.OwnerUserIDstr {
 		return true
 	}
 	
@@ -133,17 +134,17 @@ func policySingleVerify(pRequestedOpStr string,
 			//               thats why not only viewer user_ids are checked
 			//               but also tagging and editing ones.
 			for _, allowedUserIDstr := range pPolicy.ViewersUserIDsLst {
-				if pCurrentUserIDstr == allowedUserIDstr {
+				if pUserID == allowedUserIDstr {
 					return true
 				}
 			}
 			for _, allowedUserIDstr := range pPolicy.TaggersUserIDsLst {
-				if pCurrentUserIDstr == allowedUserIDstr {
+				if pUserID == allowedUserIDstr {
 					return true
 				}
 			}
 			for _, allowedUserIDstr := range pPolicy.EditorsUserIDsLst {
-				if pCurrentUserIDstr == allowedUserIDstr {
+				if pUserID == allowedUserIDstr {
 					return true
 				}
 			}
@@ -158,12 +159,12 @@ func policySingleVerify(pRequestedOpStr string,
 			// for each allowed viwing user_id check if it equals to the
 			// user_id requesting the operation permission.
 			for _, allowedUserIDstr := range pPolicy.TaggersUserIDsLst {
-				if pCurrentUserIDstr == allowedUserIDstr {
+				if pUserID == allowedUserIDstr {
 					return true
 				}
 			}
 			for _, allowedUserIDstr := range pPolicy.EditorsUserIDsLst {
-				if pCurrentUserIDstr == allowedUserIDstr {
+				if pUserID == allowedUserIDstr {
 					return true
 				}
 			}
@@ -179,7 +180,7 @@ func policySingleVerify(pRequestedOpStr string,
 			// for each allowed viwing user_id check if it equals to the
 			// user_id requesting the operation permission.
 			for _, allowedUserIDstr := range pPolicy.EditorsUserIDsLst {
-				if pCurrentUserIDstr == allowedUserIDstr {
+				if pUserID == allowedUserIDstr {
 					return true
 				}
 			}
@@ -193,17 +194,16 @@ func policySingleVerify(pRequestedOpStr string,
 //-------------------------------------------------
 
 func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
-	pPolicyIDstr    gf_core.GF_ID,
-	
-	pOwnerUserIDstr gf_core.GF_ID,
-	pCtx            context.Context,
-	pRuntimeSys     *gf_core.RuntimeSys) (*GFpolicyUpdateOutput, *gf_core.GFerror) {
+	pPolicyID    gf_core.GF_ID,
+	pOwnerUserID gf_core.GF_ID,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) (*GFpolicyUpdateOutput, *gf_core.GFerror) {
 
 	output := &GFpolicyUpdateOutput{}
 
 	//------------------------
 	// EXISTS
-	existsBool, gfErr := DBexistsByID(pPolicyIDstr, pCtx, pRuntimeSys)
+	existsBool, gfErr := DBsqlExistsByID(pPolicyID, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -219,15 +219,14 @@ func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
 	updateOp := &GFpolicyUpdateOp{
 		PublicViewBool: &publicViewBool,
 	}
-	gfErr = DBupdatePolicy(pPolicyIDstr, updateOp, pCtx, pRuntimeSys)
+	gfErr = DBsqlUpdatePolicy(pPolicyID, updateOp, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
 	//------------------------
 
-
-	getDefs()
+	// getDefs()
 
 	return output, nil
 }
@@ -235,42 +234,42 @@ func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
 //-------------------------------------------------
 // PIPELINE__CREATE
 
-func PipelineCreate(pTargetResourceIDstr gf_core.GF_ID,
-	pOwnerUserIDstr gf_core.GF_ID,
-	pCtx            context.Context,
-	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
+func PipelineCreate(pTargetResourceID gf_core.GF_ID,
+	pOwnerUserID gf_core.GF_ID,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) (*GFpolicy, *gf_core.GFerror) {
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	IDstr             := createID(pTargetResourceIDstr, creationUNIXtimeF)
+	IDstr             := createID(pTargetResourceID, creationUNIXtimeF)
 
 	policy := &GFpolicy{
 		IDstr:                IDstr,     
 		CreationUNIXtimeF:    creationUNIXtimeF,
-		TargetResourceIDsLst: []gf_core.GF_ID{pTargetResourceIDstr, },
-		OwnerUserIDstr:       pOwnerUserIDstr,
+		TargetResourceIDsLst: []gf_core.GF_ID{pTargetResourceID, },
+		OwnerUserIDstr:       pOwnerUserID,
 		PublicViewBool:       true,
 	}
 
 	// DB
-	gfErr := DBcreatePolicy(policy, pCtx, pRuntimeSys)
+	gfErr := DBsqlCreatePolicy(policy, pCtx, pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return nil, gfErr
 	}
 
-	return gfErr
+	return policy, gfErr
 }
 
 //---------------------------------------------------
 
-func createID(pTargetResourceIDstr gf_core.GF_ID,
+func createID(pTargetResourceID gf_core.GF_ID,
 	pCreationUNIXtimeF float64) gf_core.GF_ID {
 
 	fieldsForIDlst := []string{
-		string(pTargetResourceIDstr),
+		string(pTargetResourceID),
 		fmt.Sprintf("%f", pCreationUNIXtimeF),
 	}
-	gfIDstr := gf_core.IDcreate(fieldsForIDlst,
+	gfID := gf_core.IDcreate(fieldsForIDlst,
 		pCreationUNIXtimeF)
 
-	return gfIDstr
+	return gfID
 }

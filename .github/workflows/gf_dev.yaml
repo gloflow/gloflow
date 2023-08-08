@@ -97,6 +97,12 @@ jobs:
           cd /home/gf/gf_lang/go/gf_lang
           go test -v
 
+      # GF_POLICY
+      - name: test gf_policy
+        run: |
+          cd /home/gf/go/gf_identity/gf_policy
+          go test -v -mongodb_host=mongo -sql_host=postgres
+
       # GF_IDENTITY_LIB
       - name: test gf_identity
         run: |
