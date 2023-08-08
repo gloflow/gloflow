@@ -68,8 +68,11 @@ jobs:
         - ${{ github.workspace }}:/home/gf
       env:
         GF_ALCHEMY_SERVICE_ACC__API_KEY: ${{ secrets.GF_ALCHEMY_SERVICE_ACC__API_KEY }}
+
+        # currently these are used by web3 tests
         GF_TEST_MONGODB_HOST_PORT: mongo
         GF_TEST_SQL_HOST_PORT: postgres
+
         AUTH0_DOMAIN: ${{ secrets.GF_AUTH0_DOMAIN }}
 
     services:
@@ -114,7 +117,7 @@ jobs:
       - name: test gf_web3
         run: |
           cd /home/gf/go/gf_web3/gf_web3_lib
-          go test -v -sql_host=postgres
+          go test -v
       
       # GF_HOME
       - name: test gf_home
