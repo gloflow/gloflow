@@ -272,7 +272,8 @@ function gf_upload__run(p_image_name_str,
 				(p_upload_transfer_duration_sec_f)=>{
 
 					// UPLOAD__SEND_COMPLETE
-					gf_upload__send_complete(p_upload_gf_image_id_str, 
+					gf_upload__send_complete(p_upload_gf_image_id_str,
+						p_flows_names_str,
 						p_target_full_host_str,
 						()=>{
 
@@ -394,11 +395,12 @@ function gf_upload__send_metrics(p_upload_duration_sec_f,
 
 //-------------------------------------------------
 function gf_upload__send_complete(p_upload_gf_image_id_str,
+	p_flows_names_str,
 	p_target_full_host_str,
 	p_on_complete_fun) {
 
 	console.log("AWS S3 PUT upload done...")
-	const url_str = `${p_target_full_host_str}/v1/images/upload_complete?imgid=${p_upload_gf_image_id_str}`;
+	const url_str = `${p_target_full_host_str}/v1/images/upload_complete?imgid=${p_upload_gf_image_id_str}&f=${p_flows_names_str}`;
 
 	$.ajax({
 		method: "POST",
