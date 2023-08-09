@@ -21,6 +21,7 @@ package gf_policy
 
 import (
 	"fmt"
+	"time"
 	"context"
 	"strings"
 	"github.com/lib/pq"
@@ -53,7 +54,7 @@ func DBsqlCreateTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 		PRIMARY KEY(id)
 	);
 	`
-
+	
 	_, err := pRuntimeSys.SQLdb.Exec(sqlStr)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to create policies related tables in the DB",
@@ -91,10 +92,12 @@ func DBsqlGetPolicyByID(pPolicyID gf_core.GF_ID,
 			id = $1 AND deleted=false;`
 
 	policy := &GFpolicy{}
+
+	var creationTime time.Time
 	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pPolicyID).Scan(
 		&policy.ID,
 		&policy.DeletedBool,
-		&policy.CreationUNIXtimeF,
+		&creationTime, // policy.CreationUNIXtimeF,
 		&policy.TargetResourceIDsLst,
 		&policy.TargetResourceTypeStr,
 		&policy.OwnerUserID,
@@ -109,6 +112,12 @@ func DBsqlGetPolicyByID(pPolicyID gf_core.GF_ID,
 			err, "gf_policy", pRuntimeSys)
 		return nil, gfErr
 	}
+
+
+
+	creationUNIXtimeF := float64(creationTime.UnixNano()) / 1e9
+	policy.CreationUNIXtimeF = creationUNIXtimeF
+
 
 	return policy, nil
 }
@@ -149,11 +158,15 @@ func DBsqlGetPolicies(pTargetResourceID gf_core.GF_ID,
 
 	policiesLst := []*GFpolicy{}
 	for rows.Next() {
+
 		policy := &GFpolicy{}
+
+		var creationTime time.Time
+
 		err := rows.Scan(
 			&policy.ID,
 			&policy.DeletedBool,
-			&policy.CreationUNIXtimeF,
+			&creationTime, // policy.CreationUNIXtimeF,
 			&policy.TargetResourceIDsLst,
 			&policy.TargetResourceTypeStr,
 			&policy.OwnerUserID,
@@ -168,6 +181,11 @@ func DBsqlGetPolicies(pTargetResourceID gf_core.GF_ID,
 				err, "gf_policy", pRuntimeSys)
 			return nil, gfErr
 		}
+
+		creationUNIXtimeF := float64(creationTime.UnixNano()) / 1e9
+		policy.CreationUNIXtimeF = creationUNIXtimeF
+
+
 		policiesLst = append(policiesLst, policy)
 	}
 
@@ -273,39 +291,6 @@ func DBsqlUpdatePolicy(pPolicyID gf_core.GF_ID,
 
 	return nil
 }
-
-/*
-func DBsqlUpdatePolicy(pPolicyIDstr gf_core.GF_ID,
-	pUpdateOp   *GFpolicyUpdateOp,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-
-	fieldsTargets := bson.M{}
-
-	if pUpdateOp.PublicViewBool != nil {
-		fieldsTargets["public_view_bool"] = *pUpdateOp.PublicViewBool
-	}
-
-
-	_, err := pRuntimeSys.Mongo_db.Collection("gf_policies").UpdateMany(pCtx, bson.M{
-		"id_str":       pPolicyIDstr,
-		"deleted_bool": false,
-	},
-	bson.M{"$set": fieldsTargets})
-		
-	if err != nil {
-		gfErr := gf_core.MongoHandleError("failed to to update policy in DB",
-			"mongodb_update_error",
-			map[string]interface{}{
-				"policy_id_str": string(pPolicyIDstr),
-			},
-			err, "gf_policy", pRuntimeSys)
-		return gfErr
-	}
-
-	return nil
-}
-*/
 
 //---------------------------------------------------
 // EXISTS_BY_USERNAME

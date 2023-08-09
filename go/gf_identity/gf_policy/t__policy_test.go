@@ -49,7 +49,10 @@ func TestPolicy(pTest *testing.T) {
 	targetResourceID      := gf_core.GF_ID("test_resource")
 	targetResourceTypeStr := "flow"
 	ownerUserID           := gf_core.GF_ID("test_user")
-	
+	thirdpartyUserID      := gf_core.GF_ID("other_user")
+
+	//----------------------
+	fmt.Println("create policy >>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 	// CREATE
 	policy, gfErr := PipelineCreate(targetResourceID,
@@ -62,5 +65,28 @@ func TestPolicy(pTest *testing.T) {
 	}
 
 	spew.Dump(policy)
+
+
+
+	// add some third-party user to a list of editors
+	policy.EditorsUserIDsLst = append(policy.EditorsUserIDsLst, string(thirdpartyUserID))
 	
+	//----------------------
+	fmt.Println("get policies >>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+	// GET_POLICIES
+	policiesLst, gfErr := DBsqlGetPolicies(targetResourceID,
+		ctx,
+		runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+
+
+
+	spew.Dump(policiesLst)
+
+
+	//----------------------
 }
