@@ -310,6 +310,9 @@ func errorGetDefs() map[string]ErrorDef {
 		"sql_query_execute": ErrorDef{
 			DescrStr:"failed to execute a query in a SQL server",
 		},
+		"sql_row_scan": ErrorDef{
+			DescrStr:"failed to scan a row of results of a SQL query",
+		},
 		
 		//---------------
 		// ELASTICSEARCH

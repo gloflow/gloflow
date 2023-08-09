@@ -79,3 +79,57 @@ func DBsqlConnect(pDBnameStr string,
 
 	return db, nil
 }
+
+//-------------------------------------------------
+
+func DBsqlViewTableStructure(pTableNameStr string,
+	pRuntimeSys *RuntimeSys) *GFerror {
+
+	rows, err := pRuntimeSys.SQLdb.Query(`
+		SELECT column_name, data_type, udt_name
+		FROM information_schema.columns 
+		WHERE table_name = $1`, pTableNameStr)
+
+	if err != nil {
+		gfErr := ErrorCreate("failed to run table structure query against the DB...",
+			"sql_query_execute",
+			map[string]interface{}{
+				"table_name_str": pTableNameStr,
+			},
+			err, "gf_core", pRuntimeSys)
+		return gfErr
+	}
+	defer rows.Close()
+
+	fmt.Printf("Table structure for '%s':\n", pTableNameStr)
+	for rows.Next() {
+
+		var columnName, dataType, udtName string
+		if err := rows.Scan(&columnName, &dataType, &udtName); err != nil {
+
+			gfErr := ErrorCreate("failed to run table structure query against the DB...",
+				"sql_row_scan",
+				map[string]interface{}{
+					"table_name_str": pTableNameStr,
+				},
+				err, "gf_core", pRuntimeSys)
+			return gfErr
+		}
+		if dataType == "ARRAY" {
+			fmt.Printf("Column: %s, Type: ARRAY[%s]\n", columnName, udtName)
+		} else {
+			fmt.Printf("Column: %s, Type: %s\n", columnName, dataType)
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		gfErr := ErrorCreate("failed to run table structure query against the DB...",
+			"sql_query_execute",
+			map[string]interface{}{
+				"table_name_str": pTableNameStr,
+			},
+			err, "gf_core", pRuntimeSys)
+		return gfErr
+	}
+	return nil
+}
