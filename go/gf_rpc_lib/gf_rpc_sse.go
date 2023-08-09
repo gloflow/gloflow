@@ -44,21 +44,21 @@ type handler_http_sse     func(context.Context, http.ResponseWriter, *http.Reque
 
 //-------------------------------------------------
 
-func CreateHandlerSSE(p_path_str string,
-	p_handler_fun handler_http_sse,
+func CreateHandlerSSE(pPathStr string,
+	pHandlerFun   handler_http_sse,
 	pStoreRunBool bool,
 	pRuntimeSys   *gf_core.RuntimeSys) {
 
-	CreateHandlerHTTPwithMetrics(p_path_str,
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+	CreateHandlerHTTPwithMetrics(pPathStr,
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "GET" {
+			if pReq.Method == "GET" {
 
 				//-----------------------
 				// HANDLER
-				data_updates_ch, data_err_ch, data_complete_ch, gf_err := p_handler_fun(p_ctx, p_resp, p_req)
-				if gf_err != nil {
-					return nil, gf_err
+				dataUpdatesCh, dataErrCh, dataCompleteCh, gfErr := pHandlerFun(pCtx, pResp, pReq)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//-----------------------
@@ -71,31 +71,31 @@ func CreateHandlerSSE(p_path_str string,
 				// Go (this is written as of 1.0.3):
 				// https://code.google.com/p/go/source/detail?name=3292433291b2
 
-				flusher,ok := p_resp.(http.Flusher)
+				flusher, ok := pResp.(http.Flusher)
 				if !ok {
-					err_msg_str := fmt.Sprintf("%s handler failed - SSE http streaming is not supported on the server", p_path_str)
-					gf_err := gf_core.ErrorCreate(err_msg_str, 
+					errMsgStr := fmt.Sprintf("%s handler failed - SSE http streaming is not supported on the server", pPathStr)
+					gfErr := gf_core.ErrorCreate(errMsgStr, 
 						"http_server_flusher_not_supported_error",
-						map[string]interface{}{"path_str": p_path_str,},
+						map[string]interface{}{"path_str": pPathStr,},
 						nil, "gf_rpc_lib", pRuntimeSys)
-					return nil, gf_err
+					return nil, gfErr
 				}
 
-				notify := p_resp.(http.CloseNotifier).CloseNotify()
+				notify := pResp.(http.CloseNotifier).CloseNotify()
 				go func() {
 					<- notify
 					pRuntimeSys.LogFun("ERROR", "HTTP connection just closed")
 				}()
 
-				p_resp.Header().Set("Content-Type",                "text/event-stream")
-				p_resp.Header().Set("Cache-Control",               "no-cache")
-				p_resp.Header().Set("Connection",                  "keep-alive")
-				p_resp.Header().Set("Access-Control-Allow-Origin", "*") // CORS
+				pResp.Header().Set("Content-Type",                "text/event-stream")
+				pResp.Header().Set("Cache-Control",               "no-cache")
+				pResp.Header().Set("Connection",                  "keep-alive")
+				pResp.Header().Set("Access-Control-Allow-Origin", "*") // CORS
 
 				//-------------------------------------------------
-				complete_fun := func() {
+				completeFun := func() {
 					data_complete_lst, _ := json.Marshal(map[string]interface{}{"status_str": "complete"})
-					fmt.Fprintf(p_resp, "data: %s\n\n", data_complete_lst)
+					fmt.Fprintf(pResp, "data: %s\n\n", data_complete_lst)
 					flusher.Flush()
 				}
 
@@ -113,51 +113,51 @@ func CreateHandlerSSE(p_path_str string,
 					//               its messages were consumed.
 					//               to avoid this a channel is not closed, and instead the last update message is waited for here, or an error,
 					//               and cleanup only done after that.
-					case data_update := <- data_updates_ch:
+					case dataUpdate := <- dataUpdatesCh:
 
-						sse_event__unix_time_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0, 'f', 10, 64)
-						sse_event_id_str         := sse_event__unix_time_str
+						sseEventUNIXtimeStr := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0, 'f', 10, 64)
+						sseEventIDstr       := sseEventUNIXtimeStr
 
-						event_map := map[string]interface{}{
-							"data_map":   data_update,
+						eventMap := map[string]interface{}{
+							"data_map":   dataUpdate,
 							"status_str": "ok",
 						}
-						sse_event_lst, _ := json.Marshal(event_map)
+						sseEventLst, _ := json.Marshal(eventMap)
 
 						// SSE_WRITE
-						fmt.Fprintf(p_resp, "id: %s\n", sse_event_id_str)
-						fmt.Fprintf(p_resp, "data: %s\n\n", sse_event_lst)
+						fmt.Fprintf(pResp, "id: %s\n", sseEventIDstr)
+						fmt.Fprintf(pResp, "data: %s\n\n", sseEventLst)
 						flusher.Flush()
 					
 					//-----------------------
 					// ERROR_UPDATE
-					case gf_err := <- data_err_ch:
+					case gfErr := <- dataErrCh:
 
-						sse_event__unix_time_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0, 'f', 10, 64)
-						sse_event_id_str         := sse_event__unix_time_str
+						sseEventUNIXtimeStr := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0, 'f', 10, 64)
+						sseEventIDstr       := sseEventUNIXtimeStr
 						
-						event_map := map[string]interface{}{
-							"data_map":   gf_err,
+						eventMap := map[string]interface{}{
+							"data_map":   gfErr,
 							"status_str": "error",
 						}
-						sse_event_lst, _ := json.Marshal(event_map)
+						sseEventLst, _ := json.Marshal(eventMap)
 
 						// SSE_WRITE
-						fmt.Fprintf(p_resp, "id: %s\n", sse_event_id_str)
-						fmt.Fprintf(p_resp, "data: %s\n\n", sse_event_lst)
+						fmt.Fprintf(pResp, "id: %s\n", sseEventIDstr)
+						fmt.Fprintf(pResp, "data: %s\n\n", sseEventLst)
 						flusher.Flush()
 
 						// an error occured, so complete SSE stream and exit
-						complete_fun()
+						completeFun()
 						break
 
 					//-----------------------
 					// COMPLETE
-					case complete_bool := <- data_complete_ch:
+					case completeBool := <- dataCompleteCh:
 
-						if complete_bool {
+						if completeBool {
 
-							complete_fun()
+							completeFun()
 							break
 						}
 
@@ -176,12 +176,12 @@ func CreateHandlerSSE(p_path_str string,
 
 //-------------------------------------------------
 
-func clientParseResponseSSE(p_body_str string,
+func clientParseResponseSSE(pBodyStr string,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	data_items_lst := []map[string]interface{}{}
 
-	for _, line_str := range strings.Split(p_body_str, `\n`) {
+	for _, line_str := range strings.Split(pBodyStr, `\n`) {
 
 		pRuntimeSys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>")
 		pRuntimeSys.LogFun("INFO", line_str)

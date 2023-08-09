@@ -34,6 +34,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func InitHandlers(pGetHostsFun func(context.Context, *gf_eth_core.GF_runtime) []string,
 	pIndexerCmdsCh                  gf_eth_indexer.GF_indexer_ch,
 	pIndexerJobUpdatesNewConsumerCh gf_eth_indexer.GF_job_update_new_consumer_ch,

@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_core
 
 //-------------------------------------------------
+
 type GF_py_plugins struct {
 	Base_dir_path_str string
 }

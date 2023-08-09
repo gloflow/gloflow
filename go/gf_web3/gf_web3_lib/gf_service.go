@@ -38,6 +38,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func InitService(pAuthSubsystemTypeStr string,
 	pKeyServer        *gf_identity_core.GFkeyServerInfo,
 	pHTTPmux          *http.ServeMux,
@@ -70,6 +71,7 @@ func InitService(pAuthSubsystemTypeStr string,
 }
 
 //-------------------------------------------------
+
 func RunService(pRuntime *gf_eth_core.GF_runtime) {
 
 	//-------------

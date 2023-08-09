@@ -29,6 +29,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func Init_handlers(p_indexer_cmds_ch GF_indexer_ch,
 	p_indexer_job_updates_new_consumer_ch GF_job_update_new_consumer_ch,
 	p_metrics                             *gf_eth_core.GF_metrics,

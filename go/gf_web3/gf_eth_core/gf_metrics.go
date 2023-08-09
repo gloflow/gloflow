@@ -29,6 +29,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GF_metrics struct {
 	
 	// SQS
@@ -60,6 +61,7 @@ type GF_metrics struct {
 
 //-------------------------------------------------
 // INIT
+
 func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GFerror) {
 
 
@@ -206,6 +208,7 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GFerror) {
 
 //-------------------------------------------------
 // INIT_SERVER
+
 func Metrics__init_server(p_port_int int) {
 	metrics_router := mux.NewRouter()
 	metrics_router.Handle("/metrics", promhttp.Handler())
