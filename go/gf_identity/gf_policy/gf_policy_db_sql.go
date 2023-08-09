@@ -37,6 +37,7 @@ func DBsqlCreateTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	sqlStr := `
 	CREATE TABLE IF NOT EXISTS gf_policy (
+		v             VARCHAR(255),
 		id            TEXT,
 		deleted       BOOLEAN DEFAULT FALSE,
 		creation_time TIMESTAMP DEFAULT NOW(),
@@ -47,14 +48,15 @@ func DBsqlCreateTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 		public_view BOOLEAN DEFAULT FALSE,
 	
-		viewers_user_ids TEXT[],
-		taggers_user_ids TEXT[],
-		editors_user_ids TEXT[],
+		viewers_user_ids TEXT[] NOT NULL,
+		taggers_user_ids TEXT[] NOT NULL,
+		editors_user_ids TEXT[] NOT NULL,
+		admins_user_ids  TEXT[] NOT NULL,
 
 		PRIMARY KEY(id)
 	);
 	`
-	
+
 	_, err := pRuntimeSys.SQLdb.Exec(sqlStr)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to create policies related tables in the DB",
@@ -85,7 +87,8 @@ func DBsqlGetPolicyByID(pPolicyID gf_core.GF_ID,
 			public_view,
 			viewers_user_ids,
 			taggers_user_ids,
-			editors_user_ids
+			editors_user_ids,
+			admins_user_ids
 		FROM 
 			gf_policy 
 		WHERE 
@@ -94,17 +97,19 @@ func DBsqlGetPolicyByID(pPolicyID gf_core.GF_ID,
 	policy := &GFpolicy{}
 
 	var creationTime time.Time
+	var idsStr string
 	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pPolicyID).Scan(
 		&policy.ID,
 		&policy.DeletedBool,
 		&creationTime, // policy.CreationUNIXtimeF,
-		&policy.TargetResourceIDsLst,
+		&idsStr, // &policy.TargetResourceIDsLst,
 		&policy.TargetResourceTypeStr,
 		&policy.OwnerUserID,
 		&policy.PublicViewBool,
 		&policy.ViewersUserIDsLst,
 		&policy.TaggersUserIDsLst,
-		&policy.EditorsUserIDsLst)
+		&policy.EditorsUserIDsLst,
+		&policy.AdminsUserIDsLst,)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to get policy with ID in the DB",
 			"sql_query_execute",
@@ -140,7 +145,8 @@ func DBsqlGetPolicies(pTargetResourceID gf_core.GF_ID,
 			public_view,
 			viewers_user_ids,
 			taggers_user_ids,
-			editors_user_ids
+			editors_user_ids,
+			admins_user_ids
 		FROM 
 			gf_policy 
 		WHERE 
@@ -162,18 +168,25 @@ func DBsqlGetPolicies(pTargetResourceID gf_core.GF_ID,
 		policy := &GFpolicy{}
 
 		var creationTime time.Time
+		// var targetResourceIDsLst []string
+		var targetResourceIDsStr string
+		var viewersUserIDsStr    string
+		var taggersUserIDsStr    string
+		var editorsUserIDsStr    string
+		var adminsUserIDsStr     string
 
 		err := rows.Scan(
 			&policy.ID,
 			&policy.DeletedBool,
-			&creationTime, // policy.CreationUNIXtimeF,
-			&policy.TargetResourceIDsLst,
+			&creationTime,         // policy.CreationUNIXtimeF,
+			&targetResourceIDsStr, // &targetResourceIDsLst, // policy.TargetResourceIDsLst,
 			&policy.TargetResourceTypeStr,
 			&policy.OwnerUserID,
 			&policy.PublicViewBool,
-			&policy.ViewersUserIDsLst,
-			&policy.TaggersUserIDsLst,
-			&policy.EditorsUserIDsLst)
+			&viewersUserIDsStr,
+			&taggersUserIDsStr,
+			&editorsUserIDsStr,
+			&adminsUserIDsStr)
 		if err != nil {
 			gfErr := gf_core.ErrorCreate("failed to scan row to get policy with target_resource in the DB",
 				"sql_query_execute",
@@ -185,6 +198,29 @@ func DBsqlGetPolicies(pTargetResourceID gf_core.GF_ID,
 		creationUNIXtimeF := float64(creationTime.UnixNano()) / 1e9
 		policy.CreationUNIXtimeF = creationUNIXtimeF
 
+		//-----------------------
+		// PARSE_ARRAYS
+
+		targetResourceIDsLst       := strings.Split(strings.Trim(targetResourceIDsStr, "{}"), ",")
+		policy.TargetResourceIDsLst = targetResourceIDsLst
+
+		if viewersUserIDsStr != "" {
+			policy.ViewersUserIDsLst = strings.Split(strings.Trim(viewersUserIDsStr, "{}"), ",")
+		}
+
+		if taggersUserIDsStr != "" {
+			policy.TaggersUserIDsLst = strings.Split(strings.Trim(taggersUserIDsStr, "{}"), ",")
+		}
+		
+		if editorsUserIDsStr != "" {
+			policy.EditorsUserIDsLst = strings.Split(strings.Trim(editorsUserIDsStr, "{}"), ",")
+		}
+
+		if adminsUserIDsStr != "" {
+			policy.AdminsUserIDsLst = strings.Split(strings.Trim(adminsUserIDsStr, "{}"), ",")
+		}
+
+		//-----------------------
 
 		policiesLst = append(policiesLst, policy)
 	}
@@ -209,6 +245,7 @@ func DBsqlCreatePolicy(pPolicy *GFpolicy,
 
 	sqlStr := `
 		INSERT INTO gf_policy (
+			v,
 			id,
 			target_resource_ids,
 			target_resource_type,
@@ -216,13 +253,15 @@ func DBsqlCreatePolicy(pPolicy *GFpolicy,
 			public_view,
 			viewers_user_ids,
 			taggers_user_ids,
-			editors_user_ids
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+			editors_user_ids,
+			admins_user_ids
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 	`
 
 	_, err := pRuntimeSys.SQLdb.ExecContext(
 		pCtx,
 		sqlStr,
+		"0", // version
 		pPolicy.ID,
 		pq.Array(pPolicy.TargetResourceIDsLst),
 		pPolicy.TargetResourceTypeStr,
@@ -231,6 +270,7 @@ func DBsqlCreatePolicy(pPolicy *GFpolicy,
 		pq.Array(pPolicy.ViewersUserIDsLst),
 		pq.Array(pPolicy.TaggersUserIDsLst),
 		pq.Array(pPolicy.EditorsUserIDsLst),
+		pq.Array(pPolicy.AdminsUserIDsLst),
 	)
 
 	if err != nil {

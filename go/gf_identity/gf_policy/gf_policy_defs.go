@@ -31,6 +31,8 @@ const (
 
 	GF_POLICY_OP__FLOW_ADD_IMG    = "gf:images:flow_add_img"
 	GF_POLICY_OP__FLOW_REMOVE_IMG = "gf:images:flow_remove_img"
+
+	GF_POLICY_OP__FLOW_DELETE = "gf:images:flow_delete"
 )
 
 //---------------------------------------------------
@@ -56,6 +58,10 @@ func getDefs() map[string][]string {
 		"editing": []string{
 			GF_POLICY_OP__FLOW_ADD_IMG,
 			GF_POLICY_OP__FLOW_REMOVE_IMG,
+		},
+
+		"admin": []string{
+			GF_POLICY_OP__FLOW_DELETE,
 		},
 	}
 

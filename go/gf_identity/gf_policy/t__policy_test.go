@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"testing"
 	"context"
-	// "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
 	// "github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/davecgh/go-spew/spew"
@@ -68,6 +68,11 @@ func TestPolicy(pTest *testing.T) {
 
 
 
+	gfErr = gf_core.DBsqlViewTableStructure("gf_policy", runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
 	// add some third-party user to a list of editors
 	policy.EditorsUserIDsLst = append(policy.EditorsUserIDsLst, string(thirdpartyUserID))
 	
@@ -89,4 +94,44 @@ func TestPolicy(pTest *testing.T) {
 
 
 	//----------------------
+	fmt.Println("validate policy >>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+
+
+
+	policiesDefsMap := getDefs()
+
+	validBool := policySingleVerify(GF_POLICY_OP__FLOW_ADD_IMG,
+		policy,
+		thirdpartyUserID,
+		policiesDefsMap)
+
+
+	validDeleteBool := policySingleVerify(GF_POLICY_OP__FLOW_DELETE,
+		policy,
+		thirdpartyUserID,
+		policiesDefsMap)
+
+	fmt.Println("VALID", validBool, validDeleteBool)
+
+
+	assert.True(pTest, validBool, "adding an image to a flow by a user who has the editor role should be allowed")
+	assert.True(pTest, !validDeleteBool, "deleting a flow by a user who does not have the admin role should not be allowed")
+
+	//----------------------
+	fmt.Println("validate policy >>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+	policy.EditorsUserIDsLst = []string{}
+	policy.TaggersUserIDsLst = append(policy.TaggersUserIDsLst, string(thirdpartyUserID))
+
+
+	validTaggingBool := policySingleVerify(GF_POLICY_OP__FLOW_ADD_IMG,
+		policy,
+		thirdpartyUserID,
+		policiesDefsMap)
+
+	fmt.Println("VALID", validTaggingBool)
+
+
+	assert.True(pTest, !validTaggingBool, "adding an image to a flow by a user who can only tag is not allowed")
 }

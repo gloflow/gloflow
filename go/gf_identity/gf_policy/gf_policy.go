@@ -56,6 +56,9 @@ type GFpolicy struct {
 	// editors are users that are allowed by the owner to update/add/remove items to the flow
 	EditorsUserIDsLst []string `bson:"editors_user_ids_lst"`
 
+	// admins have full control of the resource
+	AdminsUserIDsLst []string
+
 	//-----------------------
 }
 
@@ -78,10 +81,8 @@ func Verify(pRequestedOpStr string,
 		return gfErr
 	}
 
-
 	// GET_DEFS
 	policiesDefsMap := getDefs()
-
 	
 	// VALIDATE_POLICIES
 	for _, policy := range policiesLst {
@@ -188,6 +189,22 @@ func policySingleVerify(pRequestedOpStr string,
 		}
 	}
 
+	// ADMIN
+	// highest level permission set at the momement, so try last
+	for _, opStr := range pPoliciesDefsMap["admin"] {
+
+		if pRequestedOpStr == opStr {
+			// for each allowed viwing user_id check if it equals to the
+			// user_id requesting the operation permission.
+			for _, allowedUserIDstr := range pPolicy.AdminsUserIDsLst {
+				if pUserID == gf_core.GF_ID(allowedUserIDstr) {
+					return true
+				}
+			}
+			return false
+		}
+	}
+
 	return false
 }
 
@@ -249,6 +266,11 @@ func PipelineCreate(pTargetResourceID gf_core.GF_ID,
 		TargetResourceTypeStr: pTargetResourceTypeStr,
 		OwnerUserID:           pOwnerUserID,
 		PublicViewBool:        true,
+
+		ViewersUserIDsLst: []string{},
+		TaggersUserIDsLst: []string{},
+		EditorsUserIDsLst: []string{},
+		AdminsUserIDsLst:  []string{},
 	}
 
 	// DB
