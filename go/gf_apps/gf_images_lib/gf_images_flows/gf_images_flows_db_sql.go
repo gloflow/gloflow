@@ -82,6 +82,7 @@ func DBsqlCreateFlow(pFlowID gf_core.GF_ID,
 		gfErr := gf_core.ErrorCreate("failed to begin the SQL transaction to create a flow",
 			"sql_transaction_begin",
 			map[string]interface{}{
+				"flow_id_str":       string(pFlowID),
 				"flow_name_str":     pFlowNameStr,
 				"owner_user_id_str": pOwnerUserID,
 			},
@@ -104,12 +105,13 @@ func DBsqlCreateFlow(pFlowID gf_core.GF_ID,
 		
 
 
-	var id int
+	var id string
 	err = row.Scan(&id)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to create a new images flow in the DB",
 			"sql_row_insert",
 			map[string]interface{}{
+				"flow_id_str":   string(pFlowID),
 				"flow_name_str": pFlowNameStr,
 				"user_id_str":   pOwnerUserID,
 			},
@@ -145,13 +147,13 @@ func DBsqlCreateFlow(pFlowID gf_core.GF_ID,
 		gfErr := gf_core.ErrorCreate("failed to commit the SQL transaction to create a flow",
 			"sql_transaction_commit",
 			map[string]interface{}{
+				"flow_id_str":       string(pFlowID),
 				"flow_name_str":     pFlowNameStr,
 				"owner_user_id_str": pOwnerUserID,
 			},
 			err, "gf_images_flows", pRuntimeSys)
 		return gfErr
 	}
-
 	
 	return nil
 }
@@ -177,7 +179,7 @@ func DBsqlCreateTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	CREATE TABLE IF NOT EXISTS gf_images_flows_editors (
 		v       VARCHAR(255),
-		flow_id INT REFERENCES gf_images_flows(id),
+		flow_id TEXT REFERENCES gf_images_flows(id),
 		user_id TEXT NOT NULL,
 		
 		PRIMARY KEY(flow_id, user_id)
