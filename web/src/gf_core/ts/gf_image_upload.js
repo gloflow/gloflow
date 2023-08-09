@@ -302,7 +302,9 @@ function gf_upload__send_init(p_image_name_str,
 
 	// UPLOAD_INIT
 	const client_type_str = "browser";
-	const url_str = `${p_target_full_host_str}/v1/images/upload_init?imgf=${p_image_format_str}&imgn=${p_image_name_str}&f=${p_flows_names_str}&ct=${client_type_str}`;
+
+	// auth_r=0 - dont redirect on auth fail, just return status
+	const url_str = `${p_target_full_host_str}/v1/images/upload_init?imgf=${p_image_format_str}&imgn=${p_image_name_str}&f=${p_flows_names_str}&ct=${client_type_str}&auth_r=0`;
 	$.ajax({
 		method: "GET",
 		"url":  url_str,
@@ -368,7 +370,9 @@ function gf_upload__send_metrics(p_upload_duration_sec_f,
 	p_on_complete_fun) {
 
 	const client_type_str = "browser";
-	const url_str = `${p_target_full_host_str}/v1/images/upload_metrics?imgid=${p_upload_gf_image_id_str}&ct=${client_type_str}`;
+
+	// auth_r=0 - dont redirect on auth fail, just return status
+	const url_str = `${p_target_full_host_str}/v1/images/upload_metrics?imgid=${p_upload_gf_image_id_str}&ct=${client_type_str}&auth_r=0`;
 
 	const data_map = {
 		"upload_client_duration_sec_f":          p_upload_duration_sec_f,
@@ -400,7 +404,9 @@ function gf_upload__send_complete(p_upload_gf_image_id_str,
 	p_on_complete_fun) {
 
 	console.log("AWS S3 PUT upload done...")
-	const url_str = `${p_target_full_host_str}/v1/images/upload_complete?imgid=${p_upload_gf_image_id_str}&f=${p_flows_names_str}`;
+
+	// auth_r=0 - dont redirect on auth fail, just return status
+	const url_str = `${p_target_full_host_str}/v1/images/upload_complete?imgid=${p_upload_gf_image_id_str}&f=${p_flows_names_str}&auth_r=0`;
 
 	$.ajax({
 		method: "POST",
