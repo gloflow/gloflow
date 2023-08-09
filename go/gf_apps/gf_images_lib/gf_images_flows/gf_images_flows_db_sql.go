@@ -70,7 +70,8 @@ func DBsqlGetID(pFlowNameStr string,
 //---------------------------------------------------
 // CREATE_FLOW
 
-func DBsqlCreateFlow(pFlowNameStr string,
+func DBsqlCreateFlow(pFlowID gf_core.GF_ID,
+	pFlowNameStr string,
 	pOwnerUserID gf_core.GF_ID,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -92,9 +93,10 @@ func DBsqlCreateFlow(pFlowNameStr string,
 	defer tx.Rollback()
 
 	row := tx.QueryRow(`
-		INSERT INTO gf_images_flows (name, creator_user_id)
-		VALUES ($1, $2) RETURNING id
+		INSERT INTO gf_images_flows (id, name, creator_user_id)
+		VALUES ($1, $2, $3) RETURNING id
 		`,
+		string(pFlowID),
 		pFlowNameStr,
 		pOwnerUserID)
 
@@ -162,13 +164,15 @@ func DBsqlCreateTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	sqlStr := `
 	CREATE TABLE IF NOT EXISTS gf_images_flows (
 		v               VARCHAR(255),
-		id              SERIAL PRIMARY KEY,
+		id              TEXT,
 		deleted         BOOLEAN DEFAULT FALSE,
 		creation_time   TIMESTAMP DEFAULT NOW(),
 		name            TEXT NOT NULL,
 		creator_user_id TEXT NOT NULL,
 		public          BOOLEAN,
-		description     TEXT
+		description     TEXT,
+
+		PRIMARY KEY(id)
 	);
 
 	CREATE TABLE IF NOT EXISTS gf_images_flows_editors (

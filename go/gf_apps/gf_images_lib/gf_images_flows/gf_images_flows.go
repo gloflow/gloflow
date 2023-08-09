@@ -95,22 +95,23 @@ TEMPORARY - this is mainly needed while flows are held as a property of images
 func pipelineCreateDiscoveredFlows(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-
-
-
 	// get all flows from the current Mongodb
 	allFlowsLst, gfErr := DBgetAll(pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
 
+	//----------------------
+	// IMPORTANT!! - system user "gf" is assigned as the owner of this flow
+	ownerUserID := gf_core.GF_ID("gf")
 
+	//----------------------
 
 	// SQL
 	for _, flowMap := range allFlowsLst {
 
-
 		nameStr := flowMap["_id"].(string)
+		fmt.Printf("flow name - %s", nameStr)
 
 		existsBool, gfErr := DBsqlCheckFlowExists(nameStr, pRuntimeSys)
 		if gfErr != nil {
@@ -121,15 +122,17 @@ func pipelineCreateDiscoveredFlows(pCtx context.Context,
 		if !existsBool {
 
 			//----------------------
-			// IMPORTANT!! - system user "gf" is assigned as the owner of this flow
-			ownerUserID := gf_core.GF_ID("gf")
+			// CREATE_FLOW
+			_, gfErr := Create(nameStr,
+				ownerUserID,
+				pCtx,
+				pRuntimeSys)
 
-			//----------------------
-
-			gfErr := DBsqlCreateFlow(nameStr, ownerUserID, pRuntimeSys)
 			if gfErr != nil {
 				return gfErr
 			}
+
+			//----------------------
 		}
 
 	}
@@ -463,7 +466,8 @@ func Create(pFlowNameStr string,
 	if pRuntimeSys.SQLdb != nil {
 
 
-		gfErr := DBsqlCreateFlow(pFlowNameStr,
+		gfErr := DBsqlCreateFlow(idStr,
+			pFlowNameStr,
 			pOwnerUserIDstr,
 			pRuntimeSys)
 		if gfErr != nil {
