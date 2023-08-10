@@ -170,10 +170,10 @@ func DBsqlGetPolicies(pTargetResourceID gf_core.GF_ID,
 		var creationTime time.Time
 		// var targetResourceIDsLst []string
 		var targetResourceIDsStr string
-		var viewersUserIDsStr    string
-		var taggersUserIDsStr    string
-		var editorsUserIDsStr    string
-		var adminsUserIDsStr     string
+		var viewersUserIDsStr    *string
+		var taggersUserIDsStr    *string
+		var editorsUserIDsStr    *string
+		var adminsUserIDsStr     *string
 
 		err := rows.Scan(
 			&policy.ID,
@@ -204,20 +204,21 @@ func DBsqlGetPolicies(pTargetResourceID gf_core.GF_ID,
 		targetResourceIDsLst       := strings.Split(strings.Trim(targetResourceIDsStr, "{}"), ",")
 		policy.TargetResourceIDsLst = targetResourceIDsLst
 
-		if viewersUserIDsStr != "" {
-			policy.ViewersUserIDsLst = strings.Split(strings.Trim(viewersUserIDsStr, "{}"), ",")
+		// check value is not null or empty string
+		if viewersUserIDsStr != nil && *viewersUserIDsStr != "" {
+			policy.ViewersUserIDsLst = strings.Split(strings.Trim(*viewersUserIDsStr, "{}"), ",")
 		}
 
-		if taggersUserIDsStr != "" {
-			policy.TaggersUserIDsLst = strings.Split(strings.Trim(taggersUserIDsStr, "{}"), ",")
+		if taggersUserIDsStr != nil && *taggersUserIDsStr != "" {
+			policy.TaggersUserIDsLst = strings.Split(strings.Trim(*taggersUserIDsStr, "{}"), ",")
 		}
 		
-		if editorsUserIDsStr != "" {
-			policy.EditorsUserIDsLst = strings.Split(strings.Trim(editorsUserIDsStr, "{}"), ",")
+		if editorsUserIDsStr != nil && *editorsUserIDsStr != "" {
+			policy.EditorsUserIDsLst = strings.Split(strings.Trim(*editorsUserIDsStr, "{}"), ",")
 		}
 
-		if adminsUserIDsStr != "" {
-			policy.AdminsUserIDsLst = strings.Split(strings.Trim(adminsUserIDsStr, "{}"), ",")
+		if adminsUserIDsStr != nil && *adminsUserIDsStr != "" {
+			policy.AdminsUserIDsLst = strings.Split(strings.Trim(*adminsUserIDsStr, "{}"), ",")
 		}
 
 		//-----------------------

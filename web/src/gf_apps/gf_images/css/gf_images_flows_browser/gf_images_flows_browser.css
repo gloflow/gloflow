@@ -220,7 +220,7 @@ body {
 
 #current_pages_display #start_page {
 	font-size: 20px;
-    background-color: #90ff4a;
+    background-color: #cccccc;
     padding-left: 7px;
     padding-top: 5px;
     padding-bottom: 4px;
@@ -228,7 +228,7 @@ body {
 
 #current_pages_display #end_page {
 	font-size: 20px;
-    background-color: #ffff2d;
+    background-color: #a4a4a4;
     padding-left: 7px;
     padding-top: 5px;
     padding-bottom: 4px;
