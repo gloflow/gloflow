@@ -67,11 +67,11 @@ func testBookmarkingFlow(pTest *testing.T,
 
 	ctx := context.Background()
 
-	testUserIDstr := gf_core.GF_ID("test_user")
+	testUserID := gf_core.GF_ID("test_user")
 	//------------------
 	// CREATE
 	inputCreate := &GFbookmarkInputCreate{
-		User_id_str:     testUserIDstr,
+		User_id_str:     testUserID,
 		Url_str:         "https://gloflow.com",
 		Description_str: "test bookmark",
 		Tags_lst: []string{
@@ -79,6 +79,7 @@ func testBookmarkingFlow(pTest *testing.T,
 		},
 	}
 	gfErr := PipelineCreate(inputCreate,
+		testUserID,
 		nil, // p_images_jobs_mngr
 		ctx,
 		pRuntimeSys)
@@ -91,7 +92,7 @@ func testBookmarkingFlow(pTest *testing.T,
 
 	inputGet := &GFbookmarkInputGet{
 		Response_format_str: "json",
-		User_id_str:         testUserIDstr,
+		User_id_str:         testUserID,
 	}
 	output, gfErr := PipelineGet(inputGet,
 		nil,
@@ -125,7 +126,7 @@ func testBookmarkingFlow(pTest *testing.T,
 
 	inputGetHTML := &GFbookmarkInputGet{
 		Response_format_str: "html",
-		User_id_str:         testUserIDstr,
+		User_id_str:         testUserID,
 	}
 	outputHTML, gfErr := PipelineGet(inputGetHTML,
 		gfTemplates.Bookmarks,
