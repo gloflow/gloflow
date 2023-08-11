@@ -328,6 +328,7 @@ func AddExternImages(pImagesExternURLsLst []string,
 	pImagesOriginPagesURLsStr []string,
 	pFlowsNamesLst            []string,
 	pClientTypeStr            string,
+	pUserID                   gf_core.GF_ID,
 	pJobsMngrCh               chan gf_images_jobs_core.JobMsg,
 	pRuntimeSys               *gf_core.RuntimeSys) (*string, []*string, []gf_images_core.GFimageID, *gf_core.GFerror) {
 
@@ -349,6 +350,7 @@ func AddExternImages(pImagesExternURLsLst []string,
 	runningJob, jobExpectedOutputsLst, gfErr := gf_images_jobs_client.RunExternImages(pClientTypeStr,
 		imagesURLsToProcessLst,
 		pFlowsNamesLst,
+		pUserID,
 		pJobsMngrCh,
 		pRuntimeSys)
 
@@ -423,6 +425,7 @@ func AddExternImage(pImageExternURLstr string,
 	runningJob, jobExpectedOutputsLst, gfErr := gf_images_jobs_client.RunExternImages(pClientTypeStr,
 		imagesURLsToProcessLst,
 		pFlowsNamesLst,
+		pUserIDstr,
 		pJobsMngrCh,
 		pRuntimeSys)
 

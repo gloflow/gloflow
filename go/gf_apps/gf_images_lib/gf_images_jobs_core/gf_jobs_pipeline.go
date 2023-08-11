@@ -124,9 +124,6 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 	pImagesStoreLocalDirPathStr  string,
 	pImagesThumbsLocalDirPathStr string,
 	pFlowsNamesLst               []string,
-	pUserID                      gf_core.GF_ID,
-	// pSourceS3bucketNameStr       string, // S3_bucket to which the image was uploaded to
-	// pTargetS3bucketNameStr       string, // S3 bucket to which processed images are stored in after this pipeline processing
 	pS3info                      *gf_aws.GFs3Info,
 	pPluginsPyDirPathStr         string,
 	pStorage                     *gf_images_storage.GFimageStorage,
@@ -497,6 +494,7 @@ func jobTransform(pImageIDstr gf_images_core.GFimageID,
 		pImagesThumbsLocalDirPathStr,
 		pPluginsPyDirPathStr,
 		pJobRuntime.metricsPlugins,
+		pJobRuntime.userID,
 		ctx,
 		pRuntimeSys)
 

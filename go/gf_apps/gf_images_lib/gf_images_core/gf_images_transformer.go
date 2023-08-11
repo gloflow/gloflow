@@ -47,6 +47,7 @@ func TransformImage(pImageIDstr GFimageID,
 	pImagesStoreThumbnailsLocalDirPathStr string,
 	pPluginsPyDirPathStr                  string,
 	pPluginsMetrics                       *gf_images_plugins.GFmetrics,
+	pUserID                               gf_core.GF_ID,
 	pCtx                                  context.Context,
 	pRuntimeSys                           *gf_core.RuntimeSys) (*GFimage, *GFimageThumbs, *gf_core.GFerror) {
 
@@ -64,6 +65,7 @@ func TransformImage(pImageIDstr GFimageID,
 		normalizedExtStr,
 		pImageLocalFilePathStr,
 		pImagesStoreThumbnailsLocalDirPathStr,
+		pUserID,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -75,6 +77,7 @@ func TransformImage(pImageIDstr GFimageID,
 	// FINISH!! - this processing function uses "bimg", which uses
 	//            and underlying C lib "libvips"
 	gfErr = TransformProcessImageV2(pImageLocalFilePathStr,
+		pUserID,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -100,6 +103,7 @@ func TransformImage(pImageIDstr GFimageID,
 // V2
 
 func TransformProcessImageV2(pImageLocalFilePathStr string,
+	pUserID     gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -131,6 +135,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	pNormalizedExtStr                  string,
 	pImageLocalFilePathStr             string,
 	pImagesStoreThumbnailsLocalDirPathStr string,
+	pUserID                               gf_core.GF_ID,
 	pCtx                                  context.Context,
 	pRuntimeSys                           *gf_core.RuntimeSys) (*GFimage, *GFimageThumbs, *gf_core.GFerror) {
 
@@ -202,6 +207,8 @@ func TransformProcessImage(pImageIDstr GFimageID,
 		Height_int:                     imageHeightInt,
 
 		Meta_map: pMetaMap,
+
+		UserID: pUserID,
 	}
 
 	//--------------------------

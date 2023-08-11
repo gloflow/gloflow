@@ -52,8 +52,11 @@ type GFjobRunning struct {
 	Images_extern_to_process_lst   []GFimageExternToProcess   `bson:"images_to_process_lst"`
 	Images_uploaded_to_process_lst []GFimageUploadedToProcess `bson:"images_uploaded_to_process_lst"`
 	
-	Errors_lst     []JobError       `bson:"errors_lst"`
+	Errors_lst     []JobError        `bson:"errors_lst"`
 	job_updates_ch chan JobUpdateMsg `bson:"-"`
+
+	// user that submited the job
+	UserID gf_core.GF_ID `bson:"user_id"`
 }
 
 type GFjobRuntime struct {
@@ -62,6 +65,7 @@ type GFjobRuntime struct {
 	job_updates_ch          chan JobUpdateMsg
 	useNewStorageEngineBool bool
 	metricsPlugins          *gf_images_plugins.GFmetrics
+	userID                  gf_core.GF_ID
 }
 
 //------------------------
@@ -162,7 +166,6 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 		for {
 			jobMsg := <- jobsMngrCh
 
-
 			ctx := context.Background()
 
 			// IMPORTANT!! - only one job is processed per jobs_mngr.
@@ -181,6 +184,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					// RUNNING_JOB
 					runningJob, gfErr := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
 						jobMsg.Job_updates_ch,
+						jobMsg.UserID,
 						pRuntimeSys)
 					if gfErr != nil {
 						continue
@@ -193,23 +197,6 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					jobMsg.Job_init_ch <- runningJob
 
 					//------------------------
-					/*// S3_BUCKETS
-
-					var target_s3_bucket_name_str string
-					if len(jobMsg.Flows_names_lst) > 0 {
-						main_flow_str := jobMsg.Flows_names_lst[0]
-
-						// check if the specified flow has an associated s3 bucket
-						var ok bool
-						target_s3_bucket_name_str, ok = pConfig.Images_flow_to_s3_bucket_map[main_flow_str]
-						if !ok {
-							target_s3_bucket_name_str = pConfig.Images_flow_to_s3_bucket_default_str
-						}
-					} else {
-						target_s3_bucket_name_str = pConfig.Images_flow_to_s3_bucket_default_str
-					}*/
-
-					//------------------------
 
 					jobRuntime := &GFjobRuntime{
 						job_id_str:              runningJob.Id_str,
@@ -217,13 +204,13 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 						job_updates_ch:          jobMsg.Job_updates_ch,
 						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
 						metricsPlugins:          metrics.ImagesPluginsMetrics,
+						userID:                  jobMsg.UserID,
 					}
 
 					runJobErrsLst := runJobLocalImages(jobMsg.Images_local_to_process_lst,
 						jobMsg.Flows_names_lst,
 						pImagesStoreLocalDirPathStr,
 						pImagesThumbnailsStoreLocalDirPathStr,
-						// target_s3_bucket_name_str,
 						pS3info,
 						pConfig.PluginsPyDirPathStr,
 						pImageStorage,
@@ -251,10 +238,12 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					// METRICS
 					metrics.Cmd__start_job_transform_imgs__count.Inc()
 
-					/*// RUST
+					/*
+					// RUST
 					// FIX!! - this just runs Rust job code for testing.
 					//         pass in proper job_cmd argument.
-					run_job_rust()*/
+					run_job_rust()
+					*/
 
 					//------------------------
 					// LIFECYCLE_CALLBACK
@@ -277,6 +266,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					// RUNNING_JOB
 					runningJob, gfErr := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
 						jobMsg.Job_updates_ch,
+						jobMsg.UserID,
 						pRuntimeSys)
 					if gfErr != nil {
 						continue
@@ -288,35 +278,19 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					// SEND_MSG
 					jobMsg.Job_init_ch <- runningJob
 
-					// //------------------------
-					// // S3_BUCKETS
-					// source_s3_bucket_name_str := pConfig.Uploaded_images_s3_bucket_str
-					//
-					// // ADD!! - due to legacy reasons the "general" flow is still used as the main flow
-					// //         that images are added to when a uploaded_images job is processed.
-					// //         this should be generalized so that images are added to dedicated flow S3 buckets
-					// //         if those flows have their S3_bucket mapping defined in Gf_config.Images_flow_to_s3_bucket_map
-					// target_s3_bucket_name_str := pConfig.Images_flow_to_s3_bucket_map["general"]
-					// 
-					// //------------------------
-
 					jobRuntime := &GFjobRuntime{
 						job_id_str:          runningJob.Id_str,
 						job_client_type_str: jobMsg.Client_type_str,
 						job_updates_ch:      jobMsg.Job_updates_ch,
 						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
 						metricsPlugins:          metrics.ImagesPluginsMetrics,
+						userID:                  jobMsg.UserID,
 					}
-
-					userID := jobMsg.UserID
 
 					runJobErrsLst := runJobUploadedImages(jobMsg.Images_uploaded_to_process_lst,
 						jobMsg.Flows_names_lst,
 						pImagesStoreLocalDirPathStr,
 						pImagesThumbnailsStoreLocalDirPathStr,
-						userID,
-						// imageStorage.S3.UploadsSourceS3bucketNameStr, // source_s3_bucket_name_str,
-						// imageStorage.S3.UploadsTargetS3bucketNameStr, // target_s3_bucket_name_str,
 						pS3info,
 						pConfig.PluginsPyDirPathStr,
 						pImageStorage,
@@ -355,6 +329,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					// RUNNING_JOB
 					runningJob, gfErr := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
 						jobMsg.Job_updates_ch,
+						jobMsg.UserID,
 						pRuntimeSys)
 					if gfErr != nil {
 						continue
@@ -381,6 +356,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 						job_updates_ch:      jobMsg.Job_updates_ch,
 						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
 						metricsPlugins:          metrics.ImagesPluginsMetrics,
+						userID:                  jobMsg.UserID,
 					}
 
 					runJobErrsLst := runJobExternImages(jobMsg.Images_extern_to_process_lst,
@@ -442,20 +418,32 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 //-------------------------------------------------
 // CREATE_RUNNING_JOB
 
-func JobsMngrCreateRunningJob(p_client_type_str string,
+func JobsMngrCreateRunningJob(pClientTypeStr string,
 	p_job_updates_ch chan JobUpdateMsg,
+	pUserID          gf_core.GF_ID,
 	pRuntimeSys      *gf_core.RuntimeSys) (*GFjobRunning, *gf_core.GFerror) {
 
+	if pUserID == "" {
+		gfErr := gf_core.ErrorCreate("user_id for this job has not been specified (its empty)",
+			"user_incorrect",
+			map[string]interface{}{
+				"client_type_str": pClientTypeStr,
+			},
+			nil, "gf_images_jobs_core", pRuntimeSys)
+		return nil, gfErr
+	}
+	
 	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
 	job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
 
 	runningJob := &GFjobRunning{
 		Id_str:          job_id_str,
 		T_str:           "img_running_job",
-		Client_type_str: p_client_type_str,
+		Client_type_str: pClientTypeStr,
 		Status_str:      "running",
 		Start_time_f:    job_start_time_f,
 		job_updates_ch:  p_job_updates_ch,
+		UserID:          pUserID,
 	}
 
 	// DB

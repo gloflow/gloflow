@@ -50,6 +50,11 @@ func InitHandlers(pMux *http.ServeMux,
 
 				//--------------------------
 				// INPUT
+
+				// FIX!! - this route should authenticated and this user_id
+				//         should be fetched from the handler context.
+				userID := gf_core.GF_ID("gf")
+
 				inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
@@ -98,6 +103,7 @@ func InitHandlers(pMux *http.ServeMux,
 				runningJob, jobExpectedOutputsLst, gfErr := gf_images_jobs_client.RunExternImages(clientTypeStr,
 					imagesToProcessLst,
 					flowsNamesLst,
+					userID,
 					pJobsMngrCh,
 					pRuntimeSys)
 				if gfErr != nil {

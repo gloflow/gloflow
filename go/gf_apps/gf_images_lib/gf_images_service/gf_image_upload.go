@@ -63,7 +63,8 @@ type GFimageUploadMetrics struct {
 	ImageIDstr         gf_images_core.GFimageID `bson:"upload_gf_image_id_str"`
 	ClientTypeStr      string                   `bson:"client_type_str"`
 	UploadClientDurationSecF         float64    `bson:"upload_client_duration_sec_f"`
-	UploadClientTransferDurationSecF float64    `bson:"upload_client_transfer_duration_sec_f"`
+	UploadClientTransferDurationSecF float64       `bson:"upload_client_transfer_duration_sec_f"`
+	UserID                           gf_core.GF_ID `bson:"user_id_str"` // ID of the user starting this upload
 }
 
 //---------------------------------------------------
@@ -238,7 +239,7 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
 	//------------------
 
 	// DB
-	uploadInfo, gfErr := dbGetUploadInfo(pUploadImageIDstr, pCtx, pRuntimeSys)
+	uploadInfo, gfErr := dbGetUploadInfo(pUploadImageIDstr, pUserID, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -321,6 +322,7 @@ func UploadMetricsCreate(pUploadImageIDstr gf_images_core.GFimageID,
 		ClientTypeStr:      pClientTypeStr,
 		UploadClientDurationSecF:         uploadClientDurationSecF,
 		UploadClientTransferDurationSecF: uploadClientTransferDurationSecF,
+		UserID:                           pUserID,
 	}
 
 	// DB
@@ -376,6 +378,7 @@ func dbPutUploadInfo(pUploadInfo *GFimageUploadInfo,
 	gfErr       := gf_core.MongoInsert(pUploadInfo,
 		collNameStr,
 		map[string]interface{}{
+			"user_id":             pUploadInfo.UserID,
 			"upload_image_id_str": pUploadInfo.ImageIDstr,
 			"caller_err_msg_str":  "failed to update/upsert image upload_info into the DB",
 		},
@@ -392,6 +395,7 @@ func dbPutUploadInfo(pUploadInfo *GFimageUploadInfo,
 //---------------------------------------------------
 
 func dbGetUploadInfo(pUploadImageIDstr gf_images_core.GFimageID,
+	pUserID     gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GFerror) {
 
@@ -404,7 +408,10 @@ func dbGetUploadInfo(pUploadImageIDstr gf_images_core.GFimageID,
 	if err == mongo.ErrNoDocuments {
 		gfErr := gf_core.MongoHandleError("image_upload_info does not exist in mongodb",
 			"mongodb_not_found_error",
-			map[string]interface{}{"upload_gf_image_id_str": pUploadImageIDstr,},
+			map[string]interface{}{
+				"user_id":                pUserID,
+				"upload_gf_image_id_str": pUploadImageIDstr,
+			},
 			err, "gf_images_service", pRuntimeSys)
 		return nil, gfErr
 	}
@@ -412,7 +419,23 @@ func dbGetUploadInfo(pUploadImageIDstr gf_images_core.GFimageID,
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to get image_upload_info from mongodb",
 			"mongodb_find_error",
-			map[string]interface{}{"upload_gf_image_id_str": pUploadImageIDstr,},
+			map[string]interface{}{
+				"user_id":                pUserID,
+				"upload_gf_image_id_str": pUploadImageIDstr,
+			},
+			err, "gf_images_service", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	if uploadInfo.UserID != pUserID {
+		gfErr := gf_core.MongoHandleError("invalid user_id fetching upload_info from DB, user starting upload is not the same thats fetching it.",
+			"user_incorrect",
+			map[string]interface{}{
+				"user_id":                pUserID,
+				"upload_user_id":         uploadInfo.UserID,
+				"upload_gf_image_id_str": pUploadImageIDstr,
+			
+			},
 			err, "gf_images_service", pRuntimeSys)
 		return nil, gfErr
 	}

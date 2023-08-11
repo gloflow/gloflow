@@ -47,6 +47,7 @@ type GFjobExpectedOutput struct {
 func RunLocalImgs(pClientTypeStr string,
 	pImagesToProcessLst []gf_images_jobs_core.GFimageLocalToProcess,
 	pFlowsNamesLst      []string,
+	pUserID             gf_core.GF_ID,
 	pJobsMngrCh         gf_images_jobs_core.JobsMngr,
 	pRuntimeSys         *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, []*GFjobExpectedOutput, *gf_core.GFerror) {
 
@@ -55,6 +56,7 @@ func RunLocalImgs(pClientTypeStr string,
 	jobUpdatesCh := make(chan gf_images_jobs_core.JobUpdateMsg, 10)
 	
 	jobMsg := gf_images_jobs_core.JobMsg{
+		UserID:                      pUserID,
 		Client_type_str:             pClientTypeStr,
 		Cmd_str:                     jobCmdStr,
 		Job_init_ch:                 jobInitCh,
@@ -128,9 +130,9 @@ func RunUploadedImages(pClientTypeStr string,
 func RunExternImages(pClientTypeStr string,
 	pImagesExternToProcessLst []gf_images_jobs_core.GFimageExternToProcess,
 	pFlowsNamesLst            []string,
+	pUserID                   gf_core.GF_ID,
 	pJobsMngrCh               gf_images_jobs_core.JobsMngr,
 	pRuntimeSys               *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, []*GFjobExpectedOutput, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("INFO", fmt.Sprintf("images_extern_to_process - %s", fmt.Sprint(pImagesExternToProcessLst)))
 
 	//-----------------
 	// SEND_MSG_TO_JOBS_MNGR
@@ -139,6 +141,7 @@ func RunExternImages(pClientTypeStr string,
 	jobUpdatesCh := make(chan gf_images_jobs_core.JobUpdateMsg, 10) // ADD!! - channel buffer size should be larger for large jobs (with a lot of images)
 
 	jobMsg := gf_images_jobs_core.JobMsg{
+		UserID:                       pUserID,
 		Client_type_str:              pClientTypeStr,
 		Cmd_str:                      jobCmdStr,
 		Job_init_ch:                  jobInitCh,

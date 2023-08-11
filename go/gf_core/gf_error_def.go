@@ -61,6 +61,9 @@ func errorGetDefs() map[string]ErrorDef {
 
 		//---------------
 		// IDENTITY
+		"user_incorrect": ErrorDef{
+			DescrStr: "incorrect user specified",
+		},
 		"policy__op_denied": ErrorDef{
 			DescrStr: "access policy has denied the operation",
 		},

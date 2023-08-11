@@ -113,7 +113,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				//--------------------------
 				// INPUT
 
-				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
 				iMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
@@ -135,7 +135,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					imageOriginPageURLstr,
 					flowsNamesLst,
 					clientTypeStr,
-					userIDstr,
+					userID,
 					pJobsMngrCh,
 					pCtx,
 					pRuntimeSys)
@@ -173,7 +173,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				//--------------------------
 				// INPUT
 
-				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
 				iMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
@@ -196,7 +196,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					imageOriginPageURLstr,
 					flowsNamesLst,
 					clientTypeStr,
-					userIDstr,
+					userID,
 					pJobsMngrCh,
 					pCtx,
 					pRuntimeSys)

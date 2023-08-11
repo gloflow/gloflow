@@ -35,7 +35,8 @@ type GFimage struct {
 	IDstr                GFimageID     `json:"id_str"               bson:"id_str"`
 	T_str                string        `json:"-"                    bson:"t"` // "img"
 	Creation_unix_time_f float64       `json:"creation_unix_time_f" bson:"creation_unix_time_f"`
-	
+	UserID               gf_core.GF_ID `json:"user_id_str"          bson:"user_id_str"`
+
 	//---------------
 	ClientTypeStr        string        `json:"-"                    bson:"client_type_str"` // "gchrome_ext"|"gf_crawl_images"|"gf_image_editor"
 	TitleStr             string        `json:"title_str"            bson:"title_str"`
@@ -124,6 +125,9 @@ type GFimageNewInfo struct {
 	Height_int                     int
 
 	Meta_map map[string]interface{}
+
+	// user that owns this image, that uploaded or added it in some other way
+	UserID gf_core.GF_ID
 }
 
 //---------------------------------------------------
@@ -137,6 +141,7 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 		IDstr:                          pImageInfo.IDstr,
 		T_str:                          "img",
 		Creation_unix_time_f:           creationUNIXtimeF,
+		UserID:                         pImageInfo.UserID,
 		ClientTypeStr:                  pImageInfo.Image_client_type_str,
 		TitleStr:                       pImageInfo.Title_str,
 		FlowsNamesLst:                  pImageInfo.Flows_names_lst,
@@ -168,6 +173,7 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 //---------------------------------------------------
 // DEPRECATED!! - use Image__create_new and its structured input
 
+/*
 func ImageCreate(pImageInfoMap map[string]interface{},
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFimage, *gf_core.GFerror) {
@@ -209,3 +215,4 @@ func ImageCreate(pImageInfoMap map[string]interface{},
 
 	return image, nil
 }
+*/
