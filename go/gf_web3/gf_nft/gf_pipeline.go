@@ -31,7 +31,7 @@ import (
 //-------------------------------------------------
 
 type GFindexAddressInput struct {
-	UserIDstr  gf_core.GF_ID
+	UserID     gf_core.GF_ID
 	AddressStr string
 	ChainStr   string
 
@@ -41,13 +41,13 @@ type GFindexAddressInput struct {
 }
 
 type GFgetByOwnerInput struct {
-	UserIDstr  gf_core.GF_ID
+	UserID     gf_core.GF_ID
 	AddressStr string
 	ChainStr   string
 }
 
 type GFgetInput struct {
-	UserIDstr         gf_core.GF_ID
+	UserID            gf_core.GF_ID
 	TokenIDstr        string
 	CollectionNameStr string
 }
@@ -75,6 +75,7 @@ func pipelineIndexAddress(pInput *GFindexAddressInput,
 				serviceSourceStr,
 				pConfig,
 				pJobsMngrCh,
+				pInput.UserID,
 				pMetrics,
 				ctxBackground,
 				pRuntimeSys)

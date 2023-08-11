@@ -16,6 +16,7 @@ func indexAddress(pAddressStr string,
 	pServiceSourceStr string,
 	pConfig           *gf_eth_core.GF_config,
 	pJobsMngrCh       chan gf_images_jobs_core.JobMsg,
+	pUserID           gf_core.GF_ID,
 	pMetrics          *GFmetrics,
 	pCtx              context.Context,
 	pRuntimeSys       *gf_core.RuntimeSys) ([]*GFnft, *gf_core.GFerror) {
@@ -77,6 +78,7 @@ func indexAddress(pAddressStr string,
 		}
 		gfErr = createAsImagesInFlows(nftsLst,
 			flowsNamesLst,
+			pUserID,
 			pJobsMngrCh,
 			pCtx,
 			pRuntimeSys)

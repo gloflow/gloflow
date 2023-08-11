@@ -33,6 +33,7 @@ import (
 
 func createAsImagesInFlows(pNFTsLst []*GFnft,
 	pFlowsNamesLst []string,
+	pUserID        gf_core.GF_ID,
 	pJobsMngrCh    chan gf_images_jobs_core.JobMsg,
 	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -58,6 +59,7 @@ func createAsImagesInFlows(pNFTsLst []*GFnft,
 		imagesOriginPagesURLsStr,
 		pFlowsNamesLst,
 		clientTypeStr,
+		pUserID,
 		pJobsMngrCh,
 		pRuntimeSys)
 	if gfErr != nil {

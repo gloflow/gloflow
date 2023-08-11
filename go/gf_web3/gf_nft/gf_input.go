@@ -29,7 +29,7 @@ import (
 //-------------------------------------------------
 // INDEX_ADDRESS
 
-func httpInputForIndexAddress(pUserIDstr gf_core.GF_ID,
+func httpInputForIndexAddress(pUserID gf_core.GF_ID,
 	pReq        *http.Request,
 	pResp       http.ResponseWriter,
 	pCtx        context.Context,
@@ -61,7 +61,7 @@ func httpInputForIndexAddress(pUserIDstr gf_core.GF_ID,
 	}
 
 	input := &GFindexAddressInput{
-		UserIDstr:      pUserIDstr,
+		UserID:         pUserID,
 		AddressStr:     addressStr,
 		ChainStr:       chainStr,
 		FetcherNameStr: fetcherNameStr,
@@ -72,7 +72,7 @@ func httpInputForIndexAddress(pUserIDstr gf_core.GF_ID,
 //-------------------------------------------------
 // GET
 
-func httpInputForGetByOwner(pUserIDstr gf_core.GF_ID,
+func httpInputForGetByOwner(pUserID gf_core.GF_ID,
 	pReq        *http.Request,
 	pResp       http.ResponseWriter,
 	pCtx        context.Context,
@@ -94,7 +94,7 @@ func httpInputForGetByOwner(pUserIDstr gf_core.GF_ID,
 	}
 
 	input := &GFgetByOwnerInput{
-		UserIDstr:  pUserIDstr,
+		UserID:     pUserID,
 		AddressStr: addressStr,
 		ChainStr:   chainStr,
 	}
@@ -104,7 +104,7 @@ func httpInputForGetByOwner(pUserIDstr gf_core.GF_ID,
 //-------------------------------------------------
 // GET
 
-func httpInputForGet(pUserIDstr gf_core.GF_ID,
+func httpInputForGet(pUserID gf_core.GF_ID,
 	pReq        *http.Request,
 	pResp       http.ResponseWriter,
 	pCtx        context.Context,
@@ -126,7 +126,7 @@ func httpInputForGet(pUserIDstr gf_core.GF_ID,
 	}
 	
 	input := &GFgetInput{
-		UserIDstr:         pUserIDstr,
+		UserID:            pUserID,
 		TokenIDstr:        tokenIDstr,
 		CollectionNameStr: collectionNameStr,
 	}
