@@ -32,12 +32,13 @@ import (
 
 //--------------------------------------------------
 
-func imagesStageProcessImages(pCrawlerNameStr string,
+func stageProcessImages(pCrawlerNameStr string,
 	pPageImagesPipelineInfosLst []*gf_page_img__pipeline_info,
 	pImagesStoreLocalDirPathStr string,
 	p_origin_page_url_str       string,
 	pMediaDomainStr             string,
 	pS3bucketNameStr            string,
+	pUserID                     gf_core.GF_ID,
 	pRuntime                    *GFcrawlerRuntime,
 	pRuntimeSys                 *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
 
@@ -46,6 +47,18 @@ func imagesStageProcessImages(pCrawlerNameStr string,
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 
 	for _, pageImagePinfo := range pPageImagesPipelineInfosLst {
+
+		/*
+		// determine if image is NSFV
+		// FIX!! - check if the processing cost of large images is not lower then determening NSFV first on large images,
+		//         and then processing (which is whats done now). perhaps processing all images and then taking the 
+		
+		page_imgs__pinfos_with_nsfv_lst := images__stage__determine_are_nsfv(pCrawlerNameStr,
+			p_page_imgs__pipeline_infos_lst,
+			pOriginPageURLstr,
+			pRuntime,
+			pRuntimeSys)
+		*/
 
 		// IMPORTANT!! - skip failed images
 		if pageImagePinfo.gf_error != nil {
@@ -71,6 +84,7 @@ func imagesStageProcessImages(pCrawlerNameStr string,
 
 			pMediaDomainStr,
 			pS3bucketNameStr,
+			pUserID,
 			pRuntime,
 			pRuntimeSys)
 
@@ -100,6 +114,7 @@ func imageProcess(pPageImg *GFcrawlerPageImage,
 	pImagesStoreLocalDirPathStr string,
 	pMediaDomainStr             string,
 	pS3bucketNameStr            string,
+	pUserID                     gf_core.GF_ID,
 	pRuntime                    *GFcrawlerRuntime,
 	pRuntimeSys                 *gf_core.RuntimeSys) (*gf_images_core.GFimage, *gf_images_core.GFimageThumbs, *gf_core.GFerror) {
 
@@ -155,6 +170,7 @@ func imageProcess(pPageImg *GFcrawlerPageImage,
 			pImageLocalFilePathStr,
 			thumbnailsLocalDirPathStr,
 			pRuntime.PluginsPyDirPathStr,
+			pUserID,
 			pRuntimeSys)
 
 		if gfErr != nil {
@@ -191,6 +207,7 @@ func imageProcessBitmap(pPageImage *GFcrawlerPageImage,
 	pImageLocalFilePathStr     string,
 	pThumbnailsLocalDirPathStr string,
 	pPluginsPyDirPathStr       string,
+	pUserID                    gf_core.GF_ID,
 	pRuntimeSys                *gf_core.RuntimeSys) (*gf_images_core.GFimage, *gf_images_core.GFimageThumbs, *gf_core.GFerror) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_process.image__process_bitmap()")
 
@@ -256,6 +273,7 @@ func imageProcessBitmap(pPageImage *GFcrawlerPageImage,
 			pThumbnailsLocalDirPathStr,
 			pPluginsPyDirPathStr,
 			metricsPlugins,
+			pUserID,
 			ctx,
 			pRuntimeSys)
 		if gfErr != nil {

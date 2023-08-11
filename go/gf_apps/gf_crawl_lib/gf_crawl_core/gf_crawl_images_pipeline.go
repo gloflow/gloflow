@@ -58,6 +58,7 @@ func imagesPipeFromHTML(pURLfetch *GFcrawlerURLfetch,
 	pImagesLocalDirPathStr string,
 	pMediaDomainStr        string,
 	pS3bucketNameStr       string,
+	pUserID                gf_core.GF_ID,
 	pRuntime               *GFcrawlerRuntime,
 	pRuntimeSys            *gf_core.RuntimeSys) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_pipeline.imagesPipeFromHTML()")
@@ -70,12 +71,12 @@ func imagesPipeFromHTML(pURLfetch *GFcrawlerURLfetch,
 	fmt.Println(">> IMAGES__GET_IN_PAGE - "+blue(pURLfetch.Url_str))
 	fmt.Println(cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
 
-	origin_page_url_str := pURLfetch.Url_str
+	originPageURLstr := pURLfetch.Url_str
 
 	//------------------
 	// STAGE - pull all page image links
 
-	page_imgs__pipeline_infos_lst := images__stage__pull_image_links(pURLfetch,
+	page_imgs__pipeline_infos_lst := stagePullImageLinks(pURLfetch,
 		pCrawlerNameStr,
 		pCycleRunIDstr,
 		pRuntime,
@@ -84,7 +85,7 @@ func imagesPipeFromHTML(pURLfetch *GFcrawlerURLfetch,
 	//------------------
 	// STAGE - create gf_image/gf_image_refs structs
 
-	page_imgs__pinfos_with_imgs_lst := images__stage__create_page_images(pCrawlerNameStr,
+	page_imgs__pinfos_with_imgs_lst := stageCreatePageImages(pCrawlerNameStr,
 		pCycleRunIDstr,
 		page_imgs__pipeline_infos_lst,
 		pRuntime,
@@ -93,7 +94,7 @@ func imagesPipeFromHTML(pURLfetch *GFcrawlerURLfetch,
 	//------------------
 	// STAGE - persist gf_image/gf_image_ref to DB
 	
-	page_imgs__pinfos_with_persists_lst := images__stage__page_images_persist(pCrawlerNameStr,
+	page_imgs__pinfos_with_persists_lst := stagePageImagesPersist(pCrawlerNameStr,
 		page_imgs__pinfos_with_imgs_lst,
 		pRuntime,
 		pRuntimeSys)
@@ -101,23 +102,24 @@ func imagesPipeFromHTML(pURLfetch *GFcrawlerURLfetch,
 	//------------------
 	// STAGE - download gf_images from target URL
 	
-	page_imgs__pinfos_with_local_file_paths_lst := images__stage__download_images(pCrawlerNameStr,
+	page_imgs__pinfos_with_local_file_paths_lst := stageDownloadImages(pCrawlerNameStr,
 		page_imgs__pinfos_with_persists_lst,
 		pImagesLocalDirPathStr,
-		origin_page_url_str,
+		originPageURLstr,
 		pRuntime,
 		pRuntimeSys)
 
 	//------------------
 	// STAGES - process images
 
-	page_imgs__pinfos_with_thumbs_lst := images__stages__process_images(pCrawlerNameStr,
+	pageImagesWithThumbsLst := stageProcessImages(pCrawlerNameStr,
 		page_imgs__pinfos_with_local_file_paths_lst,
 		pImagesLocalDirPathStr,
-		origin_page_url_str,
+		originPageURLstr,
 
 		pMediaDomainStr,
 		pS3bucketNameStr,
+		pUserID,
 		pRuntime,
 		pRuntimeSys)
 
@@ -125,8 +127,8 @@ func imagesPipeFromHTML(pURLfetch *GFcrawlerURLfetch,
 	// STAGE - persist all images files (S3, etc.)
 
 	page_imgs__pinfos_with_s3_lst := imagesS3stageStoreImages(pCrawlerNameStr,
-		page_imgs__pinfos_with_thumbs_lst,
-		origin_page_url_str,
+		pageImagesWithThumbsLst,
+		originPageURLstr,
 		pS3bucketNameStr,
 		pRuntime,
 		pRuntimeSys)
@@ -140,15 +142,15 @@ func imagesPipeFromHTML(pURLfetch *GFcrawlerURLfetch,
 }
 
 //--------------------------------------------------
-// SINGLE_IMAGE
+// PROCESS_IMAGE_FULL
 
-func images_pipe__single_simple(pImage *GFcrawlerPageImage,
+func processImageFull(pImage *GFcrawlerPageImage,
 	pImagesStoreLocalDirPathStr   string,
 	pMediaDomainStr               string,
 	pCrawledImagesS3bucketNameStr string,
+	pUserID                       gf_core.GF_ID,
 	pRuntime                      *GFcrawlerRuntime,
 	pRuntimeSys                   *gf_core.RuntimeSys) (*gf_images_core.GFimage, *gf_images_core.GFimageThumbs, string, *gf_core.GFerror) {
-
 
 	//------------------------
 	// IMAGE_DOWNLOAD - download image from some external source
@@ -165,6 +167,7 @@ func images_pipe__single_simple(pImage *GFcrawlerPageImage,
 
 		pMediaDomainStr,
 		pCrawledImagesS3bucketNameStr,
+		pUserID,
 		pRuntime,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -192,12 +195,11 @@ func images_pipe__single_simple(pImage *GFcrawlerPageImage,
 // STAGES
 //--------------------------------------------------
 
-func images__stage__pull_image_links(pURLfetch *GFcrawlerURLfetch,
+func stagePullImageLinks(pURLfetch *GFcrawlerURLfetch,
 	pCrawlerNameStr string,
 	pCycleRunIDstr  string,
 	pRuntime        *GFcrawlerRuntime,
 	pRuntimeSys     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__pull_image_links")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE - STAGE - pull_image_links")
@@ -228,12 +230,11 @@ func images__stage__pull_image_links(pURLfetch *GFcrawlerURLfetch,
 
 //--------------------------------------------------
 
-func images__stage__create_page_images(pCrawlerNameStr string,
+func stageCreatePageImages(pCrawlerNameStr string,
 	pCycleRunIDstr                  string,
 	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
 	pRuntime                        *GFcrawlerRuntime,
 	pRuntimeSys                     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__create_page_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE - STAGE - create_page_images")
@@ -283,11 +284,10 @@ func images__stage__create_page_images(pCrawlerNameStr string,
 
 //--------------------------------------------------
 
-func images__stage__page_images_persist(pCrawlerNameStr string,
+func stagePageImagesPersist(pCrawlerNameStr string,
 	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
 	pRuntime                        *GFcrawlerRuntime,
 	pRuntimeSys                     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__page_images_persist")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - page_images_persist")
@@ -331,46 +331,6 @@ func images__stage__page_images_persist(pCrawlerNameStr string,
 		//------------------
 	}
 	return p_page_imgs__pipeline_infos_lst
-}
-
-//--------------------------------------------------
-
-func images__stages__process_images(pCrawlerNameStr string,
-	p_page_imgs__pipeline_infos_lst   []*gf_page_img__pipeline_info,
-	p_images_store_local_dir_path_str string,
-	p_origin_page_url_str             string,
-
-	pMediaDomainStr                   string,
-	pS3bucketNameStr                  string,
-	pRuntime                          *GFcrawlerRuntime,
-	pRuntimeSys                       *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images.images__stages__process_images")
-
-	//------------------
-	// // STAGE - determine if image is NSFV (contains nudity)
-	// // FIX!! - check if the processing cost of large images is not lower then determening NSFV first on large images,
-	// //         and then processing (which is whats done now). perhaps processing all images and then taking the 
-	
-	// page_imgs__pinfos_with_nsfv_lst := images__stage__determine_are_nsfv(pCrawlerNameStr,
-	// 	p_page_imgs__pipeline_infos_lst,
-	// 	p_origin_page_url_str,
-	// 	pRuntime,
-	// 	pRuntimeSys)
-	//------------------
-	// STAGE - process images - resize for all thumbnail sizes
-
-	page_imgs__pinfos_with_thumbs_lst := imagesStageProcessImages(pCrawlerNameStr,
-		p_page_imgs__pipeline_infos_lst, // page_imgs__pinfos_with_nsfv_lst,
-		p_images_store_local_dir_path_str,
-		p_origin_page_url_str,
-
-		pMediaDomainStr,
-		pS3bucketNameStr,
-		pRuntime,
-		pRuntimeSys)
-
-	//------------------
-	return page_imgs__pinfos_with_thumbs_lst
 }
 
 //--------------------------------------------------

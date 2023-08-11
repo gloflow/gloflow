@@ -182,6 +182,13 @@ func startCrawler(pCrawler gf_crawl_core.GFcrawlerDef,
 	pRuntimeSys.LogFun("INFO", black("------------------------------------"))
 
 	//-----------------
+	// USER_ID
+	// IMPORTANT!! - use system user for the regular crawling runs.
+	//               use some specific users ID if a particular user runs the
+	//               crawler in some way.
+	userID := gf_core.GF_ID("gf")
+
+	//-----------------
 	// LINK_ALLOCATOR
 	gf_crawl_core.LinkAllocInit(pCrawler.NameStr, pRuntimeSys)
 	
@@ -201,6 +208,7 @@ func startCrawler(pCrawler gf_crawl_core.GFcrawlerDef,
 
 			pMediaDomainStr,
 			pImagesS3bucketNameStr,
+			userID,
 			pRuntime,
 			pRuntimeSys)
 		if gfErr != nil {

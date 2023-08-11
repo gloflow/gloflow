@@ -43,6 +43,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr GFcrawlerPageImageID,
 	pMediaDomainStr               string,
 	pCrawledImagesS3bucketNameStr string,
 	pImagesS3bucketNameStr        string,
+	pUserID                       gf_core.GF_ID,
 	pCtx                          context.Context,
 	pRuntime                      *GFcrawlerRuntime,
 	pRuntimeSys                   *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -71,16 +72,17 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr GFcrawlerPageImageID,
 	//               which means that they dont have their corresponding gf_image.
 	if imageIDstr == "" {
 
-		pRuntimeSys.LogFun("INFO", "")
-		pRuntimeSys.LogFun("INFO", "CRAWL_PAGE_IMAGE MISSING ITS GF_IMAGE --- STARTING_PROCESSING")
-		pRuntimeSys.LogFun("INFO", "")
+		pRuntimeSys.LogNewFun("INFO", "", nil)
+		pRuntimeSys.LogNewFun("INFO", "CRAWL_PAGE_IMAGE MISSING ITS GF_IMAGE --- STARTING_PROCESSING", nil)
+		pRuntimeSys.LogNewFun("INFO", "", nil)
 
 
-		gfImage, gf_image_thumbs, localImageFilePathStr, gfErr := images_pipe__single_simple(pageImage,
+		gfImage, imageThumbs, localImageFilePathStr, gfErr := processImageFull(pageImage,
 			imagesStoreLocalDirPathStr,
 
 			pMediaDomainStr,
 			pCrawledImagesS3bucketNameStr,
+			pUserID,
 			pRuntime,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -98,7 +100,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr GFcrawlerPageImageID,
 		// FIX!! - too much uploading, very inefficient, figure out a better way!
 
 		gfErr = gf_images_core.S3storeImage(localImageFilePathStr,
-			gf_image_thumbs,
+			imageThumbs,
 			pImagesS3bucketNameStr,
 			pRuntime.S3info,
 			pRuntimeSys)
@@ -114,7 +116,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr GFcrawlerPageImageID,
 		//-------------------
 		//CLEANUP
 
-		gfErr = imageCleanup(localImageFilePathStr, gf_image_thumbs, pRuntimeSys)
+		gfErr = imageCleanup(localImageFilePathStr, imageThumbs, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}

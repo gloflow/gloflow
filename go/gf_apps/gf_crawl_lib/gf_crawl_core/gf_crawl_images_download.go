@@ -30,13 +30,12 @@ import (
 
 //--------------------------------------------------
 
-func images__stage__download_images(pCrawlerNameStr string,
+func stageDownloadImages(pCrawlerNameStr string,
 	p_page_imgs__pipeline_infos_lst   []*gf_page_img__pipeline_info,
 	p_images_store_local_dir_path_str string,
 	p_origin_page_url_str             string,
 	pRuntime                          *GFcrawlerRuntime,
 	pRuntimeSys                       *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_download.images__stage__download_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - download_images")

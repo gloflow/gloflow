@@ -212,6 +212,7 @@ func FetchParseResult(pURLfetch *GFcrawlerURLfetch,
 
 	pMediaDomainStr        string,
 	pS3bucketNameStr       string,
+	pUserID                gf_core.GF_ID,
 	pRuntime               *GFcrawlerRuntime,
 	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -232,6 +233,7 @@ func FetchParseResult(pURLfetch *GFcrawlerURLfetch,
 
 		pMediaDomainStr,
 		pS3bucketNameStr,
+		pUserID,
 		pRuntime,
 		pRuntimeSys)
 

@@ -24,6 +24,7 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 )
 
@@ -77,6 +78,9 @@ func initHandlers(pMediaDomainStr string,
 
 				//--------------------------
 				// INPUT
+
+				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
 				i, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
@@ -96,6 +100,7 @@ func initHandlers(pMediaDomainStr string,
 					pMediaDomainStr,
 					p_crawled_images_s3_bucket_name_str,
 					p_gf_images_s3_bucket_name_str,
+					userID,
 					pCtx,
 					pRuntime,
 					pRuntimeSys)

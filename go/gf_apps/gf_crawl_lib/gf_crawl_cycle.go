@@ -34,6 +34,7 @@ func RunCrawlerCycle(pCrawler gf_crawl_core.GFcrawlerDef,
 	pImagesLocalDirPathStr string,
 	pMediaDomainStr        string,
 	pS3bucketNameStr       string,
+	pUserID                gf_core.GF_ID,
 	pRuntime               *gf_crawl_core.GFcrawlerRuntime,
 	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -125,6 +126,7 @@ func RunCrawlerCycle(pCrawler gf_crawl_core.GFcrawlerDef,
 
 		pMediaDomainStr,
 		pS3bucketNameStr,
+		pUserID,
 		pRuntime,
 		pRuntimeSys)
 	if gfErr != nil {
