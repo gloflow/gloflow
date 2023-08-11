@@ -67,6 +67,11 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 				//------------------
 				// INPUT
+
+				// FIX!! - this route should authenticated and this user_id
+				//         should be fetched from the handler context.
+				userID := gf_core.GF_ID("gf")
+
 				inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
@@ -87,6 +92,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 				//------------------
 
 				gfErr = gf_bookmarks.PipelineCreate(&input,
+					userID,
 					pImagesJobsMngr,
 					pCtx,
 					pRuntimeSys)
@@ -102,7 +108,6 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
-
 
 	// CREATE
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/bookmarks/get",

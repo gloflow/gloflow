@@ -145,6 +145,7 @@ func PipelineGet(p_input *GFbookmarkInputGet,
 // CREATE
 
 func PipelineCreate(p_input *GFbookmarkInputCreate,
+	pUserID         gf_core.GF_ID,
 	pImagesJobsMngr gf_images_jobs_core.JobsMngr,
 	pCtx            context.Context,
 	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -198,7 +199,8 @@ func PipelineCreate(p_input *GFbookmarkInputCreate,
 
 			ctx := context.Background()
 			gfErr := pipelineScreenshot(p_input.Url_str,
-			 IDstr,
+				IDstr,
+				pUserID,
 				ctx,
 				pImagesJobsMngr,
 				pRuntimeSys)
@@ -218,6 +220,7 @@ func PipelineCreate(p_input *GFbookmarkInputCreate,
 
 func pipelineScreenshot(pURLstr string,
 	pBookmarkIDstr  gf_core.GF_ID,
+	pUserID         gf_core.GF_ID,
 	pCtx            context.Context,
 	pImagesJobsMngr gf_images_jobs_core.JobsMngr,
 	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -244,9 +247,10 @@ func pipelineScreenshot(pURLstr string,
 	client_type_str := "gf_tagger_bookmarks"
 	flows_names_lst := []string{"bookmarks", }
 	
-	_, job_expected_outputs_lst, gfErr := gf_images_jobs_client.RunLocalImgs(client_type_str,
+	_, jobExpectedOutputsLst, gfErr := gf_images_jobs_client.RunLocalImgs(client_type_str,
 		images_to_process_lst,
 		flows_names_lst,
+		pUserID,
 		pImagesJobsMngr,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -254,8 +258,8 @@ func pipelineScreenshot(pURLstr string,
 	}
 
 
-	screenshot_image_id_str                  := job_expected_outputs_lst[0].Image_id_str
-	screenshot_image_thumbnail_small_url_str := job_expected_outputs_lst[0].Thumbnail_small_relative_url_str
+	screenshot_image_id_str                  := jobExpectedOutputsLst[0].Image_id_str
+	screenshot_image_thumbnail_small_url_str := jobExpectedOutputsLst[0].Thumbnail_small_relative_url_str
 
 	//-----------------
 	// DB_UPDATE - updated bookmark with screenshot image information
