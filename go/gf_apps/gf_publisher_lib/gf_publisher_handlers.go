@@ -134,25 +134,30 @@ func initHandlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 				//------------
 				// INPUT
-				i_map, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
+
+				// USER_ID
+				userID := gf_core.GF_ID("gf")
+
+				iMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
-				post_info_map := i_map
+				postInfoMap := iMap
 				
 				//------------
 
-				_, images_job_id_str, gfErr := PipelineCreatePost(post_info_map,
+				_, imagesJobIDstr, gfErr := PipelineCreatePost(postInfoMap,
 					p_gf_images_runtime_info,
+					userID,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				output_map := map[string]interface{}{
-					"images_job_id_str": images_job_id_str,
+				outputMap := map[string]interface{}{
+					"images_job_id_str": imagesJobIDstr,
 				}
-				return output_map, nil
+				return outputMap, nil
 			}
 			return nil, nil
 		},

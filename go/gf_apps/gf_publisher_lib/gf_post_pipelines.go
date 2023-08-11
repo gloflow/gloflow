@@ -33,6 +33,7 @@ import (
 
 func PipelineCreatePost(pPostInfoMap map[string]interface{},
 	pImagesRuntimeInfo *GF_images_extern_runtime_info,
+	pUserID            gf_core.GF_ID,
 	pRuntimeSys        *gf_core.RuntimeSys) (*gf_publisher_core.GFpost, string, *gf_core.GFerror) {
 
 	//----------------------
@@ -69,7 +70,10 @@ func PipelineCreatePost(pPostInfoMap map[string]interface{},
 	//----------------------
 	// IMAGES
 	// IMPORTANT - long-lasting image operation
-	imagesJobIDstr, gfErr := processExternalImages(post, pImagesRuntimeInfo, pRuntimeSys)
+	imagesJobIDstr, gfErr := processExternalImages(post,
+		pImagesRuntimeInfo,
+		pUserID,
+		pRuntimeSys)
 	if gfErr != nil {
 		return nil, "", gfErr
 	}

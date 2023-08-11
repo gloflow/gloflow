@@ -41,6 +41,7 @@ type GFimagesClientResult struct {
 
 func processExternalImages(p_post *gf_publisher_core.GFpost,
 	p_gf_images_runtime_info *GF_images_extern_runtime_info,
+	pUserID                  gf_core.GF_ID,
 	pRuntimeSys              *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	//-------------------	
@@ -102,6 +103,7 @@ func processExternalImages(p_post *gf_publisher_core.GFpost,
 			post_elements_images_origin_pages_urls_str,
 			image_job_client_type_str,
 			p_gf_images_runtime_info.Jobs_mngr,
+			pUserID,
 			pRuntimeSys)
 		if gfErr != nil {
 			return "", nil	
@@ -232,6 +234,7 @@ func process_external_images__in_process(pPostElementsMap map[string]*gf_publish
 	pPostElementsImagesOriginPagesURLsStr []string,
 	pImageJobClientTypeStr                string,
 	pImagesJobsMngr                       gf_images_jobs_core.JobsMngr,
+	pUserID                               gf_core.GF_ID,
 	pRuntimeSys                           *gf_core.RuntimeSys) (*GFimagesClientResult, *gf_core.GFerror) {
 
 	// ADD!! - accept this flows_names argument from http arguments, not hardcoded as is here
@@ -253,6 +256,7 @@ func process_external_images__in_process(pPostElementsMap map[string]*gf_publish
 	runningJob, outputsLst, gfErr := gf_images_jobs_client.RunExternImages(pImageJobClientTypeStr,
 		imagesToProcessLst,
 		flows_names_lst,
+		pUserID,
 		pImagesJobsMngr,
 		pRuntimeSys)
 	if gfErr != nil {
