@@ -45,6 +45,7 @@ type GFfeaturedImage struct {
 	ImageOriginPageURLhostStr  string // this is displayed in the user UI for each featured image
 	CreationUNIXtimeStr        string
 	FlowNameStr                string
+	UserID                     gf_core.GF_ID
 }
 
 //------------------------------------------
@@ -54,11 +55,13 @@ type GFfeaturedImage struct {
 func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 	pElementsNumToGetInt int, // 5
 	pFlowNameStr         string,
+	pUserID              gf_core.GF_ID,
 	pRuntimeSys          *gf_core.RuntimeSys) ([]*GFfeaturedImage, *gf_core.GFerror) {
 
 	imagesLst, err := gf_images_core.DBgetRandomImagesRange(pElementsNumToGetInt,
 		pMaxRandomCursorPositionInt,
 		pFlowNameStr,
+		pUserID,
 		pRuntimeSys)
 
 	if err != nil {
@@ -81,6 +84,8 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 			ImageOriginPageURLstr:      image.Origin_page_url_str,
 			ImageOriginPageURLhostStr:  originPageURL.Host,
 			CreationUNIXtimeStr:        strconv.FormatFloat(image.Creation_unix_time_f, 'f', 6, 64),
+			FlowNameStr:                pFlowNameStr,
+			UserID:                     image.UserID,
 		}
 		featuredImagesLst = append(featuredImagesLst, featured)
 	}

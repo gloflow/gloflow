@@ -65,7 +65,7 @@ func testLandingPage(pTest *testing.T,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	
-
+	userID := gf_core.GF_ID("test_user")
 
 	templatesPathsMap := map[string]string{
 		"gf_landing_page": "./../../../web/src/gf_apps/gf_landing_page/templates/gf_landing_page/gf_landing_page.html",
@@ -88,6 +88,7 @@ func testLandingPage(pTest *testing.T,
 
 		gfTemplates.template,
 		gfTemplates.subtemplatesNamesLst,
+		userID,
 		pRuntimeSys)
 	if gfErr != nil {
 		pTest.Fail()

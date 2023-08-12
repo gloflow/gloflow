@@ -32,6 +32,7 @@ func pipelineRenderLandingPage(pImagesMaxRandomCursorPositionInt int, // 500
 	pFeaturedImagesToGetInt int, // 10
 	pTemplate               *template.Template,
 	pSubtemplatesNamesLst   []string,
+	pUserID                 gf_core.GF_ID,
 	pRuntimeSys             *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	//-------------------
@@ -39,6 +40,7 @@ func pipelineRenderLandingPage(pImagesMaxRandomCursorPositionInt int, // 500
 	featuredImages0lst, gfErr := getFeaturedImgs(pImagesMaxRandomCursorPositionInt,
 		pFeaturedImagesToGetInt,
 		"general",
+		pUserID,
 		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
@@ -47,6 +49,7 @@ func pipelineRenderLandingPage(pImagesMaxRandomCursorPositionInt int, // 500
 	featuredImages1lst, gfErr := getFeaturedImgs(pImagesMaxRandomCursorPositionInt,
 		pFeaturedImagesToGetInt,
 		"general",
+		pUserID,
 		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr

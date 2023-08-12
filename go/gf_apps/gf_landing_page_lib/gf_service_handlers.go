@@ -57,9 +57,11 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 
 		if pReq.Method == "GET" {
 
-
 			imagesMaxRandomCursorPositionInt := 10000
 			postsMaxRandomCursorPositionInt  := 2000
+
+			// this is a public non-authed handler, so user_id is not yet specified.
+			userID := gf_core.GF_ID("")
 
 			templateRenderedStr, gfErr := pipelineRenderLandingPage(imagesMaxRandomCursorPositionInt,
 				postsMaxRandomCursorPositionInt,
@@ -67,6 +69,7 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 				10, // p_featured_imgs_to_get_int
 				gfTemplates.template,
 				gfTemplates.subtemplatesNamesLst,
+				userID,
 				pRuntimeSys)
 
 			if gfErr != nil {

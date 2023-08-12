@@ -119,14 +119,15 @@ func DBimageExists(pImageIDstr GFimageID,
 func DBgetRandomImagesRange(pImgsNumToGetInt int, // 5
 	pMaxRandomCursorPositionInt int, // 2000
 	pFlowNameStr                string,
+	pUserID                     gf_core.GF_ID,
 	pRuntimeSys                 *gf_core.RuntimeSys) ([]*GFimage, *gf_core.GFerror) {
 
 	// reseed the random number source
 	rand.Seed(time.Now().UnixNano())
 	
 	random_cursor_position_int := rand.Intn(pMaxRandomCursorPositionInt) // new Random().nextInt(pMaxRandomCursorPositionInt)
-	pRuntimeSys.LogFun("INFO", "imgs_num_to_get_int        - "+fmt.Sprint(pImgsNumToGetInt))
-	pRuntimeSys.LogFun("INFO", "random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
+	pRuntimeSys.LogNewFun("DEBUG", "imgs_num_to_get_int        - "+fmt.Sprint(pImgsNumToGetInt), nil)
+	pRuntimeSys.LogNewFun("DEBUG", "random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int), nil)
 
 
 
