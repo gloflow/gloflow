@@ -67,6 +67,11 @@ body {
     cursor: pointer;
 }
 
+#gf_images_flow_container .gf_image .owner_user_name {
+	font-size: 10px;
+    color: white;
+}
+
 /*small_view*/
 #gf_images_flow_container .gf_image.small_view .origin_page_url {
 	padding-top:      6px;

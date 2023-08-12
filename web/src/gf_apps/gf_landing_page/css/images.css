@@ -142,3 +142,8 @@
 	text-decoration: none;
 	word-wrap      : break-word;
 }
+
+#images .image_info .owner_user_name {
+	font-size: 10px;
+	color: white;
+}
