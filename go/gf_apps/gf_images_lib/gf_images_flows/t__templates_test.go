@@ -37,6 +37,8 @@ func TestTemplates(pTest *testing.T) {
 		LogNewFun:      logNewFun,
 	}
 
+	userID := gf_core.GF_ID("test_user")
+
 	// TEMPLATES
 	templatesPathsMap := map[string]string{
 		"gf_images_flows_browser": "./../../../../web/src/gf_apps/gf_images/templates/gf_images_flows_browser/gf_images_flows_browser.html",
@@ -69,6 +71,7 @@ func TestTemplates(pTest *testing.T) {
 		flowPagesNumInt,
 		gfTemplates.flows_browser__tmpl,
 		gfTemplates.flows_browser__subtemplates_names_lst,
+		userID,
 		runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()

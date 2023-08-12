@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_flows
 
 import (
-	"fmt"
 	"context"
 	"strconv"
 	"bytes"
@@ -33,32 +32,38 @@ import (
 //-------------------------------------------------
 
 func renderInitialPage(pFlowNameStr string,
-	p_initial_pages_num_int  int, // 6
-	p_page_size_int          int, // 5
-	p_tmpl                   *template.Template,
-	p_subtemplates_names_lst []string,
-	pCtx                     context.Context,
-	pRuntimeSys              *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	pInitialPagesNumInt   int, // 6
+	pPageSizeInt          int, // 5
+	pTmpl                 *template.Template,
+	pSubtemplatesNamesLst []string,
+	pUserID               gf_core.GF_ID,
+	pCtx                  context.Context,
+	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	//---------------------
 	// GET_TEMPLATE_DATA
 
 	pagesLst := [][]*gf_images_core.GFimage{}
 
-	for i:=0; i < p_initial_pages_num_int; i++ {
+	for i:=0; i < pInitialPagesNumInt; i++ {
 
-		start_position_int := i*p_page_size_int
-		// int end_position_int = start_position_int+p_page_size_int;
+		startPositionInt := i*pPageSizeInt
 
-		pRuntimeSys.LogFun("INFO", fmt.Sprintf(">>>>>>> start_position_int - %d - %d", start_position_int, p_page_size_int))
+		pRuntimeSys.LogNewFun("DEBUG", ">>>>>>> get image page from DB",
+			map[string]interface{}{
+				"start_position_int": startPositionInt,
+				"page_size_int":      pPageSizeInt,
+				"user_id_str":        pUserID,
+			})
+
 		//------------
 		// DB GET PAGE
 
 		// initial page might be larger then subsequent pages, that are requested 
 		// dynamically by the front-end
-		page_lst, gfErr := dbGetPage(pFlowNameStr,
-			start_position_int, // p_cursor_start_position_int
-			p_page_size_int,    // p_elements_num_int
+		pageLst, gfErr := dbGetPage(pFlowNameStr,
+			startPositionInt, // p_cursor_start_position_int
+			pPageSizeInt,     // p_elements_num_int
 			pCtx,
 			pRuntimeSys)
 
@@ -68,12 +73,12 @@ func renderInitialPage(pFlowNameStr string,
 
 		//------------
 
-		pagesLst = append(pagesLst, page_lst)
+		pagesLst = append(pagesLst, pageLst)
 	}
 
 
 	flowPagesNumInt, gfErr := dbGetPagesTotalNum(pFlowNameStr,
-		p_page_size_int,
+		pPageSizeInt,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -84,8 +89,9 @@ func renderInitialPage(pFlowNameStr string,
 	templateRenderedStr, gfErr := renderTemplate(pFlowNameStr,
 		pagesLst,
 		flowPagesNumInt,
-		p_tmpl,
-		p_subtemplates_names_lst,
+		pTmpl,
+		pSubtemplatesNamesLst,
+		pUserID,
 		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
@@ -101,6 +107,7 @@ func renderTemplate(pFlowNameStr string,
 	pFlowPagesNumInt      int64,
 	pTemplate             *template.Template,
 	pSubtemplatesNamesLst []string,
+	pUserID               gf_core.GF_ID,
 	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	// plugin
@@ -135,6 +142,7 @@ func renderTemplate(pFlowNameStr string,
 				"thumbnail_medium_url_str":  image.Thumbnail_medium_url_str,
 				"thumbnail_large_url_str":   image.Thumbnail_large_url_str,
 				"image_origin_page_url_str": image.Origin_page_url_str,
+				"owner_user_id_str":         image.UserID,
 			}
 
 			if len(image.TagsLst) > 0 {
@@ -183,7 +191,10 @@ func renderTemplate(pFlowNameStr string,
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to render the images flow template",
 			"template_render_error",
-			map[string]interface{}{},
+			map[string]interface{}{
+				"flow_name_str": pFlowNameStr,
+				"user_id_str":   pUserID,
+			},
 			err, "gf_images_lib", pRuntimeSys)
 		return "", gfErr
 	}

@@ -287,6 +287,9 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 				//------------------
 				// INPUT
+
+				userID := gf_core.GF_ID("")
+
 				qsMap := pReq.URL.Query()
 
 				flowNameStr := "general"
@@ -301,6 +304,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					10, // p_page_size_int int,
 					templates.flows_browser__tmpl,
 					templates.flows_browser__subtemplates_names_lst,
+					userID,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
