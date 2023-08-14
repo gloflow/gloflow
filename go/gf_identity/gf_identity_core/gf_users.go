@@ -34,15 +34,15 @@ type GFuserAddressETH string
 type GFuser struct {
 	Vstr              string             `bson:"v_str"` // schema_version
 	Id                primitive.ObjectID `bson:"_id,omitempty"`
-	IDstr             gf_core.GF_ID      `bson:"id_str"`
+	ID                gf_core.GF_ID      `bson:"id_str"`
 	DeletedBool       bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
 
-	UserTypeStr     string                      `bson:"user_type_str"`   // "admin" | "standard"
+	UserTypeStr     string     `bson:"user_type_str"`   // "admin" | "standard"
 	UserNameStr     GFuserName `bson:"user_name_str"`   // set once at the creation of the user
-	ScreenNameStr   string                      `bson:"screen_name_str"` // changable durring the lifetime of the user
+	ScreenNameStr   string     `bson:"screen_name_str"` // changable durring the lifetime of the user
 	
-	DescriptionStr  string                              `bson:"description_str"`
+	DescriptionStr  string             `bson:"description_str"`
 	AddressesETHlst []GFuserAddressETH `bson:"addresses_eth_lst"`
 
 	EmailStr           string `bson:"email_str"`
@@ -58,23 +58,23 @@ type GFuser struct {
 type GFuserCreds struct {
 	Vstr              string             `bson:"v_str"` // schema_version
 	Id                primitive.ObjectID `bson:"_id,omitempty"`
-	IDstr             gf_core.GF_ID      `bson:"id_str"`
+	ID                gf_core.GF_ID      `bson:"id_str"`
 	DeletedBool       bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
 
-	UserIDstr   gf_core.GF_ID                `bson:"user_id_str"`
-	UserNameStr GFuserName                   `bson:"user_name_str"`
-	PassSaltStr string                       `bson:"pass_salt_str"`
-	PassHashStr string                       `bson:"pass_hash_str"`
+	UserID      gf_core.GF_ID            `bson:"user_id_str"`
+	UserNameStr GFuserName               `bson:"user_name_str"`
+	PassSaltStr string                   `bson:"pass_salt_str"`
+	PassHashStr string                   `bson:"pass_hash_str"`
 }
 
 // io_update
 type GFuserInputUpdate struct {
-	UserIDstr         gf_core.GF_ID                     `validate:"required"`                 // required - not updated, but for lookup
-	UserAddressETHstr GFuserAddressETH                  `validate:"omitempty,eth_addr"`       // optional - add an Eth address to the user
-	ScreenNameStr     *string                           `validate:"omitempty,min=3,max=50"`   // optional
-	EmailStr          *string                           `validate:"omitempty,email"`          // optional
-	DescriptionStr    *string                           `validate:"omitempty,min=1,max=2000"` // optional
+	UserID            gf_core.GF_ID    `validate:"required"`                 // required - not updated, but for lookup
+	UserAddressETHstr GFuserAddressETH `validate:"omitempty,eth_addr"`       // optional - add an Eth address to the user
+	ScreenNameStr     *string          `validate:"omitempty,min=3,max=50"`   // optional
+	EmailStr          *string          `validate:"omitempty,email"`          // optional
+	DescriptionStr    *string          `validate:"omitempty,min=1,max=2000"` // optional
 
 	ProfileImageURLstr *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
 	BannerImageURLstr  *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
@@ -84,7 +84,7 @@ type GFuserOutputUpdate struct {
 }
 
 type GFuserInputGet struct {
-	UserIDstr gf_core.GF_ID
+	UserID gf_core.GF_ID
 }
 
 type GFuserOutputGet struct {
@@ -126,7 +126,7 @@ func UsersPipelineUpdate(pInput *GFuserInputUpdate,
 	}
 
 	// USER_NAME
-	userNameStr, gfErr := DBgetUserNameByID(pInput.UserIDstr, pCtx, pRuntimeSys)
+	userNameStr, gfErr := DBsqlGetUserNameByID(pInput.UserID, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -137,7 +137,7 @@ func UsersPipelineUpdate(pInput *GFuserInputUpdate,
 
 			gfErr = UsersEmailPipelineVerify(*pInput.EmailStr,
 				userNameStr,
-				pInput.UserIDstr,
+				pInput.UserID,
 				pServiceInfo.DomainBaseStr,
 				pCtx,
 				pRuntimeSys)
@@ -170,8 +170,7 @@ func UsersPipelineGet(pInput *GFuserInputGet,
 
 	//------------------------
 	
-	user, gfErr := dbUserGetByID(pInput.UserIDstr,
-		pCtx,
+	user, gfErr := DBsqlUserGetByID(pInput.UserID,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr

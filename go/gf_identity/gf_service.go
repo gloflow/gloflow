@@ -39,6 +39,13 @@ func InitService(pTemplatesPathsMap map[string]string,
 	})
 	
 	//------------------------
+	// DB
+	gfErr := gf_identity_core.DBsqlCreateTables(pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	//------------------------
 	// KEYS_SERVER
 
 	auth0initBool := false

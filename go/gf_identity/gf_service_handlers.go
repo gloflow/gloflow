@@ -85,10 +85,10 @@ func initHandlers(pAuthLoginURLstr string,
 				//---------------------
 				// INPUT
 
-				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
 				input := &gf_identity_core.GFuserInputGet{
-					UserIDstr: userIDstr,
+					UserID: userID,
 				}
 
 				//---------------------
@@ -379,7 +379,7 @@ func initHandlers(pAuthLoginURLstr string,
 				//---------------------
 				// INPUT
 
-				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
 				HTTPinput, gfErr := gf_identity_core.HTTPgetUserUpdateInput(pReq, pRuntimeSys)
 				if gfErr != nil {
@@ -387,7 +387,7 @@ func initHandlers(pAuthLoginURLstr string,
 				}
 
 				input := &gf_identity_core.GFuserInputUpdate{
-					UserIDstr:          userIDstr,
+					UserID:             userID,
 					EmailStr:           HTTPinput.EmailStr,
 					DescriptionStr:     HTTPinput.DescriptionStr,
 					ProfileImageURLstr: HTTPinput.ProfileImageURLstr,

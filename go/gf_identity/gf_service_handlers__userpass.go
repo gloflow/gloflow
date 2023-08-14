@@ -124,7 +124,7 @@ func initHandlersUserpass(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				outputMap := map[string]interface{}{
 					"user_exists_bool": output.UserExistsBool,
 					"pass_valid_bool":  output.PassValidBool,
-					"user_id_str":      output.UserIDstr,
+					"user_id_str":      output.UserID,
 				}
 				return outputMap, nil
 			}

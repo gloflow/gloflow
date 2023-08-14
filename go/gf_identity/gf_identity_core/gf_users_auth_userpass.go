@@ -47,7 +47,7 @@ type GFuserpassOutputLogin struct {
 	UserExistsBool     bool
 	EmailConfirmedBool bool
 	PassValidBool      bool
-	UserIDstr          gf_core.GF_ID 
+	UserID             gf_core.GF_ID 
 	JWTtokenVal        GFjwtTokenVal
 	SessionID          gf_core.GF_ID
 }
@@ -58,7 +58,7 @@ type GFuserpassInputLoginFinalize struct {
 }
 type GFuserpassOutputLoginFinalize struct {
 	EmailConfirmedBool bool
-	UserIDstr          gf_core.GF_ID 
+	UserID             gf_core.GF_ID 
 	JWTtokenVal        GFjwtTokenVal
 }
 
@@ -76,7 +76,7 @@ type GFserpassOutputCreateRegular struct {
 }
 type GFuserpassOutputCreate struct {
 	UserNameStr GFuserName
-	UserIDstr   gf_core.GF_ID
+	UserID      gf_core.GF_ID
 }
 
 //---------------------------------------------------
@@ -156,7 +156,7 @@ func UserpassPipelineLogin(pInput *GFuserpassInputLogin,
 
 	//------------------------
 	output.EmailConfirmedBool = loginFinalizeOutput.EmailConfirmedBool
-	output.UserIDstr          = loginFinalizeOutput.UserIDstr
+	output.UserID             = loginFinalizeOutput.UserID
 	output.JWTtokenVal        = loginFinalizeOutput.JWTtokenVal
 
 	return output, nil
@@ -197,18 +197,18 @@ func UserpassPipelineLoginFinalize(pInput *GFuserpassInputLoginFinalize,
 	//------------------------
 	// USER_ID
 	
-	userIDstr, gfErr := DBgetBasicInfoByUsername(userNameStr,
+	userID, gfErr := DBgetBasicInfoByUsername(userNameStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
-	output.UserIDstr = userIDstr
+	output.UserID = userID
 
 	//------------------------
 	// JWT
-	userIdentifierStr := string(userIDstr)
+	userIdentifierStr := string(userID)
 	authSubsystemTypeStr := GF_AUTH_SUBSYSTEM_TYPE__USERPASS
 	
 	JWTtokenVal, gfErr := JWTpipelineGenerate(userIdentifierStr,
@@ -292,7 +292,7 @@ func UserpassPipelineCreateRegular(pInput *GFuserpassInputCreate,
 
 		gfErr = UsersEmailPipelineVerify(pInput.EmailStr,
 			pInput.UserNameStr,
-			output.UserIDstr,
+			output.UserID,
 			pServiceInfo.DomainBaseStr,
 			pCtx,
 			pRuntimeSys)
@@ -305,7 +305,7 @@ func UserpassPipelineCreateRegular(pInput *GFuserpassInputCreate,
 	// EVENT
 	if pServiceInfo.EnableEventsAppBool {
 		eventMeta := map[string]interface{}{
-			"user_id":     output.UserIDstr,
+			"user_id":     output.UserID,
 			"user_name":   pInput.UserNameStr,
 			"domain_base": pServiceInfo.DomainBaseStr,
 		}
@@ -343,11 +343,11 @@ func UserpassPipelineCreate(pInput *GFuserpassInputCreate,
 	emailStr    := pInput.EmailStr
 
 	userIdentifierStr := string(userNameStr)
-	userIDstr := usersCreateID(userIdentifierStr, creationUNIXtimeF)
+	userID            := usersCreateID(userIdentifierStr, creationUNIXtimeF)
 
 	user := &GFuser{
 		Vstr:              "0",
-		IDstr:             userIDstr,
+		ID:                userID,
 		CreationUNIXtimeF: creationUNIXtimeF,
 		UserTypeStr:       userTypeStr,
 		UserNameStr:       userNameStr,
@@ -359,13 +359,13 @@ func UserpassPipelineCreate(pInput *GFuserpassInputCreate,
 	passHashStr := userpassGetPassHash(passStr, passSaltStr)
 
 	credsCreationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	userCredsIDstr         := usersCreateID(userIdentifierStr, credsCreationUNIXtimeF)
+	userCredsID            := usersCreateID(userIdentifierStr, credsCreationUNIXtimeF)
 
 	userCreds := &GFuserCreds {
 		Vstr:              "0",
-		IDstr:             userCredsIDstr,
+		ID:                userCredsID,
 		CreationUNIXtimeF: credsCreationUNIXtimeF,
-		UserIDstr:         userIDstr,
+		UserID:            userID,
 		UserNameStr:       userNameStr,
 		PassSaltStr:       passSaltStr,
 		PassHashStr:       passHashStr,
@@ -374,7 +374,7 @@ func UserpassPipelineCreate(pInput *GFuserpassInputCreate,
 	//------------------------
 	// USER_PERSIST
 	// DB__USER_CREATE
-	gfErr = dbUserCreate(user, pCtx, pRuntimeSys)
+	gfErr = DBsqlUserCreate(user, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -390,9 +390,9 @@ func UserpassPipelineCreate(pInput *GFuserpassInputCreate,
 		secretDescriptionStr := fmt.Sprintf("user creds for a particular user")
 
 		userCredsMap := map[string]interface{}{
-			"user_creds_id_str":    userCredsIDstr, 
+			"user_creds_id_str":    userCredsID,
 			"creation_unix_time_f": credsCreationUNIXtimeF,
-			"user_id_str":          userIDstr,
+			"user_id_str":          userID,
 			"user_name_str":        userNameStr,
 			"pass_salt_str":        passSaltStr,
 			"pass_hash_str":        passHashStr,
@@ -441,7 +441,7 @@ func UserpassPipelineCreate(pInput *GFuserpassInputCreate,
 
 	output := &GFuserpassOutputCreate{
 		UserNameStr: userNameStr,
-		UserIDstr:   userIDstr,
+		UserID:      userID,
 	}
 
 	return output, nil

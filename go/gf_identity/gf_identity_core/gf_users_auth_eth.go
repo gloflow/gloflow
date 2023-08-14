@@ -181,8 +181,8 @@ func ETHpipelineLogin(pInput *GFethInputLogin,
 	//------------------------
 	// USER_ID
 
-	userIDstr, gfErr := DBgetBasicInfoByETHaddr(pInput.UserAddressETHstr,
-		pCtx, pRuntimeSys)
+	userIDstr, gfErr := DBsqlGetBasicInfoByETHaddr(pInput.UserAddressETHstr,
+		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -273,7 +273,7 @@ func ETHpipelineCreate(pInput *GFethInputCreate,
 
 	user := &GFuser{
 		Vstr:              "0",
-		IDstr:             userID,
+		ID:                userID,
 		CreationUNIXtimeF: creationUNIXtimeF,
 		UserTypeStr:       pInput.UserTypeStr,
 		AddressesETHlst:   userAddressesETHlst,
@@ -281,7 +281,7 @@ func ETHpipelineCreate(pInput *GFethInputCreate,
 
 	//------------------------
 	// DB
-	gfErr = dbUserCreate(user, pCtx, pRuntimeSys)
+	gfErr = DBsqlUserCreate(user, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

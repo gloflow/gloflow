@@ -75,14 +75,14 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				//---------------------
 				// INPUT
 				
-				inputMap, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
+				inputMap, adminUserID, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				var userIDstr string
+				var userID string
 				if valStr, ok := inputMap["user_id_str"]; ok {
-					userIDstr = valStr.(string)
+					userID = valStr.(string)
 				}
 
 				var userNameStr string
@@ -90,7 +90,7 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 					userNameStr = valStr.(string)
 				}
 
-				gfErr = gf_identity.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
+				gfErr = gf_identity.AdminIs(adminUserID, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -98,7 +98,7 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				//---------------------
 
 				input := &gf_identity.GFadminUserDeleteInput{
-					UserIDstr:   gf_core.GF_ID(userIDstr),
+					UserID:      gf_core.GF_ID(userID),
 					UserNameStr: gf_identity_core.GFuserName(userNameStr),
 				}
 				gfErr = gf_identity.AdminPipelineDeleteUser(input,
@@ -130,12 +130,12 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				//---------------------
 				// INPUT
 				
-				_, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
+				_, adminUserID, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				gfErr = gf_identity.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
+				gfErr = gf_identity.AdminIs(adminUserID, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -170,12 +170,12 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				//---------------------
 				// INPUT
 				
-				_, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
+				_, adminUserID, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				gfErr = gf_identity.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
+				gfErr = gf_identity.AdminIs(adminUserID, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -210,7 +210,7 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				//---------------------
 				// INPUT
 				
-				inputMap, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
+				inputMap, adminUserID, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -220,14 +220,14 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 					emailStr = valStr.(string)
 				}
 
-				gfErr = gf_identity.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
+				gfErr = gf_identity.AdminIs(adminUserID, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
 				input := &gf_identity.GFadminInputAddToInviteList{
-					AdminUserIDstr: adminUserIDstr,
-					EmailStr:       emailStr,
+					AdminUserID: adminUserID,
+					EmailStr:    emailStr,
 				}
 
 				//---------------------
@@ -261,7 +261,7 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				//---------------------
 				// INPUT
 				
-				inputMap, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
+				inputMap, adminUserID, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -271,14 +271,14 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 					emailStr = valStr.(string)
 				}
 
-				gfErr = gf_identity.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
+				gfErr = gf_identity.AdminIs(adminUserID, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
 				input := &gf_identity.GFadminRemoveFromInviteListInput{
-					AdminUserIDstr: adminUserIDstr,
-					EmailStr:       emailStr,
+					AdminUserID: adminUserID,
+					EmailStr:    emailStr,
 				}
 
 				//---------------------
@@ -317,9 +317,9 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 					return nil, gfErr
 				}
 
-				var targetUserIDstr gf_core.GF_ID
+				var targetUserID gf_core.GF_ID
 				if valStr, ok := inputMap["user_id_str"]; ok {
-					targetUserIDstr = gf_core.GF_ID(valStr.(string))
+					targetUserID = gf_core.GF_ID(valStr.(string))
 				}
 				
 				var targetUserNameStr gf_identity_core.GFuserName
@@ -338,7 +338,7 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				}
 
 				input := &gf_identity.GFadminResendConfirmEmailInput{
-					UserIDstr:   targetUserIDstr,
+					UserID:      targetUserID,
 					UserNameStr: targetUserNameStr,
 					EmailStr:    emailStr,
 				}

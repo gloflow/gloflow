@@ -52,17 +52,17 @@ type GFadminOutputCreateAdmin struct {
 }
 
 type GFadminInputAddToInviteList struct {
-	AdminUserIDstr gf_core.GF_ID `validate:"required,min=3,max=50"`
-	EmailStr       string        `validate:"required,email"`
+	AdminUserID gf_core.GF_ID `validate:"required,min=3,max=50"`
+	EmailStr    string        `validate:"required,email"`
 }
 
 type GFadminRemoveFromInviteListInput struct {
-	AdminUserIDstr gf_core.GF_ID `validate:"required,min=3,max=50"`
-	EmailStr       string        `validate:"required,email"`
+	AdminUserID gf_core.GF_ID `validate:"required,min=3,max=50"`
+	EmailStr    string        `validate:"required,email"`
 }
 
 type GFadminUserViewOutput struct {
-	IDstr              gf_core.GF_ID                       `json:"id_str"`
+	ID                 gf_core.GF_ID                       `json:"id_str"`
 	CreationUNIXtimeF  float64                             `json:"creation_unix_time_f"`
 	UserNameStr        gf_identity_core.GFuserName         `json:"user_name_str"`
 	ScreenNameStr      string                              `json:"screen_name_str"`
@@ -73,13 +73,13 @@ type GFadminUserViewOutput struct {
 }
 
 type GFadminResendConfirmEmailInput struct {
-	UserIDstr   gf_core.GF_ID               `validate:"required,min=3,max=50"`
+	UserID      gf_core.GF_ID               `validate:"required,min=3,max=50"`
 	UserNameStr gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
 	EmailStr    string                      `validate:"required,email"`
 }
 
 type GFadminUserDeleteInput struct {
-	UserIDstr   gf_core.GF_ID               `validate:"required,min=3,max=50"`
+	UserID      gf_core.GF_ID               `validate:"required,min=3,max=50"`
 	UserNameStr gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
 }
 
@@ -97,7 +97,7 @@ func AdminPipelineDeleteUser(pInput *GFadminUserDeleteInput,
 	}
 
 	// UPDATE_USER - mark user as email_confirmed
-	gfErr := gf_identity_core.DBuserUpdate(pInput.UserIDstr,
+	gfErr := gf_identity_core.DBuserUpdate(pInput.UserID,
 		updateOp,
 		pCtx,
 		pRuntimeSys)
@@ -128,7 +128,7 @@ func AdminPipelineUserResendConfirmEmail(pInput *GFadminResendConfirmEmailInput,
 
 		gfErr = gf_identity_core.UsersEmailPipelineVerify(pInput.EmailStr,
 			pInput.UserNameStr,
-			pInput.UserIDstr,
+			pInput.UserID,
 			pServiceInfo.DomainBaseStr,
 			pCtx,
 			pRuntimeSys)
@@ -157,7 +157,7 @@ func AdminPipelineGetAllUsers(pCtx context.Context,
 
 
 		userView := &GFadminUserViewOutput{
-			IDstr:              user.IDstr,
+			ID:                 user.ID,
 			CreationUNIXtimeF:  user.CreationUNIXtimeF,
 			UserNameStr:        user.UserNameStr,
 			ScreenNameStr:      user.ScreenNameStr,
@@ -223,13 +223,13 @@ func AdminPipelineUserAddToInviteList(pInput *GFadminInputAddToInviteList,
 	// EVENT
 	if pServiceInfo.EnableEventsAppBool {
 		
-		adminUserNameStr, gfErr := gf_identity_core.DBgetUserNameByID(pInput.AdminUserIDstr, pCtx, pRuntimeSys)
+		adminUserNameStr, gfErr := gf_identity_core.DBgetUserNameByID(pInput.AdminUserID, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
 
 		eventMetaMap := map[string]interface{}{
-			"user_id":                    pInput.AdminUserIDstr,
+			"user_id":                    pInput.AdminUserID,
 			"user_name":                  adminUserNameStr,
 			"email_added_to_invite_list": pInput.EmailStr,
 		}
@@ -267,13 +267,13 @@ func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListIn
 	// EVENT
 	if pServiceInfo.EnableEventsAppBool {
 		
-		adminUserNameStr, gfErr := gf_identity_core.DBgetUserNameByID(pInput.AdminUserIDstr, pCtx, pRuntimeSys)
+		adminUserNameStr, gfErr := gf_identity_core.DBgetUserNameByID(pInput.AdminUserID, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
 
 		eventMetaMap := map[string]interface{}{
-			"user_id":                    pInput.AdminUserIDstr,
+			"user_id":                    pInput.AdminUserID,
 			"user_name":                  adminUserNameStr,
 			"email_added_to_invite_list": pInput.EmailStr,
 		}
@@ -364,7 +364,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 
 			//------------------------
 
-			userID                = output_create.General.UserIDstr
+			userID = output_create.General.UserID
 			output.UserExistsBool = true
 		} else {
 
@@ -508,7 +508,7 @@ func adminPipelineCreateAdmin(pInput *gf_identity_core.GFuserpassInputCreate,
 	// EVENT
 	if pServiceInfo.EnableEventsAppBool {
 		eventMeta := map[string]interface{}{
-			"user_id":     output.UserIDstr,
+			"user_id":     output.UserID,
 			"user_name":   pInput.UserNameStr,
 			"user_type":   pInput.UserTypeStr,
 			"domain_base": pServiceInfo.DomainBaseStr,

@@ -101,10 +101,6 @@ func DBsqlCreateFlow(pFlowID gf_core.GF_ID,
 		pFlowNameStr,
 		pOwnerUserID)
 
-
-		
-
-
 	var id string
 	err = row.Scan(&id)
 	if err != nil {
@@ -211,7 +207,6 @@ func DBsqlCheckFlowExists(pFlowNameStr string,
 	err := db.QueryRow(sqlStr, pFlowNameStr).Scan(&existsBool)
 
 	if err != nil {
-
 		gfErr := gf_core.ErrorCreate("failed to check if a flow exists in the DB",
 			"sql_query_execute",
 			map[string]interface{}{},
