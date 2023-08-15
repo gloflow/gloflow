@@ -73,7 +73,7 @@ func TesUsersHTTPuserpass(pTest *testing.T) {
 
 	//---------------------------------
 	// ADD_TO_INVITE_LIST
-	gfErr := gf_identity_core.DBuserAddToInviteList(testEmailStr,
+	gfErr := gf_identity_core.DBsqlUserAddToInviteList(testEmailStr,
 		ctx,
 		runtimeSys)
 	if gfErr != nil {

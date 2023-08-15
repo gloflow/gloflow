@@ -318,9 +318,9 @@ func TestUsersETHunit(pTest *testing.T) {
 	// USER_CREATE
 	
 	inputCreate := &gf_identity_core.GFethInputCreate{
-		UserTypeStr:       "standard",
-		AuthSignatureStr:  gf_identity_core.GFauthSignature(testUserSignatureStr),
-		UserAddressETHstr: gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
+		UserTypeStr:      "standard",
+		AuthSignatureStr: gf_identity_core.GFauthSignature(testUserSignatureStr),
+		UserAddressETH:   gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 	}
 
 	outputCreate, gfErr := gf_identity_core.ETHpipelineCreate(inputCreate, ctx, runtimeSys)
@@ -334,8 +334,8 @@ func TestUsersETHunit(pTest *testing.T) {
 
 	//------------------
 	inputLogin := &gf_identity_core.GFethInputLogin{
-		AuthSignatureStr:  gf_identity_core.GFauthSignature(testUserSignatureStr),
-		UserAddressETHstr: gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
+		AuthSignatureStr: gf_identity_core.GFauthSignature(testUserSignatureStr),
+		UserAddressETH:   gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 	}
 	outputLogin, gfErr := gf_identity_core.ETHpipelineLogin(inputLogin,
 		keyServerInfo,
