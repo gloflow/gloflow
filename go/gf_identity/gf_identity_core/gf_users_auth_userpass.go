@@ -107,7 +107,7 @@ func UserpassPipelineLogin(pInput *GFuserpassInputLogin,
 	//------------------------
 	// VERIFY
 
-	userExistsBool, gfErr := DBuserExistsByUsername(GFuserName(pInput.UserNameStr),
+	userExistsBool, gfErr := DBsqlUserExistsByUsername(GFuserName(pInput.UserNameStr),
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -179,7 +179,7 @@ func UserpassPipelineLoginFinalize(pInput *GFuserpassInputLoginFinalize,
 	// this is the initial confirmation of an email on user creation, or user email update.
 	if pServiceInfo.EnableEmailRequireConfirmForLoginBool {
 
-		emailConfirmedBool, gfErr := dbUserGetEmailConfirmedByUsername(userNameStr,
+		emailConfirmedBool, gfErr := dbSQLuserGetEmailConfirmedByUsername(userNameStr,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -197,7 +197,7 @@ func UserpassPipelineLoginFinalize(pInput *GFuserpassInputLoginFinalize,
 	//------------------------
 	// USER_ID
 	
-	userID, gfErr := DBgetBasicInfoByUsername(userNameStr,
+	userID, gfErr := DBsqlGetBasicInfoByUsername(userNameStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -247,7 +247,7 @@ func UserpassPipelineCreateRegular(pInput *GFuserpassInputCreate,
 	//------------------------
 	// VALIDATE
 
-	userExistsBool, gfErr := DBuserExistsByUsername(pInput.UserNameStr, pCtx, pRuntimeSys)
+	userExistsBool, gfErr := DBsqlUserExistsByUsername(pInput.UserNameStr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -259,7 +259,7 @@ func UserpassPipelineCreateRegular(pInput *GFuserpassInputCreate,
 	}
 
 	// check if in invite list
-	inInviteListBool, gfErr := dbUserCheckInInvitelistByEmail(pInput.EmailStr,
+	inInviteListBool, gfErr := dbSQLuserCheckInInvitelistByEmail(pInput.EmailStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -374,7 +374,7 @@ func UserpassPipelineCreate(pInput *GFuserpassInputCreate,
 	//------------------------
 	// USER_PERSIST
 	// DB__USER_CREATE
-	gfErr = DBsqlUserCreate(user, pRuntimeSys)
+	gfErr = DBsqlUserCreate(user, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -409,7 +409,7 @@ func UserpassPipelineCreate(pInput *GFuserpassInputCreate,
 	} else {
 
 		// DB__USER_CREDS_CREATE - otherwise use the regular DB
-		gfErr = dbUserCredsCreate(userCreds, pCtx, pRuntimeSys)
+		gfErr = dbSQLuserCredsCreate(userCreds, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}
@@ -480,7 +480,7 @@ func UserpassVerifyPass(pUserNameStr GFuserName,
 	} else {
 
 		// DB
-		dbPassSaltStr, dbPassHashStr, gfErr := dbUserCredsGetPassHash(pUserNameStr,
+		dbPassSaltStr, dbPassHashStr, gfErr := dbSQLuserCredsGetPassHash(pUserNameStr,
 			pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return false, gfErr

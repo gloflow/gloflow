@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity
 
 import (
+	"context"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
@@ -40,7 +41,8 @@ func InitService(pTemplatesPathsMap map[string]string,
 	
 	//------------------------
 	// DB
-	gfErr := gf_identity_core.DBsqlCreateTables(pRuntimeSys)
+	ctx := context.Background()
+	gfErr := gf_identity_core.DBsqlCreateTables(ctx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

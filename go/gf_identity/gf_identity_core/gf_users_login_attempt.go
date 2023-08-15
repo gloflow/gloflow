@@ -96,7 +96,7 @@ func loginAttempCreate(pUserNameStr GFuserName,
 		UserTypeStr:       pUserTypeStr,
 		UserNameStr:       pUserNameStr,
 	}
-	gfErr := dbLoginAttemptCreate(loginAttempt,
+	gfErr := dbSQLloginAttemptCreate(loginAttempt,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -114,7 +114,7 @@ func LoginAttemptGetIfValid(pUserNameStr GFuserName,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFloginAttempt, *gf_core.GFerror) {
 
 	var loginAttempt *GFloginAttempt
-	loginAttempt, gfErr := dbLoginAttemptGetByUsername(pUserNameStr,
+	loginAttempt, gfErr := dbSQLloginAttemptGetByUsername(pUserNameStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -134,7 +134,7 @@ func LoginAttemptGetIfValid(pUserNameStr GFuserName,
 		// mark it as deleted
 		expiredBool := true
 		updateOp := &GFloginAttemptUpdateOp{DeletedBool: &expiredBool}
-		gfErr = DBloginAttemptUpdate(&loginAttempt.IDstr,
+		gfErr = DBsqlLoginAttemptUpdate(&loginAttempt.IDstr,
 			updateOp,
 			pCtx,
 			pRuntimeSys)

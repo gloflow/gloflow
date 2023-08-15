@@ -78,7 +78,7 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				}
 
 				input :=&gf_identity_core.GFethInputPreflight{
-					UserAddressETHstr: userAddressETHstr,
+					UserAddressETH: userAddressETHstr,
 				}
 
 				//---------------------
@@ -117,8 +117,8 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				authSignatureStr := gf_identity_core.GFauthSignature(inputMap["auth_signature_str"].(string))
 
 				input :=&gf_identity_core.GFethInputLogin{
-					UserAddressETHstr: userAddressETHstr,
-					AuthSignatureStr:  authSignatureStr,
+					UserAddressETH:   userAddressETHstr,
+					AuthSignatureStr: authSignatureStr,
 				}
 
 				//---------------------
@@ -146,7 +146,7 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				outputMap := map[string]interface{}{
 					"auth_signature_valid_bool": output.AuthSignatureValidBool,
 					"nonce_exists_bool":         output.NonceExistsBool,
-					"user_id_str":               output.UserIDstr,
+					"user_id_str":               output.UserID,
 				}
 				return outputMap, nil
 			}
@@ -173,9 +173,9 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				}
 
 				input :=&gf_identity_core.GFethInputCreate{
-					UserTypeStr:       "standard",
-					UserAddressETHstr: gf_identity_core.GFuserAddressETH(inputMap["user_address_eth_str"].(string)),
-					AuthSignatureStr:  gf_identity_core.GFauthSignature(inputMap["auth_signature_str"].(string)),
+					UserTypeStr:      "standard",
+					UserAddressETH:   gf_identity_core.GFuserAddressETH(inputMap["user_address_eth_str"].(string)),
+					AuthSignatureStr: gf_identity_core.GFauthSignature(inputMap["auth_signature_str"].(string)),
 				}
 				
 				//---------------------

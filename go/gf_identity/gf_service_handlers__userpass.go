@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity
 
 import (
-	// "fmt"
+	"fmt"
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -111,13 +111,19 @@ func initHandlersUserpass(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				//---------------------
 				// COOKIES 
 
-				// SESSION_ID - sets gf_sess cookie
-				sessionIDstr := string(output.SessionID)
-				gf_session.CreateSessionIDcookie(sessionIDstr, pResp)
+				if output.UserExistsBool {
 
-				// JWT - sets "Authorization" cookie
-				jwtTokenValStr := string(output.JWTtokenVal)
-				gf_session.CreateAuthCookie(jwtTokenValStr, pResp)
+					// SESSION_ID - sets gf_sess cookie
+					sessionIDstr := string(output.SessionID)
+					gf_session.CreateSessionIDcookie(sessionIDstr, pResp)
+
+					
+
+
+					// JWT - sets "Authorization" cookie
+					jwtTokenValStr := string(output.JWTtokenVal)
+					gf_session.CreateAuthCookie(jwtTokenValStr, pResp)
+				}
 
 				//---------------------
 

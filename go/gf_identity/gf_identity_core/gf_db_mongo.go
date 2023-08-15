@@ -51,7 +51,7 @@ type GFloginAttemptUpdateOp struct {
 //---------------------------------------------------
 // CREATE_NEW_SESSION
 
-func dbAuth0createNewSession(pAuth0session *GFauth0session,
+func dbMongoAuth0createNewSession(pAuth0session *GFauth0session,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
@@ -73,7 +73,7 @@ func dbAuth0createNewSession(pAuth0session *GFauth0session,
 //---------------------------------------------------
 // GET_SESSION
 
-func dbAuth0getSession(pGFsessionID gf_core.GF_ID,
+func dbMongoAuth0getSession(pGFsessionID gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFauth0session, *gf_core.GFerror) {
 
@@ -104,7 +104,7 @@ func dbAuth0getSession(pGFsessionID gf_core.GF_ID,
 //---------------------------------------------------
 // UPDATE_SESSION
 
-func dbAuth0updateSession(pGFsessionIDstr gf_core.GF_ID,
+func dbMongoAuth0updateSession(pGFsessionIDstr gf_core.GF_ID,
 	pLoginCompleteBool bool,
 	pAuth0profileMap   map[string]interface{},
 	pCtx               context.Context,
@@ -141,7 +141,7 @@ func dbAuth0updateSession(pGFsessionIDstr gf_core.GF_ID,
 // USER
 //---------------------------------------------------
 
-func DBuserGetAll(pCtx context.Context,
+func DBmongoUserGetAll(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFuser, *gf_core.GFerror) {
 
 	collNameStr := "gf_users"
@@ -183,7 +183,7 @@ func DBuserGetAll(pCtx context.Context,
 //---------------------------------------------------
 // CREATE_USER
 
-func dbUserCreate(pUser *GFuser,
+func dbMongoUserCreate(pUser *GFuser,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -210,7 +210,7 @@ func dbUserCreate(pUser *GFuser,
 //---------------------------------------------------
 // UPDATE
 
-func DBuserUpdate(pUserIDstr gf_core.GF_ID, // p_user_address_eth_str GF_user_address_eth,
+func DBmongoUserUpdate(pUserIDstr gf_core.GF_ID,
 	pUpdateOp   *GFuserUpdateOp,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -280,7 +280,7 @@ func DBuserUpdate(pUserIDstr gf_core.GF_ID, // p_user_address_eth_str GF_user_ad
 //---------------------------------------------------
 // GET_BY_ID
 
-func dbUserGetByID(pUserIDstr gf_core.GF_ID,
+func dbMongoUserGetByID(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFuser, *gf_core.GFerror) {
 
@@ -310,7 +310,7 @@ func dbUserGetByID(pUserIDstr gf_core.GF_ID,
 //---------------------------------------------------
 // GET_BY_USERNAME
 
-func dbUserGetByUsername(pUserNameStr GFuserName,
+func dbMongoUserGetByUsername(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFuser, *gf_core.GFerror) {
 
@@ -340,7 +340,7 @@ func dbUserGetByUsername(pUserNameStr GFuserName,
 //---------------------------------------------------
 // GET_BY_ETH_ADDR
 
-func dbUserGetByETHaddr(pUserAddressETHstr GFuserAddressETH,
+func dbMongoUserGetByETHaddr(pUserAddressETHstr GFuserAddressETH,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFuser, *gf_core.GFerror) {
 
@@ -372,7 +372,7 @@ func dbUserGetByETHaddr(pUserAddressETHstr GFuserAddressETH,
 //---------------------------------------------------
 // EXISTS_BY_ID
 
-func DBuserExistsByID(pUserID gf_core.GF_ID,
+func DBmongoUserExistsByID(pUserID gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
@@ -401,7 +401,7 @@ func DBuserExistsByID(pUserID gf_core.GF_ID,
 //---------------------------------------------------
 // EXISTS_BY_USERNAME
 
-func DBuserExistsByUsername(pUserNameStr GFuserName,
+func DBmongoUserExistsByUsername(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
@@ -430,7 +430,7 @@ func DBuserExistsByUsername(pUserNameStr GFuserName,
 //---------------------------------------------------
 // EXISTS_BY_ETH_ADDR
 
-func dbUserExistsByETHaddr(pUserAddressETHstr GFuserAddressETH,
+func dbMongoUserExistsByETHaddr(pUserAddressETHstr GFuserAddressETH,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
@@ -461,7 +461,7 @@ func dbUserExistsByETHaddr(pUserAddressETHstr GFuserAddressETH,
 
 // for initial user creation only, checks if the if the user confirmed their email.
 // this is done only once.
-func dbUserEmailIsConfirmed(pUserNameStr GFuserName,
+func dbMongoUserEmailIsConfirmed(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
@@ -498,7 +498,7 @@ func dbUserEmailIsConfirmed(pUserNameStr GFuserName,
 // GET
 //---------------------------------------------------
 
-func DBgetUserNameByID(pUserIDstr gf_core.GF_ID,
+func DBmongoGetUserNameByID(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (GFuserName, *gf_core.GFerror) {
 
@@ -532,11 +532,11 @@ func DBgetUserNameByID(pUserIDstr gf_core.GF_ID,
 //---------------------------------------------------
 // GET_BASIC_INFO_BY_ETH_ADDR
 
-func DBgetBasicInfoByETHaddr(pUserAddressETHstr GFuserAddressETH,
+func DBmongoGetBasicInfoByETHaddr(pUserAddressETHstr GFuserAddressETH,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
 
-	userIDstr, gfErr := DBgetUserID(bson.M{
+	userIDstr, gfErr := DBmongoGetUserID(bson.M{
 			"addresses_eth_lst": bson.M{"$in": bson.A{pUserAddressETHstr, }},
 			"deleted_bool":      false,
 		},
@@ -555,11 +555,11 @@ func DBgetBasicInfoByETHaddr(pUserAddressETHstr GFuserAddressETH,
 //---------------------------------------------------
 // GET_BASIC_INFO_BY_USERNAME
 
-func DBgetBasicInfoByUsername(pUserNameStr GFuserName,
+func DBmongoGetBasicInfoByUsername(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
 
-	userIDstr, gfErr := DBgetUserID(bson.M{
+	userIDstr, gfErr := DBmongoGetUserID(bson.M{
 			"user_name_str": pUserNameStr,
 			"deleted_bool":  false,
 		},
@@ -579,7 +579,7 @@ func DBgetBasicInfoByUsername(pUserNameStr GFuserName,
 //---------------------------------------------------
 // DB_GET_USER_ID
 
-func DBgetUserID(pQuery bson.M,
+func DBmongoGetUserID(pQuery bson.M,
 	pMetaMap    map[string]interface{}, // data describing the DB write op
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
@@ -613,7 +613,7 @@ func DBgetUserID(pQuery bson.M,
 // INVITE_LIST
 //---------------------------------------------------
 
-func DBuserGetAllInInviteList(pCtx context.Context,
+func DBmongoUserGetAllInInviteList(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	collNameStr := "gf_users_invite_list"
@@ -655,7 +655,7 @@ func DBuserGetAllInInviteList(pCtx context.Context,
 //---------------------------------------------------
 // ADD_TO_INVITE_LIST
 
-func DBuserAddToInviteList(pUserEmailStr string,
+func DBmongoUserAddToInviteList(pUserEmailStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -684,7 +684,7 @@ func DBuserAddToInviteList(pUserEmailStr string,
 
 //---------------------------------------------------
 
-func DBuserRemoveFromInviteList(pUserEmailStr string,
+func DBmongoUserRemoveFromInviteList(pUserEmailStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
@@ -714,7 +714,7 @@ func DBuserRemoveFromInviteList(pUserEmailStr string,
 //---------------------------------------------------
 // CHECK_IN_INVITE_LIST_BY_EMAIL
 
-func dbUserCheckInInvitelistByEmail(pUserEmailStr string,
+func dbMongoUserCheckInInvitelistByEmail(pUserEmailStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 	
@@ -745,7 +745,7 @@ func dbUserCheckInInvitelistByEmail(pUserEmailStr string,
 //---------------------------------------------------
 // CREATE_CREDS
 
-func dbUserCredsCreate(pUserCreds *GFuserCreds,
+func dbMongoUserCredsCreate(pUserCreds *GFuserCreds,
 	pCtx         context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -769,7 +769,7 @@ func dbUserCredsCreate(pUserCreds *GFuserCreds,
 
 //---------------------------------------------------
 
-func dbUserCredsGetPassHash(pUserNameStr GFuserName,
+func dbMongoUserCredsGetPassHash(pUserNameStr GFuserName,
 	pCtx         context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (string, string, *gf_core.GFerror) {
 
@@ -809,7 +809,7 @@ func dbUserCredsGetPassHash(pUserNameStr GFuserName,
 //---------------------------------------------------
 // CREATE__EMAIL_CONFIRM
 
-func dbUserEmailConfirmCreate(pUserNameStr GFuserName,
+func dbMongoUserEmailConfirmCreate(pUserNameStr GFuserName,
 	pUserIDstr      gf_core.GF_ID,
 	pConfirmCodeStr string,
 	pCtx            context.Context,
@@ -843,7 +843,7 @@ func dbUserEmailConfirmCreate(pUserNameStr GFuserName,
 //---------------------------------------------------
 // GET__EMAIL_CONFIRM_CODE
 
-func dbUserEmailConfirmGetCode(pUserNameStr GFuserName,
+func dbMongoUserEmailConfirmGetCode(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (string, float64, *gf_core.GFerror) {
 
@@ -881,7 +881,7 @@ func dbUserEmailConfirmGetCode(pUserNameStr GFuserName,
 
 //---------------------------------------------------
 
-func dbUserGetEmailConfirmedByUsername(pUserNameStr GFuserName,
+func dbMongoUserGetEmailConfirmedByUsername(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
@@ -918,7 +918,7 @@ func dbUserGetEmailConfirmedByUsername(pUserNameStr GFuserName,
 // LOGIN_ATTEMPT
 //---------------------------------------------------
 
-func dbLoginAttemptCreate(pLoginAttempt *GFloginAttempt,
+func dbMongoLoginAttemptCreate(pLoginAttempt *GFloginAttempt,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -942,7 +942,7 @@ func dbLoginAttemptCreate(pLoginAttempt *GFloginAttempt,
 
 //---------------------------------------------------
 
-func dbLoginAttemptGetByUsername(pUserNameStr GFuserName,
+func dbMongoLoginAttemptGetByUsername(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFloginAttempt, *gf_core.GFerror) {
 
@@ -992,7 +992,7 @@ func dbLoginAttemptGetByUsername(pUserNameStr GFuserName,
 
 //---------------------------------------------------
 
-func DBloginAttemptUpdate(pLoginAttemptIDstr *gf_core.GF_ID,
+func DBmongoLoginAttemptUpdate(pLoginAttemptIDstr *gf_core.GF_ID,
 	pUpdateOp   *GFloginAttemptUpdateOp,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {

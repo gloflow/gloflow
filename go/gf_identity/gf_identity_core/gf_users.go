@@ -126,7 +126,7 @@ func UsersPipelineUpdate(pInput *GFuserInputUpdate,
 	}
 
 	// USER_NAME
-	userNameStr, gfErr := DBsqlGetUserNameByID(pInput.UserID, pRuntimeSys)
+	userNameStr, gfErr := DBsqlGetUserNameByID(pInput.UserID, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -171,6 +171,7 @@ func UsersPipelineGet(pInput *GFuserInputGet,
 	//------------------------
 	
 	user, gfErr := DBsqlUserGetByID(pInput.UserID,
+		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr

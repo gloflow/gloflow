@@ -79,7 +79,7 @@ func mfaPipelineConfirm(pInput *GFuserAuthMFAinputConfirm,
 		// to indicate that the password has been confirmed
 		mfaConfirmBool := true
 		updateOp := &gf_identity_core.GFloginAttemptUpdateOp{MFAconfirmedBool: &mfaConfirmBool}
-		gfErr = gf_identity_core.DBloginAttemptUpdate(&loginAttempt.IDstr,
+		gfErr = gf_identity_core.DBsqlLoginAttemptUpdate(&loginAttempt.IDstr,
 			updateOp,
 			pCtx,
 			pRuntimeSys)

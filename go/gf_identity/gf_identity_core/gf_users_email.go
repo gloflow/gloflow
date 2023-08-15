@@ -42,7 +42,7 @@ func UsersEmailPipelineVerify(pEmailAddressStr string,
 	confirmCodeStr := usersEmailGenerateConfirmationCode()
 
 	// DB
-	gfErr := dbUserEmailConfirmCreate(pUserNameStr,
+	gfErr := dbSQLuserEmailConfirmCreate(pUserNameStr,
 		pUserIDstr,
 		confirmCodeStr,
 		pCtx,
@@ -95,7 +95,7 @@ func UsersEmailPipelineConfirm(pInput *GFuserHTTPinputEmailConfirm,
 	if pInput.ConfirmCodeStr == dbConfirmCodeStr {
 		
 		// GET_USER_ID
-		userIDstr, gfErr := DBgetBasicInfoByUsername(pInput.UserNameStr,
+		userIDstr, gfErr := DBsqlGetBasicInfoByUsername(pInput.UserNameStr,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -105,7 +105,7 @@ func UsersEmailPipelineConfirm(pInput *GFuserHTTPinputEmailConfirm,
 		//------------------------
 		// initial user email confirmation. only for new users.
 		// user confirmed their email as valid.
-		userEmailConfirmedBool, gfErr := dbUserEmailIsConfirmed(pInput.UserNameStr, pCtx, pRuntimeSys)
+		userEmailConfirmedBool, gfErr := DBsqlUserEmailIsConfirmed(pInput.UserNameStr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return false, "", gfErr
 		}
@@ -116,7 +116,7 @@ func UsersEmailPipelineConfirm(pInput *GFuserHTTPinputEmailConfirm,
 			}
 	
 			// UPDATE_USER - mark user as email_confirmed
-			gfErr = DBuserUpdate(userIDstr,
+			gfErr = DBsqlUserUpdate(userIDstr,
 				updateOp,
 				pCtx,
 				pRuntimeSys)
@@ -147,7 +147,7 @@ func UsersEmailPipelineConfirm(pInput *GFuserHTTPinputEmailConfirm,
 
 		loginEmailConfirmedBool := true
 		updateOp := &GFloginAttemptUpdateOp{EmailConfirmedBool: &loginEmailConfirmedBool}
-		gfErr = DBloginAttemptUpdate(&loginAttempt.IDstr,
+		gfErr = DBsqlLoginAttemptUpdate(&loginAttempt.IDstr,
 			updateOp,
 			pCtx,
 			pRuntimeSys)
@@ -173,7 +173,7 @@ func usersEmailGetConfirmationCode(pUserNameStr GFuserName,
 
 	expiredBool := false
 
-	confirmCodeStr, confirmCodeCreationTimeF, gfErr := dbUserEmailConfirmGetCode(pUserNameStr,
+	confirmCodeStr, confirmCodeCreationTimeF, gfErr := dbSQLuserEmailConfirmGetCode(pUserNameStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {

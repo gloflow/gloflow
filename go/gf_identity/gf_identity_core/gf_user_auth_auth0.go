@@ -35,7 +35,7 @@ import (
 //---------------------------------------------------
 
 type GFauth0session struct {
-	IDstr             gf_core.GF_ID          `bson:"id_str"`
+	ID                gf_core.GF_ID          `bson:"id_str"`
 	DeletedBool       bool                   `bson:"deleted_bool"`
 	CreationUNIXtimeF float64                `bson:"creation_unix_time_f"`
 
@@ -71,7 +71,7 @@ func Auth0loginPipeline(pCtx context.Context,
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 	auth0session := &GFauth0session{
-		IDstr:             sessionID,
+		ID:                sessionID,
 		CreationUNIXtimeF: creationUNIXtimeF,
 
 		// indicate if the user already passed the initial login process,
@@ -82,7 +82,7 @@ func Auth0loginPipeline(pCtx context.Context,
 
 	//---------------------
 	// DB
-	gfErr := dbAuth0createNewSession(auth0session,
+	gfErr := dbSQLAuth0createNewSession(auth0session,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -110,7 +110,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	// created in the previously called login handler, and that a login with that session 
 	// has not already been completed
 
-	auth0session, gfErr := dbAuth0getSession(sessionID,
+	auth0session, gfErr := dbSQLauth0getSession(sessionID,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -280,7 +280,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	// cant be invoked again
 	loginCompleteBool := true
 
-	gfErr = dbAuth0updateSession(sessionID,
+	gfErr = dbSQLauth0updateSession(sessionID,
 		loginCompleteBool,
 
 		//---------------
@@ -335,6 +335,7 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 	//---------------------
 	// DB
 	existsBool, gfErr := DBsqlUserExistsByID(auth0userID,
+		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
@@ -356,7 +357,7 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 	
 		//------------------------
 		// DB
-		gfErr = DBsqlUserCreate(user, pRuntimeSys)
+		gfErr = DBsqlUserCreate(user, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}

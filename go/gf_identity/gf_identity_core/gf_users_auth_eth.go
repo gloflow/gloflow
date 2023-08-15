@@ -29,7 +29,7 @@ import (
 
 // io_preflight
 type GFethInputPreflight struct {
-	UserAddressETHstr GFuserAddressETH `validate:"omitempty,eth_addr"`
+	UserAddressETH GFuserAddressETH `validate:"omitempty,eth_addr"`
 }
 type GFethOutputPreflight struct {
 	UserExistsBool bool             
@@ -38,22 +38,22 @@ type GFethOutputPreflight struct {
 
 // io_login
 type GFethInputLogin struct {
-	UserAddressETHstr GFuserAddressETH `validate:"required,eth_addr"`
-	AuthSignatureStr  GFauthSignature  `validate:"required,len=132"` // singature length with "0x"
+	UserAddressETH   GFuserAddressETH `validate:"required,eth_addr"`
+	AuthSignatureStr GFauthSignature  `validate:"required,len=132"` // singature length with "0x"
 }
 type GFethOutputLogin struct {
 	NonceExistsBool        bool
 	AuthSignatureValidBool bool
 	JWTtokenVal            GFjwtTokenVal
-	UserIDstr              gf_core.GF_ID
+	UserID                 gf_core.GF_ID
 	SessionID              gf_core.GF_ID
 }
 
 // io_create
 type GFethInputCreate struct {
-	UserTypeStr       string           `validate:"required"` // "admin" | "standard"
-	UserAddressETHstr GFuserAddressETH `validate:"required,eth_addr"`
-	AuthSignatureStr  GFauthSignature  `validate:"required,len=132"` // singature length with "0x"
+	UserTypeStr      string           `validate:"required"` // "admin" | "standard"
+	UserAddressETH   GFuserAddressETH `validate:"required,eth_addr"`
+	AuthSignatureStr GFauthSignature  `validate:"required,len=132"` // singature length with "0x"
 }
 type GFethOutputCreate struct {
 	NonceExistsBool        bool
@@ -77,7 +77,7 @@ func ETHpipelinePreflight(pInput *GFethInputPreflight,
 
 	output := &GFethOutputPreflight{}
 
-	existsBool, gfErr := dbUserExistsByETHaddr(pInput.UserAddressETHstr,
+	existsBool, gfErr := dbSQLuserExistsByETHaddr(pInput.UserAddressETH,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -90,7 +90,7 @@ func ETHpipelinePreflight(pInput *GFethInputPreflight,
 		// user doesnt exist yet so no user_id
 		userIDstr := gf_core.GF_ID("")
 		nonce, gfErr := nonceCreateAndPersist(userIDstr,
-			pInput.UserAddressETHstr,
+			pInput.UserAddressETH,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -103,7 +103,7 @@ func ETHpipelinePreflight(pInput *GFethInputPreflight,
 	// user exists
 	} else {
 
-		nonceValStr, nonceExistsBool, gfErr := dbNonceGet(pInput.UserAddressETHstr, pCtx, pRuntimeSys)
+		nonceValStr, nonceExistsBool, gfErr := dbNonceGet(pInput.UserAddressETH, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}
@@ -144,7 +144,7 @@ func ETHpipelineLogin(pInput *GFethInputLogin,
 	output.SessionID = sessionID
 
 	//------------------------
-	userNonceVal, userNonceExistsBool, gfErr := dbNonceGet(pInput.UserAddressETHstr,
+	userNonceVal, userNonceExistsBool, gfErr := dbNonceGet(pInput.UserAddressETH,
 		pCtx,
 		pRuntimeSys)
 		
@@ -164,7 +164,7 @@ func ETHpipelineLogin(pInput *GFethInputLogin,
 
 	signatureValidBool, gfErr := verifyAuthSignatureAllMethods(pInput.AuthSignatureStr,
 		userNonceVal,
-		pInput.UserAddressETHstr,
+		pInput.UserAddressETH,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -181,17 +181,18 @@ func ETHpipelineLogin(pInput *GFethInputLogin,
 	//------------------------
 	// USER_ID
 
-	userIDstr, gfErr := DBsqlGetBasicInfoByETHaddr(pInput.UserAddressETHstr,
+	userID, gfErr := DBsqlGetBasicInfoByETHaddr(pInput.UserAddressETH,
+		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
-	output.UserIDstr = userIDstr
+	output.UserID = userID
 
 	//------------------------
 	// JWT
-	userIdentifierStr    := string(userIDstr)
+	userIdentifierStr    := string(userID)
 	authSubsystemTypeStr := GF_AUTH_SUBSYSTEM_TYPE__ETH
 	jwtTokenVal, gfErr   := JWTpipelineGenerate(userIdentifierStr,
 		authSubsystemTypeStr,
@@ -229,7 +230,7 @@ func ETHpipelineCreate(pInput *GFethInputCreate,
 	//------------------------
 	// DB_NONCE_GET - get a nonce already generated in preflight for this user address,
 	//                for validating the recevied auth_signature
-	userNonceValStr, userNonceExistsBool, gfErr := dbNonceGet(pInput.UserAddressETHstr,
+	userNonceValStr, userNonceExistsBool, gfErr := dbNonceGet(pInput.UserAddressETH,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -248,7 +249,7 @@ func ETHpipelineCreate(pInput *GFethInputCreate,
 
 	signatureValidBool, gfErr := verifyAuthSignatureAllMethods(pInput.AuthSignatureStr,
 		userNonceValStr,
-		pInput.UserAddressETHstr,
+		pInput.UserAddressETH,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -265,10 +266,10 @@ func ETHpipelineCreate(pInput *GFethInputCreate,
 	//------------------------
 
 	creationUNIXtimeF   := float64(time.Now().UnixNano())/1000000000.0
-	userAddressETHstr   := pInput.UserAddressETHstr
-	userAddressesETHlst := []GFuserAddressETH{userAddressETHstr, }
+	UserAddressETH      := pInput.UserAddressETH
+	userAddressesETHlst := []GFuserAddressETH{UserAddressETH, }
 
-	userIdentifierStr := string(userAddressETHstr)
+	userIdentifierStr := string(UserAddressETH)
 	userID := usersCreateID(userIdentifierStr, creationUNIXtimeF)
 
 	user := &GFuser{
@@ -281,7 +282,7 @@ func ETHpipelineCreate(pInput *GFethInputCreate,
 
 	//------------------------
 	// DB
-	gfErr = DBsqlUserCreate(user, pRuntimeSys)
+	gfErr = DBsqlUserCreate(user, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
