@@ -39,17 +39,20 @@ var logFun func(p_g string, p_m string)
 var logNewFun gf_core.GFlogFun
 var cliArgsMap map[string]interface{}
 
+type GFtestUserInfo struct {
+	NameStr  string
+	PassStr  string
+	EmailStr string
+}
+
 //-------------------------------------------------
 
-func TestUserpassCreateAndLoginNewUser(pTest *testing.T,
+func TestUserpassCreateAndLoginNewUser(pUserInfo *GFtestUserInfo,
+	pTest                   *testing.T,
 	pHTTPagent              *gorequest.SuperAgent,
 	pIdentityServicePortInt int,
 	pCtx                    context.Context,
 	pRuntimeSys             *gf_core.RuntimeSys) []*http.Cookie {
-
-	testUserNameStr := "ivan_t"
-	testUserPassStr := "pass_lksjds;lkdj"
-	testEmailStr    := "ivan_t@gloflow.com"
 
 	//---------------------------------
 	// CLEANUP
@@ -57,7 +60,7 @@ func TestUserpassCreateAndLoginNewUser(pTest *testing.T,
 	
 	//---------------------------------
 	// ADD_TO_INVITE_LIST
-	gfErr := gf_identity_core.DBsqlUserAddToInviteList(testEmailStr,
+	gfErr := gf_identity_core.DBsqlUserAddToInviteList(pUserInfo.EmailStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -67,15 +70,15 @@ func TestUserpassCreateAndLoginNewUser(pTest *testing.T,
 
 	//---------------------------------
 	// GF_IDENTITY_INIT
-	TestUserHTTPcreate(testUserNameStr,
-		testUserPassStr,
-		testEmailStr,
+	TestUserHTTPcreate(pUserInfo.NameStr,
+		pUserInfo.PassStr,
+		pUserInfo.EmailStr,
 		pHTTPagent,
 		pIdentityServicePortInt,
 		pTest)
 
-	cookiesInRespLst := TestUserHTTPuserpassLogin(testUserNameStr,
-		testUserPassStr,
+	cookiesInRespLst := TestUserHTTPuserpassLogin(pUserInfo.NameStr,
+		pUserInfo.PassStr,
 		pHTTPagent,
 		pIdentityServicePortInt,
 		pTest)

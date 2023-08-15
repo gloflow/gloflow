@@ -43,8 +43,15 @@ func TestAddresses(pTest *testing.T) {
 	HTTPagent := gorequest.New()
 	ctx       := context.Background()
 
+	testUserInfo := &gf_identity.GFtestUserInfo{
+		NameStr:  "ivan_t_web3",
+		PassStr:  "pass_lksjds;lkdj",
+		EmailStr: "ivan_t_web3@gloflow.com",
+	}
+
 	// CREATE_AND_LOGIN_NEW_USER
-	cookiesInRespLst := gf_identity.TestUserpassCreateAndLoginNewUser(pTest,
+	cookiesInRespLst := gf_identity.TestUserpassCreateAndLoginNewUser(testUserInfo,
+		pTest,
 		HTTPagent,
 		testIdentityServicePortInt,
 		ctx,

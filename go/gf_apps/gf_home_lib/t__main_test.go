@@ -94,9 +94,15 @@ func TestHomeViz(pTest *testing.T) {
 	testPortInt := 2000
 	testIdentityServicePortInt := 2001
 	
-	
+	testUserInfo := &gf_identity.GFtestUserInfo{
+		NameStr:  "ivan_t_home",
+		PassStr:  "pass_lksjds;lkdj",
+		EmailStr: "ivan_t_home@gloflow.com",
+	}
+
 	// CREATE_AND_LOGIN_NEW_USER
-	cookiesInRespLst := gf_identity.TestUserpassCreateAndLoginNewUser(pTest,
+	cookiesInRespLst := gf_identity.TestUserpassCreateAndLoginNewUser(testUserInfo,
+		pTest,
 		HTTPagent,
 		testIdentityServicePortInt,
 		ctx,
