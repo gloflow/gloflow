@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
 //-------------------------------------------------
 function init_selected_elements_view(p_log_fun) {
 	p_log_fun('FUN_ENTER', 'popup_selected_elements.init_selected_elements_view()');
@@ -27,6 +28,7 @@ function init_selected_elements_view(p_log_fun) {
 			p_log_fun);
 	});
 }
+
 //-------------------------------------------------
 function get_selected_elements___bckg_pg(p_o_cComplete_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER','popup_selected_elements.get_selected_elements___bckg_pg()');
@@ -64,6 +66,7 @@ function show_selected_elements(p_selected_elements_map, p_log_fun) {
 		'left':"-=400"
 	}, 200, (p_e)=>{});
 }
+
 //-------------------------------------------------
 //SHOW SELECTED IMAGES
 
@@ -117,6 +120,7 @@ function show_selected_images(p_img_infos_lst, p_log_fun) {
 		});
 	//------------
 }
+
 //-------------------------------------------------
 //SHOW SELECTED VIDEOS
 

@@ -35,6 +35,7 @@ function log_fun(p_g,p_m) {
 			break;
 	}
 }
+
 //-------------------------------------------------
 function main(p_log_fun) {
 	p_log_fun('FUN_ENTER','popup.main()');
@@ -42,6 +43,7 @@ function main(p_log_fun) {
 	init_selected_elements_view(p_log_fun);
 	init_buttons(p_log_fun);
 }
+
 //-------------------------------------------------
 function init_buttons(p_log_fun) {
 	p_log_fun('FUN_ENTER','popup.init_buttons()');
@@ -125,6 +127,7 @@ function init_buttons(p_log_fun) {
 	});
 	//-----------------------
 }
+
 //---------------------------------------------------
 //BACKGROUND_PAGE COMM
 //---------------------------------------------------
@@ -140,6 +143,7 @@ function clear__selected_elements(p_on_complete_fun, p_log_fun) {
 			p_on_complete_fun();
 		});
 }
+
 //---------------------------------------------------
 function get__selected_elements(p_on_complete_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER','popup.get__selected_elements()');
@@ -189,6 +193,7 @@ function get__selected_elements(p_on_complete_fun, p_log_fun) {
 		selected_lst.push(post_element_info_map);
 	});*/
 }
+
 //-------------------------------------------------
 //CONTENT_SCRIPT COMM
 //-------------------------------------------------
@@ -215,6 +220,7 @@ function get_page_img_infos__from_content_scr(p_on_complete_fun, p_log_fun) {
 			});
 	});
 }
+
 //-------------------------------------------------
 function get_page_video_infos__from_content_scr(p_on_complete_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER', 'popup.get_page_video_infos__from_content_scr()');
@@ -237,6 +243,7 @@ function get_page_video_infos__from_content_scr(p_on_complete_fun, p_log_fun) {
 			});
 	});
 }
+
 //-------------------------------------------------
 function get__post_origin_page_url(p_on_complete_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER', 'popup.get__post_origin_page_url()');
@@ -253,6 +260,7 @@ function get__post_origin_page_url(p_on_complete_fun, p_log_fun) {
 			});
 	});
 }
+
 //-------------------------------------------------
 function display_page_info_in_content_scr(p_on_complete_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER','popup.display_page_info_in_content_scr()');
@@ -268,6 +276,7 @@ function display_page_info_in_content_scr(p_on_complete_fun, p_log_fun) {
 			});
 	});
 }
+
 //-------------------------------------------------
 //VAR
 //-------------------------------------------------

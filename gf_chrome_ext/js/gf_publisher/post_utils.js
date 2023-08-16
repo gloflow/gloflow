@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
 //---------------------------------------------------
 function http__create_post(p_selected__post_elements_lst,
 	p_post_origin_page_url_str,
@@ -99,6 +100,7 @@ function http__create_post(p_selected__post_elements_lst,
 
 	//-------------------------
 }
+
 //---------------------------------------------------
 function publish_post(p_post_title_str,
 	p_on_complete_fun,
