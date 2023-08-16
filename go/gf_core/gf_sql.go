@@ -45,11 +45,6 @@ func DBsqlConnect(pDBnameStr string,
 		pPassStr,
 		pDBhostStr,
 		pDBnameStr)
-	
-	pRuntimeSys.LogNewFun("INFO", "connecting to SQL DB...",
-		map[string]interface{}{
-			"db_host": pDBhostStr,
-		})
 
 	//-----------------------
 	// CONNECT
@@ -62,14 +57,20 @@ func DBsqlConnect(pDBnameStr string,
 
 	for retriesInt := 0; retriesInt < maxRetriesInt; retriesInt++ {
 
+		pRuntimeSys.LogNewFun("INFO", "connecting to SQL DB...", nil)
 		db, err = sql.Open("postgres", urlStr)
 		if err == nil {
-			break // successful connection
+
+			// test the connection
+			err = db.Ping()
+			if err == nil {
+				break // successful connection
+			}
 		}
 
 		if retriesInt < maxRetriesInt-1 {
-			pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("retrying SQL DB connect in %s...\n", retryIntervalSecsInt), nil)
-			time.Sleep(time.Duration(retryIntervalSecsInt))
+			pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("retrying SQL DB connect in %d...\n", retryIntervalSecsInt), nil)
+			time.Sleep(2 * time.Second)
 		}
 	}
 	
@@ -86,18 +87,6 @@ func DBsqlConnect(pDBnameStr string,
 	}
 
 	//-----------------------
-
-	// test the connection
-	err = db.Ping()
-	if err != nil {
-		gfErr := ErrorCreate("failed to connect to a SQL server at target url",
-			"sql_failed_to_connect",
-			map[string]interface{}{
-				"db_host_str": pDBhostStr,
-				"db_name_str": pDBnameStr,
-			}, err, "gf_core", pRuntimeSys)
-		return nil, gfErr
-	}
 
 	fmt.Println("connected to SQL DB...")
 
