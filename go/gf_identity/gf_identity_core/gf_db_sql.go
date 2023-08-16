@@ -100,6 +100,7 @@ func dbSQLauth0getSession(pGFsessionID gf_core.GF_ID,
 
 	session := GFauth0session{}
 	var creationTime time.Time
+	var profileJSON []byte
 
 	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pGFsessionID).Scan(
 		&session.ID,
@@ -107,7 +108,7 @@ func dbSQLauth0getSession(pGFsessionID gf_core.GF_ID,
 		&creationTime,
 		&session.LoginCompleteBool,
 		&session.AccessTokenStr,
-		&session.ProfileMap)
+		&profileJSON)
 
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to find Auth0 session by ID in the DB",
@@ -121,6 +122,16 @@ func dbSQLauth0getSession(pGFsessionID gf_core.GF_ID,
 
 	session.CreationUNIXtimeF = float64(creationTime.Unix())
 
+	if err := json.Unmarshal(profileJSON, &session.ProfileMap); err != nil {
+		gfErr := gf_core.ErrorCreate("failed to unmarshal profile JSON",
+			"json_unmarshal_error",
+			map[string]interface{}{
+				"session_id_str": pGFsessionID,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return nil, gfErr
+	}
+	
 	return &session, nil
 }
 
