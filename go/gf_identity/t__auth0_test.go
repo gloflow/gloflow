@@ -22,8 +22,9 @@ package gf_identity
 import (
 	"fmt"
 	"testing"
-	// "github.com/parnurzeal/gorequest"
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -38,7 +39,7 @@ func TestAuth0(pTest *testing.T) {
 	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	sqlHostStr   := cliArgsMap["sql_host_str"].(string)
 	runtimeSys := Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
-
+	ctx := context.Background()
 
 
 	auth0config := gf_auth0.LoadConfig(runtimeSys)
@@ -54,6 +55,21 @@ func TestAuth0(pTest *testing.T) {
 		"auth0_key_id":  auth0keyIDstr,
 		"auth0_pub_key": auth0publicKey,
 		"auth0_pub_key_pem": pubKeyPEMstr,
+	})
+
+
+
+
+
+
+
+	sessionID, gfErr := gf_identity_core.Auth0loginPipeline(ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	runtimeSys.LogNewFun("INFO", "Auth0 login pipeline complete...", map[string]interface{}{
+		"session_id":  sessionID,
 	})
 
 

@@ -42,10 +42,11 @@ func dbSQLAuth0createNewSession(pAuth0session *GFauth0session,
 			v,
 			id,
 			deleted,
-			login_complete_bool,
-			access_token_str,
-			profile_map) 
-		VALUES (?, ?, ?, ?, ?, ?);
+			login_complete,
+			access_token,
+			profile
+		)
+		VALUES ($1, $2, $3, $4, $5, $6);
 	`
 
 	// serializing the profile map to JSON to store in the database
@@ -183,8 +184,8 @@ func DBsqlUserCreate(pUser *GFuser,
 		email,
 		email_confirmed,
 		profile_image_url,
-		banner_image_url
-	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
+		banner_image_url)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
 	`
 
 	sqlStatement, err := pRuntimeSys.SQLdb.Prepare(sqlStr)
@@ -805,7 +806,8 @@ func DBsqlUserAddToInviteList(pUserEmailStr string,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	sqlStr := `
-		INSERT INTO gf_users_invite_list (user_email)
+		INSERT INTO gf_users_invite_list
+		(user_email)
 		VALUES ($1)
 	`
 	
@@ -893,7 +895,8 @@ func dbSQLuserCredsCreate(pUserCreds *GFuserCreds,
 			user_id,
 			user_name,
 			pass_salt,
-			pass_hash)
+			pass_hash
+		)
 		VALUES ($1, $2, $3, $4, $5, $6)`
 	
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr,
@@ -961,7 +964,8 @@ func dbSQLuserEmailConfirmCreate(pUserNameStr GFuserName,
 		INSERT INTO gf_users_email_confirm (
 			user_name,
 			user_id,
-			confirm_code)
+			confirm_code
+		)
 		VALUES ($1, $2, $3)`
 
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pUserNameStr, pUserID, pConfirmCodeStr)
@@ -1029,7 +1033,8 @@ func dbSQLloginAttemptCreate(pLoginAttempt *GFloginAttempt,
 			user_name,
 			pass_confirmed,
 			email_confirmed,
-			mfa_confirmed)
+			mfa_confirmed
+		)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)`
 
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr,
@@ -1202,7 +1207,7 @@ func DBsqlCreateTables(pCtx context.Context,
 		creation_time  TIMESTAMP DEFAULT NOW(),
 		login_complete BOOLEAN NOT NULL,
 		access_token   TEXT,
-		profile_map    JSON,
+		profile        JSON,
 
 		PRIMARY KEY(id)
 	);
