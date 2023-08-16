@@ -286,6 +286,7 @@ func TestUsersETHunit(pTest *testing.T) {
 	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	sqlHostStr   := cliArgsMap["sql_host_str"].(string)
 	runtimeSys   := Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
+	
 	runtimeSys.LogNewFun("INFO", "TEST_USERS_ETH_UNIT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", nil)
 
 	

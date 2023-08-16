@@ -69,7 +69,7 @@ func DBsqlConnect(pDBnameStr string,
 		}
 
 		if retriesInt < maxRetriesInt-1 {
-			pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("retrying SQL DB connect in %d...\n", retryIntervalSecsInt), nil)
+			pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("retrying SQL DB connect in %d...", retryIntervalSecsInt), nil)
 			time.Sleep(2 * time.Second)
 		}
 	}

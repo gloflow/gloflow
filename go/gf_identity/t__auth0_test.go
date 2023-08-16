@@ -41,6 +41,10 @@ func TestAuth0(pTest *testing.T) {
 	runtimeSys := Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
 	ctx := context.Background()
 
+	gfErr := gf_identity_core.DBsqlCreateTables(ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
 
 	auth0config := gf_auth0.LoadConfig(runtimeSys)
 
