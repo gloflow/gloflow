@@ -25,9 +25,9 @@ SOFTWARE.
 package gf_core
 
 import (
-	"database/sql"
 	"fmt"
-
+	"time"
+	"database/sql"
 	_ "github.com/lib/pq"
 )
 
@@ -51,17 +51,41 @@ func DBsqlConnect(pDBnameStr string,
 			"db_host": pDBhostStr,
 		})
 
-	// connect
-	db, err := sql.Open("postgres", urlStr)
-	if err != nil {
+	//-----------------------
+	// CONNECT
+
+	maxRetriesInt := 5
+	retryIntervalSecsInt := 2
+
+	var db *sql.DB
+	var err error
+
+	for retriesInt := 0; retriesInt < maxRetriesInt; retriesInt++ {
+
+		db, err = sql.Open("postgres", urlStr)
+		if err == nil {
+			break // successful connection
+		}
+
+		if retriesInt < maxRetriesInt-1 {
+			pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("retrying SQL DB connect in %s...\n", retryIntervalSecsInt), nil)
+			time.Sleep(time.Duration(retryIntervalSecsInt))
+		}
+	}
+	
+	// if no connection was established even after retrying, return error
+	if db == nil {
 		gfErr := ErrorCreate("failed to connect to a SQL server at target url",
 			"sql_failed_to_connect",
 			map[string]interface{}{
 				"db_host_str": pDBhostStr,
 				"db_name_str": pDBnameStr,
-			}, err, "gf_core", pRuntimeSys)
+			},
+			nil, "gf_core", pRuntimeSys)
 		return nil, gfErr
 	}
+
+	//-----------------------
 
 	// test the connection
 	err = db.Ping()

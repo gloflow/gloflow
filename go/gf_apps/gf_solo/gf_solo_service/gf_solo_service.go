@@ -55,7 +55,7 @@ func Run(pConfig *GFconfig,
 	yellow := color.New(color.BgYellow).Add(color.FgBlack).SprintFunc()
 	green  := color.New(color.BgGreen).Add(color.FgBlack).SprintFunc()
 
-	pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("%s%s\n", yellow("GF_SOLO"), green("===============")), nil)
+	pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("%s%s", yellow("GF_SOLO"), green("===============")), nil)
 	
 	//-------------
 	// CONFIG
