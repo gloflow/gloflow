@@ -245,6 +245,9 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	// GOOGLE
 	// check if the "subject" name starts with google prefix
 	if strings.HasPrefix(profileMap["sub"].(string), "google-oauth2") {
+
+
+
 		googleProfile := &GFgoogleUserProfile {
 			NameStr:       profileMap["name"].(string),
 			GivenNameStr:  profileMap["given_name"].(string),
@@ -315,6 +318,18 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 
 
 	// GET_USER_INFO - from Auth0
+	/*
+	map[
+		family_name: Trajkovic
+		given_name:  Ivan
+		locale:      en
+		name:        Ivan Trajkovic
+		nickname:    ivan.ebiz
+		picture:     https://...user_image...
+		sub:         ...user_id...
+		updated_at:  2023-08-16T22:13:10.084Z
+	]
+	*/
 	auth0userInfoMap, gfErr := gf_auth0.GetUserInfo(pAuth0accessTokenStr,
 		pAuth0appDomainStr,
 		pRuntimeSys)
@@ -343,16 +358,23 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 
 	//---------------------
 
+	userNameStr   := GFuserName(auth0userInfoMap["name"].(string))
+	screenNameStr := auth0userInfoMap["nickname"].(string)
+	profileImageURLstr := auth0userInfoMap["picture"].(string)
+
 	// user doesnt exist in the GF DB
 	if !existsBool {
 
 		creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
 		user := &GFuser{
-			Vstr:              "0",
-			ID:                auth0userID,
-			CreationUNIXtimeF: creationUNIXtimeF,
-			UserTypeStr:       "standard",
+			Vstr:               "0",
+			ID:                 auth0userID,
+			CreationUNIXtimeF:  creationUNIXtimeF,
+			UserTypeStr:        "standard",
+			UserNameStr:        userNameStr,
+			ScreenNameStr:      screenNameStr,
+			ProfileImageURLstr: profileImageURLstr,
 		}
 	
 		//------------------------
@@ -363,6 +385,19 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 		}
 	
 		//------------------------
+	
+	} else {
+
+		update := &GFuserUpdateOp {
+			UserNameStr:        GFuserName(userNameStr),
+			ScreenNameStr:      screenNameStr,
+			ProfileImageURLstr: profileImageURLstr,
+		}
+
+		gfErr = DBsqlUserUpdate(auth0userID,
+			update,
+			pCtx,
+			pRuntimeSys)
 	}
 
 	return nil

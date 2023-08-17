@@ -51,12 +51,12 @@ func initHandlers(pAuthLoginURLstr string,
 	//---------------------
 	// METRICS
 	handlersEndpointsLst := []string{
+		"/v1/identity/me",
 		"/v1/identity/policy/update",
 		"/v1/identity/login_ui",
 		"/v1/identity/email_confirm",
 		"/v1/identity/mfa_confirm",
 		"/v1/identity/update",
-		"/v1/identity/me",
 		"/v1/identity/register_invite_email",
 	}
 	metricsGroupNameStr := "main"

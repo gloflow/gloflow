@@ -30,21 +30,7 @@ import (
 
 //---------------------------------------------------
 
-type GFuserUpdateOp struct {
-	DeletedBool        *bool // if nil dont update, else update to true/false
-	UserNameStr        GFuserName
-	DescriptionStr     string
-	EmailStr           string
-	EmailConfirmedBool bool
-	MFAconfirmBool     *bool // if nil dont update, else update to true/false
-}
 
-type GFloginAttemptUpdateOp struct {
-	PassConfirmedBool  *bool
-	EmailConfirmedBool *bool
-	MFAconfirmedBool   *bool
-	DeletedBool        *bool
-}
 
 //---------------------------------------------------
 // AUTH0

@@ -650,36 +650,46 @@ func DBsqlUserUpdate(pUserIDstr gf_core.GF_ID,
 	updateValues := []interface{}{}
 
 	if pUpdateOp.DeletedBool != nil {
-		updateFields = append(updateFields, "deleted_bool = ?")
+		updateFields = append(updateFields, "deleted = ?")
 		updateValues = append(updateValues, pUpdateOp.DeletedBool)
 	}
 
 	if string(pUpdateOp.UserNameStr) != "" {
-		updateFields = append(updateFields, "username_str = ?")
+		updateFields = append(updateFields, "user_name = ?")
 		updateValues = append(updateValues, pUpdateOp.UserNameStr)
 	}
 
+	if string(pUpdateOp.ScreenNameStr) != "" {
+		updateFields = append(updateFields, "screen_name = ?")
+		updateValues = append(updateValues, pUpdateOp.ScreenNameStr)
+	}
+
 	if pUpdateOp.DescriptionStr != "" {
-		updateFields = append(updateFields, "description_str = ?")
+		updateFields = append(updateFields, "description = ?")
 		updateValues = append(updateValues, pUpdateOp.DescriptionStr)
 	}
 
 	if pUpdateOp.EmailStr != "" {
-		updateFields = append(updateFields, "email_str = ?", "email_confirmed_bool = ?")
+		updateFields = append(updateFields, "email = ?")
 		updateValues = append(updateValues, pUpdateOp.EmailStr, false)
 	}
 
 	if pUpdateOp.EmailConfirmedBool {
-		updateFields = append(updateFields, "email_confirmed_bool = ?")
+		updateFields = append(updateFields, "email_confirmed = ?")
 		updateValues = append(updateValues, true)
 	}
 	
 	if pUpdateOp.MFAconfirmBool != nil {
-		updateFields = append(updateFields, "mfa_confirm_bool = ?")
+		updateFields = append(updateFields, "mfa_confirm = ?")
 		updateValues = append(updateValues, pUpdateOp.MFAconfirmBool)
 	}
 
-	sqlStr := fmt.Sprintf("UPDATE gf_users SET %s WHERE id = ? AND deleted_bool = false",
+	if pUpdateOp.ProfileImageURLstr != "" {
+		updateFields = append(updateFields, "profile_image_url = ?")
+		updateValues = append(updateValues, pUpdateOp.ProfileImageURLstr)
+	}
+
+	sqlStr := fmt.Sprintf("UPDATE gf_users SET %s WHERE id = ? AND deleted = false",
 		strings.Join(updateFields, ", "))
 	updateValues = append(updateValues, pUserIDstr)
 

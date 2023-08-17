@@ -95,6 +95,26 @@ type GFuserOutputGet struct {
 	BannerImageURLstr  string
 }
 
+type GFuserUpdateOp struct {
+	DeletedBool        *bool // if nil dont update, else update to true/false
+	UserNameStr        GFuserName
+	ScreenNameStr      string
+	
+	DescriptionStr     string
+	EmailStr           string
+	EmailConfirmedBool bool
+	MFAconfirmBool     *bool // if nil dont update, else update to true/false
+
+	ProfileImageURLstr string
+}
+
+type GFloginAttemptUpdateOp struct {
+	PassConfirmedBool  *bool
+	EmailConfirmedBool *bool
+	MFAconfirmedBool   *bool
+	DeletedBool        *bool
+}
+
 //---------------------------------------------------
 // CREATE_ID
 
