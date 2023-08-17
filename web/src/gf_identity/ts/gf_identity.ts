@@ -47,18 +47,18 @@ export async function init_me_control(p_parent_node,
     const user_profile_img_url_str = me_user_map["profile_image_url_str"];
     const user_name_str            = me_user_map["user_name_str"];
 
-    const auth_container = $(`
-        <div id="auth">
+    const auth_me_container = $(`
+        <div id="auth_me">
             <div id="current_user">
                 
             </div>
         </div>`);
-    $(p_parent_node).append(auth_container);
+    $(p_parent_node).append(auth_me_container);
     
     // IMG
     if (user_profile_img_url_str != "") { 
-        $(auth_container).find("#current_user").append(`
-            <img>${user_profile_img_url_str}</img>
+        $(auth_me_container).find("#current_user").append(`
+            <img src="${user_profile_img_url_str}"></img>
         `);
     }
 
@@ -66,7 +66,7 @@ export async function init_me_control(p_parent_node,
     else {
 
         const shorthand_str = user_name_str[0];
-        $(auth_container).find("#current_user").append(`
+        $(auth_me_container).find("#current_user").append(`
             <div id="shorthand_username">${shorthand_str}</div>
         `);
     }

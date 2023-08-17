@@ -25,6 +25,7 @@ import * as gf_landing_page_lib from "./gf_landing_page_lib";
 // main entrypoint for the OS gloflow version.
 // all the code in the the *_lib module, init(), which can be called from
 // other external code that controls initialization.
+
 $(document).ready(()=>{
 	//-------------------------------------------------
 	function log_fun(p_g, p_m) {

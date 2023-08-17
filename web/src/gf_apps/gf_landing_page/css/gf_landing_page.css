@@ -63,22 +63,28 @@ body {
 
 /*------------------------------------------------------------*/
 /* AUTH */
-#auth {
+#auth_me {
 	position: absolute;
 	top:    0px;
-	left:   536px;
-	width:  44px;
-	height: 44px;
+	left:   806px;
+	width:  54px;
+	height: 54px;
 	text-align:       center;
 	background-color: rgb(198, 196, 195);
 	cursor:           pointer;
 	color:            gray;
 }
 
-#auth #current_user {
-	width: 44px;
-	height: 40px;
+#auth_me #current_user {
+	width: 54px;
+	height: 54px;
 	padding-top: 14px;
+}
+
+#auth_me #current_user img {
+	width:    100%;
+    position: relative;
+    top:      -14px;
 }
 
 /*------------------------------------------------------------*/
