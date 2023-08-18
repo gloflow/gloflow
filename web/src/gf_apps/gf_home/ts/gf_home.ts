@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_dragndrop          from "./../../../gf_core/ts/gf_dragndrop";
 import * as gf_home_eth_addresses from "gf_home_eth_addresses";
 import * as gf_utils              from "gf_utils";
+import * as gf_sys_panel          from "./../../../gf_sys_panel/ts/gf_sys_panel";
 
 declare var WebFont; 
 declare var iro;
@@ -45,8 +46,16 @@ export async function init(p_http_api_map,
 		}*/
 	});
 
+	//-----------------------------
+	// SYS_PANEL
+	// IMPORTANT!! - by setting auth_http_api to null we indicate that the user profile section
+	//               of sys_panel is not to be initialized, since we're already in the users home screen,
+	//               and we dont need to load users profile image or have a way to get to the home screen.
+	gf_sys_panel.init(null, // p_auth_http_api_map
+		null, // p_urls_map
+		p_log_fun);
 
-
+	//-----------------------------
 	// GET_PERSISTED_COMPONENTS
 	const home_viz_map = await p_http_api_map["home"]["viz_get_fun"]();
 	const home_viz_components_map = home_viz_map["components_map"];
