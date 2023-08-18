@@ -211,16 +211,16 @@ func DBmongoUserUpdate(pUserIDstr gf_core.GF_ID,
 		fieldsTargets["deleted_bool"] = pUpdateOp.DeletedBool
 	}
 
-	if string(pUpdateOp.UserNameStr) != "" {
-		fieldsTargets["username_str"] = pUpdateOp.UserNameStr
+	if pUpdateOp.UserNameStr != nil {
+		fieldsTargets["username_str"] = *pUpdateOp.UserNameStr
 	}
 
-	if pUpdateOp.DescriptionStr != "" {
-		fieldsTargets["description_str"] = pUpdateOp.DescriptionStr
+	if pUpdateOp.DescriptionStr != nil {
+		fieldsTargets["description_str"] = *pUpdateOp.DescriptionStr
 	}
 
-	if pUpdateOp.EmailStr != "" {
-		fieldsTargets["email_str"] = pUpdateOp.EmailStr
+	if pUpdateOp.EmailStr != nil {
+		fieldsTargets["email_str"] = *pUpdateOp.EmailStr
 
 		// IMPORTANT!! - if the email is changed then it needs to be confirmed
 		//               again. this flag on the user can only be changed to false
@@ -230,14 +230,14 @@ func DBmongoUserUpdate(pUserIDstr gf_core.GF_ID,
 
 	// email_confirmed_bool itself can only be updated to explicitly
 	// if its being set to true
-	if pUpdateOp.EmailConfirmedBool {
+	if pUpdateOp.EmailConfirmedBool != nil && *pUpdateOp.EmailConfirmedBool {
 		fieldsTargets["email_confirmed_bool"] = true
 	}
 	
 	// MFA_confirm_bool - is a pointer. if its not nil, then set
 	//                    the MFA_confirm field to either true/false.
 	if pUpdateOp.MFAconfirmBool != nil {
-		fieldsTargets["mfa_confirm_bool"] = pUpdateOp.MFAconfirmBool
+		fieldsTargets["mfa_confirm_bool"] = *pUpdateOp.MFAconfirmBool
 	}
 
 	//------------------------

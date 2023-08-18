@@ -647,60 +647,76 @@ func DBsqlUserUpdate(pUserIDstr gf_core.GF_ID,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	updateFields := []string{}
-	updateValues := []interface{}{}
+	paramsLst    := []interface{}{}
+	
+	i:=1
 
 	if pUpdateOp.DeletedBool != nil {
-		updateFields = append(updateFields, "deleted = ?")
-		updateValues = append(updateValues, pUpdateOp.DeletedBool)
+		pRuntimeSys.LogNewFun("DEBUG", "user 'deleted' column to be updated...", nil)
+		updateFields = append(updateFields, fmt.Sprintf("deleted = $%d", i))
+		paramsLst = append(paramsLst, *pUpdateOp.DeletedBool)
+		i+=1
 	}
 
-	if string(pUpdateOp.UserNameStr) != "" {
-		updateFields = append(updateFields, "user_name = ?")
-		updateValues = append(updateValues, pUpdateOp.UserNameStr)
+	if pUpdateOp.UserNameStr != nil {
+		pRuntimeSys.LogNewFun("DEBUG", "user 'user_name' column to be updated...", nil)
+		updateFields = append(updateFields, fmt.Sprintf("user_name = $%d", i))
+		paramsLst = append(paramsLst, *pUpdateOp.UserNameStr)
+		i+=1
 	}
 
-	if string(pUpdateOp.ScreenNameStr) != "" {
-		updateFields = append(updateFields, "screen_name = ?")
-		updateValues = append(updateValues, pUpdateOp.ScreenNameStr)
+	if pUpdateOp.ScreenNameStr != nil {
+		pRuntimeSys.LogNewFun("DEBUG", "user 'screen_name' column to be updated...", nil)
+		updateFields = append(updateFields, fmt.Sprintf("screen_name = $%d", i))
+		paramsLst = append(paramsLst, *pUpdateOp.ScreenNameStr)
+		i+=1
 	}
 
-	if pUpdateOp.DescriptionStr != "" {
-		updateFields = append(updateFields, "description = ?")
-		updateValues = append(updateValues, pUpdateOp.DescriptionStr)
+	if pUpdateOp.DescriptionStr != nil {
+		pRuntimeSys.LogNewFun("DEBUG", "user 'description' column to be updated...", nil)
+		updateFields = append(updateFields, fmt.Sprintf("description = $%d", i))
+		paramsLst = append(paramsLst, *pUpdateOp.DescriptionStr)
+		i+=1
 	}
 
-	if pUpdateOp.EmailStr != "" {
-		updateFields = append(updateFields, "email = ?")
-		updateValues = append(updateValues, pUpdateOp.EmailStr, false)
+	if pUpdateOp.EmailStr != nil {
+		pRuntimeSys.LogNewFun("DEBUG", "user 'email' column to be updated...", nil)
+		updateFields = append(updateFields, fmt.Sprintf("email = $%d", i))
+		paramsLst = append(paramsLst, *pUpdateOp.EmailStr)
+		i+=1
 	}
 
-	if pUpdateOp.EmailConfirmedBool {
-		updateFields = append(updateFields, "email_confirmed = ?")
-		updateValues = append(updateValues, true)
+	if pUpdateOp.EmailConfirmedBool != nil && *pUpdateOp.EmailConfirmedBool {
+		pRuntimeSys.LogNewFun("DEBUG", "user 'email_confirmed' column to be updated...", nil)
+		updateFields = append(updateFields, fmt.Sprintf("email_confirmed = $%d", i))
+		paramsLst = append(paramsLst, *pUpdateOp.EmailConfirmedBool)
+		i+=1
 	}
 	
 	if pUpdateOp.MFAconfirmBool != nil {
-		updateFields = append(updateFields, "mfa_confirm = ?")
-		updateValues = append(updateValues, pUpdateOp.MFAconfirmBool)
+		pRuntimeSys.LogNewFun("DEBUG", "user 'mfa_confirm' column to be updated...", nil)
+		updateFields = append(updateFields, fmt.Sprintf("mfa_confirm = $%d", i))
+		paramsLst = append(paramsLst, *pUpdateOp.MFAconfirmBool)
+		i+=1
 	}
 
-	if pUpdateOp.ProfileImageURLstr != "" {
-		updateFields = append(updateFields, "profile_image_url = ?")
-		updateValues = append(updateValues, pUpdateOp.ProfileImageURLstr)
+	if pUpdateOp.ProfileImageURLstr != nil {
+		pRuntimeSys.LogNewFun("DEBUG", "user 'profile_image_url' column to be updated...", nil)
+		updateFields = append(updateFields, fmt.Sprintf("profile_image_url = $%d", i))
+		paramsLst = append(paramsLst, *pUpdateOp.ProfileImageURLstr)
+		i+=1
 	}
 
-	sqlStr := fmt.Sprintf("UPDATE gf_users SET %s WHERE id = ? AND deleted = false",
-		strings.Join(updateFields, ", "))
-	updateValues = append(updateValues, pUserIDstr)
+	sqlStr := fmt.Sprintf("UPDATE gf_users SET %s WHERE id = $%d AND deleted = false",
+		strings.Join(updateFields, ","), i)
+	paramsLst = append(paramsLst, pUserIDstr)
 
-	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, updateValues...)
+	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, paramsLst...)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to update user info",
 			"sql_query_execute",
 			map[string]interface{}{
-				"user_id_str":     pUserIDstr,
-				"user_name_str":   pUpdateOp.UserNameStr,
-				"description_str": pUpdateOp.DescriptionStr,
+				"user_id_str": pUserIDstr,
 			},
 			err, "gf_identity_core", pRuntimeSys)
 		return gfErr
@@ -1150,23 +1166,23 @@ func DBsqlLoginAttemptUpdate(pLoginAttemptID *gf_core.GF_ID,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	fieldsTargets := ""
-	params := []interface{}{*pLoginAttemptID}
+	paramsLst := []interface{}{*pLoginAttemptID}
 
 	if pUpdateOp.PassConfirmedBool != nil {
 		fieldsTargets += "pass_confirmed = $2,"
-		params = append(params, *pUpdateOp.PassConfirmedBool)
+		paramsLst = append(paramsLst, *pUpdateOp.PassConfirmedBool)
 	}
 	if pUpdateOp.EmailConfirmedBool != nil {
 		fieldsTargets += "email_confirmed = $3,"
-		params = append(params, *pUpdateOp.EmailConfirmedBool)
+		paramsLst = append(paramsLst, *pUpdateOp.EmailConfirmedBool)
 	}
 	if pUpdateOp.MFAconfirmedBool != nil {
 		fieldsTargets += "mfa_confirmed = $4,"
-		params = append(params, *pUpdateOp.MFAconfirmedBool)
+		paramsLst = append(paramsLst, *pUpdateOp.MFAconfirmedBool)
 	}
 	if pUpdateOp.DeletedBool != nil {
 		fieldsTargets += "deleted = $5,"
-		params = append(params, *pUpdateOp.DeletedBool)
+		paramsLst = append(paramsLst, *pUpdateOp.DeletedBool)
 	}
 
 	if fieldsTargets == "" {
@@ -1180,7 +1196,7 @@ func DBsqlLoginAttemptUpdate(pLoginAttemptID *gf_core.GF_ID,
 		SET %s
 		WHERE id = $1 AND deleted = FALSE`, fieldsTargets)
 
-	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, params...)
+	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, paramsLst...)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to to update a login_attempt",
 			"sql_query_execute",

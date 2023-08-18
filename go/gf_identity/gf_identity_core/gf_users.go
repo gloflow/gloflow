@@ -73,8 +73,8 @@ type GFuserInputUpdate struct {
 	UserID            gf_core.GF_ID    `validate:"required"`                 // required - not updated, but for lookup
 	UserAddressETHstr GFuserAddressETH `validate:"omitempty,eth_addr"`       // optional - add an Eth address to the user
 	ScreenNameStr     *string          `validate:"omitempty,min=3,max=50"`   // optional
-	EmailStr          *string          `validate:"omitempty,email"`          // optional
 	DescriptionStr    *string          `validate:"omitempty,min=1,max=2000"` // optional
+	EmailStr          *string          `validate:"omitempty,email"`          // optional
 
 	ProfileImageURLstr *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
 	BannerImageURLstr  *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
@@ -97,15 +97,15 @@ type GFuserOutputGet struct {
 
 type GFuserUpdateOp struct {
 	DeletedBool        *bool // if nil dont update, else update to true/false
-	UserNameStr        GFuserName
-	ScreenNameStr      string
+	UserNameStr        *GFuserName
+	ScreenNameStr      *string
 	
-	DescriptionStr     string
-	EmailStr           string
-	EmailConfirmedBool bool
+	DescriptionStr     *string
+	EmailStr           *string
+	EmailConfirmedBool *bool
 	MFAconfirmBool     *bool // if nil dont update, else update to true/false
 
-	ProfileImageURLstr string
+	ProfileImageURLstr *string
 }
 
 type GFloginAttemptUpdateOp struct {
@@ -155,6 +155,8 @@ func UsersPipelineUpdate(pInput *GFuserInputUpdate,
 	if pServiceInfo.EnableEmailBool {
 		if *pInput.EmailStr != "" {
 
+			// if user is updating their email, first verify that email
+			// by having the user prove that they own it.
 			gfErr = UsersEmailPipelineVerify(*pInput.EmailStr,
 				userNameStr,
 				pInput.UserID,
@@ -165,6 +167,22 @@ func UsersPipelineUpdate(pInput *GFuserInputUpdate,
 				return nil, gfErr
 			}
 		}
+	}
+
+	//------------------------
+
+	updateOp := &GFuserUpdateOp{
+		ScreenNameStr:      pInput.ScreenNameStr,
+		DescriptionStr:     pInput.DescriptionStr,
+		EmailStr:           pInput.EmailStr,
+		ProfileImageURLstr: pInput.ProfileImageURLstr,
+	}
+	gfErr = DBsqlUserUpdate(pInput.UserID,
+		updateOp,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//------------------------

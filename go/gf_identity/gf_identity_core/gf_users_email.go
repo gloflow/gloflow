@@ -110,9 +110,13 @@ func UsersEmailPipelineConfirm(pInput *GFuserHTTPinputEmailConfirm,
 			return false, "", gfErr
 		}
 
+		// if users email is not already marked as confirmed in the DB, updated
+		// it to mark it as confirmed.
 		if !userEmailConfirmedBool {
+			
+			emailIsConfirmedBool := true
 			updateOp := &GFuserUpdateOp{
-				EmailConfirmedBool: true,
+				EmailConfirmedBool: &emailIsConfirmedBool,
 			}
 	
 			// UPDATE_USER - mark user as email_confirmed

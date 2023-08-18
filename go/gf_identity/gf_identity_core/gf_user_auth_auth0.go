@@ -389,9 +389,9 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 	} else {
 
 		update := &GFuserUpdateOp {
-			UserNameStr:        GFuserName(userNameStr),
-			ScreenNameStr:      screenNameStr,
-			ProfileImageURLstr: profileImageURLstr,
+			UserNameStr:        &userNameStr,
+			ScreenNameStr:      &screenNameStr,
+			ProfileImageURLstr: &profileImageURLstr,
 		}
 
 		gfErr = DBsqlUserUpdate(auth0userID,
