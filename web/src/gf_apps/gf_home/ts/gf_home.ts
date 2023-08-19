@@ -30,6 +30,7 @@ declare var iro;
 //--------------------------------------------------------
 // INIT
 export async function init(p_http_api_map,
+	p_identity_http_api_map,
 	p_assets_paths_map,
 	p_log_fun) {
 
@@ -46,6 +47,12 @@ export async function init(p_http_api_map,
 		}*/
 	});
 
+
+
+	const user_info_map = await gf_utils.get_user_info(p_identity_http_api_map);
+	const screen_name_str     = user_info_map["screen_name_str"];
+	const profile_img_url_str = user_info_map["profile_img_url_str"];
+
 	//-----------------------------
 	// SYS_PANEL
 	// IMPORTANT!! - by setting auth_http_api to null we indicate that the user profile section
@@ -54,7 +61,7 @@ export async function init(p_http_api_map,
 	gf_sys_panel.init(null, // p_auth_http_api_map
 		null, // p_urls_map
 		p_log_fun);
-
+	
 	//-----------------------------
 	// GET_PERSISTED_COMPONENTS
 	const home_viz_map = await p_http_api_map["home"]["viz_get_fun"]();
@@ -62,8 +69,8 @@ export async function init(p_http_api_map,
 
 
 	const home_container          = $("#home_container");
-	const names_container         = init_names_view(home_container, p_http_api_map, p_assets_paths_map);
-	const profile_image_container = await init_profile_image(p_http_api_map, p_assets_paths_map);
+	const names_container         = init_names_view(screen_name_str, home_container, p_http_api_map, p_assets_paths_map);
+	const profile_image_container = await init_profile_image(profile_img_url_str, p_http_api_map, p_assets_paths_map);
 	const my_eth_addresses_container        = await gf_home_eth_addresses.init_my(home_container, p_http_api_map, p_assets_paths_map);
 	const observed_eth_addresses_container  = await gf_home_eth_addresses.init_observed(home_container, p_http_api_map, p_assets_paths_map);
 	const background_color_picker_container = await init_color_picker(home_container, p_http_api_map, p_assets_paths_map);
@@ -223,12 +230,14 @@ function init_color_picker(p_parent_element,
 }
 
 //--------------------------------------------------------
-function init_names_view(p_parent_element,
+function init_names_view(p_screen_name_str,
+	p_parent_element,
 	p_http_api_map,
 	p_assets_paths_map) {
+	
 	const container = $(`
 		<div id="names">
-			<div>@ivan</div>
+			<div>@${p_screen_name_str}</div>
 		</div>`);
 	$(p_parent_element).append(container);
 
@@ -262,14 +271,16 @@ function init_names_view(p_parent_element,
 }
 
 //--------------------------------------------------------
-function init_profile_image(p_http_api_map,
+async function init_profile_image(p_profile_img_url_str,
+	p_http_api_map,
 	p_assets_paths_map) {
-	const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+	
+	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 		const container = $(`
 			<div id="profile_image">
 				<img class="image_preview"
-					src="https://media.gloflow.com/thumbnails/786f79c0c85c08c7b1c0b3e11d6cae1e_thumb_small.png"
+					src="${p_profile_img_url_str}"
 					draggable="false"></img>
 			</div>`);
 		

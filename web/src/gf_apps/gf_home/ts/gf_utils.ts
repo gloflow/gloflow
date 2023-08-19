@@ -17,6 +17,36 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+
+//--------------------------------------------------------
+export async function get_user_info(p_identity_http_api_map) {
+
+	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+		var screen_name_str;
+		var profile_img_url_str;
+		try {
+			const me_user_map = await p_identity_http_api_map["general"]["get_me"]();
+			screen_name_str     = me_user_map["screen_name_str"];
+			profile_img_url_str = me_user_map["user_profile_img_url_str"];
+
+		} catch (error_map) {
+
+			// DEFAULT
+			screen_name_str     = "user_screenname";
+			profile_img_url_str = "https://media.gloflow.com/thumbnails/786f79c0c85c08c7b1c0b3e11d6cae1e_thumb_small.png";
+		}
+
+		const user_info_map = {
+			"screen_name_str":     screen_name_str,
+			"profile_img_url_str": profile_img_url_str
+		};
+
+		p_resolve_fun(user_info_map);
+
+	});
+	return p;
+}
+
 //--------------------------------------------------------
 export function update_viz_component_remote(p_component_name_str :string,
 	p_drag_data_map,
