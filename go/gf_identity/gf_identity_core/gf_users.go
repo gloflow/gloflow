@@ -89,6 +89,7 @@ type GFuserInputGet struct {
 
 type GFuserOutputGet struct {
 	UserNameStr        GFuserName
+	ScreenNameStr      string
 	EmailStr           string
 	DescriptionStr     string
 	ProfileImageURLstr string
@@ -217,6 +218,7 @@ func UsersPipelineGet(pInput *GFuserInputGet,
 
 	output := &GFuserOutputGet{
 		UserNameStr:        user.UserNameStr,
+		ScreenNameStr:      user.ScreenNameStr,
 		EmailStr:           user.EmailStr,
 		DescriptionStr:     user.DescriptionStr,
 		ProfileImageURLstr: user.ProfileImageURLstr,

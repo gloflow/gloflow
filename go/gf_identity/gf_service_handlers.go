@@ -100,6 +100,7 @@ func initHandlers(pAuthLoginURLstr string,
 
 				outputMap := map[string]interface{}{
 					"user_name_str":         output.UserNameStr,
+					"screen_name_str":       output.ScreenNameStr,
 					"email_str":             output.EmailStr,
 					"description_str":       output.DescriptionStr,
 					"profile_image_url_str": output.ProfileImageURLstr,
