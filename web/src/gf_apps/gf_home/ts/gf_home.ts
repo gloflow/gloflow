@@ -50,8 +50,8 @@ export async function init(p_http_api_map,
 
 
 	const user_info_map = await gf_utils.get_user_info(p_identity_http_api_map);
-	const screen_name_str     = user_info_map["screen_name_str"];
-	const profile_img_url_str = user_info_map["profile_img_url_str"];
+	const screen_name_str       = user_info_map["screen_name_str"];
+	const profile_image_url_str = user_info_map["profile_image_url_str"];
 
 	//-----------------------------
 	// SYS_PANEL
@@ -70,7 +70,7 @@ export async function init(p_http_api_map,
 
 	const home_container          = $("#home_container");
 	const names_container         = init_names_view(screen_name_str, home_container, p_http_api_map, p_assets_paths_map);
-	const profile_image_container = await init_profile_image(profile_img_url_str, p_http_api_map, p_assets_paths_map);
+	const profile_image_container = await init_profile_image(profile_image_url_str, p_http_api_map, p_assets_paths_map);
 	const my_eth_addresses_container        = await gf_home_eth_addresses.init_my(home_container, p_http_api_map, p_assets_paths_map);
 	const observed_eth_addresses_container  = await gf_home_eth_addresses.init_observed(home_container, p_http_api_map, p_assets_paths_map);
 	const background_color_picker_container = await init_color_picker(home_container, p_http_api_map, p_assets_paths_map);
