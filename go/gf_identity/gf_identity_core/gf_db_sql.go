@@ -1283,11 +1283,12 @@ func DBsqlCreateTables(pCtx context.Context,
 		deleted        BOOLEAN DEFAULT FALSE,
 		creation_time  TIMESTAMP DEFAULT NOW(),
 		user_id        TEXT,
-		login_complete BOOLEAN NOT NULL,
+		login_complete BOOLEAN NOT NULL DEFAULT FALSE,
 		access_token   TEXT,
 		profile        JSON,
 
-		PRIMARY KEY(id)
+		PRIMARY KEY(id),
+		FOREIGN KEY (user_id) REFERENCES gf_users(id)
 	);
 
 	CREATE TABLE IF NOT EXISTS gf_users_creds (
