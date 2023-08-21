@@ -26,7 +26,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
-	// "github.com/davecgh/go-spew/spew"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -75,6 +75,15 @@ func TestAuth0(pTest *testing.T) {
 	runtimeSys.LogNewFun("INFO", "Auth0 login pipeline complete...", map[string]interface{}{
 		"session_id":  sessionID,
 	})
+
+
+
+	session, gfErr := gf_identity_core.DBsqlAuth0getSession(sessionID, ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	spew.Dump(session)
 
 
 }

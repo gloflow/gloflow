@@ -38,7 +38,8 @@ type GFauth0session struct {
 	ID                gf_core.GF_ID          `bson:"id_str"`
 	DeletedBool       bool                   `bson:"deleted_bool"`
 	CreationUNIXtimeF float64                `bson:"creation_unix_time_f"`
-
+	UserID            gf_core.GF_ID          `bson:"user_id"`
+	
 	// marked as true once the login completes (once Auth0 initial auth returns the user to the GF system).
 	// if the login_callback handler is called and this login_complete is already marked as true,
 	// the http transaction will be immediatelly aborted.
@@ -124,7 +125,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	// created in the previously called login handler, and that a login with that session 
 	// has not already been completed
 
-	auth0session, gfErr := dbSQLauth0getSession(sessionID,
+	auth0session, gfErr := DBsqlAuth0getSession(sessionID,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -256,11 +257,15 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		spew.Dump(profileMap)
 	}
 
+	var userID gf_core.GF_ID
+
 	// GOOGLE
 	// check if the "subject" name starts with google prefix
 	if strings.HasPrefix(profileMap["sub"].(string), "google-oauth2") {
 
 
+		googleUserIDstr := profileMap["sub"].(string)
+		userID = gf_core.GF_ID(googleUserIDstr)
 
 		googleProfile := &GFgoogleUserProfile {
 			NameStr:       profileMap["name"].(string),
@@ -298,6 +303,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	loginCompleteBool := true
 
 	gfErr = dbSQLauth0updateSession(sessionID,
+		userID,
 		loginCompleteBool,
 
 		//---------------

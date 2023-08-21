@@ -25,6 +25,7 @@ import (
 	"time"
 	"context"
 	"encoding/json"
+	"database/sql"
 	"github.com/lib/pq"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -58,6 +59,7 @@ func dbSQLauth0deleteSession(pGFsessionID gf_core.GF_ID,
 }
 
 //---------------------------------------------------
+// CREATE_NEW_SESSION
 
 func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 	pCtx        context.Context,
@@ -67,12 +69,11 @@ func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 		INSERT INTO gf_auth0_session (
 			v,
 			id,
-			deleted,
 			login_complete,
 			access_token,
 			profile
 		)
-		VALUES ($1, $2, $3, $4, $5, $6);
+		VALUES ($1, $2, $3, $4, $5);
 	`
 
 	// serializing the profile map to JSON to store in the database
@@ -89,7 +90,6 @@ func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 		sqlStr,
 		"0",
 		pAuth0session.ID,
-		pAuth0session.DeletedBool,
 		pAuth0session.LoginCompleteBool,
 		pAuth0session.AccessTokenStr,
 		profileMapJSON)
@@ -108,16 +108,17 @@ func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 }
 
 //---------------------------------------------------
+// GET_SESSION
 
-func dbSQLauth0getSession(pGFsessionID gf_core.GF_ID,
+func DBsqlAuth0getSession(pGFsessionID gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFauth0session, *gf_core.GFerror) {
 
 	sqlStr := `
 		SELECT
 			id,
-			deleted,
 			creation_time,
+			user_id,
 			login_complete,
 			access_token,
 			profile
@@ -126,12 +127,13 @@ func dbSQLauth0getSession(pGFsessionID gf_core.GF_ID,
 
 	session := GFauth0session{}
 	var creationTime time.Time
-	var profileJSON []byte
+	var userIDsqlStr sql.NullString
+	var profileJSON  []byte
 
 	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pGFsessionID).Scan(
 		&session.ID,
-		&session.DeletedBool,
 		&creationTime,
+		&userIDsqlStr,
 		&session.LoginCompleteBool,
 		&session.AccessTokenStr,
 		&profileJSON)
@@ -148,6 +150,11 @@ func dbSQLauth0getSession(pGFsessionID gf_core.GF_ID,
 
 	session.CreationUNIXtimeF = float64(creationTime.Unix())
 
+	// only load user_id if its not an SQL NULL value
+	if userIDsqlStr.Valid {
+		session.UserID = gf_core.GF_ID(userIDsqlStr.String)
+	}
+
 	if err := json.Unmarshal(profileJSON, &session.ProfileMap); err != nil {
 		gfErr := gf_core.ErrorCreate("failed to unmarshal profile JSON",
 			"json_unmarshal_error",
@@ -162,8 +169,10 @@ func dbSQLauth0getSession(pGFsessionID gf_core.GF_ID,
 }
 
 //---------------------------------------------------
+// UPDATE_SESSION
 
 func dbSQLauth0updateSession(pGFsessionID gf_core.GF_ID,
+	pUserID            gf_core.GF_ID,
 	pLoginCompleteBool bool,
 	pAuth0profileMap   map[string]interface{},
 	pCtx               context.Context,
@@ -182,10 +191,14 @@ func dbSQLauth0updateSession(pGFsessionID gf_core.GF_ID,
 
 	sqlStr := `
 		UPDATE gf_auth0_session
-		SET login_complete = $1, profile = $2
+		SET user_id=$1, login_complete = $2, profile = $3
 		WHERE id = $3 AND deleted = false`
 
-	_, err = pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pLoginCompleteBool, profileMapJSONstr, pGFsessionID)
+	_, err = pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr,
+		string(pUserID),
+		pLoginCompleteBool,
+		profileMapJSONstr,
+		pGFsessionID)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to update Auth0 session in the DB",
 			"sql_query_execute",
@@ -1268,6 +1281,7 @@ func DBsqlCreateTables(pCtx context.Context,
 		id             TEXT,
 		deleted        BOOLEAN DEFAULT FALSE,
 		creation_time  TIMESTAMP DEFAULT NOW(),
+		user_id        TEXT,
 		login_complete BOOLEAN NOT NULL,
 		access_token   TEXT,
 		profile        JSON,
