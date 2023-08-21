@@ -132,7 +132,18 @@ func usersCreateID(pUserIdentifierStr string,
 }
 
 //---------------------------------------------------
-// PIPELINE__UPDATE
+// PIPELINE_LOGOUT
+
+func UsersPipelineLogout(pUserID gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+
+	return nil
+}
+
+//---------------------------------------------------
+// PIPELINE_UPDATE
 
 func UsersPipelineUpdate(pInput *GFuserInputUpdate,
 	pServiceInfo *GFserviceInfo,
@@ -194,7 +205,7 @@ func UsersPipelineUpdate(pInput *GFuserInputUpdate,
 }
 
 //---------------------------------------------------
-// PIPELINE__GET
+// PIPELINE_GET
 
 func UsersPipelineGet(pInput *GFuserInputGet,
 	pCtx        context.Context,

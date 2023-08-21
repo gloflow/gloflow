@@ -30,8 +30,6 @@ import (
 	"context"
 	"time"
 	"github.com/getsentry/sentry-go"
-	// "github.com/auth0/go-jwt-middleware/v2"
-	// "github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_session"
@@ -131,7 +129,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		//-----------------------
 		
 		// SESSION_VALIDATE
-		validBool, userIdentifierStr, gfErr := gf_session.ValidateOrRedirectToLogin(pReq,
+		validBool, userIdentifierStr, sessionID, gfErr := gf_session.ValidateOrRedirectToLogin(pReq,
 			pResp,
 			pHandlerRuntime.AuthKeyServer,
 			pHandlerRuntime.AuthSubsystemTypeStr,
@@ -177,7 +175,9 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 		//-----------------------
 		// USER_ID - attach to HTTP request golang context 
-		ctxAuth := context.WithValue(ctx, "gf_user_id", userIdentifierStr)
+		ctxUserID := context.WithValue(ctx, "gf_user_id", userIdentifierStr)
+
+		ctxAuth := context.WithValue(ctxUserID, "gf_session_id", string(sessionID))
 
 		//-----------------------
 

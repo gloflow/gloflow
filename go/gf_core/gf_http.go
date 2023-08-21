@@ -131,6 +131,20 @@ func HTTPsetCookieOnReq(pCookieNameStr string,
 }
 
 //---------------------------------------------------
+
+func HTTPdeleteCookieOnReq(pCookieNameStr string,
+	pResp http.ResponseWriter) {
+
+	expiredCookie := http.Cookie{
+		Name:    pCookieNameStr,
+		Value:   "", // empty value
+		Expires: time.Now().Add(-time.Hour), // set expiration in the past
+	}
+	
+	http.SetCookie(pResp, &expiredCookie)
+}
+
+//---------------------------------------------------
 // VAR
 //---------------------------------------------------
 

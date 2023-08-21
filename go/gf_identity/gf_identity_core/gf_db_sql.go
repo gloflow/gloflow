@@ -32,8 +32,34 @@ import (
 //---------------------------------------------------
 // AUTH0
 //---------------------------------------------------
+// DELETE_SESSION
 
-func dbSQLAuth0createNewSession(pAuth0session *GFauth0session,
+func dbSQLauth0deleteSession(pGFsessionID gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	
+	sqlStr := `
+		UPDATE gf_auth0_session
+		SET deleted = true
+		WHERE id = $1 AND deleted = false`
+
+	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pGFsessionID)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to delete Auth0 session in the DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"session_id_str": pGFsessionID,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+
+func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 

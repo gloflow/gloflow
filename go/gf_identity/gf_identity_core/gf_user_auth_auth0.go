@@ -58,6 +58,20 @@ type GFauth0outputLoginCallback struct {
 }
 
 //---------------------------------------------------
+
+func Auth0logoutPipeline(pGFsessionID gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	
+	gfErr := dbSQLauth0deleteSession(pGFsessionID, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
 // LOGIN
 
 func Auth0loginPipeline(pCtx context.Context,
@@ -82,7 +96,7 @@ func Auth0loginPipeline(pCtx context.Context,
 
 	//---------------------
 	// DB
-	gfErr := dbSQLAuth0createNewSession(auth0session,
+	gfErr := dbSQLauth0createNewSession(auth0session,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {

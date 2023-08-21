@@ -43,7 +43,8 @@ type GFconfig struct {
 	Auth0clientIDstr     string
 	Auth0clientSecretStr string
 	Auth0apiAudienceStr  string
-	Auth0callbackURLstr  string
+	Auth0loginCallbackURLstr  string
+	Auth0logoutCallbackURLstr string
 }
 
 type GFonLoginSuccessProfileInfo struct {
@@ -177,7 +178,7 @@ func Init(pRuntimeSys *gf_core.RuntimeSys) (*GFauthenticator, *GFconfig, *gf_cor
 	conf := oauth2.Config{
 		ClientID:     config.Auth0clientIDstr,
 		ClientSecret: config.Auth0clientSecretStr,
-		RedirectURL:  config.Auth0callbackURLstr,
+		RedirectURL:  config.Auth0loginCallbackURLstr,
 		Endpoint:     provider.Endpoint(),
 
 		Scopes: []string{
@@ -256,11 +257,13 @@ func LoadConfig(pRuntimeSys *gf_core.RuntimeSys) *GFconfig {
 	auth0clientIDstr     := os.Getenv("AUTH0_CLIENT_ID")
 	auth0clientSecretStr := os.Getenv("AUTH0_CLIENT_SECRET")
 	auth0apiAudienceStr  := os.Getenv("AUTH0_AUDIENCE")
-	auth0callbackURLstr  := os.Getenv("AUTH0_CALLBACK_URL")
+	auth0loginCallbackURLstr  := os.Getenv("AUTH0_CALLBACK_URL")
+	auth0logoutCallbackURLstr := os.Getenv("AUTH0_LOGOUT_CALLBACK_URL")
 
 	pRuntimeSys.LogNewFun("INFO", "auth0 config loaded", map[string]interface{}{
-		"auth0_domain_str":             auth0domainStr,
-		"auth0_login_callback_url_str": auth0callbackURLstr,
+		"auth0_domain_str":              auth0domainStr,
+		"auth0_login_callback_url_str":  auth0loginCallbackURLstr,
+		"auth0_logout_callback_url_str": auth0logoutCallbackURLstr,
 	})
 
 	config := &GFconfig{
@@ -268,7 +271,8 @@ func LoadConfig(pRuntimeSys *gf_core.RuntimeSys) *GFconfig {
 		Auth0clientIDstr:     auth0clientIDstr,
 		Auth0clientSecretStr: auth0clientSecretStr,
 		Auth0apiAudienceStr:  auth0apiAudienceStr,
-		Auth0callbackURLstr:  auth0callbackURLstr,
+		Auth0loginCallbackURLstr:  auth0loginCallbackURLstr,
+		Auth0logoutCallbackURLstr: auth0logoutCallbackURLstr,
 	}
 	return config
 }

@@ -20,44 +20,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_session
 
 import (
-	"fmt"
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
-
-//---------------------------------------------------
-// COOKIES
-//---------------------------------------------------
-
-func CreateSessionIDcookie(pSessionDataStr string,
-	pResp http.ResponseWriter) {
-	
-	sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
-
-	cookieNameStr := "gf_sess"
-	cookieDataStr := pSessionDataStr
-	gf_core.HTTPsetCookieOnReq(cookieNameStr,
-		cookieDataStr,
-		pResp,
-		sessionTTLhoursInt)
-}
-
-//---------------------------------------------------
-
-func CreateAuthCookie(pJWTtokenStr string,
-	pResp http.ResponseWriter) {
-
-	sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
-
-	cookieNameStr := "Authorization"
-	cookieDataStr := fmt.Sprintf("Bearer %s", pJWTtokenStr)
-	gf_core.HTTPsetCookieOnReq(cookieNameStr,
-		cookieDataStr,
-		pResp,
-		sessionTTLhoursInt)
-}
 
 //---------------------------------------------------
 // VALIDATION
@@ -70,9 +37,9 @@ func ValidateOrRedirectToLogin(pReq *http.Request,
 	pAuthLoginURLstr        *string,
 	pAuthRedirectOnFailBool bool,
 	pCtx                    context.Context,
-	pRuntimeSys             *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
+	pRuntimeSys             *gf_core.RuntimeSys) (bool, string, gf_core.GF_ID, *gf_core.GFerror) {
 
-	validBool, userIdentifierStr, gfErr := gf_identity_core.SessionValidate(pReq,
+	validBool, userIdentifierStr, sessionID, gfErr := gf_identity_core.SessionValidate(pReq,
 		pKeyServerInfo,
 		pAuthSubsystemTypeStr,
 		pCtx,
@@ -102,7 +69,7 @@ func ValidateOrRedirectToLogin(pReq *http.Request,
 			}
 		}
 
-		return false, "", gfErr
+		return false, "", gf_core.GF_ID(""), gfErr
 	}
 
 	if !validBool {
@@ -110,8 +77,8 @@ func ValidateOrRedirectToLogin(pReq *http.Request,
 			redirectFun()
 		}
 
-		return false, "", nil
+		return false, "", gf_core.GF_ID(""), nil
 	}
 
-	return validBool, userIdentifierStr, nil
+	return validBool, userIdentifierStr, sessionID, nil
 }

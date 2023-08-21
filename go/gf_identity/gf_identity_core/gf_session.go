@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_core
 
 import (
+	"fmt"
 	"time"
 	"net/http"
 	"context"
@@ -33,45 +34,60 @@ func SessionValidate(pReq *http.Request,
 	pKeyServerInfo         *GFkeyServerInfo,
 	pAuthSubsystemTypeStr  string,
 	pCtx                   context.Context,
-	pRuntimeSys            *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
-	
-	
+	pRuntimeSys            *gf_core.RuntimeSys) (bool, string, gf_core.GF_ID, *gf_core.GFerror) {
 
+	//---------------------
+	// JWT
+	jwtTokenStr, foundBool, gfErr := JWTgetTokenFromRequest(pReq, pRuntimeSys)
+	if gfErr != nil {
+		return false, "", gf_core.GF_ID(""), gfErr
+	}
+	
+	if !foundBool {
+		
+		/*
+		IMPORTANT!! - return a false validity and not an error, since missing
+		    JWT in request is not an abnormal situation (an error), and 
+		    it means that the user is not authenticated yet.
+		*/
+		return false, "", gf_core.GF_ID(""), nil
+	}
+
+	//---------------------
+	// SESSION_ID
+
+	sessionID, sessionIDfoundBool := getSessionID(pReq, pRuntimeSys)
+	if !sessionIDfoundBool {
+
+		/*
+		IMPORTANT!! - return a false validity and not an error, since missing
+		    session_id in request is not an abnormal situation (an error), and 
+		    it means that the user is not authenticated yet.
+		*/
+		return false, "", gf_core.GF_ID(""), nil
+	}
+
+	//---------------------
+	
 	var userIdentifierStr string
+
 	switch pAuthSubsystemTypeStr {
 	
 	//---------------------
 	// AUTH0
 	case GF_AUTH_SUBSYSTEM_TYPE__AUTH0:
 
-		//---------------------
-		// JWT
-		auth0JWTtokenStr, foundBool, gfErr := JWTgetTokenFromRequest(pReq, pRuntimeSys)
-		if gfErr != nil {
-			return false, "", gfErr
-		}
-		
-		if !foundBool {
-			
-			// IMPORTANT!! - return a false validity and not an error, since missing
-			//               JWT in request is not an ubnormal situation (an error), and 
-			//               it means that the user is not authenticated yet.
-			return false, "", nil
-		}
-
-		//---------------------
-
 		// KEY_SERVER
 		publicKey, gfErr := KSclientJWTgetValidationKey(GF_AUTH_SUBSYSTEM_TYPE__AUTH0,
 			pKeyServerInfo,
 			pRuntimeSys)
 		if gfErr != nil {
-			return false, "", gfErr
+			return false, "", gf_core.GF_ID(""), gfErr
 		}
 		
-		userIdentifierFromJWTstr, gfErr := gf_auth0.JWTvalidateToken(auth0JWTtokenStr, publicKey, pRuntimeSys)
+		userIdentifierFromJWTstr, gfErr := gf_auth0.JWTvalidateToken(jwtTokenStr, publicKey, pRuntimeSys)
 		if gfErr != nil {
-			return false, "", gfErr
+			return false, "", gf_core.GF_ID(""), gfErr
 		}
 
 		userIdentifierStr = userIdentifierFromJWTstr
@@ -79,32 +95,15 @@ func SessionValidate(pReq *http.Request,
 	//---------------------
 	// USERPASS
 	case GF_AUTH_SUBSYSTEM_TYPE__USERPASS:
-		
-		//---------------------
-		// JWT
-		JWTtokenStr, foundBool, gfErr := JWTgetTokenFromRequest(pReq, pRuntimeSys)
-		if gfErr != nil {
-			return false, "", gfErr
-		}
-		
-		if !foundBool {
-			
-			// IMPORTANT!! - return a false validity and not an error, since missing
-			//               JWT in request is not an ubnormal situation (an error), and 
-			//               it means that the user is not authenticated yet.
-			return false, "", nil
-		}
-
-		//---------------------
 
 		// JWT_VALIDATE
-		userIdentifierFromJWTstr, gfErr := JWTpipelineValidate(GFjwtTokenVal(JWTtokenStr),
+		userIdentifierFromJWTstr, gfErr := JWTpipelineValidate(GFjwtTokenVal(jwtTokenStr),
 			pAuthSubsystemTypeStr,
 			pKeyServerInfo,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
-			return false, "", gfErr
+			return false, "", gf_core.GF_ID(""), gfErr
 		}
 
 		userIdentifierStr = userIdentifierFromJWTstr
@@ -112,7 +111,62 @@ func SessionValidate(pReq *http.Request,
 	//---------------------
 	}
 
-	return true, userIdentifierStr, nil
+	return true, userIdentifierStr, sessionID, nil
+}
+
+//---------------------------------------------------
+// COOKIES
+//---------------------------------------------------
+
+func CreateAuthCookie(pJWTtokenStr string,
+	pResp http.ResponseWriter) {
+
+	sessionTTLhoursInt, _ := GetSessionTTL()
+
+	cookieNameStr := "Authorization"
+	cookieDataStr := fmt.Sprintf("Bearer %s", pJWTtokenStr)
+	gf_core.HTTPsetCookieOnReq(cookieNameStr,
+		cookieDataStr,
+		pResp,
+		sessionTTLhoursInt)
+}
+
+//---------------------------------------------------
+
+func CreateSessionIDcookie(pSessionIDstr string,
+	pResp http.ResponseWriter) {
+	
+	sessionTTLhoursInt, _ := GetSessionTTL()
+
+	cookieNameStr := "gf_sess"
+	cookieDataStr := pSessionIDstr
+	gf_core.HTTPsetCookieOnReq(cookieNameStr,
+		cookieDataStr,
+		pResp,
+		sessionTTLhoursInt)
+}
+
+//---------------------------------------------------
+
+func DeleteCookies(pResp http.ResponseWriter) {
+
+	sessCookieNameStr := "gf_sess"
+	gf_core.HTTPdeleteCookieOnReq(sessCookieNameStr, pResp)
+
+	jwtCookieNameStr := "Authorization"
+	gf_core.HTTPdeleteCookieOnReq(jwtCookieNameStr, pResp)
+}
+
+//---------------------------------------------------
+
+func getSessionID(pReq *http.Request,
+	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, bool) {
+
+	sessCookieNameStr := "gf_sess"
+	existsBool, valStr := gf_core.HTTPgetCookieFromReq(sessCookieNameStr, pReq, pRuntimeSys)
+
+	sessionID := gf_core.GF_ID(valStr)
+	return sessionID, existsBool
 }
 
 //---------------------------------------------------

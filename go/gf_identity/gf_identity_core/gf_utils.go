@@ -52,13 +52,26 @@ func GetUserIDfromCtx(pCtx context.Context) (gf_core.GF_ID, bool) {
 	userID := pCtx.Value("gf_user_id")
 
 	if userID != nil {
-		userIDstr := gf_core.GF_ID(userID.(string))
-		return userIDstr, true
-	} else {
-		return "", false
+		userID := gf_core.GF_ID(userID.(string))
+		return userID, true
 	}
 	
-	return "", false
+	return gf_core.GF_ID(""), false
+}
+
+//---------------------------------------------------
+// GET_SESSION_ID_FROM_CTX
+
+func GetSessionIDfromCtx(pCtx context.Context) (gf_core.GF_ID, bool) {
+	
+	sessionIDval := pCtx.Value("gf_session_id")
+
+	if sessionIDval != nil {
+		sessionID := gf_core.GF_ID(sessionIDval.(string))
+		return sessionID, true
+	}
+	
+	return gf_core.GF_ID(""), false
 }
 
 //---------------------------------------------------

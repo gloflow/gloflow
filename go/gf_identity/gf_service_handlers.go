@@ -26,7 +26,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_identity/gf_session"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_policy"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -51,6 +50,7 @@ func initHandlers(pAuthLoginURLstr string,
 	//---------------------
 	// METRICS
 	handlersEndpointsLst := []string{
+		"/v1/identity/logged_in",
 		"/v1/identity/me",
 		"/v1/identity/policy/update",
 		"/v1/identity/login_ui",
@@ -73,6 +73,23 @@ func initHandlers(pAuthLoginURLstr string,
 		AuthLoginURLstr:      pAuthLoginURLstr,
 		AuthKeyServer:        pKeyServer,
 	}
+
+	//---------------------
+	// LOGGED_IN - used to check efficiently by the front-end if the user is logged in
+	// AUTH
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/logged_in",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+			if pReq.Method == "GET" {
+				outputMap := map[string]interface{}{
+					"logged_in_bool": true,
+				}
+				return outputMap, nil
+			}
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
 
 	//---------------------
 	// USERS_GET_ME
@@ -176,12 +193,6 @@ func initHandlers(pAuthLoginURLstr string,
 
 			if pReq.Method == "GET" {
 
-				//---------------------
-				// INPUT
-				// qsMap := pReq.URL.Query()
-
-				//---------------------
-
 				templateRenderedStr, gfErr := viewRenderTemplateLogin(pServiceInfo.AuthSubsystemTypeStr,
 					gfTemplates.loginTmpl,
 					gfTemplates.loginSubtemplatesNamesLst,
@@ -264,9 +275,9 @@ func initHandlers(pAuthLoginURLstr string,
 						}
 
 						//---------------------
-						// SET_SESSION_ID - sets gf_sess cookie on all future requests
+						// SET_COOKIES
 						jwtTokenValStr := string(loginFinalizeOutput.JWTtokenVal)
-						gf_session.CreateSessionIDcookie(jwtTokenValStr, pResp)
+						gf_identity_core.CreateAuthCookie(jwtTokenValStr, pResp)
 
 						//---------------------
 
@@ -350,9 +361,9 @@ func initHandlers(pAuthLoginURLstr string,
 					}
 
 					//---------------------	
-					// SET_SESSION_ID - sets gf_sess cookie on all future requests
+					// SET_COOKIES
 					jwtTokenValStr := string(loginFinalizeOutput.JWTtokenVal)
-					gf_session.CreateSessionIDcookie(jwtTokenValStr, pResp)
+					gf_identity_core.CreateAuthCookie(jwtTokenValStr, pResp)
 
 					//---------------------
 				}

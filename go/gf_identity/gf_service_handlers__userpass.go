@@ -26,7 +26,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_identity/gf_session"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -115,14 +114,11 @@ func initHandlersUserpass(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 					// SESSION_ID - sets gf_sess cookie
 					sessionIDstr := string(output.SessionID)
-					gf_session.CreateSessionIDcookie(sessionIDstr, pResp)
-
-					
-
+					gf_identity_core.CreateSessionIDcookie(sessionIDstr, pResp)
 
 					// JWT - sets "Authorization" cookie
 					jwtTokenValStr := string(output.JWTtokenVal)
-					gf_session.CreateAuthCookie(jwtTokenValStr, pResp)
+					gf_identity_core.CreateAuthCookie(jwtTokenValStr, pResp)
 				}
 
 				//---------------------

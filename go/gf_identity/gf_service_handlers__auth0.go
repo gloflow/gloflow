@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity
 
 import (
+	"fmt"
 	"net/http"
 	"context"
 	"encoding/base64"
@@ -27,7 +28,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_identity/gf_session"
 )
 
 //------------------------------------------------
@@ -44,6 +44,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	handlersEndpointsLst := []string{
 		"/v1/identity/auth0/login",
 		"/v1/identity/auth0/login_callback",
+		"/v1/identity/auth0/logout",
 		"/v1/identity/auth0/logout_callback",
 	}
 	metricsGroupNameStr := "auth0"
@@ -130,7 +131,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			// state is base64 encoded session_id, so it needs to be decoded and casted into an GF_ID 
 			auth0providedStateBase64str := qsMap["state"][0]
 			auth0providedStateStr, _    := base64.StdEncoding.DecodeString(auth0providedStateBase64str)
-			sessionID                := gf_core.GF_ID(auth0providedStateStr)
+			sessionID                   := gf_core.GF_ID(auth0providedStateStr)
 			
 			//------------------
 			input := &gf_identity_core.GFauth0inputLoginCallback{
@@ -156,10 +157,10 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			// COOKIES 
 			
 			// SESSION_ID - sets gf_sess cookie
-			gf_session.CreateSessionIDcookie(string(sessionID), pResp)
+			gf_identity_core.CreateSessionIDcookie(string(sessionID), pResp)
 
 			// JWT - sets "Authorization" cookie
-			gf_session.CreateAuthCookie(output.JWTtokenStr, pResp)
+			gf_identity_core.CreateAuthCookie(output.JWTtokenStr, pResp)
 			
 			//------------------
 			// HTTP_REDIRECT - redirect user to logged in page
@@ -190,24 +191,58 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 		pRuntimeSys)
 
 	//---------------------
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/auth0/logout",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
+			if pReq.Method == "GET" {
+				
+				//------------------
+				/*
+				IMPORTANT!! - redirect user to Auth0 logout url, which will log them out of Auth0
+					and any third-party identity providers. this does not log them out of the GF
+					application, which needs to be done separatelly. 
+				*/
+
+				logoutURLstr := fmt.Sprintf("https://%s/v2/logout?client_id=%s&returnTo=%s",
+					pConfig.Auth0domainStr,
+					pConfig.Auth0clientIDstr,
+					pConfig.Auth0logoutCallbackURLstr)
+
+				pRuntimeSys.LogNewFun("DEBUG", "redirecting to Auth0 logout url...",
+					map[string]interface{}{"logout_url_str": logoutURLstr})
+
+				// HTTP_REDIRECT
+				http.Redirect(pResp,
+					pReq,
+					logoutURLstr,
+					301)
+
+				//------------------
+			}
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
 
 	//---------------------
-	//---------------------
-	// FINISH!! - logout handler
-	//---------------------
-	//---------------------
-
-
 	// user redirected to this URL by Auth0 on successful logout
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/auth0/logout_callback",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
-				
+				sessionID, _ := gf_identity_core.GetSessionIDfromCtx(pCtx)
 
-				// ADD!! - mark auth0 session as deleted
+
+				// IMPORTANT!! - delete GF application session
+				gfErr := gf_identity_core.Auth0logoutPipeline(sessionID, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				// unset all session cookies
+				gf_identity_core.DeleteCookies(pResp)
+
 			}
 			return nil, nil
 		},
