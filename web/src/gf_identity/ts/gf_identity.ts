@@ -93,13 +93,15 @@ export async function init_with_http(p_notifications_meta_map,
 //-------------------------------------------------
 export async function init(p_notifications_meta_map, p_http_api_map, p_urls_map) {
 
+    const logged_in_bool = await p_http_api_map["general"]["logged_in"]();
+
     $("#identity #login").on("click", async function(p_e) {
         
         const opened_bool = $("#identity").has("#auth_pick_dialog").length > 0;
 
         if (!opened_bool) {
             
-            const method_str = await auth_method_pick();
+            const method_str = await auth_method_pick(logged_in_bool);
             switch (method_str) {
                 //--------------------------
                 // AUTH0
@@ -131,7 +133,7 @@ export async function init(p_notifications_meta_map, p_http_api_map, p_urls_map)
 }
 
 //-------------------------------------------------
-async function auth_method_pick() {
+async function auth_method_pick(p_logged_in_bool) {
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
         const container_identity = $("#identity");
@@ -160,6 +162,11 @@ async function auth_method_pick() {
 
         </div>`);
 
+        // if user is already logged in, the auth0 auth method should become the log-out button
+        if (p_logged_in_bool) {
+            $(container).find("#label").text("log out");
+        }
+
         container_identity.append(container);
 
         // close_dialog
@@ -170,6 +177,13 @@ async function auth_method_pick() {
         
         $(container).find("#auth0_pick_dialog").on('click', (p_e)=>{
             p_e.stopPropagation();
+
+            // if user is already logged in, and logout button is pressed, redirect user
+            // to logout endpoint so that the system logs them out. 
+            if (p_logged_in_bool) {
+                window.location.href = "/v1/identity/auth0/logout";
+                return
+            }
 
             // remove initial auth method pick dialog
             $(container).remove();

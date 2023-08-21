@@ -131,6 +131,10 @@ export function get_http_api(p_urls_map) {
                 const output_map = await user_get_me();
                 return output_map;
             },
+            "logged_in": async ()=>{
+                const output_map = await logged_in();
+                return output_map;
+            },
         }
     };
     return http_api_map;
@@ -168,6 +172,36 @@ export function user_get_me() {
     });
     return p;
 }
+
+export function logged_in() {
+    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+
+        // auth_r=0 - toggle off redirecting to login url in case the validation fails.
+        //            redirecting not needed since /me is called by subcomponents of pages
+        //            and on failure should not redirect.
+        const url_str = '/v1/identity/logged_in?auth_r=0';
+        $.ajax({
+            'url':         url_str,
+            'type':        'GET',
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+
+                const status_str = p_response_map["status"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(true);
+                } else {
+                    p_resolve_fun(false);
+                }
+            },
+            'error': (jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
+    });
+    return p;
+}
+
 //-------------------------------------------------
 // LOGIN
 //-------------------------------------------------
