@@ -1322,11 +1322,13 @@ func DBsqlCreateTables(pCtx context.Context,
 		creation_time   TIMESTAMP DEFAULT NOW(),
 		user_type       VARCHAR(255), -- "admin" or "standard"
 		user_name       VARCHAR(255),
+		user_id         TEXT,
 		pass_confirmed  BOOLEAN,
 		email_confirmed BOOLEAN,
 		mfa_confirmed   BOOLEAN,
 	
-		PRIMARY KEY(id)
+		PRIMARY KEY(id),
+		FOREIGN KEY (user_id) REFERENCES gf_users(id)
 	);
 
 	CREATE TABLE IF NOT EXISTS gf_users_invite_list (
