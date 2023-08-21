@@ -151,10 +151,10 @@ func CreateSessionIDcookie(pSessionIDstr string,
 func DeleteCookies(pResp http.ResponseWriter) {
 
 	sessCookieNameStr := "gf_sess"
-	gf_core.HTTPdeleteCookieOnReq(sessCookieNameStr, pResp)
+	gf_core.HTTPdeleteCookieOnResp(sessCookieNameStr, pResp)
 
 	jwtCookieNameStr := "Authorization"
-	gf_core.HTTPdeleteCookieOnReq(jwtCookieNameStr, pResp)
+	gf_core.HTTPdeleteCookieOnResp(jwtCookieNameStr, pResp)
 }
 
 //---------------------------------------------------

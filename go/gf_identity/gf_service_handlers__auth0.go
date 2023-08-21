@@ -229,7 +229,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/auth0/logout_callback",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if pReq.Method == "POST" {
+			if pReq.Method == "GET" {
 
 				sessionID, _ := gf_identity_core.GetSessionIDfromCtx(pCtx)
 
@@ -242,6 +242,14 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 				// unset all session cookies
 				gf_identity_core.DeleteCookies(pResp)
+
+				afterLogoutURLstr := "/landing/main"
+
+				// HTTP_REDIRECT
+				http.Redirect(pResp,
+					pReq,
+					afterLogoutURLstr,
+					301)
 
 			}
 			return nil, nil
