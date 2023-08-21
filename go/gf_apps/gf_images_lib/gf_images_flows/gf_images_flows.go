@@ -113,7 +113,30 @@ func pipelineCreateDiscoveredFlows(pCtx context.Context,
 		nameStr := flowMap["_id"].(string)
 		fmt.Printf("flow name - %s", nameStr)
 
-		existsBool, gfErr := DBsqlCheckFlowExists(nameStr, pRuntimeSys)
+		gfErr := CreateIfMissing([]string{nameStr},
+			ownerUserID,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+	}
+
+	return nil
+}
+
+//-------------------------------------------------
+
+func CreateIfMissing(pFlowsNamesLst []string,
+	pUserID     gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+
+
+	for _, flowNameStr := range pFlowsNamesLst {
+
+		existsBool, gfErr := DBsqlCheckFlowExists(flowNameStr, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
@@ -123,8 +146,8 @@ func pipelineCreateDiscoveredFlows(pCtx context.Context,
 
 			//----------------------
 			// CREATE_FLOW
-			_, gfErr := Create(nameStr,
-				ownerUserID,
+			_, gfErr := Create(flowNameStr,
+				pUserID,
 				pCtx,
 				pRuntimeSys)
 
@@ -134,11 +157,7 @@ func pipelineCreateDiscoveredFlows(pCtx context.Context,
 
 			//----------------------
 		}
-
 	}
-
-
-
 	return nil
 }
 

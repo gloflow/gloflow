@@ -33,7 +33,7 @@ import (
 //---------------------------------------------------
 // AUTH0
 //---------------------------------------------------
-// DELETE_SESSION
+// AUTH0_DELETE_SESSION
 
 func dbSQLauth0deleteSession(pGFsessionID gf_core.GF_ID,
 	pCtx        context.Context,
@@ -59,7 +59,7 @@ func dbSQLauth0deleteSession(pGFsessionID gf_core.GF_ID,
 }
 
 //---------------------------------------------------
-// CREATE_NEW_SESSION
+// AUTH0_CREATE_NEW_SESSION
 
 func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 	pCtx        context.Context,
@@ -108,7 +108,7 @@ func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 }
 
 //---------------------------------------------------
-// GET_SESSION
+// AUTH0_GET_SESSION
 
 func DBsqlAuth0getSession(pGFsessionID gf_core.GF_ID,
 	pCtx        context.Context,
@@ -169,7 +169,7 @@ func DBsqlAuth0getSession(pGFsessionID gf_core.GF_ID,
 }
 
 //---------------------------------------------------
-// UPDATE_SESSION
+// AUTH0_UPDATE_SESSION
 
 func dbSQLauth0updateSession(pGFsessionID gf_core.GF_ID,
 	pUserID            gf_core.GF_ID,
@@ -284,6 +284,7 @@ func DBsqlUserCreate(pUser *GFuser,
 }
 
 //---------------------------------------------------
+// USERS_GET_ALL
 
 func DBsqlUserGetAll(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFuser, *gf_core.GFerror) {

@@ -191,9 +191,20 @@ func UploadInit(pImageNameStr string,
 	}
 
 	//------------------
+	/*
+	CREATE_FLOWS - check if flows to which this image is being added exist,
+	               and create if needed.
+	*/
 
+	gfErr = gf_images_flows.CreateIfMissing(pFlowsNamesLst,
+		pUserID,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
 
-	//------------------------
+	//------------------
 	// EVENT
 	if pServiceInfo.EnableEventsAppBool {
 		eventMeta := map[string]interface{}{
@@ -204,7 +215,7 @@ func UploadInit(pImageNameStr string,
 			pRuntimeSys)
 	}
 
-	//------------------------
+	//------------------
 
 
 	return uploadInfo, nil
