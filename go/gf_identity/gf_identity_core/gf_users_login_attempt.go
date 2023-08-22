@@ -35,8 +35,9 @@ type GFloginAttempt struct {
 	DeletedBool       bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
 
-	UserTypeStr        string     `bson:"user_type_str"` // "regular"|"admin"
-	UserNameStr        GFuserName `bson:"user_name_str"`
+	UserTypeStr        string        `bson:"user_type_str"` // "regular"|"admin"
+	UserID             gf_core.GF_ID `bson:"user_id_str"`
+	UserNameStr        GFuserName    `bson:"user_name_str"`
 	
 	PassConfirmedBool  bool `bson:"pass_confirmed_bool"`
 	EmailConfirmedBool bool `bson:"email_confirmed_bool"`
@@ -66,7 +67,8 @@ func LoginAttemptGetOrCreate(pUserNameStr GFuserName,
 		//------------------------
 		// CREATE_LOGIN_ATTEMPT
 
-		loginAttempt, gfErr = loginAttempCreate(pUserNameStr, pUserTypeStr, pCtx, pRuntimeSys)
+		userID := gf_core.GF_ID("")
+		loginAttempt, gfErr = loginAttempCreate(userID, pUserNameStr, pUserTypeStr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}
@@ -80,7 +82,8 @@ func LoginAttemptGetOrCreate(pUserNameStr GFuserName,
 //---------------------------------------------------
 // CREATE
 
-func loginAttempCreate(pUserNameStr GFuserName,
+func loginAttempCreate(pUserID gf_core.GF_ID,
+	pUserNameStr GFuserName,
 	pUserTypeStr string,
 	pCtx         context.Context,
 	pRuntimeSys  *gf_core.RuntimeSys) (*GFloginAttempt, *gf_core.GFerror) {
@@ -94,6 +97,7 @@ func loginAttempCreate(pUserNameStr GFuserName,
 		IDstr:             loginAttemptIDstr,
 		CreationUNIXtimeF: creationUNIXtimeF,
 		UserTypeStr:       pUserTypeStr,
+		UserID:            pUserID,
 		UserNameStr:       pUserNameStr,
 	}
 	gfErr := dbSQLloginAttemptCreate(loginAttempt,

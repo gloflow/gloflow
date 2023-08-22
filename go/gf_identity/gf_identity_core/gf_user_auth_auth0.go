@@ -104,7 +104,7 @@ func Auth0loginPipeline(pCtx context.Context,
 		return gf_core.GF_ID(""), gfErr
 	}
 
-	//---------------------
+	//------------------------
 
 	return sessionID, nil
 }
@@ -257,21 +257,24 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		spew.Dump(profileMap)
 	}
 
-	var userID gf_core.GF_ID
+	var userID      gf_core.GF_ID
+	var userNameStr GFuserName
 
 	// GOOGLE
 	// check if the "subject" name starts with google prefix
 	if strings.HasPrefix(profileMap["sub"].(string), "google-oauth2") {
 
 
-		googleUserIDstr := profileMap["sub"].(string)
-		userID = gf_core.GF_ID(googleUserIDstr)
-
+		googleUserIDstr   := profileMap["sub"].(string)
+		googleNicknameStr := profileMap["nickname"].(string)
+		userID      = gf_core.GF_ID(googleUserIDstr)
+		userNameStr = GFuserName(googleNicknameStr)
+		
 		googleProfile := &GFgoogleUserProfile {
 			NameStr:       profileMap["name"].(string),
 			GivenNameStr:  profileMap["given_name"].(string),
 			FamilyNameStr: profileMap["family_name"].(string),
-			NicknameStr:   profileMap["nickname"].(string),
+			NicknameStr:   googleNicknameStr,
 			LocaleStr:     profileMap["locale"].(string),
 			UpdatedAtStr:  profileMap["updated_at"].(string),
 			PictureURLstr: profileMap["picture"].(string),
@@ -314,6 +317,21 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		
 		pCtx,
 		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	//---------------------
+	/*
+	LOGIN_ATTEMPT
+	on user login success, when all the info on the user is present, create a login_attempt in the DB.
+	unlinke with GF native userpass/eth auth methods where the login attempt can be created from username
+	right away before it is checked for validitiy (even if it fails), with Auth0 auth method this has to be done
+	at the end since the username is not known right away as the user is navigated to Auth0 systems and only
+	returned to GF on login success.
+	*/ 
+	userTypeStr := "standard"
+	_, gfErr = loginAttempCreate(userID, userNameStr, userTypeStr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
