@@ -69,11 +69,12 @@ func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 		INSERT INTO gf_auth0_session (
 			v,
 			id,
+			deleted,
 			login_complete,
 			access_token,
 			profile
 		)
-		VALUES ($1, $2, $3, $4, $5);
+		VALUES ($1, $2, $3, $4, $5, $6);
 	`
 
 	// serializing the profile map to JSON to store in the database
@@ -90,6 +91,7 @@ func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 		sqlStr,
 		"0",
 		pAuth0session.ID,
+		pAuth0session.DeletedBool,
 		pAuth0session.LoginCompleteBool,
 		pAuth0session.AccessTokenStr,
 		profileMapJSON)
