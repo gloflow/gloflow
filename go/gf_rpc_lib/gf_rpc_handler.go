@@ -143,6 +143,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 				"path_str":            pathStr,
 				"valid_bool":          validBool,
 				"user_identifier_str": userIdentifierStr,
+				"session_id_str":      sessionID,
 				"auth_redirect_on_failure_bool": authRedirectOnFailBool,
 				"auth_method_str":               pHandlerRuntime.AuthSubsystemTypeStr,
 			})
@@ -174,10 +175,9 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		}
 
 		//-----------------------
-		// USER_ID - attach to HTTP request golang context 
+		// AUTH_CONTEXT - attach user_id and session_id to a handler context
 		ctxUserID := context.WithValue(ctx, "gf_user_id", userIdentifierStr)
-
-		ctxAuth := context.WithValue(ctxUserID, "gf_session_id", string(sessionID))
+		ctxAuth   := context.WithValue(ctxUserID, "gf_session_id", string(sessionID))
 
 		//-----------------------
 

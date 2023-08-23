@@ -225,14 +225,28 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 		pRuntimeSys)
 
 	//---------------------
-	// user redirected to this URL by Auth0 on successful logout
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/auth0/logout_callback",
+	/*
+	user redirected to this URL by Auth0 on successful logout.
+	user still has to be authenticated to invoke this endpoint, since at this point user is logged out of Auth0
+	(and any third party identity providers) but not out of GF.
+	*/
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/auth0/logout_callback",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
 
-				sessionID, _ := gf_identity_core.GetSessionIDfromCtx(pCtx)
+				//------------------
+				// INPUT
+				sessionID, existsBool := gf_identity_core.GetSessionIDfromCtx(pCtx)
+				if !existsBool {
+					gfErr := gf_core.MongoHandleError("session_id is missing from auth0 logout_callback handler context",
+						"rpc_context_value_missing",
+						map[string]interface{}{},
+						nil, "gf_identity", pRuntimeSys)
+					return nil, gfErr
+				}
 
+				//------------------
 
 				// IMPORTANT!! - delete GF application session
 				gfErr := gf_identity_core.Auth0logoutPipeline(sessionID, pCtx, pRuntimeSys)

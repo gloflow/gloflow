@@ -61,7 +61,7 @@ func TesUsersHTTPuserpass(pTest *testing.T) {
 
 	//---------------------------------
 
-	HTTPagent   := gorequest.New()
+	HTTPagent := gorequest.New()
 
 	testUserNameStr := "ivan_t"
 	testUserPassStr := "pass_lksjds;lkdj"

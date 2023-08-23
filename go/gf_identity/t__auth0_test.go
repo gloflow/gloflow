@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"testing"
 	"context"
+	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
@@ -66,7 +67,7 @@ func TestAuth0(pTest *testing.T) {
 
 
 
-
+	// LOGIN
 	sessionID, gfErr := gf_identity_core.Auth0loginPipeline(ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
@@ -77,7 +78,7 @@ func TestAuth0(pTest *testing.T) {
 	})
 
 
-
+	// GET_SESSION
 	session, gfErr := gf_identity_core.DBsqlAuth0getSession(sessionID, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
@@ -86,4 +87,22 @@ func TestAuth0(pTest *testing.T) {
 	spew.Dump(session)
 
 
+
+	// LOGOUT
+	gfErr = gf_identity_core.Auth0logoutPipeline(sessionID, ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+
+	// GET_SESSION
+	session, gfErr = gf_identity_core.DBsqlAuth0getSession(sessionID, ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	spew.Dump(session)
+
+	assert.True(pTest, session.DeletedBool,
+		"auth0 session should be marked as deleted")
 }

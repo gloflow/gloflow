@@ -202,7 +202,15 @@ func errorGetDefs() map[string]ErrorDef {
 		"http_cookie": ErrorDef{
 			DescrStr:"failed to handle a http cookie",
 		},
+		"html_parse_error": ErrorDef{
+			DescrStr: "parsing of a HTML document failed",
+		},
 		
+		//---------------
+		"rpc_context_value_missing": ErrorDef{
+			DescrStr: "expected key is missing from a gf_rpc context",
+		},
+
 		//---------------
 		// WEBSOCKETS
 		"ws_connection_init_error": ErrorDef{
@@ -402,7 +410,6 @@ func errorGetDefs() map[string]ErrorDef {
 			DescrStr: "failed to verify email address via SES",
 		},
 
-		//---------------
 		// S3
 		"s3_credentials_error": ErrorDef{
 			DescrStr: "S3 credentials operation failed",
@@ -418,12 +425,6 @@ func errorGetDefs() map[string]ErrorDef {
 		},
 		"s3_file_download_error": ErrorDef{
 			DescrStr: "failed to download a file from S3 to a local FS",
-		},
-
-		//---------------
-		// HTML_PARSING
-		"html_parse_error": ErrorDef{
-			DescrStr: "parsing of a HTML document failed",
 		},
 
 		//---------------
