@@ -39,6 +39,10 @@ func dbSQLauth0deleteSession(pGFsessionID gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
+	pRuntimeSys.LogNewFun("DEBUG", "deleting Auth0 session...", map[string]interface{}{
+		"session_id": pGFsessionID,
+	})
+	
 	sqlStr := `
 		UPDATE gf_auth0_session
 		SET deleted = true
@@ -119,13 +123,14 @@ func DBsqlAuth0getSession(pGFsessionID gf_core.GF_ID,
 	sqlStr := `
 		SELECT
 			id,
+			deleted,
 			creation_time,
 			user_id,
 			login_complete,
 			access_token,
 			profile
 		FROM gf_auth0_session
-		WHERE id = $1 AND deleted = false`
+		WHERE id = $1`
 
 	session := GFauth0session{}
 	var creationTime time.Time
@@ -134,6 +139,7 @@ func DBsqlAuth0getSession(pGFsessionID gf_core.GF_ID,
 
 	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pGFsessionID).Scan(
 		&session.ID,
+		&session.DeletedBool,
 		&creationTime,
 		&userIDsqlStr,
 		&session.LoginCompleteBool,
@@ -191,10 +197,17 @@ func dbSQLauth0updateSession(pGFsessionID gf_core.GF_ID,
 		return gfErr
 	}
 
+	pRuntimeSys.LogNewFun("DEBUG", "updating Auth0 session...", map[string]interface{}{
+		"session_id":     pGFsessionID,
+		"user_id":        pUserID,
+		"login_complete": pLoginCompleteBool,
+		"auth0_profile":  pAuth0profileMap,
+	})
+
 	sqlStr := `
 		UPDATE gf_auth0_session
 		SET user_id=$1, login_complete = $2, profile = $3
-		WHERE id = $3 AND deleted = false`
+		WHERE id = $4 AND deleted = false`
 
 	_, err = pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr,
 		string(pUserID),
