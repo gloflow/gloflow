@@ -235,7 +235,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				// INPUT
 				sessionID, existsBool := gf_identity_core.GetSessionIDfromCtx(pCtx)
 				if !existsBool {
-					gfErr := gf_core.MongoHandleError("session_id is missing from auth0 logout_callback handler context",
+					gfErr := gf_core.ErrorCreate("session_id is missing from auth0 logout_callback handler context",
 						"rpc_context_value_missing",
 						map[string]interface{}{},
 						nil, "gf_identity", pRuntimeSys)
