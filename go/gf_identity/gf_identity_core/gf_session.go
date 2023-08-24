@@ -56,7 +56,7 @@ func SessionValidate(pReq *http.Request,
 	//---------------------
 	// SESSION_ID
 
-	sessionID, sessionIDfoundBool := getSessionID(pReq, pRuntimeSys)
+	sessionID, sessionIDfoundBool := GetSessionID(pReq, pRuntimeSys)
 	if !sessionIDfoundBool {
 
 		/*
@@ -159,7 +159,7 @@ func DeleteCookies(pResp http.ResponseWriter) {
 
 //---------------------------------------------------
 
-func getSessionID(pReq *http.Request,
+func GetSessionID(pReq *http.Request,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, bool) {
 
 	sessCookieNameStr := "gf_sess"

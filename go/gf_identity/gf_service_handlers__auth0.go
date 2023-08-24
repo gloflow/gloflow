@@ -233,10 +233,16 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 				//------------------
 				// INPUT
-				sessionID, existsBool := gf_identity_core.GetSessionIDfromCtx(pCtx)
+
+				/*
+				session_id in this handler has to be fetched directly from request cookies instead from
+				context because this handler is not authed, and so in gf_rpc the auth path is not chosen
+				and context is not enriched with the session_id.
+				*/
+				sessionID, existsBool := gf_identity_core.GetSessionID(pReq, pRuntimeSys)
 				if !existsBool {
-					gfErr := gf_core.ErrorCreate("session_id is missing from auth0 logout_callback handler context",
-						"rpc_context_value_missing",
+					gfErr := gf_core.ErrorCreate("session_id is missing from auth0 logout_callback handler request cookies",
+						"http_cookie",
 						map[string]interface{}{},
 						nil, "gf_identity", pRuntimeSys)
 					return nil, gfErr
