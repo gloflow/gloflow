@@ -22,6 +22,7 @@ package gf_identity
 import (
 	"fmt"
 	"testing"
+	"time"
 	"context"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -41,6 +42,10 @@ func TestAuth0(pTest *testing.T) {
 	sqlHostStr   := cliArgsMap["sql_host_str"].(string)
 	runtimeSys := Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
 	ctx := context.Background()
+
+	userID := gf_core.GF_ID("test_user_id")
+	userNameStr := gf_identity_core.GFuserName("test_user")
+	screenNameStr := "test_user_screenname"
 
 	gfErr := gf_identity_core.DBsqlCreateTables(ctx, runtimeSys)
 	if gfErr != nil {
@@ -65,8 +70,8 @@ func TestAuth0(pTest *testing.T) {
 
 
 
-
-
+	
+	//----------------------
 	// LOGIN
 	sessionID, gfErr := gf_identity_core.Auth0loginPipeline(ctx, runtimeSys)
 	if gfErr != nil {
@@ -77,7 +82,7 @@ func TestAuth0(pTest *testing.T) {
 		"session_id":  sessionID,
 	})
 
-
+	//----------------------
 	// GET_SESSION
 	session, gfErr := gf_identity_core.DBsqlAuth0getSession(sessionID, ctx, runtimeSys)
 	if gfErr != nil {
@@ -86,15 +91,42 @@ func TestAuth0(pTest *testing.T) {
 
 	spew.Dump(session)
 
+	//----------------------
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
+	user := &gf_identity_core.GFuser{
+		Vstr:              "0",
+		ID:                userID,
+		CreationUNIXtimeF: creationUNIXtimeF,
+		UserTypeStr:       "standard",
+		UserNameStr:       userNameStr,
+		ScreenNameStr:     screenNameStr,
+	}
+	
+	// DB
+	gfErr = gf_identity_core.DBsqlUserCreate(user, ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+	
+	//----------------------
+	updateOp := &gf_identity_core.GFloginAttemptUpdateOp{
+		UserID:      &userID,
+		UserNameStr: &userNameStr,
+	}
+	gfErr = gf_identity_core.DBsqlLoginAttemptUpdateBySessionID(sessionID, updateOp, ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
 
+	//----------------------
 	// LOGOUT
 	gfErr = gf_identity_core.Auth0logoutPipeline(sessionID, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}
 
-
+	//----------------------
 	// GET_SESSION
 	session, gfErr = gf_identity_core.DBsqlAuth0getSession(sessionID, ctx, runtimeSys)
 	if gfErr != nil {
@@ -105,4 +137,6 @@ func TestAuth0(pTest *testing.T) {
 
 	assert.True(pTest, session.DeletedBool,
 		"auth0 session should be marked as deleted")
+
+	//----------------------
 }

@@ -1236,15 +1236,21 @@ func DBsqlLoginAttemptUpdate(pLoginAttemptID gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	paramsLst := []interface{}{pLoginAttemptID,}
-	fieldsTargetsStr := dbSQLloginAttemptPrepareUpdateStatement(paramsLst, pUpdateOp)
+	inputValsLst := []interface{}{pLoginAttemptID,}
+	fieldsTargetsStr, fieldsValsLst := dbSQLloginAttemptPrepareUpdateStatement(pUpdateOp)
+	
+	if fieldsTargetsStr == nil {
+		return nil
+	}
+
+	inputValsLst = append(inputValsLst, fieldsValsLst...)
 
 	sqlStr := fmt.Sprintf(`
 		UPDATE gf_login_attempts
 		SET %s
 		WHERE id = $1 AND deleted = false`, *fieldsTargetsStr)
 
-	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, paramsLst...)
+	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, inputValsLst...)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to to update a login_attempt",
 			"sql_query_execute",
@@ -1265,19 +1271,21 @@ func DBsqlLoginAttemptUpdateBySessionID(pSessionID gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	paramsLst := []interface{}{pSessionID,}
-	fieldsTargetsStr := dbSQLloginAttemptPrepareUpdateStatement(paramsLst, pUpdateOp)
+	inputValsLst := []interface{}{pSessionID,}
+	fieldsTargetsStr, fieldsValsLst := dbSQLloginAttemptPrepareUpdateStatement(pUpdateOp)
 	
 	if fieldsTargetsStr == nil {
 		return nil
 	}
+
+	inputValsLst = append(inputValsLst, fieldsValsLst...)
 
 	sqlStr := fmt.Sprintf(`
 		UPDATE gf_login_attempts
 		SET %s
 		WHERE auth0_session_id = $1 AND deleted = false`, *fieldsTargetsStr)
 
-	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, paramsLst...)
+	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, inputValsLst...)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to to update a login_attempt",
 			"sql_query_execute",
@@ -1293,50 +1301,50 @@ func DBsqlLoginAttemptUpdateBySessionID(pSessionID gf_core.GF_ID,
 
 //---------------------------------------------------
 
-func dbSQLloginAttemptPrepareUpdateStatement(pParamsLst []interface{},
-	pUpdateOp *GFloginAttemptUpdateOp) *string {
+func dbSQLloginAttemptPrepareUpdateStatement(pUpdateOp *GFloginAttemptUpdateOp) (*string, []interface{}) {
 
 	fieldsTargetsLst := []string{}
-	
+	fieldsValsLst := []interface{}{}
+
 	indexInt := 2
 
 	if pUpdateOp.UserID != nil {
 		fieldsTargetsLst = append(fieldsTargetsLst, fmt.Sprintf("user_id = $%d", indexInt))
-		pParamsLst = append(pParamsLst, *pUpdateOp.UserID)
+		fieldsValsLst = append(fieldsValsLst, *pUpdateOp.UserID)
 		indexInt += 1
 	}
 	if pUpdateOp.UserNameStr != nil {
 		fieldsTargetsLst = append(fieldsTargetsLst, fmt.Sprintf("user_name = $%d", indexInt))
-		pParamsLst = append(pParamsLst, *pUpdateOp.UserNameStr)
+		fieldsValsLst = append(fieldsValsLst, *pUpdateOp.UserNameStr)
 		indexInt += 1
 	}
 	if pUpdateOp.PassConfirmedBool != nil {
 		fieldsTargetsLst = append(fieldsTargetsLst, fmt.Sprintf("pass_confirmed = $%d", indexInt))
-		pParamsLst = append(pParamsLst, *pUpdateOp.PassConfirmedBool)
+		fieldsValsLst = append(fieldsValsLst, *pUpdateOp.PassConfirmedBool)
 		indexInt += 1
 	}
 	if pUpdateOp.EmailConfirmedBool != nil {
 		fieldsTargetsLst = append(fieldsTargetsLst, fmt.Sprintf("email_confirmed = $%d", indexInt))
-		pParamsLst = append(pParamsLst, *pUpdateOp.EmailConfirmedBool)
+		fieldsValsLst = append(fieldsValsLst, *pUpdateOp.EmailConfirmedBool)
 		indexInt += 1
 	}
 	if pUpdateOp.MFAconfirmedBool != nil {
 		fieldsTargetsLst = append(fieldsTargetsLst, fmt.Sprintf("mfa_confirmed = $%d", indexInt))
-		pParamsLst = append(pParamsLst, *pUpdateOp.MFAconfirmedBool)
+		fieldsValsLst = append(fieldsValsLst, *pUpdateOp.MFAconfirmedBool)
 		indexInt += 1
 	}
 	if pUpdateOp.DeletedBool != nil {
 		fieldsTargetsLst = append(fieldsTargetsLst, fmt.Sprintf("deleted = $%d", indexInt))
-		pParamsLst = append(pParamsLst, *pUpdateOp.DeletedBool)
+		fieldsValsLst = append(fieldsValsLst, *pUpdateOp.DeletedBool)
 		indexInt += 1
 	}
 
 	if len(fieldsTargetsLst) == 0 {
-		return nil // No updates to be made
+		return nil, nil // No updates to be made
 	}
 
 	fieldsTargetsStr := strings.Join(fieldsTargetsLst, ",")
-	return &fieldsTargetsStr
+	return &fieldsTargetsStr, fieldsValsLst
 }
 
 //---------------------------------------------------
