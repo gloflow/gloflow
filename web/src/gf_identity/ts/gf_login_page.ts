@@ -49,7 +49,7 @@ function init(p_log_fun) {
 
 
 
-	console.log("gf login UI")
+	console.log("gf login UI...")
 	
 	
 	let url    = new URL(window.location.href);
@@ -83,6 +83,8 @@ function init(p_log_fun) {
 		}
 		else {
 
+			console.log("login failed...");
+
 			/*
 			standard login state initialized, where the user is redirected to this page
 			exclusively to login (on auth failure when trying to access some auth-ed endpoint).
@@ -90,14 +92,21 @@ function init(p_log_fun) {
 			init_standard();
 		}
 	}
+	else {
+
+		console.log("standard login page init...");
+
+		/*
+		standard login state initialized, where the user is redirected to this page to login.
+		*/
+		init_standard();
+	}
 
 	//--------------------------------------------------------
 	function init_standard() {
 
 		$("#welcome .label").text("Welcome to GF Login");
 
-		//---------------------
-		// IDENTITY
 		const urls_map = gf_identity_http.get_standard_http_urls();
 		const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
 		
