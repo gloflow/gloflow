@@ -1121,19 +1121,24 @@ func dbSQLloginAttemptCreate(pLoginAttempt *GFloginAttempt,
 		INSERT INTO gf_login_attempts (
 			v,
 			id,
+			
 			user_type,
 			user_name,
+			auth0_session_id,
+			
 			pass_confirmed,
 			email_confirmed,
-			mfa_confirmed
-		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)`
+			mfa_confirmed)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr,
 		pLoginAttempt.Vstr,
-		pLoginAttempt.IDstr,
+		pLoginAttempt.ID,
+		
 		pLoginAttempt.UserTypeStr,
 		string(pLoginAttempt.UserNameStr),
+		pLoginAttempt.Auth0sessionID,
+
 		pLoginAttempt.PassConfirmedBool,
 		pLoginAttempt.EmailConfirmedBool,
 		pLoginAttempt.MFAconfirmedBool)
@@ -1142,7 +1147,7 @@ func dbSQLloginAttemptCreate(pLoginAttempt *GFloginAttempt,
 		gfErr := gf_core.ErrorCreate("failed to insert login_attempt into the DB",
 			"sql_query_execute",
 			map[string]interface{}{
-				"login_attempt_id_str": pLoginAttempt.IDstr,
+				"login_attempt_id_str": pLoginAttempt.ID,
 				"user_type_str":        pLoginAttempt.UserTypeStr,
 				"user_name_str":        pLoginAttempt.UserNameStr,
 			},
@@ -1188,7 +1193,7 @@ func dbSQLloginAttemptGetByUsername(pUserNameStr GFuserName,
 		var loginAttempt GFloginAttempt
 		err := rows.Scan(
 			&loginAttempt.Vstr,
-			&loginAttempt.IDstr,
+			&loginAttempt.ID,
 			&loginAttempt.UserTypeStr,
 			&loginAttempt.UserNameStr,
 			&loginAttempt.PassConfirmedBool,
@@ -1215,54 +1220,112 @@ func dbSQLloginAttemptGetByUsername(pUserNameStr GFuserName,
 
 //---------------------------------------------------
 
-func DBsqlLoginAttemptUpdate(pLoginAttemptID *gf_core.GF_ID,
+func DBsqlLoginAttemptUpdate(pLoginAttemptID gf_core.GF_ID,
 	pUpdateOp   *GFloginAttemptUpdateOp,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	fieldsTargets := ""
-	paramsLst := []interface{}{*pLoginAttemptID}
-
-	if pUpdateOp.PassConfirmedBool != nil {
-		fieldsTargets += "pass_confirmed = $2,"
-		paramsLst = append(paramsLst, *pUpdateOp.PassConfirmedBool)
-	}
-	if pUpdateOp.EmailConfirmedBool != nil {
-		fieldsTargets += "email_confirmed = $3,"
-		paramsLst = append(paramsLst, *pUpdateOp.EmailConfirmedBool)
-	}
-	if pUpdateOp.MFAconfirmedBool != nil {
-		fieldsTargets += "mfa_confirmed = $4,"
-		paramsLst = append(paramsLst, *pUpdateOp.MFAconfirmedBool)
-	}
-	if pUpdateOp.DeletedBool != nil {
-		fieldsTargets += "deleted = $5,"
-		paramsLst = append(paramsLst, *pUpdateOp.DeletedBool)
-	}
-
-	if fieldsTargets == "" {
-		return nil // No updates to be made
-	}
-
-	fieldsTargets = fieldsTargets[:len(fieldsTargets)-1]
+	paramsLst := []interface{}{pLoginAttemptID,}
+	fieldsTargetsStr := dbSQLloginAttemptPrepareUpdateStatement(paramsLst, pUpdateOp)
 
 	sqlStr := fmt.Sprintf(`
 		UPDATE gf_login_attempts
 		SET %s
-		WHERE id = $1 AND deleted = FALSE`, fieldsTargets)
+		WHERE id = $1 AND deleted = false`, *fieldsTargetsStr)
 
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, paramsLst...)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to to update a login_attempt",
 			"sql_query_execute",
 			map[string]interface{}{
-				"login_attempt_id_str": string(*pLoginAttemptID),
+				"login_attempt_id_str": string(pLoginAttemptID),
 			},
 			err, "gf_identity_core", pRuntimeSys)
 		return gfErr
 	}
 
 	return nil
+}
+
+//---------------------------------------------------
+
+func DBsqlLoginAttemptUpdateBySessionID(pSessionID gf_core.GF_ID,
+	pUpdateOp   *GFloginAttemptUpdateOp,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	paramsLst := []interface{}{pSessionID,}
+	fieldsTargetsStr := dbSQLloginAttemptPrepareUpdateStatement(paramsLst, pUpdateOp)
+	
+	if fieldsTargetsStr == nil {
+		return nil
+	}
+
+	sqlStr := fmt.Sprintf(`
+		UPDATE gf_login_attempts
+		SET %s
+		WHERE auth0_session_id = $1 AND deleted = false`, *fieldsTargetsStr)
+
+	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, paramsLst...)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to to update a login_attempt",
+			"sql_query_execute",
+			map[string]interface{}{
+				"session_id_str": string(pSessionID),
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+
+func dbSQLloginAttemptPrepareUpdateStatement(pParamsLst []interface{},
+	pUpdateOp *GFloginAttemptUpdateOp) *string {
+
+	fieldsTargetsLst := []string{}
+	
+	indexInt := 2
+
+	if pUpdateOp.UserID != nil {
+		fieldsTargetsLst = append(fieldsTargetsLst, fmt.Sprintf("user_id = $%d", indexInt))
+		pParamsLst = append(pParamsLst, *pUpdateOp.UserID)
+		indexInt += 1
+	}
+	if pUpdateOp.UserNameStr != nil {
+		fieldsTargetsLst = append(fieldsTargetsLst, fmt.Sprintf("user_name = $%d", indexInt))
+		pParamsLst = append(pParamsLst, *pUpdateOp.UserNameStr)
+		indexInt += 1
+	}
+	if pUpdateOp.PassConfirmedBool != nil {
+		fieldsTargetsLst = append(fieldsTargetsLst, fmt.Sprintf("pass_confirmed = $%d", indexInt))
+		pParamsLst = append(pParamsLst, *pUpdateOp.PassConfirmedBool)
+		indexInt += 1
+	}
+	if pUpdateOp.EmailConfirmedBool != nil {
+		fieldsTargetsLst = append(fieldsTargetsLst, fmt.Sprintf("email_confirmed = $%d", indexInt))
+		pParamsLst = append(pParamsLst, *pUpdateOp.EmailConfirmedBool)
+		indexInt += 1
+	}
+	if pUpdateOp.MFAconfirmedBool != nil {
+		fieldsTargetsLst = append(fieldsTargetsLst, fmt.Sprintf("mfa_confirmed = $%d", indexInt))
+		pParamsLst = append(pParamsLst, *pUpdateOp.MFAconfirmedBool)
+		indexInt += 1
+	}
+	if pUpdateOp.DeletedBool != nil {
+		fieldsTargetsLst = append(fieldsTargetsLst, fmt.Sprintf("deleted = $%d", indexInt))
+		pParamsLst = append(pParamsLst, *pUpdateOp.DeletedBool)
+		indexInt += 1
+	}
+
+	if len(fieldsTargetsLst) == 0 {
+		return nil // No updates to be made
+	}
+
+	fieldsTargetsStr := strings.Join(fieldsTargetsLst, ",")
+	return &fieldsTargetsStr
 }
 
 //---------------------------------------------------
@@ -1331,19 +1394,27 @@ func DBsqlCreateTables(pCtx context.Context,
 	);
 
 	CREATE TABLE IF NOT EXISTS gf_login_attempts (
-		v               VARCHAR(255),
-		id              TEXT,
-		deleted         BOOLEAN DEFAULT FALSE,
-		creation_time   TIMESTAMP DEFAULT NOW(),
-		user_type       VARCHAR(255), -- "admin" or "standard"
-		user_id         TEXT,
-		user_name       VARCHAR(255),
-		pass_confirmed  BOOLEAN,
-		email_confirmed BOOLEAN,
-		mfa_confirmed   BOOLEAN,
+		v                VARCHAR(255),
+		id               TEXT,
+		deleted          BOOLEAN DEFAULT FALSE,
+		creation_time    TIMESTAMP DEFAULT NOW(),
+
+		user_type        VARCHAR(255), -- "admin" or "standard"
+		user_id          TEXT,
+		user_name        VARCHAR(255),
+		
+		-- only used for auth0 authentication since initially only the session_id
+		-- is know, and not the user_name/id. that info is only known afterwards
+		-- once the user is redirected back to GF from auth0 dialogs
+		auth0_session_id TEXT,
+
+		pass_confirmed   BOOLEAN,
+		email_confirmed  BOOLEAN,
+		mfa_confirmed    BOOLEAN,
 	
 		PRIMARY KEY(id),
-		FOREIGN KEY (user_id) REFERENCES gf_users(id)
+		FOREIGN KEY (user_id) REFERENCES gf_users(id),
+		FOREIGN KEY (auth0_session_id) REFERENCES gf_auth0_session(id)
 	);
 
 	CREATE TABLE IF NOT EXISTS gf_users_invite_list (

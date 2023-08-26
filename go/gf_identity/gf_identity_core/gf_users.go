@@ -110,6 +110,8 @@ type GFuserUpdateOp struct {
 }
 
 type GFloginAttemptUpdateOp struct {
+	UserID             *gf_core.GF_ID
+	UserNameStr        *GFuserName
 	PassConfirmedBool  *bool
 	EmailConfirmedBool *bool
 	MFAconfirmedBool   *bool

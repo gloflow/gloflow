@@ -151,7 +151,7 @@ func UsersEmailPipelineConfirm(pInput *GFuserHTTPinputEmailConfirm,
 
 		loginEmailConfirmedBool := true
 		updateOp := &GFloginAttemptUpdateOp{EmailConfirmedBool: &loginEmailConfirmedBool}
-		gfErr = DBsqlLoginAttemptUpdate(&loginAttempt.IDstr,
+		gfErr = DBsqlLoginAttemptUpdate(loginAttempt.ID,
 			updateOp,
 			pCtx,
 			pRuntimeSys)

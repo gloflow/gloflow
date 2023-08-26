@@ -912,7 +912,7 @@ func dbMongoLoginAttemptCreate(pLoginAttempt *GFloginAttempt,
 	gfErr := gf_core.MongoInsert(pLoginAttempt,
 		collNameStr,
 		map[string]interface{}{
-			"login_attempt_id_str": pLoginAttempt.IDstr,
+			"login_attempt_id_str": pLoginAttempt.ID,
 			"user_type_str":        pLoginAttempt.UserTypeStr,
 			"user_name_str":        pLoginAttempt.UserNameStr,
 			"caller_err_msg_str":   "failed to insert GFloginAttempt into the DB",

@@ -31,7 +31,7 @@ import (
 type GFloginAttempt struct {
 	Vstr              string             `bson:"v_str"` // schema_version
 	Id                primitive.ObjectID `bson:"_id,omitempty"`
-	IDstr             gf_core.GF_ID      `bson:"id_str"`
+	ID                gf_core.GF_ID      `bson:"id_str"`
 	DeletedBool       bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
 
@@ -39,12 +39,15 @@ type GFloginAttempt struct {
 	UserID             gf_core.GF_ID `bson:"user_id_str"`
 	UserNameStr        GFuserName    `bson:"user_name_str"`
 	
+	Auth0sessionID gf_core.GF_ID `bson:"auth0_session_id"`
+
 	PassConfirmedBool  bool `bson:"pass_confirmed_bool"`
 	EmailConfirmedBool bool `bson:"email_confirmed_bool"`
 	MFAconfirmedBool   bool `bson:"mfa_confirmed_bool"`
 }
 
 //---------------------------------------------------
+// GET_OR_CREATE
 
 func LoginAttemptGetOrCreate(pUserNameStr GFuserName,
 	pUserTypeStr string,
@@ -80,6 +83,34 @@ func LoginAttemptGetOrCreate(pUserNameStr GFuserName,
 }
 
 //---------------------------------------------------
+// CREATE_WITH_SESSION
+
+func loginAttempCreateWithSession(pSessionID gf_core.GF_ID,
+	pUserTypeStr string,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) (*GFloginAttempt, *gf_core.GFerror) {
+
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	loginAttemptID    := usersCreateID(string(pSessionID), creationUNIXtimeF)
+
+	loginAttempt := &GFloginAttempt{
+		Vstr:              "0",
+		ID:                loginAttemptID,
+		CreationUNIXtimeF: creationUNIXtimeF,
+		UserTypeStr:       
+		Auth0sessionID:    pSessionID,
+	}
+	gfErr := dbSQLloginAttemptCreate(loginAttempt,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	return loginAttempt, nil
+}
+
+//---------------------------------------------------
 // CREATE
 
 func loginAttempCreate(pUserID gf_core.GF_ID,
@@ -90,11 +121,11 @@ func loginAttempCreate(pUserID gf_core.GF_ID,
 
 	userIdentifierStr := string(pUserNameStr)
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	loginAttemptIDstr := usersCreateID(userIdentifierStr, creationUNIXtimeF)
+	loginAttemptID    := usersCreateID(userIdentifierStr, creationUNIXtimeF)
 
 	loginAttempt := &GFloginAttempt{
 		Vstr:              "0",
-		IDstr:             loginAttemptIDstr,
+		ID:                loginAttemptID,
 		CreationUNIXtimeF: creationUNIXtimeF,
 		UserTypeStr:       pUserTypeStr,
 		UserID:            pUserID,
@@ -138,17 +169,15 @@ func LoginAttemptGetIfValid(pUserNameStr GFuserName,
 		// mark it as deleted
 		expiredBool := true
 		updateOp := &GFloginAttemptUpdateOp{DeletedBool: &expiredBool}
-		gfErr = DBsqlLoginAttemptUpdate(&loginAttempt.IDstr,
+		gfErr = DBsqlLoginAttemptUpdate(loginAttempt.ID,
 			updateOp,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}
-
 		return nil, nil
 	}
-
 	return nil, nil
 }
 

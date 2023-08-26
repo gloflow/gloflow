@@ -424,7 +424,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 			// if password is valid then update the login_attempt 
 			// to indicate that the password has been confirmed
 			updateOp := &gf_identity_core.GFloginAttemptUpdateOp{PassConfirmedBool: &passValidBool}
-			gfErr = gf_identity_core.DBsqlLoginAttemptUpdate(&loginAttempt.IDstr,
+			gfErr = gf_identity_core.DBsqlLoginAttemptUpdate(loginAttempt.ID,
 				updateOp,
 				pCtx,
 				pRuntimeSys)

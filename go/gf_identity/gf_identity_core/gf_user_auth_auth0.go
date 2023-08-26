@@ -104,6 +104,16 @@ func Auth0loginPipeline(pCtx context.Context,
 		return gf_core.GF_ID(""), gfErr
 	}
 
+	/*
+	with auth0 auth method only login_attept is created initially with session_id only.
+	after auth0 logs the user in only then is the login_attempt updated with user info. 
+	*/
+	userTypeStr := "standard"
+	_, gfErr = loginAttempCreateWithSession(sessionID, userTypeStr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gf_core.GF_ID(""), gfErr
+	}
+
 	//------------------------
 
 	return sessionID, nil
@@ -190,11 +200,6 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	if gf_core.LogsIsDebugEnabled() {
 		spew.Dump(oauth2bearerToken)
 	}
-
-
-
-
-
 
 	// extract the ID token from OAuth2 token.
 	rawIDTokenStr, ok := oauth2bearerToken.Extra("id_token").(string)
@@ -324,14 +329,17 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	//---------------------
 	/*
 	LOGIN_ATTEMPT
-	on user login success, when all the info on the user is present, create a login_attempt in the DB.
-	unlinke with GF native userpass/eth auth methods where the login attempt can be created from username
-	right away before it is checked for validitiy (even if it fails), with Auth0 auth method this has to be done
+	on user login success, when all the info on the user is present, update login_attempt in the DB.
+	unlike with GF native userpass/eth auth methods where the login attempt can be created from username
+	right away before creds are checked (even if login ultimately fails), with Auth0 auth method this has to be done
 	at the end since the username is not known right away as the user is navigated to Auth0 systems and only
 	returned to GF on login success.
 	*/ 
-	userTypeStr := "standard"
-	_, gfErr = loginAttempCreate(userID, userNameStr, userTypeStr, pCtx, pRuntimeSys)
+	updateOp := &GFloginAttemptUpdateOp{
+		UserID:      &userID,
+		UserNameStr: &userNameStr,
+	}
+	gfErr = DBsqlLoginAttemptUpdateBySessionID(sessionID, updateOp, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
