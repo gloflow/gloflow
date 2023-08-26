@@ -97,7 +97,7 @@ func loginAttempCreateWithSession(pSessionID gf_core.GF_ID,
 		Vstr:              "0",
 		ID:                loginAttemptID,
 		CreationUNIXtimeF: creationUNIXtimeF,
-		UserTypeStr:       
+		UserTypeStr:       pUserTypeStr,
 		Auth0sessionID:    pSessionID,
 	}
 	gfErr := dbSQLloginAttemptCreate(loginAttempt,
