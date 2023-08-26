@@ -1130,6 +1130,17 @@ func dbSQLloginAttemptCreate(pLoginAttempt *GFloginAttempt,
 			email_confirmed,
 			mfa_confirmed)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+	
+	/*
+	IMPORTANT!! - there is a foreign key defined on the auth0_session_id column,
+				  so if it either has to be a NULL value or a valid session_id.
+				  here we're checking if its an empty string value. if it is we're passing
+				  an uninitialized pointer which has a nil value.
+	*/              
+	var auth0sessionID *gf_core.GF_ID
+	if pLoginAttempt.Auth0sessionID != "" {
+		auth0sessionID = &pLoginAttempt.Auth0sessionID
+	}
 
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr,
 		pLoginAttempt.Vstr,
@@ -1137,7 +1148,7 @@ func dbSQLloginAttemptCreate(pLoginAttempt *GFloginAttempt,
 		
 		pLoginAttempt.UserTypeStr,
 		string(pLoginAttempt.UserNameStr),
-		pLoginAttempt.Auth0sessionID,
+		auth0sessionID,
 
 		pLoginAttempt.PassConfirmedBool,
 		pLoginAttempt.EmailConfirmedBool,
