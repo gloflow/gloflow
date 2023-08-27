@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"testing"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -64,10 +65,17 @@ func TestTemplates(pTest *testing.T) {
 		},
 	}
 
+	pagesUserNamesLst := [][]gf_identity_core.GFuserName{
+		{
+			gf_identity_core.GFuserName("image_owner_user_name"),
+		},
+	}
+
 	flowNameStr     := "test_flow" 
 	flowPagesNumInt := int64(6)
 	templateRenderedStr, gfErr := renderTemplate(flowNameStr,
 		imagesPagesLst,
+		pagesUserNamesLst,
 		flowPagesNumInt,
 		gfTemplates.flows_browser__tmpl,
 		gfTemplates.flows_browser__subtemplates_names_lst,

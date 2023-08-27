@@ -26,6 +26,7 @@ import (
 	"text/template"
 	"encoding/json"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
@@ -61,7 +62,7 @@ func renderInitialPage(pFlowNameStr string,
 
 		// initial page might be larger then subsequent pages, that are requested 
 		// dynamically by the front-end
-		pageLst, gfErr := dbGetPage(pFlowNameStr,
+		pageLst, gfErr := dbMongoGetPage(pFlowNameStr,
 			startPositionInt, // p_cursor_start_position_int
 			pPageSizeInt,     // p_elements_num_int
 			pCtx,
@@ -76,8 +77,47 @@ func renderInitialPage(pFlowNameStr string,
 		pagesLst = append(pagesLst, pageLst)
 	}
 
+	pagesUserNamesLst := [][]gf_identity_core.GFuserName{}
 
-	flowPagesNumInt, gfErr := dbGetPagesTotalNum(pFlowNameStr,
+	// RESOLVE_USER_IDS_TO_USERNAMES
+	usernamesCacheMap := map[gf_core.GF_ID]gf_identity_core.GFuserName{}
+	for i, pLst := range pagesLst {
+		for j, image := range pLst {
+			
+			var userNameStr gf_identity_core.GFuserName
+
+			/*
+			LEGACY!! - old images dont have a user_id associated with them.
+					   before the user system was fully integrated into gf_images, images were added anonimously
+					   and did not have a user ID associated with them.
+					   for those images it is not possible to associate user_names with them. 
+			*/
+			if image.UserID != "" {
+
+				userID := image.UserID
+
+				// check if there is a cached user_name, and use it if present; if not, resolve from DB
+				if cachedUserNameStr, ok := usernamesCacheMap[userID]; ok {
+					userNameStr = cachedUserNameStr
+				} else {
+					resolvedUserNameStr, gfErr := gf_identity_core.DBsqlGetUserNameByID(userID, pCtx, pRuntimeSys)
+					if gfErr != nil {
+
+						/*
+						failing to resolve username should not fail the rendering
+						of the entire flow view.
+						*/ 
+						continue
+					}
+
+					usernamesCacheMap[userID] = resolvedUserNameStr
+				}	
+			}
+			pagesUserNamesLst[i][j] = userNameStr
+		}
+	}
+
+	flowPagesNumInt, gfErr := dbMongoGetPagesTotalNum(pFlowNameStr,
 		pPageSizeInt,
 		pCtx,
 		pRuntimeSys)
@@ -88,6 +128,7 @@ func renderInitialPage(pFlowNameStr string,
 	//---------------------
 	templateRenderedStr, gfErr := renderTemplate(pFlowNameStr,
 		pagesLst,
+		pagesUserNamesLst,
 		flowPagesNumInt,
 		pTmpl,
 		pSubtemplatesNamesLst,
@@ -103,12 +144,13 @@ func renderInitialPage(pFlowNameStr string,
 //-------------------------------------------------
 
 func renderTemplate(pFlowNameStr string,
-	pImagesPagesLst       [][]*gf_images_core.GFimage,
-	pFlowPagesNumInt      int64,
-	pTemplate             *template.Template,
-	pSubtemplatesNamesLst []string,
-	pUserID               gf_core.GF_ID,
-	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	pImagesPagesLst          [][]*gf_images_core.GFimage,
+	pImagesPagesUserNamesLst [][]gf_identity_core.GFuserName,
+	pFlowPagesNumInt         int64,
+	pTemplate                *template.Template,
+	pSubtemplatesNamesLst    []string,
+	pUserID                  gf_core.GF_ID,
+	pRuntimeSys              *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	// plugin
 	metadataFilterDefinedBool := false
@@ -119,10 +161,10 @@ func renderTemplate(pFlowNameStr string,
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 	//-------------------------
 	imagesPagesLst := [][]map[string]interface{}{}
-	for _, imagesPageLst := range pImagesPagesLst {
+	for i, imagesPageLst := range pImagesPagesLst {
 
 		pageImagesLst := []map[string]interface{}{}
-		for _, image := range imagesPageLst {
+		for j, image := range imagesPageLst {
 
 			// META
 			var filteredMetaJSONstr string
@@ -142,7 +184,9 @@ func renderTemplate(pFlowNameStr string,
 				"thumbnail_medium_url_str":  image.Thumbnail_medium_url_str,
 				"thumbnail_large_url_str":   image.Thumbnail_large_url_str,
 				"image_origin_page_url_str": image.Origin_page_url_str,
-				"owner_user_id_str":         image.UserID,
+				"owner_user_name_str":       string(pImagesPagesUserNamesLst[i][j]),
+
+				// "owner_user_id_str": image.UserID,
 			}
 
 			if len(image.TagsLst) > 0 {
