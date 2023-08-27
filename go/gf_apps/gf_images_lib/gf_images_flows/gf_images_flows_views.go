@@ -84,8 +84,6 @@ func renderInitialPage(pFlowNameStr string,
 	for _, pLst := range pagesLst {
 
 		pageUserNamesLst := []gf_identity_core.GFuserName{}
-		pagesUserNamesLst = append(pagesUserNamesLst, pageUserNamesLst)
-
 		for _, image := range pLst {
 			
 			var userNameStr gf_identity_core.GFuserName
@@ -114,11 +112,19 @@ func renderInitialPage(pFlowNameStr string,
 						continue
 					}
 
+					userNameStr = resolvedUserNameStr
 					usernamesCacheMap[userID] = resolvedUserNameStr
 				}	
+			} else {
+
+				// IMPORTANT!! - pre-auth-system images are marked as owned by anonymous users.
+				userNameStr = "anon"
 			}
+
 			pageUserNamesLst = append(pageUserNamesLst, userNameStr)
 		}
+
+		pagesUserNamesLst = append(pagesUserNamesLst, pageUserNamesLst)
 	}
 
 	flowPagesNumInt, gfErr := dbMongoGetPagesTotalNum(pFlowNameStr,
