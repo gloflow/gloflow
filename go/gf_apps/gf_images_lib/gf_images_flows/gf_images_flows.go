@@ -96,7 +96,7 @@ func pipelineCreateDiscoveredFlows(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	// get all flows from the current Mongodb
-	allFlowsLst, gfErr := DBgetAll(pCtx, pRuntimeSys)
+	allFlowsLst, gfErr := DBmongoGetAll(pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -166,7 +166,7 @@ func CreateIfMissing(pFlowsNamesLst []string,
 func pipelineGetAll(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
-	resultsLst, gfErr := DBgetAll(pCtx, pRuntimeSys)
+	resultsLst, gfErr := DBmongoGetAll(pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -239,7 +239,7 @@ func pipelineGetPage(p_req *http.Request,
 	//--------------------
 	// GET_PAGES
 	cursor_start_position_int := page_index_int*page_size_int
-	pages_lst, gfErr := dbGetPage(flow_name_str,
+	pages_lst, gfErr := dbMongoGetPage(flow_name_str,
 		cursor_start_position_int, // p_cursor_start_position_int
 		page_size_int,             // p_elements_num_int
 		p_ctx,
@@ -260,7 +260,7 @@ func imagesExistCheck(pImagesExternURLsLst []string,
 	pClientTypeStr string,
 	pRuntimeSys  *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
-	existing_images_lst, gfErr := dbImagesExist(pImagesExternURLsLst,
+	existing_images_lst, gfErr := dbMongoImagesExist(pImagesExternURLsLst,
 		pFlowNameStr,
 		pClientTypeStr,
 		pRuntimeSys)

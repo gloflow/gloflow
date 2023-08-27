@@ -128,7 +128,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr GFcrawlerPageImageID,
 
 	// IMPORTANT!! - for each flow_name add that name to the target gf_image DB record.
 	for _, flowNameStr := range pFlowsNamesLst {
-		gfErr := gf_images_flows.DBaddFlowNameToImage(flowNameStr, imageIDstr, pRuntimeSys)
+		gfErr := gf_images_flows.DBmongoAddFlowNameToImage(flowNameStr, imageIDstr, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}

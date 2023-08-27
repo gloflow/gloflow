@@ -43,13 +43,13 @@ type GFflowMongo struct {
 
 //-------------------------------------------------
 
-func DBgetFlowsIDs(pFlowsNamesLst []string,
+func DBmongoGetFlowsIDs(pFlowsNamesLst []string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]gf_core.GF_ID, *gf_core.GFerror) {
 
 	flowsIDsLst := []gf_core.GF_ID{}
 	for _, flowNameStr := range pFlowsNamesLst {
-		flowIDstr, gfErr := DBgetID(flowNameStr, pCtx, pRuntimeSys)
+		flowIDstr, gfErr := DBmongoGetID(flowNameStr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}
@@ -60,7 +60,7 @@ func DBgetFlowsIDs(pFlowsNamesLst []string,
 
 //---------------------------------------------------
 
-func DBgetID(pFlowNameStr string,
+func DBmongoGetID(pFlowNameStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
 
@@ -94,7 +94,7 @@ func DBgetID(pFlowNameStr string,
 //---------------------------------------------------
 // GET_ALL
 
-func DBgetAll(pCtx context.Context,
+func DBmongoGetAll(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	pipeline := mongo.Pipeline{
@@ -151,7 +151,7 @@ func DBgetAll(pCtx context.Context,
 
 //---------------------------------------------------
 
-func DBaddFlowNameToImage(p_flow_name_str string,
+func DBmongoAddFlowNameToImage(p_flow_name_str string,
 	p_image_gf_id_str gf_images_core.Gf_image_id,
 	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
 	
@@ -183,7 +183,7 @@ func DBaddFlowNameToImage(p_flow_name_str string,
 
 //---------------------------------------------------
 
-func dbGetPagesTotalNum(p_flow_name_str string,
+func dbMongoGetPagesTotalNum(p_flow_name_str string,
 	p_page_size_int int,
 	p_ctx           context.Context,
 	pRuntimeSys   *gf_core.RuntimeSys) (int64, *gf_core.GFerror) {
@@ -212,7 +212,7 @@ func dbGetPagesTotalNum(p_flow_name_str string,
 
 //---------------------------------------------------
 
-func dbGetPage(p_flow_name_str string,
+func dbMongoGetPage(p_flow_name_str string,
 	p_cursor_start_position_int int, // 0
 	p_elements_num_int          int, // 50
 	p_ctx                       context.Context,
@@ -266,7 +266,7 @@ func dbGetPage(p_flow_name_str string,
 
 //-------------------------------------------------
 
-func dbImagesExist(p_images_extern_urls_lst []string,
+func dbMongoImagesExist(p_images_extern_urls_lst []string,
 	p_flow_name_str   string,
 	p_client_type_str string,
 	pRuntimeSys     *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
