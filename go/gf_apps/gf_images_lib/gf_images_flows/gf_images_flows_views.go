@@ -81,8 +81,12 @@ func renderInitialPage(pFlowNameStr string,
 
 	// RESOLVE_USER_IDS_TO_USERNAMES
 	usernamesCacheMap := map[gf_core.GF_ID]gf_identity_core.GFuserName{}
-	for i, pLst := range pagesLst {
-		for j, image := range pLst {
+	for _, pLst := range pagesLst {
+
+		pageUserNamesLst := []gf_identity_core.GFuserName{}
+		pagesUserNamesLst = append(pagesUserNamesLst, pageUserNamesLst)
+
+		for _, image := range pLst {
 			
 			var userNameStr gf_identity_core.GFuserName
 
@@ -113,7 +117,7 @@ func renderInitialPage(pFlowNameStr string,
 					usernamesCacheMap[userID] = resolvedUserNameStr
 				}	
 			}
-			pagesUserNamesLst[i][j] = userNameStr
+			pageUserNamesLst = append(pageUserNamesLst, userNameStr)
 		}
 	}
 
