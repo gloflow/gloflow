@@ -30,22 +30,15 @@ body {
 
 /*------------------------------------------------------------*/
 /* AUTH */
-#auth {
-	position: absolute;
-	top: 157px;
-    left: 59px;
-	width:  44px;
-	height: 44px;
-	text-align:       center;
-	background-color: rgb(198, 196, 195);
-	cursor:           pointer;
-	color:            gray;
+#auth_me {
+	position: relative;
+    top: 11px;
+    left: 29px;
+    width: 69px;
 }
 
-#auth #current_user {
-	width: 44px;
-	height: 40px;
-	padding-top: 14px;
+#auth_me #current_user img {
+	width: 100%;
 }
 
 /*----------------------------------------------------------*/
