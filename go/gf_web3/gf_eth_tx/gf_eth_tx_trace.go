@@ -35,6 +35,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GF_eth__tx_trace struct {
 	DB_id                 string                     `mapstructure:"db_id"                 json:"db_id"                 bson:"_id"`
 	Creation_time__unix_f float64                    `mapstructure:"creation_time__unix_f" json:"creation_time__unix_f" bson:"creation_time__unix_f"`
@@ -56,6 +57,7 @@ type GF_eth__tx_trace_opcode struct {
 }
 
 //-------------------------------------------------
+
 func Trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 	p_worker_inspector_host_port_str string,
 	pCtx                             context.Context,
@@ -94,7 +96,7 @@ func Trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 	}
 
 	// DB_WRITE_BULK
-	gfErr := Trace__db__write_bulk(txs_traces_lst,
+	gfErr := DBmongoTraceWriteBulk(txs_traces_lst,
 		pCtx,
 		p_metrics,
 		p_runtime)
@@ -106,7 +108,8 @@ func Trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 }
 
 //-------------------------------------------------
-func Trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
+
+func DBmongoTraceWriteBulk(p_txs_traces_lst []*GF_eth__tx_trace,
 	pCtx      context.Context,
 	p_metrics *gf_eth_core.GF_metrics,
 	p_runtime *gf_eth_core.GF_runtime) *gf_core.GFerror {
@@ -141,6 +144,7 @@ func Trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
 }
 
 //-------------------------------------------------
+
 func Trace__plot(p_tx_id_hex_str string,
 	p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
 	pCtx           context.Context,
@@ -200,6 +204,7 @@ func Trace__plot(p_tx_id_hex_str string,
 
 //-------------------------------------------------
 // GET_FROM_WORKER_INSPECTOR
+
 func Trace__get_from_worker_inspector(p_tx_hash_str string,
 	p_host_port_str string,
 	pCtx            context.Context,
@@ -309,6 +314,7 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 }
 
 //-------------------------------------------------
+
 func Trace__get(p_tx_hash_str string,
 	p_eth_rpc_host_str string,
 	pCtx               context.Context,

@@ -59,7 +59,7 @@ func InitHandlers(pMux *http.ServeMux,
 				// BY_ORIGIN_URL
 				if originURLstr != "" {
 
-					gif, gfErr = dbGetByOriginURL(originURLstr, pRuntimeSys)
+					gif, gfErr = dbMongoGetByOriginURL(originURLstr, pRuntimeSys)
 
 					if gfErr != nil {
 						return nil, gfErr
@@ -68,7 +68,7 @@ func InitHandlers(pMux *http.ServeMux,
 				// BY_GF_IMG_ID
 				} else if imgIDstr != "" {
 
-					gif, gfErr = gifDBgetByImgID(imgIDstr,pRuntimeSys)
+					gif, gfErr = dbMongoGetByImageID(imgIDstr,pRuntimeSys)
 
 					if gfErr != nil {
 						return nil, gfErr

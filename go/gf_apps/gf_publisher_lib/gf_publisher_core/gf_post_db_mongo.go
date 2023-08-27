@@ -31,7 +31,7 @@ import (
 
 //---------------------------------------------------
 
-func DBgetPost(p_post_title_str string,
+func DBmongoGetPost(p_post_title_str string,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFpost, *gf_core.GFerror) {
 
 	ctx := context.Background()
@@ -55,7 +55,7 @@ func DBgetPost(p_post_title_str string,
 //---------------------------------------------------
 // CREATE
 
-func DBcreatePost(p_post *GFpost,
+func DBmongoCreatePost(p_post *GFpost,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx           := context.Background()
@@ -87,7 +87,7 @@ func DBcreatePost(p_post *GFpost,
 //---------------------------------------------------
 // UPDATE
 
-func DBupdatePost(pPost *GFpost, 
+func DBmongoUpdatePost(pPost *GFpost, 
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx := context.Background()
@@ -110,7 +110,7 @@ func DBupdatePost(pPost *GFpost,
 //---------------------------------------------------
 // DELETE
 
-func DBmarkAsDeletedPost(p_post_title_str string,
+func DBmongoMarkAsDeletedPost(p_post_title_str string,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx := context.Background()
@@ -134,7 +134,7 @@ func DBmarkAsDeletedPost(p_post_title_str string,
 //---------------------------------------------------
 // DELETE
 
-func DBdeletePost(p_post_title_str string, pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+func DBmongoDeletePost(p_post_title_str string, pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx := context.Background()
 	_, err := pRuntimeSys.Mongo_coll.DeleteOne(ctx, bson.M{"title_str": p_post_title_str})
@@ -151,7 +151,7 @@ func DBdeletePost(p_post_title_str string, pRuntimeSys *gf_core.RuntimeSys) *gf_
 //---------------------------------------------------
 // GET_POSTS_PAGE
 
-func DBgetPostsPage(p_cursor_start_position_int int, // 0
+func DBmongoGetPostsPage(p_cursor_start_position_int int, // 0
 	p_elements_num_int int, // 50
 	pRuntimeSys        *gf_core.RuntimeSys) ([]*GFpost, *gf_core.GFerror) {
 
@@ -204,7 +204,7 @@ func DBgetPostsPage(p_cursor_start_position_int int, // 0
 //---------------------------------------------------
 // REMOVE!! - is this a duplicate of DB__get_posts_page?
 
-func DB__get_posts_from_offset(p_cursor_position_int int,
+func DBmongoGetPostsFromOffset(p_cursor_position_int int,
 	p_posts_num_to_get_int int,
 	pRuntimeSys            *gf_core.RuntimeSys) ([]*GFpost, *gf_core.GFerror) {
 
@@ -262,7 +262,7 @@ func DB__get_posts_from_offset(p_cursor_position_int int,
 
 //---------------------------------------------------
 
-func DB__get_random_posts_range(p_posts_num_to_get_int int, // 5
+func DBmongoGetRandomPostsRange(p_posts_num_to_get_int int, // 5
 	p_max_random_cursor_position_int int, // 500
 	pRuntimeSys                      *gf_core.RuntimeSys) ([]*GFpost, *gf_core.GFerror) {
 
@@ -270,7 +270,7 @@ func DB__get_random_posts_range(p_posts_num_to_get_int int, // 5
 	random_cursor_position_int := rand.Intn(p_max_random_cursor_position_int) //new Random().nextInt(p_max_random_cursor_position_int)
 	pRuntimeSys.LogFun("INFO","random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
 
-	posts_in_random_range_lst, gfErr := DB__get_posts_from_offset(random_cursor_position_int,
+	posts_in_random_range_lst, gfErr := DBmongoGetPostsFromOffset(random_cursor_position_int,
 		p_posts_num_to_get_int,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -282,7 +282,7 @@ func DB__get_random_posts_range(p_posts_num_to_get_int int, // 5
 
 //---------------------------------------------------
 
-func DB__check_post_exists(p_post_title_str string,
+func DBmongoCheckPostExists(p_post_title_str string,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 	
 	ctx := context.Background()

@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2019 Ivan Trajkovic
+Copyright (C) 2023 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,91 +16,28 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-/*BosaC.Jan30.2020. <3 volim te zauvek*/
 
 package gf_domains_lib
 
 import (
 	"fmt"
 	"time"
-	"context"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	// "github.com/globalsign/mgo/bson"
-	// "github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
-//--------------------------------------------------
-// ADD!! - creation_time
 
-type GFdomain struct {
-	Id            primitive.ObjectID `bson:"_id,omitempty"`
-	Id_str        string             `bson:"id_str"`
-	T_str         string             `bson:"t"` // "domain"
-	Name_str      string             `bson:"name_str"`
-	Count_int     int                `bson:"count_int"`
-	Domain_posts  GFdomainPosts      `bson:"posts_domain"`
-	Domain_images GFdomainImages     `bson:"images_domain"`
+//-------------------------------------------------
+//IMPORTANT!! - this statistic used by the gf_domains GF app, directly by the end-user
+//              (not only by the admin user)
+
+type GFdomainImages struct {
+	Name_str            string         `bson:"_id"`
+	Count_int           int            `bson:"count_int"`           // total count of all subpages counts
+	Subpages_Counts_map map[string]int `bson:"subpages_counts_map"` // counts of individual sub-page urls that images come from
 }
 
-//--------------------------------------------------
-
-func InitDomainsAggregation(pRuntimeSys *gf_core.RuntimeSys) {
-
-	go func() {
-		for ;; {
-
-			//--------------------
-			// IMPORTANT!! - RUN AGGREGATION EVERY Xs (since this is a demanding aggregation)
-			//               this is run first, in the loop, so that initialy when this is
-			//               initialized it doesnt run, and only later when service active 
-			//               for a while it will run for its first iteration.
-			time_to_sleep := time.Second*time.Duration(60*5) // 5min
-			time.Sleep(time_to_sleep)
-
-			//--------------------
-			
-			gf_err := DiscoverDomainsInDB(pRuntimeSys)
-			if gf_err != nil {
-				continue
-			}
-		}
-	}()
-}
-
-//--------------------------------------------------
-
-func DiscoverDomainsInDB(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-
-	// ADD!! - issue the posts/images queries in parallel via their own go-routines
-	//---------------
-	// POSTS
-	posts_domains_lst, gf_err := GetDomainsPostsDB(pRuntimeSys)
-	if gf_err != nil {
-		return gf_err
-	}
-
-	//---------------
-	// IMAGES
-	images_domains_lst, gf_err := GetDomainsImagesDB(pRuntimeSys)
-	if gf_err != nil {
-		return gf_err
-	}
-
-	//---------------
-	// APP_LEVEL_JOIN
-	domains_map := accumulateDomains(posts_domains_lst, images_domains_lst, pRuntimeSys)
-
-	// DB PERSIST
-	gf_err = dbPersistDomains(domains_map, pRuntimeSys)
-	if gf_err != nil {
-		return gf_err
-	}
-
-	//--------------------
-
-	return nil
+type GFdomainPosts struct {
+	Name_str  string `bson:"name_str"`
+	Count_int int    `bson:"count_int"`
 }
 
 //--------------------------------------------------
@@ -159,91 +96,4 @@ func accumulateDomains(pPostsDomainsLst []GFdomainPosts,
 	//--------------------------------------------------
 
 	return domainsMap
-}
-
-//--------------------------------------------------
-
-func dbPersistDomains(pDomainsMap map[string]GFdomain,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-
-	// cyan   := color.New(color.FgCyan).SprintFunc()
-	// yellow := color.New(color.FgYellow).SprintFunc()
-	// white  := color.New(color.FgWhite).SprintFunc()
-
-	ctx := context.Background()
-	
-	i := 0
-	for _, d := range pDomainsMap {
-
-		// pRuntimeSys.LogFun("INFO",yellow("persisting ")+white("domain")+yellow(" "+fmt.Sprint(i)+" >---------------- ")+cyan(d.Name_str))
-
-		// IMPORTANT!! -  finds a single document matching the provided selector document 
-		//                and modifies it according to the update document. If no document 
-		//                matching the selector is found, the update document is applied 
-		//                to the selector document and the result is inserted in the collection
-
-		// UPSERT
-		query := bson.M{
-			"t":        "domain",
-			"name_str": d.Name_str,
-		}
-		gfErr := gf_core.MongoUpsert(query,
-			d,
-			map[string]interface{}{
-				"domain_name_str":    d.Name_str,
-				"caller_err_msg_str": "failed to persist a domain in mongodb",},
-			pRuntimeSys.Mongo_coll,
-			ctx, pRuntimeSys)
-		if gfErr != nil {
-			return gfErr
-		}
-
-		i+=1
-	}
-	return nil
-}
-
-//--------------------------------------------------
-
-func dbGetDomains(pRuntimeSys *gf_core.RuntimeSys) ([]GFdomain, *gf_core.GFerror) {
-
-	ctx := context.Background()
-
-	q := bson.M{
-		"t":         "domain",
-		"count_int": bson.M{"$exists": true}, // "count_int" is a new required field, and we want those records, not the old ones
-	}
-
-	find_opts := options.Find()
-	find_opts.SetSort(map[string]interface{}{"count_int": -1}) // descending - true - sort the highest count first
-
-	cursor, gfErr := gf_core.MongoFind(q,
-		find_opts,
-		map[string]interface{}{
-			"caller_err_msg_str": "failed to DB fetch all domains",
-		},
-		pRuntimeSys.Mongo_coll,
-		ctx,
-		pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
-	defer cursor.Close(ctx)
-
-	results_lst := []GFdomain{}
-	for cursor.Next(ctx) {
-		var domain GFdomain
-		err := cursor.Decode(&domain)
-		if err != nil {
-			gfErr := gf_core.MongoHandleError("failed to decode mongodb result of query to get domains",
-				"mongodb_cursor_decode",
-				map[string]interface{}{},
-				err, "gf_domains_lib", pRuntimeSys)
-			return nil, gfErr
-		}
-	
-		results_lst = append(results_lst, domain)
-	}
-
-	return results_lst, nil
 }

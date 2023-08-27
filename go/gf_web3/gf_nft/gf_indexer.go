@@ -51,7 +51,7 @@ func indexAddress(pAddressStr string,
 		}
 
 		// DB - persist alchemy records
-		gfErr = DBcreateBulkAlchemyNFTs(nftsAlchemyLst,
+		gfErr = DBmongoCreateBulkAlchemyNFTs(nftsAlchemyLst,
 			pMetrics,
 			pCtx,
 			pRuntimeSys)

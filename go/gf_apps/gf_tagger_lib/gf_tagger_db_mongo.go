@@ -33,10 +33,9 @@ import (
 // VAR
 //---------------------------------------------------
 
-func db__get_objects_with_tag_count(pTagStr string,
+func dbMongoGetObjectsWithTagCount(pTagStr string,
 	pObjectTypeStr string,
 	pRuntimeSys    *gf_core.RuntimeSys) (int64, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger_db.db__get_objects_with_tag_count()")
 
 	switch pObjectTypeStr {
 		case "post":
@@ -66,11 +65,10 @@ func db__get_objects_with_tag_count(pTagStr string,
 // POSTS
 //---------------------------------------------------
 
-func db__get_post_notes(pPostTitleStr string,
+func dbMongoGetPostNotes(pPostTitleStr string,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnote, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger_db.db__get_post_notes()")
 
-	post, gfErr := gf_publisher_core.DBgetPost(pPostTitleStr, pRuntimeSys)
+	post, gfErr := gf_publisher_core.DBmongoGetPost(pPostTitleStr, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -94,7 +92,7 @@ func db__get_post_notes(pPostTitleStr string,
 
 //---------------------------------------------------
 
-func db__add_post_note(pNote *GFnote,
+func dbMongoAddPostNote(pNote *GFnote,
 	pPostTitleStr string,
 	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -130,7 +128,7 @@ func db__add_post_note(pNote *GFnote,
 
 //---------------------------------------------------
 
-func db__get_posts_with_tag(pTagStr string,
+func dbMongoGetPostsWithTag(pTagStr string,
 	p_page_index_int int,
 	p_page_size_int  int,
 	pRuntimeSys      *gf_core.RuntimeSys) ([]*gf_publisher_core.GFpost, *gf_core.GFerror) {
@@ -206,10 +204,9 @@ func db__get_posts_with_tag(pTagStr string,
 
 //---------------------------------------------------
 
-func db__add_tags_to_post(pPostTitleStr string,
+func dbMongoAddTagsToPost(pPostTitleStr string,
 	pTagsLst    []string,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger_db.db__add_tags_to_post()")
 
 	ctx := context.Background()
 	_, err := pRuntimeSys.Mongo_coll.UpdateMany(ctx, bson.M{
@@ -235,7 +232,7 @@ func db__add_tags_to_post(pPostTitleStr string,
 // IMAGES
 //---------------------------------------------------
 
-func db__add_tags_to_image(pImageIDstr string,
+func dbMongoAddTagsToImage(pImageIDstr string,
 	pTagsLst    []string,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 

@@ -30,6 +30,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func Test__indexer_core(pTest *testing.T) {
 
 	fmt.Println("TEST__INDEXER_CORE ==============================================")

@@ -23,19 +23,20 @@ import (
 	"context"
 	"strings"
 	"encoding/json"
-	"go.mongodb.org/mongo-driver/bson"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 )
 
 //-------------------------------------------------
+
 type GF_eth__abi struct {
 	Type_str string                   `bson:"type_str"`
 	Def_lst  []map[string]interface{} `bson:"def_lst"`
 }
 
 //-------------------------------------------------
+
 func Eth_abi__get_defs(p_ctx context.Context,
 	p_metrics *gf_eth_core.GF_metrics,
 	p_runtime *gf_eth_core.GF_runtime) (map[string]*GF_eth__abi, *gf_core.GFerror) {
@@ -47,7 +48,7 @@ func Eth_abi__get_defs(p_ctx context.Context,
 
 	// DB_GET
 	abi_type_str := "erc20"
-	abis_lst, gf_err := Eth_abi__db__get(abi_type_str, p_ctx, p_metrics, p_runtime)
+	abis_lst, gf_err := DBmongoABIget(abi_type_str, p_ctx, p_metrics, p_runtime)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -60,6 +61,7 @@ func Eth_abi__get_defs(p_ctx context.Context,
 }
 
 //-------------------------------------------------
+
 func Eth_abi__get(p_gf_abi *GF_eth__abi,
 	p_ctx     context.Context,
 	p_metrics *gf_eth_core.GF_metrics,
@@ -100,66 +102,4 @@ func Eth_abi__get(p_gf_abi *GF_eth__abi,
 	//---------------------
 
 	return &abi, nil
-}
-
-//-------------------------------------------------
-func Eth_abi__db__get(p_abi_type_str string,
-	p_ctx     context.Context,
-	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) ([]*GF_eth__abi, *gf_core.GFerror) {
-
-
-
-
-	if !Is_type_valid(p_abi_type_str) {
-		error_defs_map := gf_eth_core.ErrorGetDefs()
-		gf_err := gf_core.ErrorCreateWithDefs("supplied Eth contract to get an ABI from DB for is not valid",
-			"eth_contract__not_supported_type",
-			map[string]interface{}{"type_str": p_abi_type_str,},
-			nil, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.RuntimeSys)
-		return nil, gf_err
-	}
-
-
-
-
-	coll_name_str := "gf_eth_meta__contracts_abi"
-
-	q := bson.M{"type_str": p_abi_type_str, }
-
-	cur, err := p_runtime.RuntimeSys.Mongo_db.Collection(coll_name_str).Find(p_ctx, q)
-	if err != nil {
-
-		// METRICS
-		if p_metrics != nil {
-			p_metrics.Errs_num__counter.Inc()
-		}
-
-		gf_err := gf_core.MongoHandleError("failed to find Contract ABI with given type in DB",
-			"mongodb_find_error",
-			map[string]interface{}{"type_str": p_abi_type_str,},
-			err, "gf_eth_monitor_core", p_runtime.RuntimeSys)
-		return nil, gf_err
-	}
-	defer cur.Close(p_ctx)
-
-
-	abis_lst := []*GF_eth__abi{}
-	for cur.Next(p_ctx) {
-
-		var gf_abi GF_eth__abi
-		err := cur.Decode(&gf_abi)
-		if err != nil {
-			gf_err := gf_core.MongoHandleError("failed to decode mongodb result of query to get contract ABIs",
-				"mongodb_cursor_decode",
-				map[string]interface{}{},
-				err, "gf_eth_monitor_core", p_runtime.RuntimeSys)
-
-			return nil, gf_err
-		}
-	
-		abis_lst = append(abis_lst, &gf_abi)
-	}
-
-	return abis_lst, nil
 }

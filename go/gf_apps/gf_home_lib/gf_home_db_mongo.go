@@ -30,7 +30,7 @@ import (
 
 //------------------------------------------------
 
-func DBupdateHomeVizComponents(pUserIDstr gf_core.GF_ID,
+func DBmongoUpdateHomeVizComponents(pUserIDstr gf_core.GF_ID,
 	pUpdatedComponentsMap map[string]GFhomeVizComponent,
 	pCtx                  context.Context,
 	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror  {
@@ -62,7 +62,7 @@ func DBupdateHomeVizComponents(pUserIDstr gf_core.GF_ID,
 //------------------------------------------------
 // CREATE_HOME_VIZ
 
-func DBcreateHomeViz(pHomeViz *GFhomeViz,
+func DBmongoCreateHomeViz(pHomeViz *GFhomeViz,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -85,7 +85,7 @@ func DBcreateHomeViz(pHomeViz *GFhomeViz,
 //------------------------------------------------
 // GET_HOME_VIZ
 
-func DBgetHomeViz(pUserIDstr gf_core.GF_ID,
+func DBmongoGetHomeViz(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFhomeViz, *gf_core.GFerror) {
 

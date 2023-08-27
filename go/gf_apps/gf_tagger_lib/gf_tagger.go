@@ -76,15 +76,16 @@ func addTagsToObject(pTagsStr string,
 		// POST
 		case "post":
 			postTitleStr      := pObjectExternIDstr
-			existsBool, gfErr := gf_publisher_core.DB__check_post_exists(postTitleStr,
+			existsBool, gfErr := gf_publisher_core.DBmongoCheckPostExists(postTitleStr,
 				pRuntimeSys)
 			if gfErr != nil {
 				return gfErr
 			}
 			
 			if existsBool {
-				pRuntimeSys.LogFun("INFO", "POST EXISTS")
-				gfErr := db__add_tags_to_post(postTitleStr, tagsLst, pRuntimeSys)
+				pRuntimeSys.LogNewFun("DEBUG", "POST EXISTS", nil)
+
+				gfErr := dbMongoAddTagsToPost(postTitleStr, tagsLst, pRuntimeSys)
 				return gfErr
 
 			} else {
@@ -104,13 +105,13 @@ func addTagsToObject(pTagsStr string,
 		// IMAGE
 		case "image":
 			imageIDstr := pObjectExternIDstr
-			imageID    := gf_images_core.GF_image_id(imageIDstr)
-			exists_bool, gfErr := gf_images_core.DBimageExists(imageID, pCtx, pRuntimeSys)
+			imageID    := gf_images_core.GFimageID(imageIDstr)
+			exists_bool, gfErr := gf_images_core.DBmongoImageExists(imageID, pCtx, pRuntimeSys)
 			if gfErr != nil {
 				return gfErr
 			}
 			if exists_bool {
-				gfErr := db__add_tags_to_image(imageIDstr, tagsLst, pRuntimeSys)
+				gfErr := dbMongoAddTagsToImage(imageIDstr, tagsLst, pRuntimeSys)
 				if gfErr != nil {
 					return gfErr
 				}
@@ -122,10 +123,8 @@ func addTagsToObject(pTagsStr string,
 
 			chainStr := pMetaMap["chain_str"].(string)
 
-
-
 			addressStr := pObjectExternIDstr
-			existsBool, gfErr := gf_address.DBexists(addressStr,
+			existsBool, gfErr := gf_address.DBmongoExists(addressStr,
 				chainStr,
 				pCtx,
 				pRuntimeSys)
@@ -133,9 +132,8 @@ func addTagsToObject(pTagsStr string,
 				return gfErr
 			}
 
-			
 			if existsBool {
-				gfErr := gf_address.DBaddTag(tagsLst,
+				gfErr := gf_address.DBmongoAddTag(tagsLst,
 					addressStr,
 					chainStr,
 					pCtx,
@@ -194,7 +192,7 @@ func getObjectsWithTag(pTagStr string,
 		return nil, gfErr
 	}
 	
-	postsWithTagLst, gfErr := db__get_posts_with_tag(pTagStr,
+	postsWithTagLst, gfErr := dbMongoGetPostsWithTag(pTagStr,
 		pPageIndexInt,
 		pPageSizeInt,
 		pRuntimeSys)

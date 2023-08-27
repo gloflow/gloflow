@@ -206,7 +206,7 @@ func initHandlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 				//------------
 
-				gfErr = gf_publisher_core.DBmarkAsDeletedPost(post_title_str, pRuntimeSys)
+				gfErr = gf_publisher_core.DBmongoMarkAsDeletedPost(post_title_str, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

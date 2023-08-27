@@ -58,7 +58,7 @@ type Gf_crawl_link_alloc_block struct {
 func LinkAllocInit(pCrawlerNameStr string, pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__init()")
 
-	allocator, gf_err := LinkAllocCreate(pCrawlerNameStr, pRuntimeSys)
+	allocator, gf_err := DBmongoLinkAllocCreate(pCrawlerNameStr, pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -82,7 +82,8 @@ func LinkAllocInit(pCrawlerNameStr string, pRuntimeSys *gf_core.RuntimeSys) *gf_
 
 //--------------------------------------------------
 
-func LinkAllocCreate(pCrawlerNameStr string, pRuntimeSys *gf_core.RuntimeSys) (*Gf_crawl_link_alloc, *gf_core.GFerror) {
+func DBmongoLinkAllocCreate(pCrawlerNameStr string,
+	pRuntimeSys *gf_core.RuntimeSys) (*Gf_crawl_link_alloc, *gf_core.GFerror) {
 
 	block_size_int     := 100
 	sleep_time_sec_int := 60*20 // 20min
@@ -122,36 +123,38 @@ func LinkAllocCreate(pCrawlerNameStr string, pRuntimeSys *gf_core.RuntimeSys) (*
 
 //--------------------------------------------------
 
-func LinkAllocRun(p_alloc *Gf_crawl_link_alloc, pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+func LinkAllocRun(pAlloc *Gf_crawl_link_alloc,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	alloc_run_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
-	//BLOCK
-	new_block, gf_err := Link_alloc__create_links_block(p_alloc.Id_str, p_alloc.Crawler_name_str, p_alloc.Block_size_int, pRuntimeSys)
-	if gf_err != nil {
-		return gf_err
+	// BLOCK
+	newBlock, gfErr := DBmongoLinkAllocCreateLinksBlock(pAlloc.Id_str,
+		pAlloc.Crawler_name_str,
+		pAlloc.Block_size_int,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 		
-	p_alloc.Last_run_unix_time_f      = alloc_run_unix_time_f
-	p_alloc.Current_link_block_id_str = new_block.Id_str
+	pAlloc.Last_run_unix_time_f      = alloc_run_unix_time_f
+	pAlloc.Current_link_block_id_str = newBlock.Id_str
 
 	return nil
 }
 
 //--------------------------------------------------
 
-func Link_alloc__create_links_block(p_alloc_id_str string,
-	pCrawlerNameStr  string,
-	p_block_size_int int,
-	pRuntimeSys      *gf_core.RuntimeSys) (*Gf_crawl_link_alloc_block, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__create_links_block()")
-
+func DBmongoLinkAllocCreateLinksBlock(p_alloc_id_str string,
+	pCrawlerNameStr string,
+	pBlockSizeInt   int,
+	pRuntimeSys     *gf_core.RuntimeSys) (*Gf_crawl_link_alloc_block, *gf_core.GFerror) {
 
 	ctx := context.Background()
 
 	find_opts := options.Find()
 	find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": 1})
-    find_opts.SetLimit(int64(p_block_size_int))
+    find_opts.SetLimit(int64(pBlockSizeInt))
 	find_opts.SetProjection(bson.M{"id_str": 1})
 
 	cursor, gf_err := gf_core.MongoFind(bson.M{
@@ -169,7 +172,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 		find_opts,
 		map[string]interface{}{
 			"crawler_name_str":   pCrawlerNameStr,
-			"block_size_int":     p_block_size_int,
+			"block_size_int":     pBlockSizeInt,
 			"caller_err_msg_str": "failed to get a block of crawler_page_outgoing_links, to allocate for crawling",
 		},
 		pRuntimeSys.Mongo_db.Collection("gf_crawl"),
@@ -187,7 +190,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 			"mongodb_cursor_all",
 			map[string]interface{}{
 				"crawler_name_str":   pCrawlerNameStr,
-				"block_size_int":     p_block_size_int,
+				"block_size_int":     pBlockSizeInt,
 				"caller_err_msg_str": "failed to get a block of crawler_page_outgoing_links, to allocate for crawling",
 			},
 			err, "gf_crawl_core", pRuntimeSys)
@@ -209,7 +212,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 	// IMPORTANT!! - sort by date of link creation/discovery, and get the links that were discovered first,
 	//               ascending order of unix timestamps.
 	Sort("$creation_unix_time_f: 1").
-	Limit(p_block_size_int).
+	Limit(pBlockSizeInt).
 	Select(bson.M{"id_str": 1})
 
 
@@ -221,7 +224,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 			"mongodb_find_error",
 			map[string]interface{}{
 				"crawler_name_str": pCrawlerNameStr,
-				"block_size_int":   p_block_size_int,
+				"block_size_int":   pBlockSizeInt,
 			},
 			err, "gf_crawl_core", pRuntimeSys)
 		return nil, gf_err

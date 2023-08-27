@@ -25,7 +25,7 @@ import (
 
 //--------------------------------------------------
 
-func DBindexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+func DBmongoIndexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	indexesKeysLst := [][]string{
 		[]string{"t", "tags_lst",},

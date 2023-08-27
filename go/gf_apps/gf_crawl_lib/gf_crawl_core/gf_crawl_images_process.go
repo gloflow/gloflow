@@ -153,7 +153,7 @@ func imageProcess(pPageImg *GFcrawlerPageImage,
 		}													
 
 		imageIDstr := gfGif.GFimageIDstr
-		gfErr       = image__db_update_after_process(pPageImg, imageIDstr, pRuntimeSys)
+		gfErr       = DBmongoImageUpdateAfterProcess(pPageImg, imageIDstr, pRuntimeSys)
 		if gfErr != nil {
 			return nil, nil, gfErr
 		}
@@ -188,7 +188,7 @@ func imageProcess(pPageImg *GFcrawlerPageImage,
 		//spew.Dump(gf_image)
 
 		imageIDstr := gfImage.IDstr
-		gfErr       = image__db_update_after_process(pPageImg, imageIDstr, pRuntimeSys)
+		gfErr       = DBmongoImageUpdateAfterProcess(pPageImg, imageIDstr, pRuntimeSys)
 		if gfErr != nil {
 			return nil, nil, gfErr
 		}

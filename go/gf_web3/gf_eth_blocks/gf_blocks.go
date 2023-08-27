@@ -73,7 +73,7 @@ func Init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 		for {
 			//---------------------
 			// GET_BLOCKS_COUNTS
-			blocks_count_int, gfErr := DB__get_count(p_metrics, p_runtime)
+			blocks_count_int, gfErr := DBmongoGetCount(p_metrics, p_runtime)
 			if gfErr != nil {
 				time.Sleep(60 * time.Second) // SLEEP
 				continue
@@ -140,7 +140,7 @@ func Index__pipeline(p_block_uint uint64,
 	//---------------------
 	// DB_WRITE_BULK__BLOCK
 
-	gfErr = DB__write_bulk([]*GF_eth__block__int{gf_block,},
+	gfErr = DBmongoWriteBulk([]*GF_eth__block__int{gf_block,},
 		p_ctx,
 		p_metrics,
 		p_runtime)
@@ -163,7 +163,7 @@ func Index__pipeline(p_block_uint uint64,
 		//---------------------
 		// DB_WRITE_BULK__TXS
 
-		gfErr = gf_eth_tx.DB__write_bulk(gf_block.Txs_lst,
+		gfErr = gf_eth_tx.DBmongoWriteBulk(gf_block.Txs_lst,
 			p_ctx,
 			p_metrics,
 			p_runtime)

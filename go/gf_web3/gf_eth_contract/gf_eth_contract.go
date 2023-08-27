@@ -31,6 +31,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GF_eth__contract_new struct {
 	Addr_str       string `json:"addr_str"`
 	Code_bytes_lst []byte `json:"-"` // in json serialization []byte is not included, just the base64 encoding
@@ -40,6 +41,7 @@ type GF_eth__contract_new struct {
 }
 
 //-------------------------------------------------
+
 func Enrich(p_gf_abi *GF_eth__abi,
 	p_ctx     context.Context,
 	p_metrics *gf_eth_core.GF_metrics,
@@ -61,6 +63,7 @@ func Enrich(p_gf_abi *GF_eth__abi,
 }
 
 //-------------------------------------------------
+
 func Get_via_rpc(p_contract_addr_str string,
 	p_block_num_int  uint64,
 	p_ctx            context.Context,
@@ -95,6 +98,7 @@ func Get_via_rpc(p_contract_addr_str string,
 }
 
 //-------------------------------------------------
+
 func Get_code(p_contract_addr_str string,
 	p_block_num_int  uint64,
 	p_ctx            context.Context,
@@ -121,6 +125,7 @@ func Get_code(p_contract_addr_str string,
 }
 
 //-------------------------------------------------
+
 func Is_type_valid(p_type_str string) bool {
 	types_map := map[string]bool{
 		"erc20": true,

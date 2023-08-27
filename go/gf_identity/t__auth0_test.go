@@ -43,7 +43,7 @@ func TestAuth0(pTest *testing.T) {
 	runtimeSys := Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
 	ctx := context.Background()
 
-	userID := gf_core.GF_ID("test_user_id")
+	userID := gf_core.GF_ID(fmt.Sprintf("test_user_id_%s", gf_core.StrRandom()))
 	userNameStr := gf_identity_core.GFuserName("test_user")
 	screenNameStr := "test_user_screenname"
 

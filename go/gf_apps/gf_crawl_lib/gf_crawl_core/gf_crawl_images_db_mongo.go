@@ -30,7 +30,7 @@ import (
 
 //--------------------------------------------------
 
-func ImageDBcreate(p_img *GFcrawlerPageImage,
+func DBmongoImageCreate(p_img *GFcrawlerPageImage,
 	pRuntime   *GFcrawlerRuntime,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
@@ -88,7 +88,7 @@ func ImageDBcreate(p_img *GFcrawlerPageImage,
 
 //--------------------------------------------------
 
-func ImageDBcreateRef(p_img_ref *GFcrawlerPageImageRef,
+func DBmongoImageCreateRef(p_img_ref *GFcrawlerPageImageRef,
 	pRuntime    *GFcrawlerRuntime,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -137,7 +137,7 @@ func ImageDBcreateRef(p_img_ref *GFcrawlerPageImageRef,
 
 //--------------------------------------------------
 
-func imageDBget(p_id_str GFcrawlerPageImageID,
+func dbMongoimageGet(p_id_str GFcrawlerPageImageID,
 	pRuntime     *GFcrawlerRuntime,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFcrawlerPageImage, *gf_core.GFerror) {
 
@@ -162,7 +162,7 @@ func imageDBget(p_id_str GFcrawlerPageImageID,
 
 //-------------------------------------------------
 
-func ImagesDBgetRecent(pRuntimeSys *gf_core.RuntimeSys) ([]GFcrawlerRecentImages, *gf_core.GFerror) {
+func DBmongoImagesGetRecent(pRuntimeSys *gf_core.RuntimeSys) ([]GFcrawlerRecentImages, *gf_core.GFerror) {
 
 	ctx := context.Background()
 	pipeline := mongo.Pipeline{
@@ -245,8 +245,7 @@ func ImagesDBgetRecent(pRuntimeSys *gf_core.RuntimeSys) ([]GFcrawlerRecentImages
 
 //--------------------------------------------------
 
-func image__db_mark_as_downloaded(p_image *GFcrawlerPageImage, pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.image__db_mark_as_downloaded()")
+func DBimageMarkAsDownloaded(p_image *GFcrawlerPageImage, pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx := context.Background()
 
@@ -275,10 +274,9 @@ func image__db_mark_as_downloaded(p_image *GFcrawlerPageImage, pRuntimeSys *gf_c
 
 //--------------------------------------------------
 
-func image__db_set_gf_image_id(pGFimageIDstr gf_images_core.GFimageID,
+func DBmongoImageSetImageID(pGFimageIDstr gf_images_core.GFimageID,
 	pImage      *GFcrawlerPageImage,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.image__db_set_gf_image_id()")
 
 	ctx := context.Background()
 
@@ -307,10 +305,9 @@ func image__db_set_gf_image_id(pGFimageIDstr gf_images_core.GFimageID,
 
 //--------------------------------------------------
 
-func image__db_update_after_process(pPageImg *GFcrawlerPageImage,
+func DBmongoImageUpdateAfterProcess(pPageImg *GFcrawlerPageImage,
 	pGFimageIDstr gf_images_core.GFimageID,
 	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.image__db_update_after_process()")
 
 	ctx := context.Background()
 

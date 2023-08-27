@@ -58,7 +58,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr GFcrawlerPageImageID,
 	fmt.Printf("flows_names               - %s\n", fmt.Sprint(pFlowsNamesLst))
 
 	// DB - get GFcrawlerPageImage from the DB
-	pageImage, gfErr := imageDBget(pCrawlerPageImageIDstr, pRuntime, pRuntimeSys)
+	pageImage, gfErr := dbMongoimageGet(pCrawlerPageImageIDstr, pRuntime, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -146,7 +146,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr GFcrawlerPageImageID,
 
 		fmt.Printf("\n%s - %s -> %s\n\n", green("COPYING IMAGE between S3 BUCKETS"), cyan(sourceCrawlS3bucketStr), cyan(pImagesS3bucketNameStr))
 
-		gfImage, gfErr := gf_images_core.DBgetImage(imageIDstr, pCtx, pRuntimeSys)
+		gfImage, gfErr := gf_images_core.DBmongoGetImage(imageIDstr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}

@@ -61,7 +61,7 @@ func pipelineGetAll(pInput *GFgetAllInput,
 	//------------------------
 
 	// DB
-	addressesLst, gfErr := DBgetAll(pInput.TypeStr,
+	addressesLst, gfErr := DBmongoGetAll(pInput.TypeStr,
 		pInput.ChainStr,
 		pInput.UserIDstr,
 		pCtx,
@@ -124,7 +124,7 @@ func pipelineAdd(pInput *GFaddInput,
 	}
 
 	// DB
-	gfErr = DBadd(address,
+	gfErr = DBmongoAdd(address,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {

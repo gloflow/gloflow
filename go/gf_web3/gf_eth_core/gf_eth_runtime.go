@@ -28,6 +28,7 @@ import (
 )
 
 //-------------------------------------------------------------
+
 type GF_runtime struct {
 	Config     *GF_config
 	Py_plugins *GF_py_plugins

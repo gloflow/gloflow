@@ -29,7 +29,7 @@ import (
 
 //---------------------------------------------------
 
-func db__bookmark__create(p_bookmark *GFbookmark,
+func dbMongoCreateBookmark(p_bookmark *GFbookmark,
 	p_ctx         context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -52,7 +52,7 @@ func db__bookmark__create(p_bookmark *GFbookmark,
 
 //---------------------------------------------------
 
-func db__bookmark__update_screenshot(p_bookmark_id_str gf_core.GF_ID,
+func dbMongoUpdateBookmarkScreenshot(p_bookmark_id_str gf_core.GF_ID,
 	p_screenshot_image_id_str            gf_images_core.GFimageID,
 	p_screenshot_image_thumbnail_url_str string,
 	p_ctx                                context.Context,
@@ -88,8 +88,8 @@ func db__bookmark__update_screenshot(p_bookmark_id_str gf_core.GF_ID,
 
 //---------------------------------------------------
 
-func db__bookmark__get_all(p_user_id_str gf_core.GF_ID,
-	p_ctx         context.Context,
+func dbMongoGetAllBookmarks(p_user_id_str gf_core.GF_ID,
+	p_ctx       context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFbookmark, *gf_core.GFerror) {
 
 

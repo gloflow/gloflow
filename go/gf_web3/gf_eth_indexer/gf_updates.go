@@ -30,6 +30,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GF_job_update struct {
 	Block_num_indexed_int uint64 `json:"block_num_indexed_int"`
 	Txs_num_indexed_int   uint64 `json:"txs_num_indexed_int"`
@@ -53,6 +54,7 @@ type GF_job_update_new_consumer_response struct {
 }
 
 //-------------------------------------------------
+
 func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 	p_ctx        context.Context,
 	p_aws_client *sqs.Client,
@@ -126,6 +128,7 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 }
 
 //-------------------------------------------------
+
 func Updates__init_stream(p_job_id_str GF_indexer_job_id,
 	p_ctx        context.Context,
 	p_sqs_client *sqs.Client,
@@ -148,6 +151,7 @@ func Updates__init_stream(p_job_id_str GF_indexer_job_id,
 }
 
 //-------------------------------------------------
+
 func updates__get_queue_name(p_job_id_str GF_indexer_job_id) string {
 	queue_name_str := fmt.Sprintf(fmt.Sprintf("gf_eth_indexer__job_updates__%s", p_job_id_str))
 	return queue_name_str

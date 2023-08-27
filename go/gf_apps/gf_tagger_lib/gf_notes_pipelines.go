@@ -87,7 +87,7 @@ func notesPipelineAdd(p_input_data_map map[string]interface{},
 			CreationDatetimeStr: creation_datetime_str,
 		}
 
-		gfErr := db__add_post_note(note, post_title_str, pRuntimeSys)
+		gfErr := dbMongoAddPostNote(note, post_title_str, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
@@ -129,7 +129,7 @@ func notesPipelineGet(pReq *http.Request,
 	if objectTypeStr == "post" {
 
 		postTitleStr    := objectExternIDstr
-		notesLst, gfErr := db__get_post_notes(postTitleStr, pRuntimeSys)
+		notesLst, gfErr := dbMongoGetPostNotes(postTitleStr, pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}

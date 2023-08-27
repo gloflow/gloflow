@@ -276,7 +276,7 @@ func fetchError(p_error_type_str string,
 
 	if pLink != nil {
 		// IMPORTANT!! - mark link as failed, so that it is not repeatedly tried
-		lm_err := link__db_mark_as_failed(crawler_error, pLink, pRuntime, pRuntimeSys)
+		lm_err := dbMongoLinkMarkAsFailed(crawler_error, pLink, pRuntime, pRuntimeSys)
 		if lm_err != nil {
 			return nil, lm_err
 		}

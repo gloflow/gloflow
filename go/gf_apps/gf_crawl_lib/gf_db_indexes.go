@@ -26,7 +26,7 @@ import (
 
 //--------------------------------------------------
 
-func dbIndexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+func dbMongoIndexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	indexesKeysLst := [][]string{
 		[]string{"t", }, // all stat queries first match on "t"
@@ -45,7 +45,7 @@ func dbIndexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//-------------
 	// LINK_INDEXES
-	gfErr = gf_crawl_core.LinkDBindexInit(pRuntimeSys)
+	gfErr = gf_crawl_core.DBmongoLinkIndexInit(pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}

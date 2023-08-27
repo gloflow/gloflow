@@ -37,6 +37,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func Eth_rpc__call(p_input_json_str string,
 	p_eth_node_host_str string,
 	p_error_data_map    map[string]interface{},
@@ -112,6 +113,7 @@ func Eth_rpc__call(p_input_json_str string,
 
 //-------------------------------------------------
 // INIT
+
 func Eth_rpc__init(p_host_str string,
 	p_geth_port_int int,
 	pRuntimeSys   *gf_core.RuntimeSys) (*ethclient.Client, *gf_core.GFerror) {

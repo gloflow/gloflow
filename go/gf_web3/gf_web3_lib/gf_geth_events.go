@@ -33,6 +33,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFqueueInfo struct {
 	name_str   string
 	url_str    string
@@ -41,6 +42,7 @@ type GFqueueInfo struct {
 
 //-------------------------------------------------
 // INIT_QUEUE
+
 func Event__init_queue(p_queue_name_str string,
 	pMetrics *gf_eth_core.GF_metrics) (*GFqueueInfo, error) {
 
@@ -85,6 +87,7 @@ func Event__init_queue(p_queue_name_str string,
 }
 
 //-------------------------------------------------
+
 func eventStartSQSconsumer(pQueueInfo *GFqueueInfo,
 	pCtx     context.Context,
 	pMetrics *gf_eth_core.GF_metrics,
@@ -99,6 +102,7 @@ func eventStartSQSconsumer(pQueueInfo *GFqueueInfo,
 }
 
 //-------------------------------------------------
+
 func EventProcessFromSQS(pQueueInfo *GFqueueInfo,
 	pCtx     context.Context,
 	pMetrics *gf_eth_core.GF_metrics,
@@ -172,6 +176,7 @@ func EventProcessFromSQS(pQueueInfo *GFqueueInfo,
 
 //-------------------------------------------------
 // GF_ETH_WORKER_EVENT
+
 func event__process(p_event_map map[string]interface{},
 	pCtx     context.Context,
 	pMetrics *gf_eth_core.GF_metrics,
@@ -205,7 +210,7 @@ func event__process(p_event_map map[string]interface{},
 		}
 
 		// DB_WRITE
-		gfErr := gf_eth_core.Eth_peers__db__write(peer__new_lifecycle, pCtx, pMetrics, pRuntime)
+		gfErr := gf_eth_core.DBmongoPeersWrite(peer__new_lifecycle, pCtx, pMetrics, pRuntime)
 		if gfErr != nil {
 			return gfErr
 		}

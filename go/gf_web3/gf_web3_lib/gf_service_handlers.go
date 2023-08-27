@@ -233,7 +233,7 @@ func InitHandlers(pGetHostsFun func(context.Context, *gf_eth_core.GF_runtime) []
 			}
 
 			// PEERS__GET
-			peer_names_groups_lst, gfErr := gf_eth_core.Eth_peers__db__get_pipeline(pMetrics, pRuntime)
+			peer_names_groups_lst, gfErr := gf_eth_core.DBmongoPeersGetPipeline(pMetrics, pRuntime)
 			if gfErr != nil {
 				return nil, gfErr
 			}

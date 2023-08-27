@@ -144,12 +144,12 @@ func imageDownload(pImage *GFcrawlerPageImage,
 
 	//-------------------
 	// DB_UPDATE
-	gfErr = image__db_mark_as_downloaded(pImage, pRuntimeSys)
+	gfErr = DBimageMarkAsDownloaded(pImage, pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}
 
-	gfErr = image__db_set_gf_image_id(imageIDstr, pImage, pRuntimeSys)
+	gfErr = DBmongoImageSetImageID(imageIDstr, pImage, pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}

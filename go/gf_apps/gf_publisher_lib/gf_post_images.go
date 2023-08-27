@@ -151,7 +151,7 @@ func processExternalImages(p_post *gf_publisher_core.GFpost,
 	//----------------
 	// persists the newly updated post (some of its post_elements have been updated
 	// in the initiation of image post_elements)
-	gfErr = gf_publisher_core.DBupdatePost(p_post, pRuntimeSys)
+	gfErr = gf_publisher_core.DBmongoUpdatePost(p_post, pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}

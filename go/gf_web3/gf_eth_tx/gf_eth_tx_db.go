@@ -28,7 +28,8 @@ import (
 
 //-------------------------------------------------
 // DB__GET_COUNT
-func DB__get_count(pMetrics *gf_eth_core.GF_metrics,
+
+func DBmongoGetCount(pMetrics *gf_eth_core.GF_metrics,
 	p_runtime *gf_eth_core.GF_runtime) (uint64, uint64, *gf_core.GFerror) {
 
 	//-------------------------------------------------
@@ -67,7 +68,8 @@ func DB__get_count(pMetrics *gf_eth_core.GF_metrics,
 
 //-------------------------------------------------
 // DB__GET
-func DB__get(pTxHashStr string,
+
+func DBmongoGet(pTxHashStr string,
 	pCtx     context.Context,
 	pMetrics *gf_eth_core.GF_metrics,
 	p_runtime *gf_eth_core.GF_runtime) (*GF_eth__tx, *gf_core.GFerror) {
@@ -99,7 +101,8 @@ func DB__get(pTxHashStr string,
 
 //-------------------------------------------------
 // DB__WRITE_BULK
-func DB__write_bulk(pTXsLst []*GF_eth__tx,
+
+func DBmongoWriteBulk(pTXsLst []*GF_eth__tx,
 	pCtx     context.Context,
 	pMetrics *gf_eth_core.GF_metrics,
 	pRuntime *gf_eth_core.GF_runtime) *gf_core.GFerror {

@@ -36,6 +36,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GF_indexer_job_id string
 
 type GF_indexer_ch chan(GF_indexer_cmd)
@@ -47,6 +48,7 @@ type GF_indexer_cmd struct {
 }
 
 //-------------------------------------------------
+
 func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 	p_metrics *gf_eth_core.GF_metrics,
 	p_runtime *gf_eth_core.GF_runtime) (GF_indexer_ch, GF_job_update_new_consumer_ch, *gf_core.GFerror) {
@@ -151,6 +153,7 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 }
 
 //-------------------------------------------------
+
 func job_get_id() GF_indexer_job_id {
 	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
 	job_id_str       := GF_indexer_job_id(fmt.Sprintf("jid_%s", strings.ReplaceAll(fmt.Sprintf("%f", job_start_time_f), ".", "_")))
@@ -158,6 +161,7 @@ func job_get_id() GF_indexer_job_id {
 }
 
 //-------------------------------------------------
+
 func job_run(p_job_id_str GF_indexer_job_id,
 	p_cmd                 GF_indexer_cmd,
 	p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
@@ -248,6 +252,7 @@ func job_run(p_job_id_str GF_indexer_job_id,
 }
 
 //-------------------------------------------------
+
 func index__range(p_block_start_uint uint64,
 	p_block_end_uint      uint64,
 	p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,

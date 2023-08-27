@@ -74,7 +74,7 @@ func createAsImagesInFlows(pNFTsLst []*GFnft,
 		gfImageID          := imagesIDsLst[i]
 		gfImageThumbURLstr := imagesThumbSmallRelativeURLlst[i]
 
-		gfErr := DBupdateGFimageProps(nft.IDstr,
+		gfErr := DBmongoUpdateGFimageProps(nft.IDstr,
 			gfImageID,
 			gfImageThumbURLstr,
 			pCtx,

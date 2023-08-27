@@ -32,7 +32,7 @@ func ImgGet(pImageIDstr gf_images_core.GFimageID,
 	pRuntimeSys *gf_core.RuntimeSys) (*gf_images_core.GFimageExport, bool, *gf_core.GFerror) {
 
 	// DB_EXISTS
-	existsBool, gfErr := gf_images_core.DBimageExists(pImageIDstr, pCtx, pRuntimeSys)
+	existsBool, gfErr := gf_images_core.DBmongoImageExists(pImageIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, false, gfErr
 	}
@@ -40,7 +40,7 @@ func ImgGet(pImageIDstr gf_images_core.GFimageID,
 	if existsBool {
 
 		// DB_GET
-		gfImage, gfErr := gf_images_core.DBgetImage(pImageIDstr, pCtx, pRuntimeSys)
+		gfImage, gfErr := gf_images_core.DBmongoGetImage(pImageIDstr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return nil, false, gfErr
 		}

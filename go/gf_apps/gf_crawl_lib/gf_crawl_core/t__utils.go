@@ -134,7 +134,7 @@ func t__create_test_image_ADTs(p_test *testing.T,
 	}
 
 	// DB - CRAWLED_IMAGE_PERSIST
-	existsBool, gfErr := ImageDBcreate(testCrawledImage, pCrawlerRuntime, pRuntimeSys)
+	existsBool, gfErr := DBmongoImageCreate(testCrawledImage, pCrawlerRuntime, pRuntimeSys)
 	if gfErr != nil {
 		p_test.Errorf("failed to DB persist image_adt with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
 		panic(gfErr.Error)
@@ -154,7 +154,7 @@ func t__create_test_image_ADTs(p_test *testing.T,
 		pRuntimeSys)
 
 	// DB - CRAWLED_IMAGE_REF_PERSIST
-	gfErr = ImageDBcreateRef(testCrawledImageRef, pCrawlerRuntime, pRuntimeSys)
+	gfErr = DBmongoImageCreateRef(testCrawledImageRef, pCrawlerRuntime, pRuntimeSys)
 	if gfErr != nil {
 		p_test.Errorf("failed to DB persist image_ref for image with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
 		panic(gfErr.Error)

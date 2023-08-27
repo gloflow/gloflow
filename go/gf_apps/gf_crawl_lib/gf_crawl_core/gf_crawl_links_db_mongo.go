@@ -31,7 +31,7 @@ import (
 
 //--------------------------------------------------
 
-func LinkDBindexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+func DBmongoLinkIndexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	indexesKeysLst := [][]string{
 		[]string{"t", "crawler_name_str"}, // all stat queries first match on "t"
@@ -62,16 +62,16 @@ func LinkDBindexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 //--------------------------------------------------
 // LINK_DB_GET_UNRESOLVED
 
-func LinkDBgetUnresolved(pCrawlerNameStr string,
+func DBmongoLinkGetUnresolved(pCrawlerNameStr string,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFcrawlerPageOutgoingLink, *gf_core.GFerror) {
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 	black  := color.New(color.FgBlack).Add(color.BgWhite).SprintFunc()
 
-	fmt.Println("INFO", cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
-	fmt.Println("INFO", black("GET__UNRESOLVED_LINK")+" - for crawler - "+yellow(pCrawlerNameStr))
-	fmt.Println("INFO", cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
+	pRuntimeSys.LogNewFun("DEBUG", cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"), nil)
+	pRuntimeSys.LogNewFun("DEBUG", black("GET__UNRESOLVED_LINK")+" - for crawler - "+yellow(pCrawlerNameStr), nil)
+	pRuntimeSys.LogNewFun("DEBUG", cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"), nil)
 
 	ctx := context.Background()
 	var unresolved_link GFcrawlerPageOutgoingLink
@@ -158,7 +158,7 @@ func LinkDBgetUnresolved(pCrawlerNameStr string,
 
 //--------------------------------------------------
 
-func LinkDBget(pLink_id_str string,
+func DBmongoGetLink(pLink_id_str string,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFcrawlerPageOutgoingLink, *gf_core.GFerror) {
 
 	ctx := context.Background()
@@ -181,7 +181,7 @@ func LinkDBget(pLink_id_str string,
 
 //--------------------------------------------------
 
-func linkDBcreate(pLink *GFcrawlerPageOutgoingLink,
+func DBmongoCreateLink(pLink *GFcrawlerPageOutgoingLink,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -195,7 +195,7 @@ func linkDBcreate(pLink *GFcrawlerPageOutgoingLink,
 	//                            on pages could maybe prove useful for some kind of analysis or algo. 
 	//                            - so maybe store links even if their hashes are duplicates?
 	//                            - add some kind of tracking where these duplicates are counted for pages.
-	linkExistsBool, gfErr := linkDBexists(pLink.Hash_str, pRuntimeSys)
+	linkExistsBool, gfErr := DBmongoLinkExists(pLink.Hash_str, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -229,7 +229,7 @@ func linkDBcreate(pLink *GFcrawlerPageOutgoingLink,
 
 //--------------------------------------------------
 
-func linkDBexists(pLinkHashStr string,
+func DBmongoLinkExists(pLinkHashStr string,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 	ctx := context.Background()
@@ -258,12 +258,11 @@ func linkDBexists(pLinkHashStr string,
 
 //--------------------------------------------------
 
-func Link__db_mark_import_in_progress(pStatusBool bool,
+func DBmongoLinkMarkImportInProgress(pStatusBool bool,
 	p_unix_time_f float64,
 	pLink        *GFcrawlerPageOutgoingLink,
 	pRuntime     *GFcrawlerRuntime,
 	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_links_db.Link__db_mark_import_in_progress()")
 
 	//----------------
 	updateMap := bson.M{
@@ -298,11 +297,10 @@ func Link__db_mark_import_in_progress(pStatusBool bool,
 
 //--------------------------------------------------
 
-func Link__db_mark_as_resolved(pLink *GFcrawlerPageOutgoingLink,
+func DBmongoLinkMarkAsResolved(pLink *GFcrawlerPageOutgoingLink,
 	pFetchIDstr         string,
 	pFetchCreationTimeF float64,
 	pRuntimeSys         *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_links_db.Link__db_mark_as_resolved()")
 	
 	ctx := context.Background()
 
@@ -335,11 +333,10 @@ func Link__db_mark_as_resolved(pLink *GFcrawlerPageOutgoingLink,
 
 //--------------------------------------------------
 
-func link__db_mark_as_failed(p_error *GFcrawlerError,
+func dbMongoLinkMarkAsFailed(p_error *GFcrawlerError,
 	pLink      *GFcrawlerPageOutgoingLink,
 	pRuntime   *GFcrawlerRuntime,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_links_db.link__mark_as_failed()")
 
 	ctx := context.Background()
 	_, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{

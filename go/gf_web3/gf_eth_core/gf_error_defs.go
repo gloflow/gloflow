@@ -24,11 +24,13 @@ import (
 )
 
 //-------------------------------------------------
+
 type ErrorDef struct {
 	DescrStr string
 }
 
 //-------------------------------------------------
+
 func ErrorGetDefs() map[string]gf_core.ErrorDef {
 
 	errorDefs_map := map[string]gf_core.ErrorDef{

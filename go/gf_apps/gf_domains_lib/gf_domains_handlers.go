@@ -61,7 +61,7 @@ func InitHandlers(p_templates_paths_map map[string]string,
 																pLogFun)*/
 				//--------------------
 				// GET DOMAINS FROM DB
-				domains_lst, gfErr := dbGetDomains(pRuntimeSys)
+				domains_lst, gfErr := dbMongoGetDomains(pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

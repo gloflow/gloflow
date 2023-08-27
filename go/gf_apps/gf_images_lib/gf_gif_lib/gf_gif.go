@@ -191,7 +191,7 @@ func Process(pImageIDstr gf_images_core.Gf_image_id,
 
 	//-----------------------
 	// GIF_OBJ_CREATE
-	gif, gfErr := gifDBcreate(p_image_source_url_str,
+	gif, gfErr := dbMongoCreate(p_image_source_url_str,
 		p_image_origin_page_url_str,
 		img_width_int,
 		img_height_int,
@@ -285,7 +285,7 @@ func Process(pImageIDstr gf_images_core.Gf_image_id,
 		}
 
 		// link the new gf_image DB record to the gf_gif DB record
-		dbUpdateImageID(gif.Id_str, verified_gf_image_id_str, pRuntimeSys)
+		dbMongoUpdateImageID(gif.Id_str, verified_gf_image_id_str, pRuntimeSys)
 	}
 
 	//-----------------------

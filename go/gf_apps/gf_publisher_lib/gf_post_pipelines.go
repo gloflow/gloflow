@@ -62,7 +62,7 @@ func PipelineCreatePost(pPostInfoMap map[string]interface{},
 
 	//----------------------
 	// PERSIST POST
-	gfErr = gf_publisher_core.DBcreatePost(post, pRuntimeSys)
+	gfErr = gf_publisher_core.DBmongoCreatePost(post, pRuntimeSys)
 	if gfErr != nil {
 		return nil, "", gfErr
 	}
@@ -92,7 +92,7 @@ func PipelineGetPost(pPostTitleStr string,
 	p_resp                io.Writer,
 	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	post, gfErr := gf_publisher_core.DBgetPost(pPostTitleStr, pRuntimeSys)
+	post, gfErr := gf_publisher_core.DBmongoGetPost(pPostTitleStr, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}

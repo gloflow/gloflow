@@ -103,13 +103,13 @@ func saveEditedImagePipeline(p_handler_url_path_str string,
 
 	//--------------------------
 
-	source_gf_image, gfErr := gf_images_core.DBgetImage(source_image_id_str, pCtx, pRuntimeSys)
+	sourceImage, gfErr := gf_images_core.DBmongoGetImage(source_image_id_str, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
 
-	processingInfo.image_origin_url_str      = source_gf_image.Origin_url_str
-	processingInfo.image_origin_page_url_str = source_gf_image.Origin_page_url_str
+	processingInfo.image_origin_url_str      = sourceImage.Origin_url_str
+	processingInfo.image_origin_page_url_str = sourceImage.Origin_page_url_str
 
 	gfErr = createImage(new_title_str,
 		[]string{input.Target_flow_name_str,},

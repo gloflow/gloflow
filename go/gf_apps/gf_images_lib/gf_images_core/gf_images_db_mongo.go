@@ -32,7 +32,7 @@ import (
 
 //---------------------------------------------------
 
-func DBputImage(pImage *GFimage,
+func DBmongoPutImage(pImage *GFimage,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -56,7 +56,7 @@ func DBputImage(pImage *GFimage,
 
 //---------------------------------------------------
 
-func DBgetImage(pImageIDstr GFimageID,
+func DBmongoGetImage(pImageIDstr GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFimage, *gf_core.GFerror) {
 
@@ -91,7 +91,7 @@ func DBgetImage(pImageIDstr GFimageID,
 
 //---------------------------------------------------
 
-func DBimageExists(pImageIDstr GFimageID,
+func DBmongoImageExists(pImageIDstr GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 	
@@ -116,7 +116,7 @@ func DBimageExists(pImageIDstr GFimageID,
 
 //---------------------------------------------------
 
-func DBgetRandomImagesRange(pImgsNumToGetInt int, // 5
+func DBmongoGetRandomImagesRange(pImgsNumToGetInt int, // 5
 	pMaxRandomCursorPositionInt int, // 2000
 	pFlowNameStr                string,
 	pUserID                     gf_core.GF_ID,

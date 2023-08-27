@@ -94,7 +94,7 @@ func pipelineGetByOwner(pInput *GFgetByOwnerInput,
 	
 
 	// DB
-	nftsLst, gfErr := DBgetByOwner(pInput.AddressStr,
+	nftsLst, gfErr := DBmongoGetByOwner(pInput.AddressStr,
 		pInput.ChainStr,
 		pCtx,
 		pRuntimeSys)

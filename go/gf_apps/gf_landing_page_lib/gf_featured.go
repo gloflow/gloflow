@@ -58,7 +58,7 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 	pUserID              gf_core.GF_ID,
 	pRuntimeSys          *gf_core.RuntimeSys) ([]*GFfeaturedImage, *gf_core.GFerror) {
 
-	imagesLst, err := gf_images_core.DBgetRandomImagesRange(pElementsNumToGetInt,
+	imagesLst, err := gf_images_core.DBmongoGetRandomImagesRange(pElementsNumToGetInt,
 		pMaxRandomCursorPositionInt,
 		pFlowNameStr,
 		pUserID,
@@ -102,7 +102,7 @@ func getFeaturedPosts(pMaxRandomCursorPositionInt int, // 500
 
 	//gets posts starting in some random position (time wise), 
 	//and as many as specified after that random point
-	postsLst, gfErr := gf_publisher_core.DB__get_random_posts_range(pElementsNumToGetInt,
+	postsLst, gfErr := gf_publisher_core.DBmongoGetRandomPostsRange(pElementsNumToGetInt,
 		pMaxRandomCursorPositionInt,
 		pRuntimeSys)
 	if gfErr != nil {

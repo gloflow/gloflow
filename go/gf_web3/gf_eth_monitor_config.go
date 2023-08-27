@@ -26,6 +26,7 @@ import (
 )
 
 //-------------------------------------------------------------
+
 func config__init(p_config_dir_path_str string,
 	p_config_file_name_str string) (*gf_eth_core.GF_config, error) {
 

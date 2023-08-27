@@ -303,7 +303,7 @@ func stagePageImagesPersist(pCrawlerNameStr string,
 		page_img := page_img__pinfo.page_img
 
 		//------------------
-		img_exists_bool, gfErr := ImageDBcreate(page_img__pinfo.page_img, pRuntime, pRuntimeSys)
+		img_exists_bool, gfErr := DBmongoImageCreate(page_img__pinfo.page_img, pRuntime, pRuntimeSys)
 		if gfErr != nil {
 			t := "image_db_create__failed"
 			m := "failed db creation of image with img_url_str - "+page_img.Url_str
@@ -317,7 +317,7 @@ func stagePageImagesPersist(pCrawlerNameStr string,
 		page_img__pinfo.exists_bool = img_exists_bool
 
 		//------------------
-		gfErr = ImageDBcreateRef(page_img__pinfo.page_img_ref, pRuntime, pRuntimeSys)
+		gfErr = DBmongoImageCreateRef(page_img__pinfo.page_img_ref, pRuntime, pRuntimeSys)
 		if gfErr != nil {
 			t := "image_ref_db_create__failed"
 			m := "failed db creation of image_ref with img_url_str - "+page_img.Url_str

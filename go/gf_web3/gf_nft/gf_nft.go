@@ -185,7 +185,7 @@ func createFromAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 	}
 
 	// DB
-	gfErr := DBcreateBulkNFTs(NFTsLst,
+	gfErr := DBmongoCreateBulkNFTs(NFTsLst,
 		pMetrics,
 		pCtx,
 		pRuntimeSys)

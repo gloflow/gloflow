@@ -49,7 +49,7 @@ func renderObjectsWithTag(pTagStr string,
 		return gfErr
 	}
 
-	posts_with_tag_lst := []map[string]interface{}{}
+	postsWithTagLst := []map[string]interface{}{}
 	for _, p_object_info_map := range objectsInfosLst {
 
 		//----------------
@@ -74,7 +74,7 @@ func renderObjectsWithTag(pTagStr string,
 			"post_thumbnail_url_str": post_thumbnail_url_str,
 		}
 
-		posts_with_tag_lst = append(posts_with_tag_lst, post_info_map)
+		postsWithTagLst = append(postsWithTagLst, post_info_map)
 	}
 	//-----------------------------
 
@@ -89,7 +89,7 @@ func renderObjectsWithTag(pTagStr string,
 	}
 
 	objectTypeStr := "post"
-	posts_with_tag_count_int, gfErr := db__get_objects_with_tag_count(pTagStr, objectTypeStr, pRuntimeSys)
+	postsWithTagCountInt, gfErr := dbMongoGetObjectsWithTagCount(pTagStr, objectTypeStr, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -99,9 +99,9 @@ func renderObjectsWithTag(pTagStr string,
 	err := p_tmpl.Execute(p_resp,
 		tmpl_data{
 			Tag_str:                pTagStr,
-			Posts_with_tag_num_int: posts_with_tag_count_int,
+			Posts_with_tag_num_int: postsWithTagCountInt,
 			Images_with_tag_int:    0, // FIX!! - image tagging is now implemented, and so counting images with tag occurance should be done ASAP. 
-			Posts_with_tag_lst:     posts_with_tag_lst,
+			Posts_with_tag_lst:     postsWithTagLst,
 			Sys_release_info:       sysReleaseInfo,
 			//-------------------------------------------------
 			// IS_SUBTEMPLATE_DEFINED

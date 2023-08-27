@@ -50,7 +50,7 @@ func RunCrawlerCycle(pCrawler gf_crawl_core.GFcrawlerDef,
 	// IMPORTANT!! - get unresolved links to pages on the domain to which the crawler belongs.
 	//               so if the a page contains links to domains external to the domain to which the 
 	//               crawler belongs, it wont get fetched/parsed here
-	unresolved_link, gfErr := gf_crawl_core.LinkDBgetUnresolved(pCrawler.NameStr, pRuntimeSys)
+	unresolved_link, gfErr := gf_crawl_core.DBmongoLinkGetUnresolved(pCrawler.NameStr, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -84,7 +84,7 @@ func RunCrawlerCycle(pCrawler gf_crawl_core.GFcrawlerDef,
 		//               instances running on other nodes should not load this link of importing as well, 
 		//               to avoid duplicate work/data
 		start_time_f := float64(time.Now().UnixNano())/1000000000.0
-		gfErr       := gf_crawl_core.Link__db_mark_import_in_progress(true, start_time_f, unresolved_link, pRuntime, pRuntimeSys)
+		gfErr       := gf_crawl_core.DBmongoLinkMarkImportInProgress(true, start_time_f, unresolved_link, pRuntime, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
@@ -171,7 +171,7 @@ func RunCrawlerCycle(pCrawler gf_crawl_core.GFcrawlerDef,
 	// IMPORTANT!! - unresolved_link is nil if no links are present in DB or if all links have been resolved, 
 	//              in which case the pCrawler.StartURLstr was used
 	if unresolved_link != nil {
-		gfErr = gf_crawl_core.Link__db_mark_as_resolved(unresolved_link,
+		gfErr = gf_crawl_core.DBmongoLinkMarkAsResolved(unresolved_link,
 			url_fetch.Id_str,
 			url_fetch.Creation_unix_time_f,
 			pRuntimeSys)
@@ -185,7 +185,7 @@ func RunCrawlerCycle(pCrawler gf_crawl_core.GFcrawlerDef,
 	if unresolved_link != nil {
 
 		// IMPORTANT!! - mark the link as no longer import_in_progress
-		gfErr := gf_crawl_core.Link__db_mark_import_in_progress(false, //p_status_bool
+		gfErr := gf_crawl_core.DBmongoLinkMarkImportInProgress(false, // p_status_bool
 			end_time_f,
 			unresolved_link,
 			pRuntime,

@@ -87,7 +87,7 @@ func PipelineGet(p_input *GFbookmarkInputGet,
 
 
 	// DB
-	bookmarks_lst, gfErr := db__bookmark__get_all(p_input.User_id_str,
+	bookmarks_lst, gfErr := dbMongoGetAllBookmarks(p_input.User_id_str,
 		p_ctx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -183,7 +183,7 @@ func PipelineCreate(p_input *GFbookmarkInputCreate,
 	}
 
 	// DB
-	gfErr = db__bookmark__create(bookmark, pCtx, pRuntimeSys)
+	gfErr = dbMongoCreateBookmark(bookmark, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -263,7 +263,7 @@ func pipelineScreenshot(pURLstr string,
 
 	//-----------------
 	// DB_UPDATE - updated bookmark with screenshot image information
-	gfErr = db__bookmark__update_screenshot(pBookmarkIDstr,
+	gfErr = dbMongoUpdateBookmarkScreenshot(pBookmarkIDstr,
 		screenshot_image_id_str,
 		screenshot_image_thumbnail_small_url_str,
 		pCtx,

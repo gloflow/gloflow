@@ -40,6 +40,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GF_eth__tx struct {
 	DB_id                 string         `mapstructure:"db_id"                 json:"db_id"                 bson:"_id"`
 	Creation_time__unix_f float64        `mapstructure:"creation_time__unix_f" json:"creation_time__unix_f" bson:"creation_time__unix_f"`
@@ -50,7 +51,6 @@ type GF_eth__tx struct {
 	From_addr_str  string                `mapstructure:"from_addr_str"    json:"from_addr_str"    bson:"from_addr_str"`
 	To_addr_str    string                `mapstructure:"to_addr_str"      json:"to_addr_str"      bson:"to_addr_str"`
 	Value_eth_f    float64               `mapstructure:"value_eth_f"      json:"value_eth_f"      bson:"value_eth_f"`
-	// Data_bytes_lst []byte                `mapstructure:"-"                json:"-"                bson:"-"`
 	Data_b64_str   string                `mapstructure:"data_b64_str"     json:"data_b64_str"     bson:"-"`
 	Gas_used_int   uint64                `mapstructure:"gas_used_int"     json:"gas_used_int"     bson:"gas_used_int"`
 	Gas_price_int  uint64                `mapstructure:"gas_price_int"    json:"gas_price_int"    bson:"gas_price_int"`
@@ -59,6 +59,8 @@ type GF_eth__tx struct {
 	Cost_gwei_f    float64                `mapstructure:"cost_gwei_f"    json:"cost_gwei_f"    bson:"cost_gwei_f"`
 	Contract_new   *gf_eth_contract.GF_eth__contract_new `mapstructure:"contract_new_map" json:"contract_new_map" bson:"contract_new_map"`
 	Logs_lst       []*GF_eth__log                        `mapstructure:"logs_lst"         json:"logs_lst"         bson:"logs_lst"`
+
+	// Data_bytes_lst []byte                `mapstructure:"-"                json:"-"                bson:"-"`
 }
 
 // eth_types.Log
@@ -77,7 +79,7 @@ func Init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 		for {
 			//---------------------
 			// GET_BLOCKS_COUNTS
-			txs_count_int, txs_traces_count_int, gfErr := DB__get_count(p_metrics, p_runtime)
+			txs_count_int, txs_traces_count_int, gfErr := DBmongoGetCount(p_metrics, p_runtime)
 			if gfErr != nil {
 				time.Sleep(60 * time.Second) // SLEEP
 				continue
@@ -94,6 +96,7 @@ func Init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 //-------------------------------------------------
 // VAR
 //-------------------------------------------------
+
 func Enrich_from_block(p_blocks_txs_lst []*GF_eth__tx,
 	p_abis_defs_map map[string]*gf_eth_contract.GF_eth__abi,
 	p_ctx           context.Context,
@@ -144,6 +147,7 @@ func Enrich_from_block(p_blocks_txs_lst []*GF_eth__tx,
 }
 
 //-------------------------------------------------
+
 func Load(p_tx *eth_types.Transaction,
 	p_tx_index_int   uint,
 	p_block_hash     eth_common.Hash,
@@ -432,6 +436,7 @@ func Load(p_tx *eth_types.Transaction,
 }
 
 //-------------------------------------------------
+
 func Enrich_logs(p_tx_logs []*GF_eth__log,
 	p_abis_map map[string]*gf_eth_contract.GF_eth__abi,
 	p_ctx      context.Context,
@@ -504,6 +509,7 @@ func Enrich_logs(p_tx_logs []*GF_eth__log,
 }
 
 //-------------------------------------------------
+
 func Get_logs(p_tx_receipt *eth_types.Receipt,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,

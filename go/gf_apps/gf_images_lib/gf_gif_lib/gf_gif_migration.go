@@ -519,7 +519,7 @@ func migrateRebuildGIF(p_old_gif *GFgif,
 
 	//----------------
 	// DELETE_OLD_GIF - the one that was rebuilt
-	gifDBdelete(p_old_gif.Id_str, pRuntimeSys)
+	dbMongoDelete(p_old_gif.Id_str, pRuntimeSys)
 	
 	//----------------
 	return nil

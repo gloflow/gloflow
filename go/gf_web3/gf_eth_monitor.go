@@ -33,12 +33,13 @@ import (
 )
 
 //-------------------------------------------------
+
 func main() {
 
 	logFun, _ := gf_core.LogsInit()
 	log.SetOutput(os.Stdout)
 
-	cmd__base := cmds_init(logFun)
+	cmd__base := cmdsInit(logFun)
 	err := cmd__base.Execute()
 	if err != nil {
 		panic(err)
@@ -46,6 +47,7 @@ func main() {
 }
 
 //-------------------------------------------------
+
 func runtimeGet(p_config_path_str string,
 	pLogFun func(string, string)) (*gf_eth_core.GF_runtime, error) {
 
@@ -78,7 +80,8 @@ func runtimeGet(p_config_path_str string,
 }
 
 //-------------------------------------------------
-func cmds_init(pLogFun func(string, string)) *cobra.Command {
+
+func cmdsInit(pLogFun func(string, string)) *cobra.Command {
 
 	// BASE
 	cmd__base := &cobra.Command{

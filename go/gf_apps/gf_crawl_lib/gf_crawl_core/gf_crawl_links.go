@@ -207,7 +207,7 @@ func LinksGetOutgoingInPage(pURLfetch *GFcrawlerURLfetch,
 	// STAGE - PERSIST ALL LINKS
 	for _, link := range crawledLinksLst {
 
-		gfErr := linkDBcreate(link, pRuntimeSys)
+		gfErr := DBmongoCreateLink(link, pRuntimeSys)
 		if gfErr != nil {
 			t := "link__db_create__failed"
 			m := "failed creating link in the DB - "+link.A_href_str

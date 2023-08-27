@@ -31,7 +31,6 @@ import (
 //-------------------------------------------------------------
 
 func StrRandom() string {
-
 	randWithSeed := rand.New(rand.NewSource(time.Now().UnixNano()))
 	randInt := randWithSeed.Int()
 	randStr := fmt.Sprintf("%d", randInt)

@@ -61,7 +61,7 @@ func PipelineVizPropsUpdate(pInput *GFvizPropsUpdateInput,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-	homeVizExisting, gfErr := DBgetHomeViz(pInput.UserIDstr, pCtx, pRuntimeSys)
+	homeVizExisting, gfErr := DBmongoGetHomeViz(pInput.UserIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -96,7 +96,7 @@ func PipelineVizPropsUpdate(pInput *GFvizPropsUpdateInput,
 		}
 
 		// DB
-		gfErr = DBupdateHomeVizComponents(pInput.UserIDstr,
+		gfErr = DBmongoUpdateHomeVizComponents(pInput.UserIDstr,
 			componentsMap,
 			pCtx,
 			pRuntimeSys)
@@ -131,7 +131,7 @@ func PipelineVizPropsCreate(pUserIDstr gf_core.GF_ID,
 	}
 
 	// DB
-	gfErr := DBcreateHomeViz(homeViz, pCtx, pRuntimeSys)
+	gfErr := DBmongoCreateHomeViz(homeViz, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -147,7 +147,7 @@ func PipelineVizPropsGet(pUserIDstr gf_core.GF_ID,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFhomeViz, *gf_core.GFerror) {
 	
 
-	homeVizExisting, gfErr := DBgetHomeViz(pUserIDstr, pCtx, pRuntimeSys)
+	homeVizExisting, gfErr := DBmongoGetHomeViz(pUserIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

@@ -34,7 +34,7 @@ func InitService(pTemplatesPathsMap map[string]string,
 	
 	//------------------------
 	// DB_INDEXES
-	gfErr := DBindexInit(pRuntimeSys)
+	gfErr := DBmongoIndexInit(pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}

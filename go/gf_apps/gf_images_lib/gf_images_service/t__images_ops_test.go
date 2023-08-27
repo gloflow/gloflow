@@ -101,7 +101,7 @@ func TestBasicImageOps(p_test *testing.T) {
 		T_str:  "img",
 		FlowsNamesLst: []string{"flow_0"},
 	}
-	gfErr = gf_images_core.DBputImage(test_img_0, ctx, runtimeSys)
+	gfErr = gf_images_core.DBmongoPutImage(test_img_0, ctx, runtimeSys)
 	if gfErr != nil {
 		p_test.Fail()
 	}

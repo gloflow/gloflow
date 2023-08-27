@@ -33,7 +33,7 @@ func AddTagsToPostInDB(p_post_title_str string,
 	p_tags_lst  []string,
 	pRuntimeSys *gf_core.RuntimeSys) (*gf_publisher_core.GFpost, *gf_core.GFerror) {
 	
-	post, gfErr := gf_publisher_core.DBgetPost(p_post_title_str, pRuntimeSys)
+	post, gfErr := gf_publisher_core.DBmongoGetPost(p_post_title_str, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -41,7 +41,7 @@ func AddTagsToPostInDB(p_post_title_str string,
 	addTagsToPost(post, p_tags_lst, pRuntimeSys)
 	fmt.Println(fmt.Sprintf(" --------- post tags - %s", post.TagsLst))
 
-	gfErr = gf_publisher_core.DBupdatePost(post, pRuntimeSys)
+	gfErr = gf_publisher_core.DBmongoUpdatePost(post, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

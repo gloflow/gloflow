@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2019 Ivan Trajkovic
+Copyright (C) 2023 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,33 +17,4 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_domains_lib
-
-import (
-	"github.com/gloflow/gloflow/go/gf_core"
-)
-
-//--------------------------------------------------
-
-func DBindexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	
-	indexesKeysLst := [][]string{
-		[]string{"t", }, // all stat queries first match on "t"
-		[]string{"t", "origin_page_url_str"},
-		[]string{"t", "name_str"},
-		[]string{"t", "count_int"},
-	}
-
-	indexesNamesLst := []string{
-		"by_type",
-		"by_type_and_origin_page_url",
-		"by_type_and_name",
-		"by_type_and_count",
-	}
-	gfErr := gf_core.MongoEnsureIndex(indexesKeysLst, indexesNamesLst, "data_symphony", pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
-
-	return nil
-}
+package gf_images_core

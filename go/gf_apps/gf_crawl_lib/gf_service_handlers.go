@@ -46,7 +46,7 @@ func initHandlers(pMediaDomainStr string,
 			if pReq.Method == "GET" {
 
 				//------------------
-				recentImagesLst, gfErr := gf_crawl_core.ImagesDBgetRecent(pRuntimeSys)
+				recentImagesLst, gfErr := gf_crawl_core.DBmongoImagesGetRecent(pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

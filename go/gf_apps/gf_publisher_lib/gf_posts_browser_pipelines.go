@@ -34,7 +34,7 @@ func Get_posts_page(p_page_index_int int,
 	pRuntimeSys             *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	cursor_start_position_int := p_page_index_int*p_page_elements_num_int
-	page_lst, gfErr          := gf_publisher_core.DBgetPostsPage(cursor_start_position_int, p_page_elements_num_int, pRuntimeSys)
+	page_lst, gfErr          := gf_publisher_core.DBmongoGetPostsPage(cursor_start_position_int, p_page_elements_num_int, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -77,7 +77,7 @@ func RenderInitialPages(p_response_format_str string,
 
 		// initial page might be larger then subsequent pages, that are requested 
 		// dynamically by the front-end
-		pageLst, gfErr := gf_publisher_core.DBgetPostsPage(start_position_int, p_page_size_int, pRuntimeSys)
+		pageLst, gfErr := gf_publisher_core.DBmongoGetPostsPage(start_position_int, p_page_size_int, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}

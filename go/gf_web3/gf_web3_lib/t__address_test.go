@@ -20,10 +20,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_web3_lib
 
 import (
-	// "fmt"
+	"fmt"
 	"testing"
 	"context"
 	"github.com/parnurzeal/gorequest"
+	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_address"
@@ -44,9 +45,9 @@ func TestAddresses(pTest *testing.T) {
 	ctx       := context.Background()
 
 	testUserInfo := &gf_identity.GFtestUserInfo{
-		NameStr:  "ivan_t_web3",
+		NameStr:  fmt.Sprintf("ivan_t_web3_%s", gf_core.StrRandom()),
 		PassStr:  "pass_lksjds;lkdj",
-		EmailStr: "ivan_t_web3@gloflow.com",
+		EmailStr: fmt.Sprintf("ivan_t_web3_%s@gloflow.com", gf_core.StrRandom()),
 	}
 
 	// CREATE_AND_LOGIN_NEW_USER

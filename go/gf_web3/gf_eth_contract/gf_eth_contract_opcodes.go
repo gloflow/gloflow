@@ -99,6 +99,7 @@ import (
 */
 
 //-------------------------------------------------
+
 type GF_eth__opcode struct {
 	Op_and_args_str string
 	Addr_hex_str    string
@@ -110,6 +111,7 @@ type gf_eth_opcode struct {
 }
 
 //-------------------------------------------------
+
 func Eth_contract__get_opcodes(p_bytecode_hex_str string,
 	p_runtime *gf_eth_core.GF_runtime) ([]*GF_eth__opcode, *gf_core.GFerror) {
 
@@ -161,6 +163,7 @@ func Eth_contract__get_opcodes(p_bytecode_hex_str string,
 }
 
 //-------------------------------------------------
+
 func Eth_opscodes__get_tables() map[string]map[string]gf_eth_opcode {
 
 

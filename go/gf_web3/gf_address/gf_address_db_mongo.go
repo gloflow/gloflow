@@ -29,7 +29,7 @@ import (
 //-------------------------------------------------
 // GET_ALL
 
-func DBgetAll(pAddressTypeStr string,
+func DBmongoGetAll(pAddressTypeStr string,
 	pAddressChainNameStr string,
 	pUserIDstr           gf_core.GF_ID,
 	pCtx                 context.Context,
@@ -72,7 +72,7 @@ func DBgetAll(pAddressTypeStr string,
 
 //-------------------------------------------------
 
-func DBadd(pAddress *GFchainAddress,
+func DBmongoAdd(pAddress *GFchainAddress,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -96,7 +96,7 @@ func DBadd(pAddress *GFchainAddress,
 //-------------------------------------------------
 // EXISTS
 
-func DBexists(pAddressStr string,
+func DBmongoExists(pAddressStr string,
 	pChainStr   string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
@@ -129,7 +129,7 @@ func DBexists(pAddressStr string,
 //-------------------------------------------------
 // ADD_TAG
 
-func DBaddTag(pTagsLst []string,
+func DBmongoAddTag(pTagsLst []string,
 	pAddressStr string,
 	pChainStr   string,
 	pCtx        context.Context,

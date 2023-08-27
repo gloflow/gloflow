@@ -35,7 +35,7 @@ import (
 
 //--------------------------------------------------
 
-func gifDBcreate(p_image_source_url_str string,
+func dbMongoCreate(p_image_source_url_str string,
 	p_image_origin_page_url_str string,
 	p_img_width_int             int,
 	p_img_height_int            int,
@@ -106,9 +106,8 @@ func gifDBcreate(p_image_source_url_str string,
 
 //--------------------------------------------------
 
-func gifDBdelete(p_id_str string,
+func dbMongoDelete(p_id_str string,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif_db.gifDBdelete()")
 
 	ctx := context.Background()
 	_, err := pRuntimeSys.Mongo_coll.UpdateMany(ctx, bson.M{
@@ -131,10 +130,8 @@ func gifDBdelete(p_id_str string,
 
 //--------------------------------------------------
 
-func gifDBgetByImgID(p_gf_img_id_str string,
+func dbMongoGetByImageID(p_gf_img_id_str string,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif_db.gifDBgetByImgID()")
-
 
 	ctx := context.Background()
 
@@ -173,7 +170,7 @@ func gifDBgetByImgID(p_gf_img_id_str string,
 
 //--------------------------------------------------
 
-func dbGetByOriginURL(p_origin_url_str string,
+func dbMongoGetByOriginURL(p_origin_url_str string,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
 
 	ctx := context.Background()
@@ -211,9 +208,9 @@ func dbGetByOriginURL(p_origin_url_str string,
 
 //--------------------------------------------------
 
-func dbGetPage(p_cursor_start_position_int int, // p_elements_num_int0
-	p_elements_num_int int,                // 50
-	pRuntimeSys      *gf_core.RuntimeSys) ([]GFgif, *gf_core.GFerror) {
+func dbMongoGetPage(p_cursor_start_position_int int, // p_elements_num_int
+	p_elements_num_int int,
+	pRuntimeSys        *gf_core.RuntimeSys) ([]GFgif, *gf_core.GFerror) {
 
 	ctx := context.Background()
 
@@ -265,7 +262,7 @@ func dbGetPage(p_cursor_start_position_int int, // p_elements_num_int0
 
 //--------------------------------------------------
 
-func dbUpdateImageID(p_gif_id_str string,
+func dbMongoUpdateImageID(p_gif_id_str string,
 	p_image_id_str gf_images_core.GFimageID,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 

@@ -131,19 +131,19 @@ func TestGetAll(pTest *testing.T) {
 		T_str: "img",
 		FlowsNamesLst: []string{"flow_1", "flow_2"},
 	}
-	gfErr = gf_images_core.DBputImage(testImg0, ctx, runtimeSys)
+	gfErr = gf_images_core.DBmongoPutImage(testImg0, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}
-	gfErr = gf_images_core.DBputImage(testImg1, ctx, runtimeSys)
+	gfErr = gf_images_core.DBmongoPutImage(testImg1, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}
-	gfErr = gf_images_core.DBputImage(testImg2, ctx, runtimeSys)
+	gfErr = gf_images_core.DBmongoPutImage(testImg2, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}
-	gfErr = gf_images_core.DBputImage(testImg3, ctx, runtimeSys)
+	gfErr = gf_images_core.DBmongoPutImage(testImg3, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}

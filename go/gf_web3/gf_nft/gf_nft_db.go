@@ -32,7 +32,7 @@ import (
 
 //-------------------------------------------------
 
-func DBupdateGFimageProps(pNFTid gf_core.GF_ID,
+func DBmongoUpdateGFimageProps(pNFTid gf_core.GF_ID,
 	pGFimageID          gf_images_core.GFimageID,
 	pGFimageThumbURLstr *string,
 	pCtx                context.Context,
@@ -70,7 +70,7 @@ func DBupdateGFimageProps(pNFTid gf_core.GF_ID,
 
 //-------------------------------------------------
 
-func DBgetByOwner(pAddressStr string,
+func DBmongoGetByOwner(pAddressStr string,
 	pChainStr   string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnft, *gf_core.GFerror) {
@@ -115,7 +115,7 @@ func DBgetByOwner(pAddressStr string,
 
 //-------------------------------------------------
 
-func DBcreateBulkNFTs(pNFTsLst []*GFnft,
+func DBmongoCreateBulkNFTs(pNFTsLst []*GFnft,
 	pMetrics    *GFmetrics,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -167,7 +167,7 @@ func DBcreateBulkNFTs(pNFTsLst []*GFnft,
 
 //-------------------------------------------------
 
-func DBcreateBulkAlchemyNFTs(pNFTsLst []*gf_nft_extern_services.GFnftAlchemy,
+func DBmongoCreateBulkAlchemyNFTs(pNFTsLst []*gf_nft_extern_services.GFnftAlchemy,
 	pMetrics    *GFmetrics,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
