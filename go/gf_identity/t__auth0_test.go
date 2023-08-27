@@ -79,7 +79,7 @@ func TestAuth0(pTest *testing.T) {
 	}
 
 	runtimeSys.LogNewFun("INFO", "Auth0 login pipeline complete...", map[string]interface{}{
-		"session_id":  sessionID,
+		"session_id": sessionID,
 	})
 
 	//----------------------
@@ -108,7 +108,14 @@ func TestAuth0(pTest *testing.T) {
 	if gfErr != nil {
 		pTest.Fail()
 	}
-	
+
+
+
+	resolvedUserNameStr, gfErr := gf_identity_core.DBsqlGetUserNameByID(userID, ctx, runtimeSys)
+	runtimeSys.LogNewFun("INFO", "user_name resolving from user_id succeeded...", map[string]interface{}{
+		"user_name": resolvedUserNameStr,
+	})
+
 	//----------------------
 	updateOp := &gf_identity_core.GFloginAttemptUpdateOp{
 		UserID:      &userID,

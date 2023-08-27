@@ -41,6 +41,40 @@ func renderInitialPage(pFlowNameStr string,
 	pCtx                  context.Context,
 	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
+	// GET_DATA
+	pagesLst, pagesUserNamesLst, flowPagesNumInt, gfErr := getTemplateData(pFlowNameStr,
+		pInitialPagesNumInt,
+		pPageSizeInt,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
+	}
+
+	// RENDER
+	templateRenderedStr, gfErr := renderTemplate(pFlowNameStr,
+		pagesLst,
+		pagesUserNamesLst,
+		flowPagesNumInt,
+		pTmpl,
+		pSubtemplatesNamesLst,
+		pUserID,
+		pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
+	}
+
+	return templateRenderedStr, nil
+}
+
+//-------------------------------------------------
+
+func getTemplateData(pFlowNameStr string,
+	pInitialPagesNumInt   int,
+	pPageSizeInt          int,
+	pCtx                  context.Context,
+	pRuntimeSys           *gf_core.RuntimeSys) ([][]*gf_images_core.GFimage, [][]gf_identity_core.GFuserName, int64, *gf_core.GFerror) {
+
 	//---------------------
 	// GET_TEMPLATE_DATA
 
@@ -54,7 +88,6 @@ func renderInitialPage(pFlowNameStr string,
 			map[string]interface{}{
 				"start_position_int": startPositionInt,
 				"page_size_int":      pPageSizeInt,
-				"user_id_str":        pUserID,
 			})
 
 		//------------
@@ -69,7 +102,7 @@ func renderInitialPage(pFlowNameStr string,
 			pRuntimeSys)
 
 		if gfErr != nil {
-			return "", gfErr
+			return nil, nil, 0, gfErr
 		}
 
 		//------------
@@ -108,7 +141,9 @@ func renderInitialPage(pFlowNameStr string,
 						/*
 						failing to resolve username should not fail the rendering
 						of the entire flow view.
-						*/ 
+						*/
+						userNameStr = gf_identity_core.GFuserName("?")
+						pageUserNamesLst = append(pageUserNamesLst, userNameStr)
 						continue
 					}
 
@@ -118,7 +153,7 @@ func renderInitialPage(pFlowNameStr string,
 			} else {
 
 				// IMPORTANT!! - pre-auth-system images are marked as owned by anonymous users.
-				userNameStr = "anon"
+				userNameStr = gf_identity_core.GFuserName("anon")
 			}
 
 			pageUserNamesLst = append(pageUserNamesLst, userNameStr)
@@ -132,23 +167,11 @@ func renderInitialPage(pFlowNameStr string,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
-		return "", gfErr
+		return nil, nil, 0, gfErr
 	}
 
-	//---------------------
-	templateRenderedStr, gfErr := renderTemplate(pFlowNameStr,
-		pagesLst,
-		pagesUserNamesLst,
-		flowPagesNumInt,
-		pTmpl,
-		pSubtemplatesNamesLst,
-		pUserID,
-		pRuntimeSys)
-	if gfErr != nil {
-		return "", gfErr
-	}
 
-	return templateRenderedStr, nil
+	return pagesLst, pagesUserNamesLst, flowPagesNumInt, nil
 }
 
 //-------------------------------------------------
