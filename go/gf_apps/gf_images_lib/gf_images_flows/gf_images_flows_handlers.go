@@ -332,7 +332,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 			if pReq.Method == "GET" {
 
-				pagesLst, gfErr := pipelineGetPage(pReq, pResp, pCtx, pRuntimeSys)
+				pagesLst, gfErr := pipelineGetPage(pReq, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

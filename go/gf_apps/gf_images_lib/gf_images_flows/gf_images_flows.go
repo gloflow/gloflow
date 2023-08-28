@@ -187,69 +187,70 @@ func pipelineGetAll(pCtx context.Context,
 //-------------------------------------------------
 // GET_PAGE__PIPELINE
 
-func pipelineGetPage(p_req *http.Request,
-	p_resp        http.ResponseWriter,
-	p_ctx         context.Context,
+func pipelineGetPage(pReq *http.Request,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*gf_images_core.GFimage, *gf_core.GFerror) {
 
 	//--------------------
 	// INPUT
 
-	qs_map := p_req.URL.Query()
+	qsMap := pReq.URL.Query()
 
-	flow_name_str := "general" // default
-	if a_lst,ok := qs_map["fname"]; ok {
-		flow_name_str = a_lst[0]
+	flowNameStr := "general" // default
+	if aLst, ok := qsMap["fname"]; ok {
+		flowNameStr = aLst[0]
 	}
 
 	var err error
-	page_index_int := 0 // default
-	if a_lst, ok := qs_map["pg_index"]; ok {
-		pg_index           := a_lst[0]
-		page_index_int, err = strconv.Atoi(pg_index) // user supplied value
+	pageIndexInt := 0 // default
+	if aLst, ok := qsMap["pg_index"]; ok {
+		pageIndex        := aLst[0]
+		pageIndexInt, err = strconv.Atoi(pageIndex) // user supplied value
 		
 		if err != nil {
-			gfErr := gf_core.ErrorCreate("failed to parse integer pg_index query string arg",
+			gfErr := gf_core.ErrorCreate("failed to parse integer page_index query string arg",
 				"int_parse_error",
-				map[string]interface{}{"pg_index": pg_index,},
-				err, "gf_images_lib", pRuntimeSys)
+				map[string]interface{}{"page_index": pageIndex,},
+				err, "gf_images_flows", pRuntimeSys)
 			return nil, gfErr
 		}
 	}
 
-	page_size_int := 10 // default
-	if a_lst, ok := qs_map["pg_size"]; ok {
-		pg_size          := a_lst[0]
-		page_size_int,err = strconv.Atoi(pg_size) // user supplied value
+	pageSizeInt := 10 // default
+	if aLst, ok := qsMap["pg_size"]; ok {
+		
+		pageSize := aLst[0]
+		
+		pageSizeInt, err = strconv.Atoi(pageSize) // user supplied value
 		if err != nil {
 			gfErr := gf_core.ErrorCreate("failed to parse integer pg_size query string arg",
 				"int_parse_error",
-				map[string]interface{}{"pg_size": pg_size,},
-				err, "gf_images_lib", pRuntimeSys)
+				map[string]interface{}{"page_size": pageSize,},
+				err, "gf_images_flows", pRuntimeSys)
 			return nil, gfErr
 		}
 	}
 
-	pRuntimeSys.LogFun("INFO",fmt.Sprintf("flow_name_str  - %s", flow_name_str))
-	pRuntimeSys.LogFun("INFO",fmt.Sprintf("page_index_int - %d", page_index_int))
-	pRuntimeSys.LogFun("INFO",fmt.Sprintf("page_size_int  - %d", page_size_int))
+	pRuntimeSys.LogNewFun("DEBUG", fmt.Sprintf("flow_name_str  - %s", flowNameStr), nil)
+	pRuntimeSys.LogNewFun("DEBUG", fmt.Sprintf("page_index_int - %d", pageIndexInt), nil)
+	pRuntimeSys.LogNewFun("DEBUG", fmt.Sprintf("page_size_int  - %d", pageSizeInt), nil)
 
 	//--------------------
 
 	//--------------------
 	// GET_PAGES
-	cursor_start_position_int := page_index_int*page_size_int
-	pages_lst, gfErr := dbMongoGetPage(flow_name_str,
-		cursor_start_position_int, // p_cursor_start_position_int
-		page_size_int,             // p_elements_num_int
-		p_ctx,
+	cursorStartPositionInt := pageIndexInt * pageSizeInt
+	pagesLst, gfErr := dbMongoGetPage(flowNameStr,
+		cursorStartPositionInt, // p_cursor_start_position_int
+		pageSizeInt,            // p_elements_num_int
+		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
 	//------------------
-	return pages_lst, nil
+	return pagesLst, nil
 }
 
 //-------------------------------------------------
