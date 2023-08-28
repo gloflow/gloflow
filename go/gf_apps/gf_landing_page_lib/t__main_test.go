@@ -22,6 +22,7 @@ package gf_landing_page_lib
 import (
 	"fmt"
 	"os"
+	"context"
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -64,7 +65,7 @@ func TestBookmarks(pTest *testing.T) {
 func testLandingPage(pTest *testing.T,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
-	
+	ctx := context.Background()
 	userID := gf_core.GF_ID("test_user")
 
 	templatesPathsMap := map[string]string{
@@ -89,6 +90,7 @@ func testLandingPage(pTest *testing.T,
 		gfTemplates.template,
 		gfTemplates.subtemplatesNamesLst,
 		userID,
+		ctx,
 		pRuntimeSys)
 	if gfErr != nil {
 		pTest.Fail()
