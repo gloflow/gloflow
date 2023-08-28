@@ -74,9 +74,15 @@ export async function init_me_control(p_parent_node,
     // HOME_REDIRECT
     $("#current_user").on("click", ()=>{
 
-        window.location.href = p_home_url_str;
+        // IMPORTAN!! - adding a unique param to this request to disable browser cache,
+        //              since it can cause inconsistent behavior.
+        const unique_param = new Date().getTime();
+        const url_str = p_home_url_str+"?"+unique_param;
+        
+        window.location.href = url_str;
     });
 }
+
 //-------------------------------------------------
 // INIT_WITH_HTTP
 // p_notifications_meta_map - map of notifications metadata.
@@ -181,7 +187,7 @@ async function auth_method_pick(p_logged_in_bool) {
             // if user is already logged in, and logout button is pressed, redirect user
             // to logout endpoint so that the system logs them out. 
             if (p_logged_in_bool) {
-                window.location.href = "/v1/identity/auth0/logout";
+                gf_identity_auth0.logout();
                 return
             }
 

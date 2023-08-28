@@ -18,9 +18,26 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 //-------------------------------------------------
-export async function user_auth_pipeline() {
+export function user_auth_pipeline() {
+
+    // IMPORTAN!! - adding a unique param to this request to disable browser cache,
+    //              since it can cause inconsistent behavior.
+    const unique_param = new Date().getTime();
+    const url_str = "/v1/identity/auth0/login?"+unique_param;
 
     // redirect the user to the GF auth0 login page, which will in turn
     // redirec the auth0 domain.
-    window.location.href = "/v1/identity/auth0/login";
+    window.location.href = url_str;
+}
+
+//-------------------------------------------------
+export function logout() {
+
+    // IMPORTAN!! - adding a unique param to this request to disable browser cache,
+    //              since it can cause inconsistent behavior.
+    const unique_param = new Date().getTime();
+    const url_str = "/v1/identity/auth0/logout?"+unique_param;
+
+    // redirect user to logout endpoint
+    window.location.href = url_str;
 }
