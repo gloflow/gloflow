@@ -47,6 +47,36 @@ type GFtestUserInfo struct {
 
 //-------------------------------------------------
 
+func TestCreateUserInDB(pTest *testing.T,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, gf_identity_core.GFuserName) {
+
+	userID := gf_core.GF_ID(fmt.Sprintf("test_user_id_%s", gf_core.StrRandom()))
+	userNameStr := gf_identity_core.GFuserName("test_user")
+	screenNameStr := "test_user_screenname"
+
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+
+	user := &gf_identity_core.GFuser{
+		Vstr:              "0",
+		ID:                userID,
+		CreationUNIXtimeF: creationUNIXtimeF,
+		UserTypeStr:       "standard",
+		UserNameStr:       userNameStr,
+		ScreenNameStr:     screenNameStr,
+	}
+	
+	// DB
+	gfErr := gf_identity_core.DBsqlUserCreate(user, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	return userID, userNameStr
+}
+
+//-------------------------------------------------
+
 func TestUserpassCreateAndLoginNewUser(pUserInfo *GFtestUserInfo,
 	pTest                   *testing.T,
 	pHTTPagent              *gorequest.SuperAgent,
@@ -136,12 +166,12 @@ func Tinit(pServiceNameStr string,
 	pLogNewFun    gf_core.GFlogFun,
 	pLogFun       func(string, string)) *gf_core.RuntimeSys {
 
-	testMongodbHostStr   := pMongoHostStr // cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	testMongodbHostStr   := pMongoHostStr
 	testMongodbDBnameStr := "gf_tests"
 	testMongodbURLstr    := fmt.Sprintf("mongodb://%s", testMongodbHostStr)
 
 	runtimeSys := &gf_core.RuntimeSys{
-		ServiceNameStr: pServiceNameStr, // "gf_identity_tests",
+		ServiceNameStr: pServiceNameStr,
 		LogFun:         pLogFun,
 		LogNewFun:      pLogNewFun,
 		Validator:      gf_core.ValidateInit(),

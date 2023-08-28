@@ -43,8 +43,8 @@ func viewRenderTemplateLogin(pAuthSubsystemTypeStr string,
 	
 
 	type templateData struct {
-		Sys_release_info     gf_core.SysReleaseInfo
-		Is_subtmpl_def       func(string) bool // used inside the main_template to check if the subtemplate is defined
+		Sys_release_info gf_core.SysReleaseInfo
+		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
 	buff := new(bytes.Buffer)

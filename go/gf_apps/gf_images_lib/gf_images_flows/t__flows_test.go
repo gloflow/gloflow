@@ -77,7 +77,6 @@ func TestCreate(pTest *testing.T) {
 		pTest.Fail()
 	}
 
-
 	spew.Dump(flow)
 
 	//--------------------
@@ -94,6 +93,7 @@ func TestGetAll(pTest *testing.T) {
 		LogFun:         logFun,
 		LogNewFun:      logNewFun,
 	}
+	userID := gf_core.GF_ID("test_user")
 
 	//------------------
 	// MONGODB
@@ -111,43 +111,8 @@ func TestGetAll(pTest *testing.T) {
 	
 	//------------------
 	// CREATE_TEST_IMAGES
-	testImg0 := &gf_images_core.GFimage{
-		IDstr: "test_img_0",
-		T_str: "img",
-		FlowsNamesLst: []string{"flow_0"},
-	}
-	testImg1 := &gf_images_core.GFimage{
-		IDstr: "test_img_1",
-		T_str: "img",
-		FlowsNamesLst: []string{"flow_0"},
-	}
-	testImg2 := &gf_images_core.GFimage{
-		IDstr: "test_img_2",
-		T_str: "img",
-		FlowsNamesLst: []string{"flow_0", "flow_1"},
-	}
-	testImg3 := &gf_images_core.GFimage{
-		IDstr: "test_img_3",
-		T_str: "img",
-		FlowsNamesLst: []string{"flow_1", "flow_2"},
-	}
-	gfErr = gf_images_core.DBmongoPutImage(testImg0, ctx, runtimeSys)
-	if gfErr != nil {
-		pTest.Fail()
-	}
-	gfErr = gf_images_core.DBmongoPutImage(testImg1, ctx, runtimeSys)
-	if gfErr != nil {
-		pTest.Fail()
-	}
-	gfErr = gf_images_core.DBmongoPutImage(testImg2, ctx, runtimeSys)
-	if gfErr != nil {
-		pTest.Fail()
-	}
-	gfErr = gf_images_core.DBmongoPutImage(testImg3, ctx, runtimeSys)
-	if gfErr != nil {
-		pTest.Fail()
-	}
- 
+	
+	createTestImages(userID, pTest, ctx, runtimeSys)
 	//------------------
 
 
@@ -166,4 +131,57 @@ func TestGetAll(pTest *testing.T) {
 	assert.True(pTest, allFlowsNamesLst[0]["flow_imgs_count_int"].(int32) == 3, "first flow should have a count of 3")
 	assert.True(pTest, allFlowsNamesLst[1]["flow_imgs_count_int"].(int32) == 2, "second flow should have a count of 2")
 	assert.True(pTest, allFlowsNamesLst[2]["flow_imgs_count_int"].(int32) == 1, "third flow should have a count of 1")
+}
+
+//---------------------------------------------------
+
+func createTestImages(pUserID gf_core.GF_ID,
+	pTest       *testing.T,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) {
+
+	pRuntimeSys.LogNewFun("DEBUG", "creating test images...", nil)
+
+	testImg0 := &gf_images_core.GFimage{
+		IDstr: "test_img_0",
+		T_str: "img",
+		FlowsNamesLst: []string{"flow_0"},
+		UserID:        pUserID,
+	}
+	testImg1 := &gf_images_core.GFimage{
+		IDstr: "test_img_1",
+		T_str: "img",
+		FlowsNamesLst: []string{"flow_0"},
+		UserID:        pUserID,
+	}
+	testImg2 := &gf_images_core.GFimage{
+		IDstr: "test_img_2",
+		T_str: "img",
+		FlowsNamesLst: []string{"flow_0", "flow_1"},
+		UserID:        pUserID,
+	}
+	testImg3 := &gf_images_core.GFimage{
+		IDstr: "test_img_3",
+		T_str: "img",
+		FlowsNamesLst: []string{"flow_1", "flow_2"},
+		UserID:        pUserID,
+	}
+	gfErr := gf_images_core.DBmongoPutImage(testImg0, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+	gfErr = gf_images_core.DBmongoPutImage(testImg1, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+	gfErr = gf_images_core.DBmongoPutImage(testImg2, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+	gfErr = gf_images_core.DBmongoPutImage(testImg3, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+
 }

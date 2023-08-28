@@ -83,12 +83,16 @@ func ListContainsStr(pStr string, pLst []string) bool {
 	return false
 }
 
+//-------------------------------------------------------------
+
 func ListRemoveElementAtIndex(pLst []interface{}, pIndex int) []interface{} {
 	newLst := make([]interface{}, 0)
 	newLst = append(newLst, pLst[:pIndex]...)
 	newLst = append(newLst, pLst[pIndex+1:]...)
 	return newLst
 }
+
+//-------------------------------------------------------------
 
 func ListPop[T any](pLst []T) (T, []T) {
 

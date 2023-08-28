@@ -22,11 +22,79 @@ package gf_images_flows
 import (
 	"fmt"
 	"testing"
+	"context"
+	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
-	// "github.com/davecgh/go-spew/spew"
+	"github.com/davecgh/go-spew/spew"
 )
+
+//---------------------------------------------------
+
+func TestTemplatesWithDB(pTest *testing.T) {
+
+	ctx := context.Background()
+
+
+	serviceNameStr := "gf_identity_test"
+	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	sqlHostStr     := cliArgsMap["sql_host_str"].(string)
+	runtimeSys     := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
+
+	gfErr := gf_identity_core.DBsqlCreateTables(ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	//-------------------
+	// CREATE USER
+	
+	userID, userNameStr := gf_identity.TestCreateUserInDB(pTest, ctx, runtimeSys)
+
+	//-------------------
+	// CREATE_TEST_IMAGES
+	createTestImages(userID, pTest, ctx, runtimeSys)
+
+
+
+	flowNameStr        := "flow_0"
+	initialPagesNumInt := 2
+	pageSizeInt        := 2
+	pagesLst, pagesUserNamesLst, flowPagesNumInt, gfErr := getTemplateData(flowNameStr,
+		initialPagesNumInt, pageSizeInt,
+		ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+
+
+
+	spew.Dump(pagesLst)
+	spew.Dump(pagesUserNamesLst)
+
+
+
+	fmt.Println(flowPagesNumInt)
+
+
+
+	for _, pLst := range pagesUserNamesLst {
+		for _, resolvedUserNameStr := range pLst {
+
+			/*
+			check that the user_id that was assigned to images is resolved to the
+			correct user_name of that user.
+			the resolution of user_id to user_name happens via the user SQL table.
+			*/
+			assert.True(pTest, resolvedUserNameStr == userNameStr,
+				"image user_id not resolved to the correct user_name")
+		}
+	}
+
+}
 
 //---------------------------------------------------
 
