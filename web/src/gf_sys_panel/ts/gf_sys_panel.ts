@@ -46,7 +46,7 @@ export async function init(p_auth_http_api_map,
 			
 			<div id="background">
 				<div id="controls">
-					<div id="home_btn">
+					<div id="landing_page_btn">
 						<img src="/images/d/gf_logo_icon.png"></img>
 					</div>
 
@@ -74,8 +74,8 @@ export async function init(p_auth_http_api_map,
 		});
 	});
 
-	// HOME_BTN
-	$(sys_panel_element).find("#home_btn").on("click", ()=>{
+	// LANDING_PAGE_BTN
+	$(sys_panel_element).find("#landing_page_btn").on("click", ()=>{
 		window.location.href = "/"
 	});
 
