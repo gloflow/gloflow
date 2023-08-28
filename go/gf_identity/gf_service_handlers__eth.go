@@ -87,6 +87,9 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 					return nil, gfErr
 				}
 
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
+
 				outputMap := map[string]interface{}{
 					"user_exists_bool": output.UserExistsBool,
 					"nonce_val_str":    output.NonceValStr,
@@ -142,6 +145,9 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 				//---------------------
 
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
+
 				outputMap := map[string]interface{}{
 					"auth_signature_valid_bool": output.AuthSignatureValidBool,
 					"nonce_exists_bool":         output.NonceExistsBool,
@@ -183,6 +189,9 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 					return nil, gfErr
 				}
 
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
+				
 				outputMap := map[string]interface{}{
 					"auth_signature_valid_bool": output.AuthSignatureValidBool,
 					"nonce_exists_bool":         output.NonceExistsBool,

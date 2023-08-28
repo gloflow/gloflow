@@ -642,3 +642,11 @@ func HTTPgetReqConfig() (map[string]string, string) {
 	userAgentStr := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
 	return headersMap, userAgentStr
 }
+
+//-------------------------------------------------
+
+func HTTPdisableCachingOfResponse(pResp http.ResponseWriter) {
+	pResp.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+    pResp.Header().Set("Pragma", "no-cache")
+    pResp.Header().Set("Expires", "0")
+}

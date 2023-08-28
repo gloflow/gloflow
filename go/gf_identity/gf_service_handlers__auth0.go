@@ -76,9 +76,13 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				if gfErr != nil {
 					return nil, gfErr
 				}
-				
+
 				//------------------
 				// HTTP_REDIRECT - redirect user to Auth0 login url
+
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
+
 				auth0appStateBase64str := base64.StdEncoding.EncodeToString([]byte(string(sessionIDstr)))
 
 				http.Redirect(pResp,
@@ -165,6 +169,9 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			//------------------
 			// HTTP_REDIRECT - redirect user to logged in page
 			
+			// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+			gf_core.HTTPdisableCachingOfResponse(pResp)
+
 			/*
 			IMPORTANT!! - currently in the Auth0 login_callback, once all login initialization is complete,
 						the client is redirected to the login_page with a QS arg "login_success" set to 1.
@@ -210,6 +217,9 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 				pRuntimeSys.LogNewFun("DEBUG", "redirecting to Auth0 logout url...",
 					map[string]interface{}{"logout_url_str": logoutURLstr})
+
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
 
 				// HTTP_REDIRECT
 				http.Redirect(pResp,
@@ -261,6 +271,9 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 				afterLogoutURLstr := "/landing/main"
 
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
+				
 				// HTTP_REDIRECT
 				http.Redirect(pResp,
 					pReq,

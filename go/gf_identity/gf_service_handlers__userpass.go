@@ -123,6 +123,9 @@ func initHandlersUserpass(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 				//---------------------
 
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
+
 				outputMap := map[string]interface{}{
 					"user_exists_bool": output.UserExistsBool,
 					"pass_valid_bool":  output.PassValidBool,
@@ -168,6 +171,9 @@ func initHandlersUserpass(pKeyServer *gf_identity_core.GFkeyServerInfo,
 					return nil, gfErr
 				}
 
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
+				
 				outputMap := map[string]interface{}{
 					"user_exists_bool":         output.UserExistsBool,
 					"user_in_invite_list_bool": output.UserInInviteListBool,

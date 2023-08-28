@@ -86,6 +86,10 @@ func initHandlers(pAuthLoginURLstr string,
 				}
 				return outputMap, nil
 			}
+
+			// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+			gf_core.HTTPdisableCachingOfResponse(pResp)
+
 			return nil, nil
 		},
 		rpcHandlerRuntime,
@@ -114,6 +118,9 @@ func initHandlers(pAuthLoginURLstr string,
 				if gfErr != nil {
 					return nil, gfErr
 				}
+
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
 
 				outputMap := map[string]interface{}{
 					"user_name_str":         output.UserNameStr,
@@ -168,6 +175,9 @@ func initHandlers(pAuthLoginURLstr string,
 					return nil, gfErr
 				}
 
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
+
 				//---------------------
 				// OUTPUT
 				dataMap := map[string]interface{}{
@@ -202,6 +212,9 @@ func initHandlers(pAuthLoginURLstr string,
 				}
 				
 				pResp.Write([]byte(templateRenderedStr))
+
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
 			}
 
 			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
@@ -297,6 +310,9 @@ func initHandlers(pAuthLoginURLstr string,
 					}
 					return outputMap, nil
 				}
+
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
 			}
 			return nil, nil
 		},
@@ -368,6 +384,9 @@ func initHandlers(pAuthLoginURLstr string,
 					//---------------------
 				}
 
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
+
 				outputMap := map[string]interface{}{
 					"mfa_valid_bool": validBool,
 				}
@@ -422,6 +441,9 @@ func initHandlers(pAuthLoginURLstr string,
 					return nil, gfErr
 				}
 
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
+
 				outputMap := map[string]interface{}{}
 				return outputMap, nil
 			}
@@ -435,6 +457,9 @@ func initHandlers(pAuthLoginURLstr string,
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/register_invite_email",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
+			// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+			gf_core.HTTPdisableCachingOfResponse(pResp)
+			
 			dataMap := map[string]interface{}{}
 			return dataMap, nil
 		},
