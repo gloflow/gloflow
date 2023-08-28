@@ -32,6 +32,7 @@ function log_fun(p_g,p_m) {
 			break;
 	}
 }
+
 /*//---------------------------------------------------
 function send_msg_to_background_page(p_msg_map,
 								p_msg_type_str) {
@@ -39,12 +40,13 @@ function send_msg_to_background_page(p_msg_map,
 	p_msg_map['type_str']   = p_msg_type_str;
 	chrome.extension.sendRequest(p_msg_map,(p_response) => {});
 }*/
+
 //---------------------------------------------------
 function main(p_log_fun) {
-	p_log_fun('FUN_ENTER','page_element_picker.main()')
+	// p_log_fun('FUN_ENTER','page_element_picker.main()')
 				
-	//IMPORTANT!! - maintaining this state so that once the info is parsed
-	//              it is cached 
+	// IMPORTANT!! - maintaining this state so that once the info is parsed
+	//               it is cached 
 	var page_img_infos_lst    = [];
 	var page_videos_infos_lst = [];
 
@@ -54,13 +56,14 @@ function main(p_log_fun) {
 		p_send_response_fun) => {
 			handle_msg(p_request, p_sender, p_send_response_fun);
 		});
+		
 	//---------------------------------------------------
 	function handle_msg(p_request, p_sender, p_send_response_fun) {
 
-		p_log_fun('INFO','============================================');
-		p_log_fun('INFO','page_element_picker received message');
-		//p_log_fun('INFO','p_request.source_str:'+p_request.source_str)
-		//p_log_fun('INFO','p_request.type_str  :'+p_request.type_str)
+		// p_log_fun('INFO', '============================================');
+		// p_log_fun('INFO', 'page_element_picker received message');
+		// p_log_fun('INFO','p_request.source_str:'+p_request.source_str)
+		// p_log_fun('INFO','p_request.type_str  :'+p_request.type_str)
 		
 		const request_source_str = p_request.source_str;
 		const request_type_str   = p_request.type_str;
@@ -69,8 +72,8 @@ function main(p_log_fun) {
 		//MESSAGES FROM POPUP
 
 		if (request_source_str == "popup") {
-			p_log_fun('INFO','POPUP MSG');
-			p_log_fun('INFO','request_type_str - '+request_type_str);
+			p_log_fun('INFO', 'POPUP MSG');
+			p_log_fun('INFO', 'request_type_str - '+request_type_str);
 
 			switch(request_type_str) {
 				//-------------

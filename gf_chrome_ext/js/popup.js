@@ -38,7 +38,7 @@ function log_fun(p_g,p_m) {
 
 //-------------------------------------------------
 function main(p_log_fun) {
-	p_log_fun('FUN_ENTER','popup.main()');
+	// p_log_fun('FUN_ENTER', 'popup.main()');
 	
 	init_selected_elements_view(p_log_fun);
 	init_buttons(p_log_fun);
@@ -46,7 +46,7 @@ function main(p_log_fun) {
 
 //-------------------------------------------------
 function init_buttons(p_log_fun) {
-	p_log_fun('FUN_ENTER','popup.init_buttons()');
+	// p_log_fun('FUN_ENTER', 'popup.init_buttons()');
 	
 	//-----------------------
 	//CREATE POST
@@ -132,7 +132,7 @@ function init_buttons(p_log_fun) {
 //BACKGROUND_PAGE COMM
 //---------------------------------------------------
 function clear__selected_elements(p_on_complete_fun, p_log_fun) {
-	p_log_fun('FUN_ENTER','popup.get__selected_elements()');
+	// p_log_fun('FUN_ENTER','popup.get__selected_elements()');
 
 	const msg_map = {
 		'source_str':'popup',
@@ -146,7 +146,7 @@ function clear__selected_elements(p_on_complete_fun, p_log_fun) {
 
 //---------------------------------------------------
 function get__selected_elements(p_on_complete_fun, p_log_fun) {
-	p_log_fun('FUN_ENTER','popup.get__selected_elements()');
+	// p_log_fun('FUN_ENTER','popup.get__selected_elements()');
 
 	const msg_map = {
 		'source_str':'popup',
@@ -198,7 +198,7 @@ function get__selected_elements(p_on_complete_fun, p_log_fun) {
 //CONTENT_SCRIPT COMM
 //-------------------------------------------------
 function get_page_img_infos__from_content_scr(p_on_complete_fun, p_log_fun) {
-	p_log_fun('FUN_ENTER','popup.get_page_img_infos__from_content_scr()');
+	// p_log_fun('FUN_ENTER', 'popup.get_page_img_infos__from_content_scr()');
 
 	chrome.tabs.getSelected(null,(p_tab)=>{
 
@@ -223,7 +223,7 @@ function get_page_img_infos__from_content_scr(p_on_complete_fun, p_log_fun) {
 
 //-------------------------------------------------
 function get_page_video_infos__from_content_scr(p_on_complete_fun, p_log_fun) {
-	p_log_fun('FUN_ENTER', 'popup.get_page_video_infos__from_content_scr()');
+	// p_log_fun('FUN_ENTER', 'popup.get_page_video_infos__from_content_scr()');
 
 	chrome.tabs.getSelected(null,(p_tab)=>{
 
@@ -246,7 +246,7 @@ function get_page_video_infos__from_content_scr(p_on_complete_fun, p_log_fun) {
 
 //-------------------------------------------------
 function get__post_origin_page_url(p_on_complete_fun, p_log_fun) {
-	p_log_fun('FUN_ENTER', 'popup.get__post_origin_page_url()');
+	// p_log_fun('FUN_ENTER', 'popup.get__post_origin_page_url()');
 
 	chrome.tabs.getSelected(null, (p_tab) => {
 		const msg_info_map = {
@@ -263,7 +263,7 @@ function get__post_origin_page_url(p_on_complete_fun, p_log_fun) {
 
 //-------------------------------------------------
 function display_page_info_in_content_scr(p_on_complete_fun, p_log_fun) {
-	p_log_fun('FUN_ENTER','popup.display_page_info_in_content_scr()');
+	// p_log_fun('FUN_ENTER','popup.display_page_info_in_content_scr()');
 
 	chrome.tabs.getSelected(null,(p_tab) => {
 		const msg_info_map = {
@@ -281,7 +281,7 @@ function display_page_info_in_content_scr(p_on_complete_fun, p_log_fun) {
 //VAR
 //-------------------------------------------------
 function run_script_in_tab(p_script_code_str, p_tab_id, p_log_fun) {
-	p_log_fun('FUN_ENTER','popup.run_script_in_tab()')	
+	// p_log_fun('FUN_ENTER','popup.run_script_in_tab()')	
 	const details_map = {
 		'code':p_script_code_str
 	};

@@ -23,7 +23,7 @@ extract__main(log_fun)
 //-------------------------------------------------
 function log_fun(p_g,p_m) {
 	var msg_str = p_g+':'+p_m
-	//chrome.extension.getBackgroundPage().console.log(msg_str);
+	// chrome.extension.getBackgroundPage().console.log(msg_str);
 
 	switch (p_g) {
 		case "INFO":
@@ -37,7 +37,7 @@ function log_fun(p_g,p_m) {
 
 //---------------------------------------------------
 function extract__main(p_log_fun) {
-	p_log_fun('FUN_ENTER','extract.extract__main()');
+	// p_log_fun('FUN_ENTER', 'extract.extract__main()');
 
 	chrome.extension.onMessage.addListener(
 		(p_request, p_sender, p_send_response_fun) => {
@@ -64,7 +64,7 @@ background page for storage, and then that data is displayed to the user by the
 page_element_picker content_script*/
 
 function handle_msg(p_request_type_str, p_log_fun) {
-	p_log_fun('FUN_ENTER','extract.handle_msg()');
+	// p_log_fun('FUN_ENTER', 'extract.handle_msg()');
 
 	switch(p_request_type_str) {
 		//-------------
@@ -72,7 +72,7 @@ function handle_msg(p_request_type_str, p_log_fun) {
 
 		case 'get_page_img_infos':
 			const new_page_img_infos_lst = get_images_info(p_log_fun);
-			const msg_map = {
+			var msg_map = {
 				'page_img_infos_lst': new_page_img_infos_lst
 			};
 			send_to_bg_page(msg_map, (p_resp)=>{});
@@ -83,7 +83,7 @@ function handle_msg(p_request_type_str, p_log_fun) {
 
 		case 'get_page_videos_infos':
 			const new_page_video_infos_lst = get_videos_info(p_log_fun);
-			const msg_map = {
+			var msg_map = {
 				'page_videos_infos_lst':new_page_video_infos_lst
 			};
 			send_to_bg_page(msg_map,(p_resp)=>{});
@@ -95,7 +95,7 @@ function handle_msg(p_request_type_str, p_log_fun) {
 
 //---------------------------------------------------
 function send_to_bg_page(p_msg_map, p_on_complete_fun) {
-	p_log_fun('FUN_ENTER','exctract.send_to_bg_page()');
+	// p_log_fun('FUN_ENTER', 'exctract.send_to_bg_page()');
 
 	chrome.extension.sendRequest(p_msg_map,
 		(p_resp)=>{
@@ -104,12 +104,12 @@ function send_to_bg_page(p_msg_map, p_on_complete_fun) {
 }
 
 //---------------------------------------------------
-//ADD!! - detect you tube embeds in other non-youtube.com pages
-//        via the <embed> tag
+// ADD!! - detect you tube embeds in other non-youtube.com pages
+//         via the <embed> tag
 
 //->:List<:Dict(video_info_map)>
 function get_videos_info(p_log_fun) {
-	p_log_fun('FUN_ENTER', 'extract.get_videos_info()')
+	// p_log_fun('FUN_ENTER', 'extract.get_videos_info()')
 
 	const page_url_str    = window.location.toString();
 	const videos_info_lst = [];
@@ -122,7 +122,7 @@ function get_videos_info(p_log_fun) {
 	if (page_url_str.match("^http:\/\/www.youtube.com\/watch") || page_url_str.match("^https:\/\/www.youtube.com\/watch")) {
 
 		const youtube_video_embed_url_str = $('link[itemprop="embedURL"]').attr('href');
-		p_log_fun('INFO', 'youtube_video_embed_url_str:'+youtube_video_embed_url_str);
+		// p_log_fun('INFO', 'youtube_video_embed_url_str:'+youtube_video_embed_url_str);
 		
 		const video_info_map = {
 			'type_str':        'video',
@@ -216,14 +216,14 @@ function get_videos_info(p_log_fun) {
 //---------------------------------------------------
 //->:List<:Dict()>(img_infos_lst)
 function get_images_info(p_log_fun) {
-	p_log_fun('FUN_ENTER', 'extract.get_images_info()')
+	// p_log_fun('FUN_ENTER', 'extract.get_images_info()')
 	
 	const page_url_str        = window.location.toString();
 	const min_image_dimension = 20;
 
 	//---------------------------------------------------
 	function get_image_info(p_jq_element) {
-		p_log_fun('FUN_ENTER', 'extract.get_images_info().get_image_info()')
+		// p_log_fun('FUN_ENTER', 'extract.get_images_info().get_image_info()')
 		
 		//".src" instead of ".attr('src')" - gets the fully resolved url (including the host)
 		//                                   and not just the value thats stored in the "src" html attr
