@@ -39,18 +39,13 @@ $(document).ready(()=>{
 
 	//-------------------------------------------------
 
-
 	init(log_fun);
-
 });
 
 //--------------------------------------------------------
 function init(p_log_fun) {
 
-
-
 	console.log("gf login UI...")
-	
 	
 	let url    = new URL(window.location.href);
 	let params = new URLSearchParams(url.search);
@@ -78,7 +73,13 @@ function init(p_log_fun) {
 				</div>`);
 
 			setTimeout(function() {
-				window.location.href = '/v1/home/view';
+
+				// IMPORTAN!! - adding a unique param to this request to disable browser cache,
+				//              since it can cause inconsistent behavior.
+				const unique_param = new Date().getTime();
+				const url_str = "/v1/home/view?"+unique_param;
+				
+				window.location.href = url_str;
 			}, 3000);
 		}
 		else {
