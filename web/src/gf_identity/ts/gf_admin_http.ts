@@ -33,7 +33,6 @@ export function delete_user(p_user_id_str :string,
         $.ajax({
             'url':         url_str,
             'type':        'POST',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
@@ -70,7 +69,6 @@ export function resend_email_confirm(p_user_id_str :string,
         $.ajax({
             'url':         url_str,
             'type':        'POST',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
@@ -101,7 +99,6 @@ export function get_all_users() {
         $.ajax({
             'url':         url_str,
             'type':        'POST',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
@@ -132,7 +129,6 @@ export function get_all_invite_list() {
         $.ajax({
             'url':         url_str,
             'type':        'POST',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
@@ -164,7 +160,6 @@ export function add_to_invite_list(p_email_str :string) {
         $.ajax({
             'url':         url_str,
             'type':        'POST',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
@@ -196,7 +191,6 @@ export function remove_from_invite_list(p_email_str :string) {
         $.ajax({
             'url':         url_str,
             'type':        'POST',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{

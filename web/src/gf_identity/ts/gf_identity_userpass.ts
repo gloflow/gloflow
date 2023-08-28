@@ -226,10 +226,7 @@ async function login_activate(p_container,
     //-------------------
     const home_url_str = p_urls_map["home"];
 
-    // IMPORTAN!! - adding a unique param to this request to disable browser cache,
-    //              since it can cause inconsistent behavior.
-    const unique_param = new Date().getTime();
-    const url_str = home_url_str+"?"+unique_param;
+    const url_str = home_url_str;
 	window.location.href = url_str;
 
     //-------------------

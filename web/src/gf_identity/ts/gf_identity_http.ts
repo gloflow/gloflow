@@ -153,7 +153,6 @@ export function user_get_me() {
         $.ajax({
             'url':         url_str,
             'type':        'GET',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
 
@@ -184,7 +183,6 @@ export function logged_in() {
         $.ajax({
             'url':         url_str,
             'type':        'GET',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
 
@@ -220,7 +218,6 @@ export function user_preflight(p_user_name_str,
         $.ajax({
             'url':         url_str,
             'type':        'POST',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
@@ -257,7 +254,6 @@ export function user_eth_login(p_user_address_eth_str :string,
         $.ajax({
             'url':         url_str,
             'type':        'POST',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
@@ -296,7 +292,6 @@ export function user_userpass_login(p_user_name_str :string,
         $.ajax({
             'url':         p_url_str,
             'type':        'POST',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
@@ -332,7 +327,6 @@ export function user_mfa_confirm(p_user_name_str :string,
         $.ajax({
             'url':         url_str,
             'type':        'POST',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
@@ -372,7 +366,6 @@ export function user_eth_create(p_user_address_eth_str :string,
         $.ajax({
             'url':         url_str,
             'type':        'POST',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
@@ -411,7 +404,6 @@ export function user_userpass_create(p_user_name_str :string,
         $.ajax({
             'url':         url_str,
             'type':        'POST',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
@@ -450,7 +442,6 @@ export function user_update(p_user_data_map) {
         $.ajax({
             'url':         url_str,
             'type':        'POST',
-            'cache':       false, // IMPORTANT!! - avoids various issues. always need latest response
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{

@@ -74,11 +74,7 @@ export async function init_me_control(p_parent_node,
     // HOME_REDIRECT
     $("#current_user").on("click", ()=>{
 
-        // IMPORTAN!! - adding a unique param to this request to disable browser cache,
-        //              since it can cause inconsistent behavior.
-        const unique_param = new Date().getTime();
-        const url_str = p_home_url_str+"?"+unique_param;
-        
+        const url_str = p_home_url_str;        
         window.location.href = url_str;
     });
 }

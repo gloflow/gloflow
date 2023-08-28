@@ -109,7 +109,6 @@ async function user_create(p_username_str :string,
                 //--------------------------
                 $(create_user_dialog).remove();
 
-
                 const user_create_data_map = {
                     "http_output_map":    http_output_map,
                     "auth_signature_str": auth_signature_str,
