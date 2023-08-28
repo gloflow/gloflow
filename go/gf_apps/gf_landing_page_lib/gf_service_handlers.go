@@ -70,6 +70,7 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 				gfTemplates.template,
 				gfTemplates.subtemplatesNamesLst,
 				userID,
+				pCtx,
 				pRuntimeSys)
 
 			if gfErr != nil {

@@ -221,7 +221,7 @@ export async function load_new_page(p_flow_name_str :string,
 
 //---------------------------------------------------
 export function init__current_pages_display(p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_paging.init__current_pages_display()');
+	// p_log_fun('FUN_ENTER', 'gf_paging.init__current_pages_display()');
 
 	const container = $(`
 		<div id="current_pages_display"'>

@@ -25,7 +25,7 @@ export function init(p_image_element,
 	p_img_thumb_large_url_str  :string,
 	p_flow_name_str            :string,
 	p_log_fun) {
-	p_log_fun("FUN_ENTER", "gf_image_viewer.init()");
+	// p_log_fun("FUN_ENTER", "gf_image_viewer.init()");
 
 	// const img_thumb_medium_url = $(p_image_element).find('img').data('img_thumb_medium_url');
 

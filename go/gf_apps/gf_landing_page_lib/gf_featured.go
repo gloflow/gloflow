@@ -21,9 +21,11 @@ package gf_landing_page_lib
 
 import (
 	"fmt"
+	"context"
 	"strconv"
 	"net/url"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 )
@@ -45,7 +47,7 @@ type GFfeaturedImage struct {
 	ImageOriginPageURLhostStr  string // this is displayed in the user UI for each featured image
 	CreationUNIXtimeStr        string
 	FlowNameStr                string
-	UserID                     gf_core.GF_ID
+	OwnerUserNameStr           gf_identity_core.GFuserName
 }
 
 //------------------------------------------
@@ -56,6 +58,7 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 	pElementsNumToGetInt int, // 5
 	pFlowNameStr         string,
 	pUserID              gf_core.GF_ID,
+	pCtx                 context.Context,
 	pRuntimeSys          *gf_core.RuntimeSys) ([]*GFfeaturedImage, *gf_core.GFerror) {
 
 	imagesLst, err := gf_images_core.DBmongoGetRandomImagesRange(pElementsNumToGetInt,
@@ -69,6 +72,8 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 	}
 
 	featuredImagesLst := []*GFfeaturedImage{}
+	usernamesCacheMap := map[gf_core.GF_ID]gf_identity_core.GFuserName{}
+
 	for _, image := range imagesLst {
 
 		// FIX!! - create a proper gfErr
@@ -76,6 +81,39 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 		if err != nil {
 			continue
 		}
+
+		//---------------------
+		// RESOLVE_USER_ID_TO_USERNAME
+		var userNameStr gf_identity_core.GFuserName
+		if image.UserID != "" {
+			userID := image.UserID
+
+			// check if there is a cached user_name, and use it if present; if not, resolve from DB
+			if cachedUserNameStr, ok := usernamesCacheMap[userID]; ok {
+				userNameStr = cachedUserNameStr
+			} else {
+				resolvedUserNameStr, gfErr := gf_identity_core.DBsqlGetUserNameByID(userID, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					/*
+					failing to resolve username should not fail the rendering
+					of the entire flow view.
+					*/
+					userNameStr = gf_identity_core.GFuserName("?")
+					continue
+				}
+				userNameStr = resolvedUserNameStr
+				usernamesCacheMap[userID] = resolvedUserNameStr
+			}
+		} else {
+
+			// IMPORTANT!! - pre-auth-system images are marked as owned by anonymous users.
+			userNameStr = gf_identity_core.GFuserName("anon")
+		}
+
+		//---------------------
+
+
+
 
 		featured := &GFfeaturedImage{
 			TitleStr:                   image.TitleStr,
@@ -85,7 +123,7 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 			ImageOriginPageURLhostStr:  originPageURL.Host,
 			CreationUNIXtimeStr:        strconv.FormatFloat(image.Creation_unix_time_f, 'f', 6, 64),
 			FlowNameStr:                pFlowNameStr,
-			UserID:                     image.UserID,
+			OwnerUserNameStr:           userNameStr,
 		}
 		featuredImagesLst = append(featuredImagesLst, featured)
 	}

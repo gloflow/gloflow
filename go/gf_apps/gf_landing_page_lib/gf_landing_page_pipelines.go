@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_landing_page_lib
 
 import (
+	"context"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -33,6 +34,7 @@ func pipelineRenderLandingPage(pImagesMaxRandomCursorPositionInt int, // 500
 	pTemplate               *template.Template,
 	pSubtemplatesNamesLst   []string,
 	pUserID                 gf_core.GF_ID,
+	pCtx                    context.Context,
 	pRuntimeSys             *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	//-------------------
@@ -41,6 +43,7 @@ func pipelineRenderLandingPage(pImagesMaxRandomCursorPositionInt int, // 500
 		pFeaturedImagesToGetInt,
 		"general",
 		pUserID,
+		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
@@ -50,6 +53,7 @@ func pipelineRenderLandingPage(pImagesMaxRandomCursorPositionInt int, // 500
 		pFeaturedImagesToGetInt,
 		"general",
 		pUserID,
+		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
