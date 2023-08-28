@@ -77,7 +77,7 @@ func getTemplateData(pFlowNameStr string,
 	pRuntimeSys           *gf_core.RuntimeSys) ([][]*gf_images_core.GFimage, [][]gf_identity_core.GFuserName, int64, *gf_core.GFerror) {
 
 	//---------------------
-	// GET_TEMPLATE_DATA
+	// GET_IMAGES
 
 	pagesLst := [][]*gf_images_core.GFimage{}
 
@@ -111,10 +111,12 @@ func getTemplateData(pFlowNameStr string,
 		pagesLst = append(pagesLst, pageLst)
 	}
 
-	pagesUserNamesLst := [][]gf_identity_core.GFuserName{}
-
+	//---------------------
 	// RESOLVE_USER_IDS_TO_USERNAMES
+
+	pagesUserNamesLst := [][]gf_identity_core.GFuserName{}
 	usernamesCacheMap := map[gf_core.GF_ID]gf_identity_core.GFuserName{}
+	
 	for _, pLst := range pagesLst {
 
 		pageUserNamesLst := []gf_identity_core.GFuserName{}
@@ -147,7 +149,6 @@ func getTemplateData(pFlowNameStr string,
 						pageUserNamesLst = append(pageUserNamesLst, userNameStr)
 						continue
 					}
-
 					userNameStr = resolvedUserNameStr
 					usernamesCacheMap[userID] = resolvedUserNameStr
 				}	
@@ -156,13 +157,13 @@ func getTemplateData(pFlowNameStr string,
 				// IMPORTANT!! - pre-auth-system images are marked as owned by anonymous users.
 				userNameStr = gf_identity_core.GFuserName("anon")
 			}
-
 			pageUserNamesLst = append(pageUserNamesLst, userNameStr)
 		}
-
 		pagesUserNamesLst = append(pagesUserNamesLst, pageUserNamesLst)
 	}
 
+	//---------------------
+	// TOTAL_PAGES_NUM
 	flowPagesNumInt, gfErr := dbMongoGetPagesTotalNum(pFlowNameStr,
 		pPageSizeInt,
 		pCtx,
@@ -171,7 +172,7 @@ func getTemplateData(pFlowNameStr string,
 		return nil, nil, 0, gfErr
 	}
 
-
+	//---------------------
 	return pagesLst, pagesUserNamesLst, flowPagesNumInt, nil
 }
 

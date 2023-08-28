@@ -35,8 +35,14 @@ import (
 
 func TestTemplatesWithDB(pTest *testing.T) {
 
-	ctx := context.Background()
+	getTemplateTestData(pTest)
+}
 
+//---------------------------------------------------
+
+func getTemplateTestData(pTest *testing.T) ([][]*gf_images_core.GFimage, [][]gf_identity_core.GFuserName) {
+
+	ctx := context.Background()
 
 	serviceNameStr := "gf_identity_test"
 	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
@@ -50,15 +56,13 @@ func TestTemplatesWithDB(pTest *testing.T) {
 
 	//-------------------
 	// CREATE USER
-	
 	userID, userNameStr := gf_identity.TestCreateUserInDB(pTest, ctx, runtimeSys)
 
 	//-------------------
 	// CREATE_TEST_IMAGES
 	createTestImages(userID, pTest, ctx, runtimeSys)
 
-
-
+	//-------------------
 	flowNameStr        := "flow_0"
 	initialPagesNumInt := 2
 	pageSizeInt        := 2
@@ -69,17 +73,9 @@ func TestTemplatesWithDB(pTest *testing.T) {
 		pTest.Fail()
 	}
 
-
-
-
 	spew.Dump(pagesLst)
 	spew.Dump(pagesUserNamesLst)
-
-
-
 	fmt.Println(flowPagesNumInt)
-
-
 
 	for _, pLst := range pagesUserNamesLst {
 		for _, resolvedUserNameStr := range pLst {
@@ -93,7 +89,7 @@ func TestTemplatesWithDB(pTest *testing.T) {
 				"image user_id not resolved to the correct user_name")
 		}
 	}
-
+	return pagesLst, pagesUserNamesLst
 }
 
 //---------------------------------------------------
@@ -118,6 +114,7 @@ func TestTemplates(pTest *testing.T) {
 		pTest.Fail()
 	}
 
+	/*
 	imagesPagesLst := [][]*gf_images_core.GFimage{
 		{
 			&gf_images_core.GFimage{
@@ -138,6 +135,9 @@ func TestTemplates(pTest *testing.T) {
 			gf_identity_core.GFuserName("image_owner_user_name"),
 		},
 	}
+	*/
+
+	imagesPagesLst, pagesUserNamesLst := getTemplateTestData(pTest)
 
 	flowNameStr     := "test_flow" 
 	flowPagesNumInt := int64(6)
