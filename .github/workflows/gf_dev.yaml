@@ -67,6 +67,7 @@ jobs:
         # mount the dir where the gloflow repo is cloned
         - ${{ github.workspace }}:/home/gf
       env:
+        GF_LOG_LEVEL: debug
         GF_ALCHEMY_SERVICE_ACC__API_KEY: ${{ secrets.GF_ALCHEMY_SERVICE_ACC__API_KEY }}
 
         # currently these are used by web3 tests
@@ -86,7 +87,6 @@ jobs:
           POSTGRES_HOST_AUTH_METHOD: trust
           POSTGRES_DB: gf_tests
           POSTGRES_USER: gf
-
 
     steps:
 
