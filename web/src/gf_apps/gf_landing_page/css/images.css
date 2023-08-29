@@ -146,4 +146,10 @@
 #images .image_info .owner_user_name {
 	font-size: 10px;
 	color: white;
+	text-align: center;
+	padding-top: 3px;
+}
+#images .image_info .owner_user_name span {
+	font-weight: bold;
+    font-size: 12px;
 }

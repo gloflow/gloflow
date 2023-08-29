@@ -70,6 +70,12 @@ body {
 #gf_images_flow_container .gf_image .owner_user_name {
 	font-size: 10px;
     color: white;
+	text-align: center;
+	padding-top: 3px;
+}
+#gf_images_flow_container .gf_image .owner_user_name span {
+	font-weight: bold;
+    font-size: 12px;
 }
 
 /*small_view*/
