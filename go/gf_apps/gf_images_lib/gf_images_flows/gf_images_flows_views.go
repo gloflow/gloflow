@@ -79,7 +79,7 @@ func getTemplateData(pFlowNameStr string,
 	//---------------------
 	// GET_IMAGES
 
-	pagesLst := [][]*gf_images_core.GFimage{}
+	imagesPagesLst := [][]*gf_images_core.GFimage{}
 
 	for i:=0; i < pInitialPagesNumInt; i++ {
 
@@ -108,59 +108,13 @@ func getTemplateData(pFlowNameStr string,
 
 		//------------
 
-		pagesLst = append(pagesLst, pageLst)
+		imagesPagesLst = append(imagesPagesLst, pageLst)
 	}
 
 	//---------------------
 	// RESOLVE_USER_IDS_TO_USERNAMES
 
-	pagesUserNamesLst := [][]gf_identity_core.GFuserName{}
-	usernamesCacheMap := map[gf_core.GF_ID]gf_identity_core.GFuserName{}
-	
-	for _, pLst := range pagesLst {
-
-		pageUserNamesLst := []gf_identity_core.GFuserName{}
-		for _, image := range pLst {
-			
-			var userNameStr gf_identity_core.GFuserName
-
-			/*
-			LEGACY!! - old images dont have a user_id associated with them.
-					   before the user system was fully integrated into gf_images, images were added anonimously
-					   and did not have a user ID associated with them.
-					   for those images it is not possible to associate user_names with them. 
-			*/
-			if image.UserID != "" {
-
-				userID := image.UserID
-
-				// check if there is a cached user_name, and use it if present; if not, resolve from DB
-				if cachedUserNameStr, ok := usernamesCacheMap[userID]; ok {
-					userNameStr = cachedUserNameStr
-				} else {
-					resolvedUserNameStr, gfErr := gf_identity_core.DBsqlGetUserNameByID(userID, pCtx, pRuntimeSys)
-					if gfErr != nil {
-
-						/*
-						failing to resolve username should not fail the rendering
-						of the entire flow view.
-						*/
-						userNameStr = gf_identity_core.GFuserName("?")
-						pageUserNamesLst = append(pageUserNamesLst, userNameStr)
-						continue
-					}
-					userNameStr = resolvedUserNameStr
-					usernamesCacheMap[userID] = resolvedUserNameStr
-				}	
-			} else {
-
-				// IMPORTANT!! - pre-auth-system images are marked as owned by anonymous users.
-				userNameStr = gf_identity_core.GFuserName("anon")
-			}
-			pageUserNamesLst = append(pageUserNamesLst, userNameStr)
-		}
-		pagesUserNamesLst = append(pagesUserNamesLst, pageUserNamesLst)
-	}
+	pagesUserNamesLst := resolveUserIDStoUserNames(imagesPagesLst, pCtx, pRuntimeSys)
 
 	//---------------------
 	// TOTAL_PAGES_NUM
@@ -173,7 +127,7 @@ func getTemplateData(pFlowNameStr string,
 	}
 
 	//---------------------
-	return pagesLst, pagesUserNamesLst, flowPagesNumInt, nil
+	return imagesPagesLst, pagesUserNamesLst, flowPagesNumInt, nil
 }
 
 //-------------------------------------------------

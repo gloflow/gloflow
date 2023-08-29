@@ -44,6 +44,7 @@ export function init_image_element(p_img__id_str :string,
 	p_img__thumbnail_medium_url_str :string,
 	p_img__thumbnail_large_url_str  :string,
 	p_img__tags_lst                 :string[],
+	p_img__owner_user_name_str      :string,
 	p_flow_name_str                 :string,
 	p_current_image_view_type_str   :string,
 
@@ -75,6 +76,7 @@ export function init_image_element(p_img__id_str :string,
 				<a href="${p_img__origin_page_url_str}" target="_blank">${p_img__origin_page_url_str}</a>
 			</div>
 			<div class="creation_time">${p_img__creation_unix_time_f}</div>
+			<div class="owner_user_name">by <span>${p_img__owner_user_name_str}</span></div>
 		</div>`);
 
 	//------------------

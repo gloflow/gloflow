@@ -211,17 +211,18 @@ func dbMongoGetPagesTotalNum(p_flow_name_str string,
 }
 
 //---------------------------------------------------
+// GET_PAGE
 
-func dbMongoGetPage(p_flow_name_str string,
-	p_cursor_start_position_int int, // 0
-	p_elements_num_int          int, // 50
-	p_ctx                       context.Context,
-	pRuntimeSys                 *gf_core.RuntimeSys) ([]*gf_images_core.GFimage, *gf_core.GFerror) {
+func dbMongoGetPage(pFlowNameStr string,
+	pCursorStartPositionInt int, // 0
+	pElementsNumInt         int, // 50
+	pCtx                    context.Context,
+	pRuntimeSys             *gf_core.RuntimeSys) ([]*gf_images_core.GFimage, *gf_core.GFerror) {
 
-	find_opts := options.Find()
-    find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first
-	find_opts.SetSkip(int64(p_cursor_start_position_int))
-    find_opts.SetLimit(int64(p_elements_num_int))
+	findOpts := options.Find()
+    findOpts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first
+	findOpts.SetSkip(int64(pCursorStartPositionInt))
+    findOpts.SetLimit(int64(pElementsNumInt))
 	
 	cursor, gfErr := gf_core.MongoFind(bson.M{
 			"t":   "img",
@@ -229,39 +230,39 @@ func dbMongoGetPage(p_flow_name_str string,
 
 				// DEPRECATED!! - if a img has a flow_name_str (most due, but migrating to flows_names_lst),
 				//                then match it with supplied flow_name_str.
-				bson.M{"flow_name_str": p_flow_name_str,},
+				bson.M{"flow_name_str": pFlowNameStr,},
 
 				// IMPORTANT!! - new approach, images can belong to multiple flows.
 				//               check if the suplied flow_name_str in in the flows_names_lst list
-				bson.M{"flows_names_lst": bson.M{"$in": []string{p_flow_name_str,}}},
+				bson.M{"flows_names_lst": bson.M{"$in": []string{pFlowNameStr,}}},
 			},
 		},
-		find_opts,
+		findOpts,
 		map[string]interface{}{
-			"flow_name_str":             p_flow_name_str,
-			"cursor_start_position_int": p_cursor_start_position_int,
-			"elements_num_int":          p_elements_num_int,
+			"flow_name_str":             pFlowNameStr,
+			"cursor_start_position_int": pCursorStartPositionInt,
+			"elements_num_int":          pElementsNumInt,
 			"caller_err_msg_str":        "failed to get a page of images from a flow",
 		},
 		pRuntimeSys.Mongo_coll,
-		p_ctx,
+		pCtx,
 		pRuntimeSys)
 	
 	if gfErr != nil {
 		return nil, gfErr
 	}
 	
-	images_lst := []*gf_images_core.GFimage{}
-	err        := cursor.All(p_ctx, &images_lst)
+	imagesLst := []*gf_images_core.GFimage{}
+	err        := cursor.All(pCtx, &imagesLst)
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to get a page of images from a flow",
 			"mongodb_cursor_decode",
 			map[string]interface{}{},
-			err, "gf_images_lib", pRuntimeSys)
+			err, "gf_images_flows", pRuntimeSys)
 		return nil, gfErr
 	}
 
-	return images_lst, nil
+	return imagesLst, nil
 }
 
 //-------------------------------------------------
@@ -346,7 +347,7 @@ func dbMongoImagesExist(p_images_extern_urls_lst []string,
 				"flow_name_str":          p_flow_name_str,
 				"client_type_str":        p_client_type_str,
 			},
-			err, "gf_images_lib", pRuntimeSys)
+			err, "gf_images_flows", pRuntimeSys)
 		return nil, gfErr
 	}
 

@@ -61,7 +61,6 @@ export async function get(p_image_id_str :string,
 export function get_page(p_flow_name_str :string,
 	p_current_page_int :number,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_images_http.get_page()');
 
 	const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
@@ -81,7 +80,11 @@ export function get_page(p_flow_name_str :string,
 				if (p_data_map["status"] == "OK") {
 
 					const pages_lst = p_data_map["data"]["pages_lst"];
-					p_resolve_fun(pages_lst);
+					const pages_user_names_lst = p_data_map["data"]["pages_user_names_lst"];
+					p_resolve_fun({
+						"pages_lst":            pages_lst,
+						"pages_user_names_lst": pages_user_names_lst,
+					});
 				}
 				else {
 					p_reject_fun(p_data_map["data"]);

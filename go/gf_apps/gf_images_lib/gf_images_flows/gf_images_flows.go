@@ -27,7 +27,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
-	// "github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_policy"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
@@ -59,9 +59,7 @@ type GFimageExistsCheck struct {
 
 func Init(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-
 	ctx := context.Background()
-
 
 	// SQL_CREATE_TABLES
 	gfErr := DBsqlCreateTables(pRuntimeSys)
@@ -189,7 +187,7 @@ func pipelineGetAll(pCtx context.Context,
 
 func pipelineGetPage(pReq *http.Request,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) ([]*gf_images_core.GFimage, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) ([][]*gf_images_core.GFimage, [][]gf_identity_core.GFuserName, *gf_core.GFerror) {
 
 	//--------------------
 	// INPUT
@@ -212,7 +210,7 @@ func pipelineGetPage(pReq *http.Request,
 				"int_parse_error",
 				map[string]interface{}{"page_index": pageIndex,},
 				err, "gf_images_flows", pRuntimeSys)
-			return nil, gfErr
+			return nil, nil, gfErr
 		}
 	}
 
@@ -227,7 +225,7 @@ func pipelineGetPage(pReq *http.Request,
 				"int_parse_error",
 				map[string]interface{}{"page_size": pageSize,},
 				err, "gf_images_flows", pRuntimeSys)
-			return nil, gfErr
+			return nil, nil, gfErr
 		}
 	}
 
@@ -240,17 +238,55 @@ func pipelineGetPage(pReq *http.Request,
 	//--------------------
 	// GET_PAGES
 	cursorStartPositionInt := pageIndexInt * pageSizeInt
-	pagesLst, gfErr := dbMongoGetPage(flowNameStr,
+	imagesPageLst, gfErr := dbMongoGetPage(flowNameStr,
 		cursorStartPositionInt, // p_cursor_start_position_int
 		pageSizeInt,            // p_elements_num_int
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
-		return nil, gfErr
+		return nil, nil, gfErr
 	}
-
+	
 	//------------------
-	return pagesLst, nil
+	
+	imagesPagesLst := [][]*gf_images_core.GFimage{imagesPageLst,}
+	pagesUserNamesLst := resolveUserIDStoUserNames(imagesPagesLst, pCtx, pRuntimeSys)
+
+	return imagesPagesLst, pagesUserNamesLst, nil
+}
+
+//-------------------------------------------------
+// RESOLVE_USER_IDS_TO_USER_NAMES
+
+func resolveUserIDStoUserNames(pImagesPagesLst [][]*gf_images_core.GFimage,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) [][]gf_identity_core.GFuserName {
+
+	pagesUserNamesLst := [][]gf_identity_core.GFuserName{}
+	usernamesCacheMap := map[gf_core.GF_ID]gf_identity_core.GFuserName{}
+	
+	for _, pLst := range pImagesPagesLst {
+
+		pageUserNamesLst := []gf_identity_core.GFuserName{}
+		for _, image := range pLst {
+			
+			
+			userID := image.UserID
+			var userNameStr gf_identity_core.GFuserName
+
+			// resolve user_id to user_name, or use cached result if its already present.
+			if cachedUserNameStr, ok := usernamesCacheMap[userID]; ok {
+				userNameStr = cachedUserNameStr
+			} else {
+				resolvedUserNameStr := gf_images_core.ImageGetUserName(image, pCtx, pRuntimeSys)
+				userNameStr               = resolvedUserNameStr
+				usernamesCacheMap[userID] = resolvedUserNameStr
+			}
+			pageUserNamesLst = append(pageUserNamesLst, userNameStr)
+		}
+		pagesUserNamesLst = append(pagesUserNamesLst, pageUserNamesLst)
+	}
+	return pagesUserNamesLst
 }
 
 //-------------------------------------------------

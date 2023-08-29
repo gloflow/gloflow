@@ -332,7 +332,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 			if pReq.Method == "GET" {
 
-				pagesLst, gfErr := pipelineGetPage(pReq, pCtx, pRuntimeSys)
+				pagesLst, pagesUserNamesLst, gfErr := pipelineGetPage(pReq, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -340,7 +340,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				//--------------------
 				// OUTPUT
 				dataMap := map[string]interface{}{
-					"pages_lst": pagesLst,
+					"pages_lst":            pagesLst,
+					"pages_user_names_lst": pagesUserNamesLst,
 				}
 				return dataMap, nil
 				
