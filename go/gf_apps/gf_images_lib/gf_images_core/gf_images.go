@@ -25,6 +25,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
 
 //---------------------------------------------------
@@ -89,6 +90,7 @@ type GFimage struct {
 
 type GFimageExport struct {
 	Creation_unix_time_f     float64  `json:"creation_unix_time_f"`
+	UserNameStr              gf_identity_core.GFuserName `json:"user_name_str"`
 	Title_str                string   `json:"title_str"`
 	Flows_names_lst          []string `json:"flows_names_lst"`
 	Origin_page_url_str      string   `json:"origin_page_url_str"`

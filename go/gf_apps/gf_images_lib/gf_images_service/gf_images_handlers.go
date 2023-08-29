@@ -97,7 +97,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				//-----------------
 
 				imgID := gf_images_core.GFimageID(imgIDstr)
-				imageExport, existsBool, gfErr := ImgGet(imgID, pCtx, pRuntimeSys)
+				imageExport, existsBool, gfErr := ImageGet(imgID, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

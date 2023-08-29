@@ -203,6 +203,7 @@ function init_upload(p_flow_name_str :string,
 			// start attempting to get uploaded image metadata, until the upload succeeds
 			const attempts_num_int = 6;
 			for (var i=0; i<5; i++) {
+				
 				//------------------
 				// SLEEP - it takes time for the image to get uploaded.
 				//         so dont run gf_image_http.get() until the system had time to add the image,
@@ -241,11 +242,13 @@ function init_upload(p_flow_name_str :string,
 
 				const img__format_str               = image_export_map["format_str"];
 				const img__creation_unix_time_f     = image_export_map["creation_unix_time_f"];
+				const img__owner_user_name_str      = image_export_map["user_name_str"];
 				const img__origin_page_url_str      = image_export_map["origin_page_url_str"];
 				const img__thumbnail_small_url_str  = image_export_map["thumbnail_small_url_str"];
 				const img__thumbnail_medium_url_str = image_export_map["thumbnail_medium_url_str"];
 				const img__thumbnail_large_url_str  = image_export_map["thumbnail_large_url_str"];
 				const img__tags_lst                 = image_export_map["tags_lst"];
+				
 
 				const current_image_view_type_str = gf_view_type_picker.get_current_view_type();
 
@@ -257,6 +260,7 @@ function init_upload(p_flow_name_str :string,
 					img__thumbnail_medium_url_str,
 					img__thumbnail_large_url_str,
 					img__tags_lst,
+					img__owner_user_name_str,
 					p_flow_name_str,
 					current_image_view_type_str,
 

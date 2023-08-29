@@ -27,7 +27,7 @@ import (
 
 //---------------------------------------------------
 
-func ImgGet(pImageIDstr gf_images_core.GFimageID,
+func ImageGet(pImageIDstr gf_images_core.GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*gf_images_core.GFimageExport, bool, *gf_core.GFerror) {
 
@@ -40,22 +40,25 @@ func ImgGet(pImageIDstr gf_images_core.GFimageID,
 	if existsBool {
 
 		// DB_GET
-		gfImage, gfErr := gf_images_core.DBmongoGetImage(pImageIDstr, pCtx, pRuntimeSys)
+		image, gfErr := gf_images_core.DBmongoGetImage(pImageIDstr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return nil, false, gfErr
 		}
 
-		gfImageExport := &gf_images_core.GFimageExport{
-			Creation_unix_time_f:     gfImage.Creation_unix_time_f,
-			Title_str:                gfImage.TitleStr,
-			Flows_names_lst:          gfImage.FlowsNamesLst,
-			Thumbnail_small_url_str:  gfImage.Thumbnail_small_url_str,
-			Thumbnail_medium_url_str: gfImage.Thumbnail_medium_url_str,
-			Thumbnail_large_url_str:  gfImage.Thumbnail_large_url_str,
-			Format_str:               gfImage.Format_str,
-			Tags_lst:                 gfImage.TagsLst,
+		resolvedUserNameStr := gf_images_core.ImageGetUserName(image, pCtx, pRuntimeSys)
+
+		imageExport := &gf_images_core.GFimageExport{
+			Creation_unix_time_f:     image.Creation_unix_time_f,
+			UserNameStr:              resolvedUserNameStr,
+			Title_str:                image.TitleStr,
+			Flows_names_lst:          image.FlowsNamesLst,
+			Thumbnail_small_url_str:  image.Thumbnail_small_url_str,
+			Thumbnail_medium_url_str: image.Thumbnail_medium_url_str,
+			Thumbnail_large_url_str:  image.Thumbnail_large_url_str,
+			Format_str:               image.Format_str,
+			Tags_lst:                 image.TagsLst,
 		}
-		return gfImageExport, true, nil
+		return imageExport, true, nil
 	} else {
 		return nil, false, nil
 	}
