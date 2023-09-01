@@ -37,7 +37,7 @@ function get_selected_elements___bckg_pg(p_o_cComplete_fun, p_log_fun) {
 		'source_str':'popup_selected_elements',
 		'type_str':  'get_selected_elements'
 	};
-	chrome.extension.sendRequest(msg_map,
+	chrome.runtime.sendMessage(msg_map,
 		(p_response) => {
 
 			const selected_elements_map = p_response.selected_elements_map;

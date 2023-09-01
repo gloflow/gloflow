@@ -33,24 +33,25 @@ function log_fun(p_g,p_m) {
 	}
 }
 
-/*//---------------------------------------------------
+//---------------------------------------------------
+/*
 function send_msg_to_background_page(p_msg_map,
-								p_msg_type_str) {
+	p_msg_type_str) {
 	p_msg_map['source_str'] = 'content_script';
 	p_msg_map['type_str']   = p_msg_type_str;
-	chrome.extension.sendRequest(p_msg_map,(p_response) => {});
-}*/
+	chrome.runtime.sendMessage(p_msg_map,(p_response) => {});
+}
+*/
 
 //---------------------------------------------------
 function main(p_log_fun) {
-	// p_log_fun('FUN_ENTER','page_element_picker.main()')
 				
 	// IMPORTANT!! - maintaining this state so that once the info is parsed
 	//               it is cached 
 	var page_img_infos_lst    = [];
 	var page_videos_infos_lst = [];
 
-	chrome.extension.onMessage.addListener(
+	chrome.runtime.onMessage.addListener(
 		(p_request,
 		p_sender,
 		p_send_response_fun) => {
@@ -69,53 +70,54 @@ function main(p_log_fun) {
 		const request_type_str   = p_request.type_str;
 
 		//-------------
-		//MESSAGES FROM POPUP
+		// MESSAGES FROM POPUP
 
 		if (request_source_str == "popup") {
 			p_log_fun('INFO', 'POPUP MSG');
 			p_log_fun('INFO', 'request_type_str - '+request_type_str);
 
+			var msg_map;
 			switch(request_type_str) {
 				//-------------
-				//GET PAGE IMAGE INFOS
+				// GET PAGE IMAGE INFOS
 
 				case 'get_page_img_infos':
 					const new_page_img_infos_lst = get_images_info(p_log_fun);
 					page_img_infos_lst           = new_page_img_infos_lst;
-
-					var msg_map = {
+					
+					msg_map = {
 						'page_img_infos_lst':page_img_infos_lst
 					};
 					p_send_response_fun(msg_map);
 					break;
 				//-------------
-				//GET PAGE VIDEO INFOS
+				// GET PAGE VIDEO INFOS
 
 				case 'get_page_videos_infos':
 
 					const new_page_video_infos_lst = get_videos_info(p_log_fun);
 					page_videos_infos_lst          = new_page_video_infos_lst;
 
-					var msg_map = {
+					msg_map = {
 						'page_videos_infos_lst':page_videos_infos_lst
 					};
 					p_send_response_fun(msg_map);
 					break;
 				//-------------
-				//get the url of the page from which images/videos are being extracted
+				// get the url of the page from which images/videos are being extracted
 				case 'get_post_source_page_url':
 					const post_source_page_url  = window.location.href;
 					p_send_response_fun(post_source_page_url);
 					break;
 				//-------------
-				//DISPLAY PAGE INFO
+				// DISPLAY PAGE INFO
 				case 'display_page_info':
 
 					p_log_fun('INFO', '========_____===');
 					p_log_fun('INFO', page_img_infos_lst);
 					p_log_fun('INFO', page_img_infos_lst.length);
 
-					//determine whether you are a top level frame
+					// determine whether you are a top level frame
 					if (window.parent == window) {
 						display_page_info(page_img_infos_lst, page_videos_infos_lst, p_log_fun);
 					}
@@ -126,11 +128,12 @@ function main(p_log_fun) {
 	}
 	//---------------------------------------------------
 }
+
 //---------------------------------------------------
 function add_image_to_post(p_image_info_map, p_log_fun) {
 	p_log_fun('FUN_ENTER','page_element_picker.add_image_to_post()');
 
-	//first send the newly added post to the background_page
+	// first send the newly added post to the background_page
 	add_element_to_post___bckg_pg(p_image_info_map,
 		(p_response) => {
 			switch(p_response.status_str) {
@@ -168,12 +171,12 @@ function add_image_to_post(p_image_info_map, p_log_fun) {
 		//CLOSE_BTN
 
 		function init_close_btn() {
-			const icons_atlas_url_str = chrome.extension.getURL("assets/icons.png");
+			const icons_atlas_url_str = chrome.runtime.getURL("assets/icons.png");
 			const close_btn           = $(image_to_post).find('.close_btn')[0];
 
 			//--------
 			//CSS
-			const icons_chrome_ext_url_str = 'url('+chrome.extension.getURL('assets/icons.png')+')';
+			const icons_chrome_ext_url_str = 'url('+chrome.runtime.getURL('assets/icons.png')+')';
 			$(close_btn).css('background-image', icons_chrome_ext_url_str);
 			//--------
 
@@ -219,8 +222,9 @@ function add_image_to_post(p_image_info_map, p_log_fun) {
 	}
 	//---------------------------------------------------
 }
+
 //---------------------------------------------------
-//BACKGROUND_PAGE COMM
+// BACKGROUND_PAGE COMM
 //---------------------------------------------------
 function add_element_to_post___bckg_pg(p_element_info_map, p_on_complete_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER','page_element_picker.add_element_to_post___bckg_pg()');	
@@ -230,11 +234,12 @@ function add_element_to_post___bckg_pg(p_element_info_map, p_on_complete_fun, p_
 		'type_str':        'add_element_to_post',
 		'element_info_map':p_element_info_map
 	};
-	chrome.extension.sendRequest(msg_map,
+	chrome.runtime.sendMessage(msg_map,
 		function(p_response) {
 			p_on_complete_fun(p_response);
 		});
 }
+
 //---------------------------------------------------
 function remove_element_from_post_bckg_pg(p_element_info_map, p_on_complete_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER','page_element_picker.remove_element_from_post_bckg_pg()');

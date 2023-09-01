@@ -216,12 +216,14 @@
 	background-color: rgb(166, 166, 166);
 	cursor          : pointer;
 
-	/*this is specified programmatically in JS, because this 
-	  .png resource is an image declared as web-accessible in 
-	  the extension manifest.json. it is done via the
-	  chrome.extension.getURL(), so that the PACKAGE_ID can 
-	  be set by the runtime, to its correct value.
-	  background-image   : url('assets/icons.png');*/
+	/*
+	this is specified programmatically in JS, because this 
+	.png resource is an image declared as web-accessible in 
+	the extension manifest.json. it is done via the
+	chrome.runtime.getURL(), so that the PACKAGE_ID can 
+	be set by the runtime, to its correct value.
+	background-image   : url('assets/icons.png');
+	*/
 	background-position: -530px -796px;
 }
 #page_info_container .image_in_page .hud #actions .add_to_image_flow_btn .symbol .icon:hover {
@@ -256,7 +258,7 @@
 	/*this is specified programmatically in JS, because this 
 	  .png resource is an image declared as web-accessible in 
 	  the extension manifest.json. it is done via the
-	  chrome.extension.getURL(), so that the PACKAGE_ID can 
+	  chrome.runtime.getURL(), so that the PACKAGE_ID can 
 	  be set by the runtime, to its correct value.
 	  background-image   : url('assets/icons.png');*/
 	background-position: -223px -423px;
@@ -339,7 +341,7 @@
 	/*this is specified programmatically in JS, because this 
 	  .png resource is an image declared as web-accessible in 
 	  the extension manifest.json. it is done via the
-	  chrome.extension.getURL(), so that the PACKAGE_ID can 
+	  chrome.runtime.getURL(), so that the PACKAGE_ID can 
 	  be set by the runtime, to its correct value.
 	  background-image   : url('assets/icons.png');*/
 	background-position: -223px -423px;
@@ -360,7 +362,7 @@
 	/*this is specified programmatically in JS, because this 
 	  .png resource is an image declared as web-accessible in 
 	  the extension manifest.json. it is done via the
-	  chrome.extension.getURL(), so that the PACKAGE_ID can 
+	  chrome.runtime.getURL(), so that the PACKAGE_ID can 
 	  be set by the runtime, to its correct value.
 	  background-image   : url('assets/icons.png');*/
 	background-position: -143px -423px;

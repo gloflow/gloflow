@@ -95,7 +95,7 @@ function display_page_info(p_page_images_infos_lst,
 
 		//--------
 		// CSS
-		const icons_chrome_ext_url_str = 'url('+chrome.extension.getURL('assets/icons.png')+')';
+		const icons_chrome_ext_url_str = 'url('+chrome.runtime.getURL('assets/icons.png')+')';
 		$(close_btn_element).css('background-image', icons_chrome_ext_url_str);
 		//--------
 		
@@ -321,7 +321,7 @@ function init_image_hud(p_image_id_str,
 	}
 	//--------------
 
-	const icons_chrome_ext_url_str = 'url('+chrome.extension.getURL('assets/icons.png')+')';
+	const icons_chrome_ext_url_str = 'url('+chrome.runtime.getURL('assets/icons.png')+')';
 	$(hud).find('.add_to_image_flow_btn .icon').css('background-image',icons_chrome_ext_url_str);
 	$(hud).find('.add_to_post_btn .icon').css('background-image',icons_chrome_ext_url_str);
 	//------------
@@ -459,7 +459,7 @@ function init_video_hud(p_video_in_page_element, p_video_info_map, p_log_fun) {
 				'</div>'+
 			'</div>'+
 		'</div>');
-	const icons_chrome_ext_url_str = 'url('+chrome.extension.getURL('assets/icons.png')+')';
+	const icons_chrome_ext_url_str = 'url('+chrome.runtime.getURL('assets/icons.png')+')';
 	$(hud).find('.icon').css('background-image', icons_chrome_ext_url_str);
 
 	$(p_video_in_page_element).mouseenter(function(p_e) {
