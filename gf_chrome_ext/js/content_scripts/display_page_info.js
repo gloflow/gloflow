@@ -343,7 +343,10 @@ function init_image_hud(p_image_id_str,
 	//------------
 	// ADD_TO_IMAGE_FLOW
 	const add_to_image_flow__selector_str = `#${p_image_id_str} .add_to_image_flow_btn`;
-	$(document).on("click", add_to_image_flow__selector_str, ()=>{
+	$(document).on("click", add_to_image_flow__selector_str, add_to_image_flow_btn_handler);
+	
+	//---------------------------------------------------
+	function add_to_image_flow_btn_handler() {
 		
 		const flows_names_str 		= $("input.flow_name").val();
 		const final_flows_names_lst = []
@@ -371,11 +374,16 @@ function init_image_hud(p_image_id_str,
 				//-------------------
 
 				$(hud).find(".add_to_image_flow_btn").css("pointer-events", "none");
+
+				// remove the event handler so that clicking on the add_to_flow button no longer functions,
+				// since the image has already been added and shouldnt be add-able anymore.
+				$(document).off("click", add_to_image_flow__selector_str, add_to_image_flow_btn_handler);
 			},
 			(p_data_map)=>{},
 			p_log_fun);
-	});
+	}
 
+	//---------------------------------------------------
 	//------------
 
 	//------------
@@ -443,6 +451,8 @@ function init_video_hud(p_video_in_page_element, p_video_info_map, p_log_fun) {
 }
 
 //---------------------------------------------------
+// ADD_IMAGE_TO_FLOW
+
 function add_image_to_flow(p_full_img_src_str,
 	p_images_flows_names_lst,
 	p_gf_host_str,
@@ -476,6 +486,7 @@ function add_image_to_flow(p_full_img_src_str,
 
 		switch(p_response_map["status_str"]) {
 			case "OK":
+
 				p_on_complete_fun();
 				break;
 
@@ -484,24 +495,6 @@ function add_image_to_flow(p_full_img_src_str,
 				break;
 		}
 	});
-
-	/*
-	http__add_image_to_flow(p_full_img_src_str,
-		image_origin_page_url_str,
-		p_images_flows_names_lst,
-		p_gf_host_str,
-		(p_images_job_id_str, p_image_id_str, p_thumbnail_small_relative_url_str)=>{
-
-			console.log("image added")
-			console.log(`image job ID    - ${p_images_job_id_str}`)
-			console.log(`image ID        - ${p_image_id_str}`)
-			console.log(`thumb small URL - ${p_thumbnail_small_relative_url_str}`)
-
-			p_on_complete_fun();
-		},
-		(p_error_data_map)=>{p_on_error_fun(p_error_data_map)},
-		p_log_fun);
-	*/
 }
 
 //---------------------------------------------------

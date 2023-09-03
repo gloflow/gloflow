@@ -42,7 +42,7 @@ function http__check_imgs_exist_in_flow(p_images_extern_urls_lst,
 			console.log('response received');
 			// const data_map = JSON.parse(p_data);
 			
-			if (p_data_map["status_str"] == 'OK') {
+			if (p_data_map["status"] == 'OK') {
 				var existing_images_lst = p_data_map['data']['existing_images_lst'];
 
 				//FIX!! - sometimes the backend returns existing_images_lst as null
@@ -92,9 +92,9 @@ function http__add_image_to_flow(p_image_extern_url_str,
 	  .then(response => response.json())
 	  .then(p_data_map => {
 		console.log('response received');
-		console.log(`status - ${p_data_map["status_str"]}`);
+		console.log(`status - ${p_data_map["status"]}`);
 	  
-		if (p_data_map["status_str"] === 'OK') {
+		if (p_data_map["status"] === 'OK') {
 			const images_job_id_str                = p_data_map['data']['images_job_id_str'];
 			const image_id_str                     = p_data_map['data']['image_id_str'];
 			const thumbnail_small_relative_url_str = p_data_map['data']['thumbnail_small_relative_url_str'];
@@ -108,30 +108,6 @@ function http__add_image_to_flow(p_image_extern_url_str,
 	.catch(error => {
 		console.log('An error occurred:', error);
 	});
-
-	  
-	/*
-	$.post(url_str,
-		JSON.stringify(data_map),
-		(p_data_map) => {
-			console.log('response received');
-			console.log(`status - ${p_data_map["status_str"]}`);
-
-			// const data_map = JSON.parse(p_data);
-			
-			if (p_data_map["status_str"] == 'OK') {
-
-				const images_job_id_str                = p_data_map['data']['images_job_id_str'];
-				const image_id_str                     = p_data_map['data']['image_id_str'];
-				const thumbnail_small_relative_url_str = p_data_map['data']['thumbnail_small_relative_url_str'];
-				
-				p_on_complete_fun(images_job_id_str, image_id_str, thumbnail_small_relative_url_str);
-			}
-			else {
-				p_on_error_fun(p_data_map["data"]);
-			}
-		});
-	*/
 
 	//-------------------------	
 }
@@ -152,10 +128,8 @@ function http__gif_get_info(p_gf_img_id_str,
 	$.get(url_str,
 		(p_data_map) => {
 			console.log('response received');
-			//const data_map = JSON.parse(p_data);
-			//console.log('data_map["status_str"] - '+data_map["status_str"]);
 			
-			if (p_data_map["status_str"] == 'OK') {
+			if (p_data_map["status"] == 'OK') {
 
 				const gif_map = p_data_map['data']['gif_map'];
 				p_on_complete_fun(gif_map);
