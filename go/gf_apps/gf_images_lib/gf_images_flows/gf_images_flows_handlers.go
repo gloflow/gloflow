@@ -51,7 +51,6 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	handlersEndpointsLst := []string{
 		"/v1/images/flows/all",
 		"/v1/images/flows/add_img",
-		"/images/flows/add_img",
 		"/images/flows/imgs_exist",
 		"/images/flows/browser",
 		"/images/flows/browser_page",
@@ -159,70 +158,6 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 			return nil, nil
 		},
 		rpcHandlerRuntime,
-		pRuntimeSys)
-
-	//-------------------------------------------------
-	// ADD_IMAGE
-	// DEPRECATED!! - switch to using the v1/auth based add_img handler
-
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/add_img",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
-
-			if pReq.Method == "POST" {
-
-				//--------------------------
-				// INPUT
-
-				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
-
-				iMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr
-				}
-
-				imageExternURLstr     := iMap["image_extern_url_str"].(string)
-				imageOriginPageURLstr := iMap["image_origin_page_url_str"].(string) // if image is from a page, the url of the page
-				clientTypeStr         := iMap["client_type_str"].(string)
-
-				// flow_name_str := "general" //i["flow_name_str"].(string) // DEPRECATED
-				flowsNamesLst := []string{}
-				for _, s := range iMap["flows_names_lst"].([]interface{}) {
-					flowsNamesLst = append(flowsNamesLst, s.(string))
-				}
-
-				//--------------------------
-
-				runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, gfErr := AddExternImage(imageExternURLstr,
-					imageOriginPageURLstr,
-					flowsNamesLst,
-					clientTypeStr,
-					userID,
-					pJobsMngrCh,
-					pCtx,
-					pRuntimeSys)
-
-				if gfErr != nil {
-					return nil, gfErr
-				}
-
-				//------------------
-				// OUTPUT
-				dataMap := map[string]interface{}{
-					"images_job_id_str":                runningJobIDstr,
-					"thumbnail_small_relative_url_str": thumbnailSmallRelativeURLstr,
-					"image_id_str":                     imageIDstr,
-				}
-				return dataMap, nil
-
-				//------------------
-			}
-
-			return nil, nil
-		},
-		pHTTPmux,
-		metrics,
-		true, // pStoreRunBool
-		nil,
 		pRuntimeSys)
 
 	//-------------------------------------------------
