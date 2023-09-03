@@ -17,10 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-/*$(document).ready(()=>{
-	main(log_fun)
-});*/
-
 main(log_fun);
 //-------------------------------------------------
 function log_fun(p_g,p_m) {
@@ -78,7 +74,8 @@ function init_buttons(p_log_fun) {
 				} else {
 
 					// user is not loged in, so present a message
-					$("#auth #status").append("you're not logged into gloflow.com...")
+					$("#auth #status").remove();
+					$("#auth").append("<div id='status'>you're not logged into gloflow.com...</div>")
 				}
 
 			});

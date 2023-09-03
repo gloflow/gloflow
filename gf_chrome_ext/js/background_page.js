@@ -17,7 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-importScripts('gf_images/image_utils.js');
+importScripts('utils/var.js');
+importScripts('utils/image_utils.js');
 
 main(log_fun);
 
@@ -59,6 +60,7 @@ function main(p_log_fun) {
 			case 'popup_selected_elements':
 				handle_popup_selected_elements(p_request.type_str, p_log_fun);
 				break;
+
 			case 'content_script':
 				handle_content_script_msg(p_request.type_str, p_send_response_fun, p_request);
 				break;
@@ -250,11 +252,38 @@ function main(p_log_fun) {
 				//----------------
 				// LOG_MSG
 				case 'log_msg':
-					console.log('CONTENT_SCR:'+p_request.msg_str);
+					console.log(`CONTENT_SCR:${p_request.msg_str}`);
 					break;
 
 				//----------------
+				// ADD_IMAGE_TO_FLOW
 				case 'add_image_to_flow':
+
+					const full_img_src_str          = p_request["full_img_src_str"];
+					const image_origin_page_url_str = p_request["image_origin_page_url_str"];
+					const images_flows_names_lst    = p_request["images_flows_names_lst"];
+					const gf_host_str               = p_request["gf_host_str"];
+
+					add_image_to_flow(full_img_src_str,
+						image_origin_page_url_str,
+						images_flows_names_lst,
+						gf_host_str,
+
+						// p_on_complete_fun
+						()=>{
+							p_send_response_fun({"status_str": "OK"});
+						},
+
+						// p_on_error_fun
+						(p_data_map)=>{
+							p_send_response_fun({
+								"status_str": "ERROR",
+								"data_map":   p_data_map,
+							});
+						},
+
+						p_log_fun);
+					
 					break;
 
 				//----------------
@@ -301,6 +330,37 @@ function main(p_log_fun) {
 		return true;
 	}
 	//---------------------------------------------------
+}
+
+//---------------------------------------------------
+// FLOW_OPS
+//---------------------------------------------------
+// ADD_IMAGE_TO_FLOW
+
+function add_image_to_flow(p_full_img_src_str,
+	p_image_origin_page_url_str,
+	p_images_flows_names_lst,
+	p_gf_host_str,
+	p_on_complete_fun,
+	p_on_error_fun,
+	p_log_fun) {
+
+	http__add_image_to_flow(p_full_img_src_str,
+		p_image_origin_page_url_str,
+		p_images_flows_names_lst,
+		p_gf_host_str,
+
+		(p_images_job_id_str, p_image_id_str, p_thumbnail_small_relative_url_str)=>{
+
+			console.log("image added")
+			console.log(`image job ID    - ${p_images_job_id_str}`)
+			console.log(`image ID        - ${p_image_id_str}`)
+			console.log(`thumb small URL - ${p_thumbnail_small_relative_url_str}`)
+
+			p_on_complete_fun();
+		},
+		(p_data_map)=>{p_on_error_fun(p_data_map)},
+		p_log_fun);
 }
 
 //---------------------------------------------------
@@ -408,16 +468,3 @@ function remove_element_from_post(p_element_info_map, p_ctx_map, p_log_fun) {
 }
 
 //-------------------------------------------------
-function log_fun(p_g, p_m) {
-	const msg_str = `${p_g}:${p_m}`;
-	// chrome.extension.getBackgroundPage().console.log(msg_str);
-
-	switch (p_g) {
-		case "INFO":
-			console.log(`%cINFO:%c${p_m}`, "color:green; background-color:#ACCFAC;", "background-color:#ACCFAC;");
-			break;
-		case "FUN_ENTER":
-			console.log(`%cFUN_ENTER:%c${p_m}`, "color:yellow; background-color:lightgray", "background-color:lightgray");
-			break;
-	}
-}

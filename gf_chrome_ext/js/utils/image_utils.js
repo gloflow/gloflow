@@ -18,37 +18,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 //---------------------------------------------------
-function http__gif_get_info(p_gf_img_id_str,
-	p_host_str,
-	p_on_complete_fun,
-	p_on_error_fun,
-	p_log_fun) {
-	p_log_fun('FUN_ENTER', 'image_utils.http__gif_get_info()');
-
-	const url_str = p_host_str+'/images/gif/get_info?gfimg_id='+p_gf_img_id_str;
-	p_log_fun('INFO', 'url_str - '+url_str);
-
-	//-------------------------
-	// HTTP AJAX
-	$.get(url_str,
-		(p_data_map) => {
-			console.log('response received');
-			//const data_map = JSON.parse(p_data);
-			//console.log('data_map["status_str"] - '+data_map["status_str"]);
-			
-			if (p_data_map["status_str"] == 'OK') {
-
-				const gif_map = p_data_map['data']['gif_map'];
-				p_on_complete_fun(gif_map);
-			}
-			else {
-				p_on_error_fun(p_data_map["data"]);
-			}
-		});
-	//-------------------------	
-}
-
-//---------------------------------------------------
 function http__check_imgs_exist_in_flow(p_images_extern_urls_lst,
 	p_host_str,
 	p_on_complete_fun,
@@ -100,7 +69,7 @@ function http__add_image_to_flow(p_image_extern_url_str,
 	p_log_fun) {
 	p_log_fun('FUN_ENTER', 'image_utils.http__add_image_to_flow()');
 
-	const url_str = `${p_gf_host_str}/images/flows/add_img`;
+	const url_str = `${p_gf_host_str}/v1/images/flows/add_img?auth_r=0`;
 	p_log_fun('INFO', 'url_str - '+url_str);
 
 	const data_map = {
@@ -112,6 +81,36 @@ function http__add_image_to_flow(p_image_extern_url_str,
 
 	//-------------------------
 	// HTTP AJAX
+	
+	fetch(url_str, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(data_map)
+	  })
+	  .then(response => response.json())
+	  .then(p_data_map => {
+		console.log('response received');
+		console.log(`status - ${p_data_map["status_str"]}`);
+	  
+		if (p_data_map["status_str"] === 'OK') {
+			const images_job_id_str                = p_data_map['data']['images_job_id_str'];
+			const image_id_str                     = p_data_map['data']['image_id_str'];
+			const thumbnail_small_relative_url_str = p_data_map['data']['thumbnail_small_relative_url_str'];
+		  
+			p_on_complete_fun(images_job_id_str, image_id_str, thumbnail_small_relative_url_str);
+		}
+		else {
+			p_on_error_fun(p_data_map["data"]);
+		}
+	  })
+	.catch(error => {
+		console.log('An error occurred:', error);
+	});
+
+	  
+	/*
 	$.post(url_str,
 		JSON.stringify(data_map),
 		(p_data_map) => {
@@ -132,7 +131,39 @@ function http__add_image_to_flow(p_image_extern_url_str,
 				p_on_error_fun(p_data_map["data"]);
 			}
 		});
-		
+	*/
+
+	//-------------------------	
+}
+
+//---------------------------------------------------
+function http__gif_get_info(p_gf_img_id_str,
+	p_host_str,
+	p_on_complete_fun,
+	p_on_error_fun,
+	p_log_fun) {
+	p_log_fun('FUN_ENTER', 'image_utils.http__gif_get_info()');
+
+	const url_str = p_host_str+'/images/gif/get_info?gfimg_id='+p_gf_img_id_str;
+	p_log_fun('INFO', 'url_str - '+url_str);
+
+	//-------------------------
+	// HTTP AJAX
+	$.get(url_str,
+		(p_data_map) => {
+			console.log('response received');
+			//const data_map = JSON.parse(p_data);
+			//console.log('data_map["status_str"] - '+data_map["status_str"]);
+			
+			if (p_data_map["status_str"] == 'OK') {
+
+				const gif_map = p_data_map['data']['gif_map'];
+				p_on_complete_fun(gif_map);
+			}
+			else {
+				p_on_error_fun(p_data_map["data"]);
+			}
+		});
 	//-------------------------	
 }
 

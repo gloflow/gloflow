@@ -24,7 +24,7 @@ function http__create_post(p_selected__post_elements_lst,
 	p_on_complete_fun,
 	p_on_error_fun,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','post_utils.http__create_post()');
+	p_log_fun('FUN_ENTER', 'post_utils.http__create_post()');
 
 	//---------------------------------------------------
 	// ->:Map

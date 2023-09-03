@@ -31,25 +31,15 @@
 				"./lib/masonry.pkgd.min.js",
 
 				//---------------
-				"./js/content_scripts/page_element_picker/display_page_info.js",
-				"./js/content_scripts/page_element_picker/page_element_picker.js",
-				"./js/content_scripts/page_element_picker/page_info_extraction.js",
-				"./js/content_scripts/utils.js",
-				"./js/gf_images/image_utils.js" // for image_flows
-			]
-		},
+				"./js/utils/var.js",
+				"./js/utils/image_utils.js",
+				"./js/utils/post_utils.js", 
 
-		{
-			// Specifies which pages this content script will be injected into
-			"matches": [
-				"http://*/*", // any http url
-				"https://*/*" // any https url
-			],
-
-			// The list of JavaScript files to be injected into matching pages. 
-			// These are injected in the order they appear in this array.
-			"js": [
-				"./js/content_scripts/page_data_extractor/extract.js"
+				"./js/content_scripts/extractor.js",
+				"./js/content_scripts/display_page_info.js",
+				"./js/content_scripts/page_element_picker.js",
+		
+				"./js/content_scripts/main.js"
 			],
 
 			//---------------------

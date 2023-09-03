@@ -18,10 +18,70 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 //---------------------------------------------------
+function extractor_init(p_log_fun) {
+
+	chrome.runtime.onMessage.addListener(
+		(p_request, p_sender, p_send_response_fun) => {
+
+			const request_source_str = p_request.source_str;
+			const request_type_str   = p_request.request_type_str;
+
+			if (request_source_str == 'popup') {
+				handle_msg(request_type_str, p_log_fun);
+			}
+		});
+}
+
+//---------------------------------------------------
+/*
+IMPORTANT!! - this script is run in all frames of the particular page.
+it may get run in advertising iframes as well, so potentially 10's of these scripts
+are run in the same page context.
+when the popup sends a message to the particular tab, all these scripts receive it. 
+however chrome extensions have a limit where only the first invocation of p_send_response_fun
+is executed, and its response returned to the popup sender as response. All other responses
+are ignored, and potentially data extracted not used.
+to avoid this, p_send_response_fun is not used at all, and instead data results are sent to the 
+background page for storage, and then that data is displayed to the user by the
+page_element_picker content_script
+*/
+
+// handle messages received by content script by the popup
+function handle_msg(p_request_type_str, p_log_fun) {
+
+	var msg_map;
+	switch(p_request_type_str) {
+		//-------------
+		// GET PAGE IMAGE INFOS
+
+		case 'get_page_img_infos':
+			const new_page_img_infos_lst = get_images_info(p_log_fun);
+			msg_map = {
+				'page_img_infos_lst': new_page_img_infos_lst
+			};
+			send_msg_to_bg_page(msg_map, (p_resp)=>{});
+			break;
+
+		//-------------
+		//GET PAGE VIDEO INFOS
+
+		case 'get_page_videos_infos':
+			const new_page_video_infos_lst = get_videos_info(p_log_fun);
+			msg_map = {
+				'page_videos_infos_lst':new_page_video_infos_lst
+			};
+			send_msg_to_bg_page(msg_map,(p_resp)=>{});
+			break;
+
+		//-------------
+	}
+}
+
+//---------------------------------------------------
 // ADD!! - detect you tube embeds in other non-youtube.com pages
 //         via the <embed> tag
 
-//->:List<:Dict(video_info_map)>
+// ->:List<:Dict(video_info_map)>
 function get_videos_info(p_log_fun) {
 	p_log_fun('FUN_ENTER','page_info_extraction.get_videos_info()')
 
@@ -29,7 +89,7 @@ function get_videos_info(p_log_fun) {
 	const videos_info_lst = [];
 	
 	//------------------------------------
-	//YOUTUBE.COM DOMAIN
+	// YOUTUBE.COM DOMAIN
 	
 	//the user is currently watching a video on youtube.com
 	//"\/\/" is "//" escaped
@@ -48,15 +108,15 @@ function get_videos_info(p_log_fun) {
 		videos_info_lst.push(video_info_map);
 	}
 	//------------------------------------
-	//if its any other page, search all elements 'src' attribute
-	//and see if it contains "http://www.youtube.com", "http://player.vimeo.com"
+	// if its any other page, search all elements 'src' attribute
+	// and see if it contains "http://www.youtube.com", "http://player.vimeo.com"
 	else {
 		
-		//"*=" - Attribute Contains Selector [name*="value"]
-		//Selects elements that have the specified attribute 
-		//with a value containing the a given substring.
+		// "*=" - Attribute Contains Selector [name*="value"]
+		// Selects elements that have the specified attribute 
+		// with a value containing the a given substring.
 		//------------------------------------
-		//YOUTUBE - IFRAME EMBED
+		// YOUTUBE - IFRAME EMBED
 		
 		$('*[src*="https://www.youtube.com"]').each((p_i,p_element) => {
 			p_log_fun('INFO', 'YOUTUBE IFRAME EMBED++++++++++++++++++++++++++++++++');
@@ -72,7 +132,7 @@ function get_videos_info(p_log_fun) {
 			videos_info_lst.push(video_info_map);
 		});
 		//------------------------------------
-		//VIMEO - IFRAME EMBED
+		// VIMEO - IFRAME EMBED
 		
 		$('*[src*="http://player.vimeo.com"]').each((p_i,p_element) => {
 			p_log_fun('INFO', 'VIMEO IFRAME EMBED++++++++++++++++++++++++++++++++');
@@ -88,7 +148,7 @@ function get_videos_info(p_log_fun) {
 			videos_info_lst.push(video_info_map);
 		});
 		//------------------------------------
-		//VIMEO - FLASH PLAYER (<OBJECT> TAG)
+		// VIMEO - FLASH PLAYER (<OBJECT> TAG)
 		
 		$('object[data*="http://a.vimeocdn.com"]').each((p_i,p_element) => {
 			p_log_fun('INFO', 'VIMEO FLASH PLAYER OBJECT TAG++++++++++++++++++++++++++++++++');
@@ -105,7 +165,7 @@ function get_videos_info(p_log_fun) {
 			videos_info_lst.push(video_info_map);
 		});
 		//------------------------------------
-		//OOYALA - IFRAME EMBED
+		// OOYALA - IFRAME EMBED
 		
 		$('*[src*="http://player.ooyala.com"]').each((p_i,p_element) => {
 			p_log_fun('INFO', 'OOYALA IFRAME EMBED++++++++++++++++++++++++++++++++');

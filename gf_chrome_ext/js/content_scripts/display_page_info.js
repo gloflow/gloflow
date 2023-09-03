@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 function display_page_info(p_page_images_infos_lst,
 	p_page_videos_infos_lst,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER', 'display_page_info.display_page_info()');
 
 	const gf_container = $(
 		`<div id="page_info_container">
@@ -114,15 +113,9 @@ function display_page_info(p_page_images_infos_lst,
 
 	//---------------------------------------------------
 	function view_image(p_image_map) {
-		//p_log_fun('FUN_ENTER','display_page_info.display_page_info().view_image()');
 
 		const full_img_src_str = p_image_map['full_img_src_str'];
 		const img_name_str     = p_image_map['img_name_str'];
-
-		//p_log_fun('INFO','+++-------------------+++');
-		//p_log_fun('INFO',JSON.stringify(p_image_map));
-		//p_log_fun('INFO',full_img_src_str);
-		//p_log_fun('INFO',img_name_str);
 
 		const image_in_page_element = $(`
 			<div class="image_in_page">
@@ -164,7 +157,6 @@ function display_page_info(p_page_images_infos_lst,
 
 	//---------------------------------------------------
 	function view_video(p_video_map) {
-		//p_log_fun('FUN_ENTER','display_page_info.display_page_info().view_video()');
 
 		const video_source_str = p_video_map['video_source_str'];
 		const embed_url_str    = p_video_map['embed_url_str'];
@@ -179,8 +171,9 @@ function display_page_info(p_page_images_infos_lst,
 		init_video_hud(video_in_page_element, p_video_map, p_log_fun);
 
 		//-------------------
-		//IMPORTANT!! - reload the masonry layout with the newly loaded image
+		// IMPORTANT!! - reload the masonry layout with the newly loaded image
 		$(container).find('#collection').masonry();
+
 		//-------------------
 	}
 
@@ -189,9 +182,9 @@ function display_page_info(p_page_images_infos_lst,
 
 //---------------------------------------------------
 function check_images_exist_in_system(p_page_images_infos_lst, p_log_fun) {
-	p_log_fun('FUN_ENTER','display_page_info.check_images_exist_in_system()');
+	p_log_fun('FUN_ENTER', 'display_page_info.check_images_exist_in_system()');
 
-	const images_extern_urls_lst = []; //:List<:String>
+	const images_extern_urls_lst = []; // :List<:String>
 	$.each(p_page_images_infos_lst,
 		(p_i,p_image_map) => {
 			const full_img_src_str = p_image_map['full_img_src_str'];
@@ -199,12 +192,13 @@ function check_images_exist_in_system(p_page_images_infos_lst, p_log_fun) {
 		});
 
 	//-------------------
-	//IMPORTANT!! - since request to host_str is made from the context of the page in which the 
-	//              content is located, browser security imposes that the same protocol (http|https)
-	//              is used to communicate with host_str as with the origin-domain of the page
+	// IMPORTANT!! - since request to host_str is made from the context of the page in which the 
+	//               content is located, browser security imposes that the same protocol (http|https)
+	//               is used to communicate with host_str as with the origin-domain of the page
 	const origin_url_str = window.location.href;
 	const protocol_str   = origin_url_str.split('://')[0];
-	const host_str       = protocol_str+'://gloflow.com'; //127.0.0.1:3050';
+	const host_str       = `${protocol_str}://gloflow.com`;
+	
 	//-------------------
 
 	console.log(images_extern_urls_lst)
@@ -301,9 +295,11 @@ function init_image_hud(p_image_id_str,
 						<div class="icon"></div>
 					</div>
 				</div>`);
+
 		//-------------------
 		$(hud).find('#actions').append(flow_btn);
 	}
+
 	//--------------
 	// IMPORTANT!! - testing for image dimensions, so that this info is not displayed if
 	//               the image is too small, since it will obstruct actions div.
@@ -311,6 +307,7 @@ function init_image_hud(p_image_id_str,
 		$(hud).append(`<div class="img_height">height: <span>${img_height}</span>px</div>`);
 		$(hud).append(`<div class="img_width">width: <span>${img_width}</span>px</div>`);	
 	}
+	
 	//--------------
 
 	const icons_chrome_ext_url_str = `url(${chrome.runtime.getURL('assets/icons.png')})`;
@@ -340,7 +337,6 @@ function init_image_hud(p_image_id_str,
 			},
 			(p_error_data_map)=>{},
 			p_log_fun);
-			
 	});
 	*/
 
@@ -366,6 +362,7 @@ function init_image_hud(p_image_id_str,
 		add_image_to_flow(full_img_src_str,
 			final_flows_names_lst,
 			gf_host_str,
+
 			()=>{
 				//-------------------
 				// IMPORTANT!! - adding the .btn_ok class activates the CSS animation
@@ -375,7 +372,7 @@ function init_image_hud(p_image_id_str,
 
 				$(hud).find(".add_to_image_flow_btn").css("pointer-events", "none");
 			},
-			(p_error_data_map)=>{},
+			(p_data_map)=>{},
 			p_log_fun);
 	});
 
@@ -452,7 +449,6 @@ function add_image_to_flow(p_full_img_src_str,
 	p_on_complete_fun,
 	p_on_error_fun,
 	p_log_fun) {
-	p_log_fun("FUN_ENTER", "display_page_info.add_image_to_flow()");
 
 	const image_origin_page_url_str = window.location.href;
 
@@ -467,6 +463,29 @@ function add_image_to_flow(p_full_img_src_str,
 	//-------------------
 	*/
 
+	const msg_map = {
+		"source_str":                "content_script",
+		"type_str":                  "add_image_to_flow",
+		"full_img_src_str":          p_full_img_src_str,
+		"image_origin_page_url_str": image_origin_page_url_str,
+		"images_flows_names_lst":    p_images_flows_names_lst,
+		"gf_host_str":               p_gf_host_str
+	};
+
+	send_msg_to_bg_page(msg_map, (p_response_map)=>{
+
+		switch(p_response_map["status_str"]) {
+			case "OK":
+				p_on_complete_fun();
+				break;
+
+			case "ERROR":
+				p_on_error_fun(p_response_map["data_map"]);
+				break;
+		}
+	});
+
+	/*
 	http__add_image_to_flow(p_full_img_src_str,
 		image_origin_page_url_str,
 		p_images_flows_names_lst,
@@ -482,6 +501,7 @@ function add_image_to_flow(p_full_img_src_str,
 		},
 		(p_error_data_map)=>{p_on_error_fun(p_error_data_map)},
 		p_log_fun);
+	*/
 }
 
 //---------------------------------------------------
