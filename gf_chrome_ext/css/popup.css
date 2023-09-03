@@ -34,6 +34,43 @@ body {
 #card_2 .selected_image img {
 	width: 100%;
 }
+
+/*-------------------------------------------------------*/
+#auth {
+	position: absolute;
+    width: 100%;
+    height: 375px;
+    background-color: #cf9393;
+    z-index: 17;
+    text-align: center;
+    padding-top: 69%;
+    font-size: 20px;
+    color: white;
+
+	cursor: pointer;
+}
+#auth:hover {
+	background-color: rgb(226, 65, 65);
+}
+
+#auth #descr {
+	font-size: 10px;
+}
+#auth #descr span {
+	font-size: 12px;
+	font-weight: bold;
+}
+
+#auth #status {
+	top: 20px;
+    position: relative;
+    font-size: 15px;
+    color: #494949;
+    background-color: white;
+    padding-top: 6px;
+    padding-bottom: 8px;
+}
+
 /*-------------------------------------------------------*/
 /*IMAGE ACTIONS*/
 #image_actions_container {
@@ -75,6 +112,7 @@ body {
     background-image:url('chrome-extension://__MSG_@@extension_id__/assets/icons.png');
 	background-position: -146px -733px;
 }
+
 /*-------------------------------------------------------*/
 /*VIDEO ACTIONS*/
 #video_actions_container {
@@ -115,6 +153,7 @@ body {
     background-image:url('chrome-extension://__MSG_@@extension_id__/assets/icons.png');
 	background-position: -761px -176px;
 }
+
 /*-------------------------------------------------------*/
 #post_creation_form {
 	background-color: rgb(216, 216, 216);
@@ -147,12 +186,14 @@ body {
 	padding-left: 5px;
 	margin-top  : 5px;
 }
+
 /*-------------------------------------------------------*/
 /*when the user selects an image (in the popup) to be included in the post
   the url of the image is added to the picked_images_lst div*/
 div #picked_images_lst {
 	background-color:#E8E8E8;
 }
+
 /*-------------------------------------------------------*/
 /*CREATE POST BUTTON*/
 
@@ -181,6 +222,7 @@ div #picked_images_lst {
 #create_post_btn:hover {
 	opacity: 1.0;
 }
+
 /*-------------------------------------------------------*/
 #card_navigator #view_selected_elements_card {
 	position: fixed;
@@ -201,6 +243,7 @@ div #picked_images_lst {
     background-image:url('chrome-extension://__MSG_@@extension_id__/assets/icons.png');
 	background-position: -376px -486px;
 }
+
 /*-------------------------------------------------------*/
 #target_host {
 	position: absolute;

@@ -1,11 +1,11 @@
 {
-	"name"            : "GloFlow",
-	"version"         : "0.7.3.0",
+	"name":             "GloFlow",
+	"version":          "0.10.0.0",
 	"manifest_version": 3,
-	"description"     : "GloFlow chrome extension",
+	"description":      "GloFlow chrome extension",
 
 	"action": {
-		"default_icon" : "./assets/favicon.png",
+		"default_icon":  "./assets/favicon.png",
 		"default_popup": "./html/popup.html"
 	},
 	"background": {
@@ -71,14 +71,19 @@
 			"matches": ["http://*/*", "https://*/*"]
 		}
 	],
+	
+	"permissions": [
+		"cookies"
+	],
+	"host_permissions": [
+		// "http://*/*",
+		// "https://*/*"
+		"https://gloflow.com/*",
+		"https://www.gloflow.com/*"
+	]
 
 	// Whether the app or extension is expected to work offline.     
 	// When Chrome detects that it is offline, apps with this 
 	// field set to true will be highlighted on the New Tab page.
 	// "offline_enabled":"true",
-  
-	"host_permissions": [
-		"http://*/*",
-		"https://*/*"
-	]
 }

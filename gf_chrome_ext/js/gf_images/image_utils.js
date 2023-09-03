@@ -29,7 +29,7 @@ function http__gif_get_info(p_gf_img_id_str,
 	p_log_fun('INFO', 'url_str - '+url_str);
 
 	//-------------------------
-	//HTTP AJAX
+	// HTTP AJAX
 	$.get(url_str,
 		(p_data_map) => {
 			console.log('response received');
@@ -66,12 +66,12 @@ function http__check_imgs_exist_in_flow(p_images_extern_urls_lst,
 	};
 
 	//-------------------------
-	//HTTP AJAX
+	// HTTP AJAX
 	$.post(url_str,
 		JSON.stringify(data_map),
 		(p_data_map) => {
 			console.log('response received');
-			//const data_map = JSON.parse(p_data);
+			// const data_map = JSON.parse(p_data);
 			
 			if (p_data_map["status_str"] == 'OK') {
 				var existing_images_lst = p_data_map['data']['existing_images_lst'];
@@ -106,9 +106,8 @@ function http__add_image_to_flow(p_image_extern_url_str,
 	const data_map = {
 		'image_extern_url_str':      p_image_extern_url_str,
 		"image_origin_page_url_str": p_image_origin_page_url_str,
-		'flows_names_lst':           p_flows_names_lst, //['general'],
+		'flows_names_lst':           p_flows_names_lst, // ['general'],
 		'client_type_str':           'gchrome_ext',
-		//'flow_name_str'            :'general', //DEPRECATED!!
 	};
 
 	//-------------------------
@@ -119,7 +118,7 @@ function http__add_image_to_flow(p_image_extern_url_str,
 			console.log('response received');
 			console.log(`status - ${p_data_map["status_str"]}`);
 
-			//const data_map = JSON.parse(p_data);
+			// const data_map = JSON.parse(p_data);
 			
 			if (p_data_map["status_str"] == 'OK') {
 
@@ -133,6 +132,7 @@ function http__add_image_to_flow(p_image_extern_url_str,
 				p_on_error_fun(p_data_map["data"]);
 			}
 		});
+		
 	//-------------------------	
 }
 

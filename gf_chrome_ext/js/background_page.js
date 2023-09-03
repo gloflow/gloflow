@@ -17,45 +17,42 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+importScripts('gf_images/image_utils.js');
+
 main(log_fun);
-
-//-------------------------------------------------
-function log_fun(p_g, p_m) {
-	const msg_str = p_g+':'+p_m;
-	// chrome.extension.getBackgroundPage().console.log(msg_str);
-
-	switch (p_g) {
-		case "INFO":
-			console.log("%cINFO"+":"+"%c"+p_m, "color:green; background-color:#ACCFAC;", "background-color:#ACCFAC;");
-			break;
-		case "FUN_ENTER":
-			console.log("%cFUN_ENTER"+":"+"%c"+p_m, "color:yellow; background-color:lightgray", "background-color:lightgray");
-			break;
-	}
-}
 
 //---------------------------------------------------
 function main(p_log_fun) {
 	
+	p_log_fun('INFO', `background_page started...`);
+	
+	const main_domain_str = "gloflow.com";
 	const ctx_map = {
-		'selected_elements_map':{},
+		'logged_in_bool': false,
+		'selected_elements_map': {},
 		// 'selected_images_lst' :[],
 		// 'selected_videos_lst' :[]
 	};
-
 	
 	chrome.runtime.onMessage.addListener(on_request_received_fun);
 	//---------------------------------------------------	
 	function on_request_received_fun(p_request, p_sender, p_send_response_fun) {		
 
-		p_log_fun('INFO', 'background_page MSG RECEIVED ------------');
-		
-		/*const msg_source_str = p_request.source_str;
-		const msg_type_str   = p_request.type_str;
-		p_log_fun('INFO','msg_source_str - '+msg_source_str);
-		p_log_fun('INFO','msg_type_str   - '+msg_type_str);*/
+		p_log_fun('INFO', `background_page MSG RECEIVED ------------ ${p_request.source_str} | ${p_request.type_str}`);
 
 		switch (p_request.source_str) {
+			
+			case 'popup_auth':
+				handle_auth_msg(p_request.type_str, p_send_response_fun)
+					.then(() => {
+						
+					})
+					.catch((error) => {
+						console.log("Error caught:", error);
+					});
+
+				break;
+
 			case 'popup':
 				handle_popup_msg(p_request.type_str, p_request);
 				break;
@@ -65,13 +62,124 @@ function main(p_log_fun) {
 			case 'content_script':
 				handle_content_script_msg(p_request.type_str, p_send_response_fun, p_request);
 				break;
+			
+		}
+		
+		//---------------------------------------------------
+		// AUTH
+		//---------------------------------------------------
+		// HANDLE_AUTH_MSG
+		function handle_auth_msg(p_msg_type_str, p_send_response_fun) {
+			
+			return new Promise(async (p_resolve_fun, p_reject_fun) => {
+
+				switch (p_msg_type_str) {
+
+					//----------------
+					// LOGIN
+					case "login":
+
+						try {
+							await Promise.all([
+								check_cookie("gf_sess"),
+								check_cookie("Authorization")
+							]);
+
+							// mark the extension state as logged in
+							ctx_map["logged_in_bool"] = true;
+
+							p_send_response_fun({"status_str": "OK"});
+							p_resolve_fun();
+
+						} catch (error) {
+							p_send_response_fun({"status_str": "ERROR"});
+							p_reject_fun(error);
+						}
+
+						
+						break;
+					
+					//----------------
+					// LOGGED_IN
+					case "logged_in":
+						
+						p_send_response_fun({
+							"logged_in_bool": ctx_map["logged_in_bool"]
+						});
+
+						p_resolve_fun();
+						break;
+
+					//----------------
+				}
+			});
+
+			//---------------------------------------------------
+			function check_cookie(p_name_str) {
+				return new Promise((p_resolve_fun, p_reject_fun) => {
+
+					// GET_COOKIE
+					chrome.cookies.get({ url: `https://${main_domain_str}`, name: p_name_str },
+						function(p_cookie) {
+							if (p_cookie) {
+
+								/*
+								const cookie_val_str    = p_cookie.value;
+								const cookie_expiration = p_cookie.expirationDate;
+    							const cookie_path_str   = p_cookie.path;
+
+								// SET_COOKIE
+								chrome.cookies.set({
+										"name":   p_name_str,
+										"value":  cookie_val_str,
+										"url":    `https://${main_domain_str}`,
+										"secure": true,
+										"expirationDate": cookie_expiration,
+										"path":           cookie_path_str
+									}, function(cookie) {
+										
+									});
+
+								console.log(cookie_val_str);
+								*/
+
+								p_resolve_fun("cookie found");
+							} else {
+								// console.log(`Cookie ${p_name_str} not found`);
+								p_reject_fun("cookie not found");
+							}
+						});
+					});
+			}
+			
+			//---------------------------------------------------
 		}
 
+		//---------------------------------------------------
+		// DETECT_LOGOUT
+		chrome.cookies.onChanged.addListener(function(p_change_info) {
+
+			// cookie deletion
+			if (p_change_info.removed) {
+
+				const cookie_name_str = p_change_info.cookie.name;
+
+				// check if cookies related to GF auth have been deleted, to infer that user has logged out
+				if (cookie_name_str == "gf_sess" || cookie_name_str == "Authorization") {
+
+					// mark the extension state as logged out
+					ctx_map["logged_in_bool"] = false;
+				}
+			}
+		});
+
+		//---------------------------------------------------
+		// VAR
 		//---------------------------------------------------	
 		function handle_popup_selected_elements(p_msg_type_str, p_request) {
 			switch(p_msg_type_str) {
 				//----------------
-				//GET SELECTED ASSETS
+				// GET SELECTED ASSETS
 
 				case 'get_selected_elements':
 					get__selected_elements(ctx_map,
@@ -99,13 +207,13 @@ function main(p_log_fun) {
 		function handle_popup_msg(p_msg_type_str, p_request) {
 			switch (p_msg_type_str) {
 				//----------------
-				//LOG_MSG
+				// LOG_MSG
 				case 'log_msg':
 					console.log('POPUP:'+p_request.msg_str);
 					break;
 
 				//----------------
-				//GET_SELECTED_ELEMENTS
+				// GET_SELECTED_ELEMENTS
 				case 'get__selected_elements':
 					get__selected_elements(ctx_map,
 						(p_selected_elements_map)=>{
@@ -137,11 +245,16 @@ function main(p_log_fun) {
 
 		//---------------------------------------------------
 		function handle_content_script_msg(p_msg_type_str, p_send_response_fun, p_request) {
+
 			switch (p_msg_type_str) {
 				//----------------
 				// LOG_MSG
 				case 'log_msg':
 					console.log('CONTENT_SCR:'+p_request.msg_str);
+					break;
+
+				//----------------
+				case 'add_image_to_flow':
 					break;
 
 				//----------------
@@ -177,7 +290,15 @@ function main(p_log_fun) {
 			}
 		}
 
-		//---------------------------------------------------	
+		//---------------------------------------------------
+
+		/*
+		IMPORTANT!! - if some asynchronous code is being run in the background script,
+			(as is the case here, in the handle functions above)
+			returning true right away (while async ops are running) from the message listener is keeping
+			the message port open until the async operation is done and for the sendResponse() call. 
+		*/
+		return true;
 	}
 	//---------------------------------------------------
 }
@@ -269,7 +390,6 @@ function add_element_to_post(p_element_info_map, p_ctx_map, p_on_complete_fun, p
 
 //---------------------------------------------------
 function remove_element_from_post(p_element_info_map, p_ctx_map, p_log_fun) {
-	p_log_fun('FUN_ENTER', 'background_page.remove_element_from_post()');
 
 	const element_type_str      = p_element_info_map['type_str'];
 	const selected_elements_map = p_ctx_map['selected_elements_map'];
@@ -284,5 +404,20 @@ function remove_element_from_post(p_element_info_map, p_ctx_map, p_log_fun) {
 			break;
 		default:
 			false;
+	}
+}
+
+//-------------------------------------------------
+function log_fun(p_g, p_m) {
+	const msg_str = `${p_g}:${p_m}`;
+	// chrome.extension.getBackgroundPage().console.log(msg_str);
+
+	switch (p_g) {
+		case "INFO":
+			console.log(`%cINFO:%c${p_m}`, "color:green; background-color:#ACCFAC;", "background-color:#ACCFAC;");
+			break;
+		case "FUN_ENTER":
+			console.log(`%cFUN_ENTER:%c${p_m}`, "color:yellow; background-color:lightgray", "background-color:lightgray");
+			break;
 	}
 }

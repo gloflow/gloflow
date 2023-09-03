@@ -115,10 +115,10 @@ function get_videos_info(p_log_fun) {
 	const videos_info_lst = [];
 	
 	//------------------------------------
-	//YOUTUBE.COM DOMAIN
+	// YOUTUBE.COM DOMAIN
 	
-	//the user is currently watching a video on youtube.com
-	//"\/\/" is "//" escaped
+	// the user is currently watching a video on youtube.com
+	// "\/\/" is "//" escaped
 	if (page_url_str.match("^http:\/\/www.youtube.com\/watch") || page_url_str.match("^https:\/\/www.youtube.com\/watch")) {
 
 		const youtube_video_embed_url_str = $('link[itemprop="embedURL"]').attr('href');
@@ -133,16 +133,17 @@ function get_videos_info(p_log_fun) {
 		
 		videos_info_lst.push(video_info_map);
 	}
+
 	//------------------------------------
-	//if its any other page, search all elements 'src' attribute
-	//and see if it contains "http://www.youtube.com", "http://player.vimeo.com"
+	// if its any other page, search all elements 'src' attribute
+	// and see if it contains "http://www.youtube.com", "http://player.vimeo.com"
 	else {
 		
 		//"*=" - Attribute Contains Selector [name*="value"]
 		//Selects elements that have the specified attribute 
 		//with a value containing the a given substring.
 		//------------------------------------
-		//YOUTUBE - IFRAME EMBED
+		// YOUTUBE - IFRAME EMBED
 		
 		$('*[src*="https://www.youtube.com"]').each((p_i, p_element) => {
 			p_log_fun('INFO', 'YOUTUBE IFRAME EMBED++++++++++++++++++++++++++++++++');
@@ -159,7 +160,7 @@ function get_videos_info(p_log_fun) {
 		});
 
 		//------------------------------------
-		//VIMEO - IFRAME EMBED
+		// VIMEO - IFRAME EMBED
 		
 		$('*[src*="http://player.vimeo.com"]').each((p_i, p_element) => {
 			p_log_fun('INFO', 'VIMEO IFRAME EMBED++++++++++++++++++++++++++++++++');
@@ -176,7 +177,7 @@ function get_videos_info(p_log_fun) {
 		});
 
 		//------------------------------------
-		//VIMEO - FLASH PLAYER (<OBJECT> TAG)
+		// VIMEO - FLASH PLAYER (<OBJECT> TAG)
 		
 		$('object[data*="http://a.vimeocdn.com"]').each((p_i, p_element) => {
 			p_log_fun('INFO','VIMEO FLASH PLAYER OBJECT TAG++++++++++++++++++++++++++++++++');
@@ -194,7 +195,7 @@ function get_videos_info(p_log_fun) {
 		});
 
 		//------------------------------------
-		//OOYALA - IFRAME EMBED
+		// OOYALA - IFRAME EMBED
 		
 		$('*[src*="http://player.ooyala.com"]').each((p_i, p_element) => {
 			p_log_fun('INFO', 'OOYALA IFRAME EMBED++++++++++++++++++++++++++++++++');
@@ -218,7 +219,7 @@ function get_videos_info(p_log_fun) {
 }
 
 //---------------------------------------------------
-//->:List<:Dict()>(img_infos_lst)
+// ->:List<:Dict()>(img_infos_lst)
 function get_images_info(p_log_fun) {
 	
 	const page_url_str        = window.location.toString();
@@ -228,8 +229,8 @@ function get_images_info(p_log_fun) {
 	function get_image_info(p_jq_element) {
 		// p_log_fun('FUN_ENTER', 'extract.get_images_info().get_image_info()')
 		
-		//".src" instead of ".attr('src')" - gets the fully resolved url (including the host)
-		//                                   and not just the value thats stored in the "src" html attr
+		// ".src" instead of ".attr('src')" - gets the fully resolved url (including the host)
+		//                                    and not just the value thats stored in the "src" html attr
 		const full_img_src_str = $(p_jq_element)[0].src;
 		const img_name_str     = full_img_src_str.split('/').pop();
 		const img_width        = $(p_jq_element).width();
@@ -240,9 +241,8 @@ function get_images_info(p_log_fun) {
 			'page_url_str':     page_url_str,
 			'full_img_src_str': full_img_src_str,
 			'img_name_str':     img_name_str,
-
-			'img_width' : img_width,
-			'img_height': img_height
+			'img_width' :       img_width,
+			'img_height':       img_height
 		};
 		console.log(img_info_map);
 

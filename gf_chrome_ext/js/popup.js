@@ -47,10 +47,71 @@ function main(p_log_fun) {
 //-------------------------------------------------
 function init_buttons(p_log_fun) {
 	
+
 	//-----------------------
-	//CREATE POST
+	// AUTH
+
+	/*
+	IMPORTANT!! - every time popup is closed its state is deleted, so on every open
+		it needs to be reinitialized and the popup needs to check with the backround_worker
+		if the user/extension is logged in. if it is, set the popup state to logged-in.
+	*/
+	check_logged_in();
+
+	$(document).on("click", "#auth", ()=>{
+		
+		const msg_map = {
+			"source_str": "popup_auth",
+			"type_str":   "login"
+		};
+
+		chrome.runtime.sendMessage(msg_map,
+			(p_response) => {
+				const status_str = p_response["status_str"];
+				
+				if (status_str == "OK") {
+					
+					console.log("chrome_ext login success...")
+
+					// user succeeded authenticating, so remove auth overlay and reveal UI
+					$("#auth").remove();
+				} else {
+
+					// user is not loged in, so present a message
+					$("#auth #status").append("you're not logged into gloflow.com...")
+				}
+
+			});
+	});
+
+	//-------------------------------------------------
+	function check_logged_in() {
+		const msg_map = {
+			"source_str": "popup_auth",
+			"type_str":   "logged_in"
+		};
+		chrome.runtime.sendMessage(msg_map,
+			(p_response) => {
+				const logged_in_bool = p_response["logged_in_bool"];
+				
+				if (logged_in_bool) {
+					
+					console.log("user is logged in already...")
+
+					// user already logged in, so remove auth overlay and reveal UI
+					$("#auth").remove();
+				} else {
+					console.log("user is not logged in...")
+				}
+			});
+	}
+
+	//-------------------------------------------------
+
+	//-----------------------
+	// CREATE POST
 	
-	$(document).on('click', '#create_post_btn',()=>{
+	$(document).on('click', '#create_post_btn', ()=>{
 
 		//-------------
 		// TARGET_HOST
@@ -94,7 +155,7 @@ function init_buttons(p_log_fun) {
 	});
 
 	//-----------------------
-	// TELL CONTENT-SCRIPT TO GET IMAGES INFO
+	// GET_IMAGES
 	
 	$(document).on('click', '#get_tab_page_images_btn', (p_e)=>{
 
@@ -106,7 +167,7 @@ function init_buttons(p_log_fun) {
 	});
 
 	//-----------------------
-	// TELL CONTENT-SCRIPT TO GET VIDEOS INFO
+	// GET_VIDEOS
 	
 	$(document).on('click', '#get_tab_page_videos_btn', (p_e)=>{
 		// POPUP->CONTENT_SCRIPT
@@ -119,7 +180,7 @@ function init_buttons(p_log_fun) {
 	//-----------------------
 	// SHOW SELECTED ASSETS
 
-	$(document).on('click','#show_selected_assets_btn',() => {
+	$(document).on('click', '#show_selected_assets_btn', () => {
 		$('body').css('background-color','red');
 
 		const selected_assets_str = chrome.runtime.getURL('html/selected_elements_ui.html');

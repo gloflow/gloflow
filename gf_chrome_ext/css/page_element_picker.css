@@ -47,6 +47,7 @@
 	width :100%;
 	height:auto;
 }
+
 /*-----------------------------------------------------*/
 #page_info_container {
 	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -71,6 +72,7 @@
 	margin-bottom: 40px;
 	margin-left: 15px;
 }
+
 /*-----------------------------------------------------*/
 /*IMAGE_IN_PAGE*/
 
@@ -92,13 +94,16 @@
 #page_info_container .image_in_page img {
 }
 
-/*#page_info_container .image_in_page .hud {
+/*
+#page_info_container .image_in_page .hud {
 	position: absolute;
 	top     : 0px;
 	left    : 0px;
 	width   : 100%;
 	height  : 100%;
-}*/
+}
+*/
+
 /*-----------------------------------------------------*/
 /*IMAGE_EXISTS*/
 #page_info_container .image_in_page .img_exists {
@@ -117,6 +122,7 @@
 #page_info_container .image_in_page .img_exists span.time {
 	font-weight: bold;
 }
+
 /*-----------------------------------------------------*/
 #page_info_container .image_in_page .hud {
 	position        : absolute;
@@ -156,6 +162,7 @@
 #page_info_container .image_in_page .hud .img_width span {
 	font-weight: bold;
 }
+
 /*-----------------------------------------------------*/
 /*GF EXTENTION INPUT FIELD*/
 .flow_name_field{
@@ -190,6 +197,7 @@
 	color: #696969;
 	margin-bottom: 4px;
 }
+
 /*-----------------------------------------------------*/
 /*IMAGE_IN_PAGE__HUD_ACTIONS*/
 
@@ -205,6 +213,7 @@
 	bottom: 0px;
 	margin: auto;
 }
+
 /*-----------------------------------------------------*/
 #page_info_container .image_in_page .hud #actions .add_to_image_flow_btn .symbol .icon {
 	position        : absolute;
@@ -244,6 +253,7 @@
 		background-color: green;
 	}
 }
+
 /*-----------------------------------------------------*/
 #page_info_container .image_in_page .hud #actions .add_to_post_btn .symbol .icon {
 	position        : absolute;
@@ -346,6 +356,7 @@
 	  background-image   : url('assets/icons.png');*/
 	background-position: -223px -423px;
 }
+
 /*-----------------------------------------------------*/
 /*CLOSE BUTTON*/
 

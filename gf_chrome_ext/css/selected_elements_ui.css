@@ -3,6 +3,7 @@ body {
 	font-family     : "Helvetica Neue", Helvetica, Arial, sans-serif;
 	background-color: rgb(73, 73, 73);
 }
+
 /*------------------------------------------------------------*/
 #selected_images {
 	position: absolute;
@@ -25,4 +26,5 @@ body {
 
 	background-color: rgb(158, 158, 158);
 }
+
 /*------------------------------------------------------------*/
