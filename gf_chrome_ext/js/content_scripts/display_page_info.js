@@ -31,7 +31,8 @@ function display_page_info(p_page_images_infos_lst,
 				<p class="flow_name_msg"># Add flow names</p>
 				<input type="text" class="flow_name" placeholder="general"></input>
 			</div>
-			<div id="collection"></div>
+			<div id="collection_masonry">
+			</div>
 			<div id="selected_elements_preview"></div>
 		</div>`);
 	$("body").append(gf_container);
@@ -45,10 +46,18 @@ function display_page_info(p_page_images_infos_lst,
 	// $(gf_container).css('height', $(document).height());
     var current_scroll_y = window.scrollY;
 
+	const window_height_int = window.innerHeight;
 	$(gf_container).css({
-		"height":	"100%",
+
+		/*
+		IMPORTANT!! - setting the height of the container to the height of the window.
+			this solves a problem where on some sites scrolling wouldnt work properly with the
+			height of the container set to 100% (with intention to cover the whole page).
+		*/
+		"height": `${window_height_int}px`,
+		
 		"overflow-y": "visible",
-		"top":	current_scroll_y+"px",
+		"top": `${current_scroll_y}px`,
 	})
 
 	create_close_btn();
@@ -64,11 +73,11 @@ function display_page_info(p_page_images_infos_lst,
 		(p_i, p_video_map) => {
 			view_video(p_video_map);
 		});
-	
+
 	//------------
 	// MASONRY
 
-	$(gf_container).find("#collection").masonry(
+	$(gf_container).find("#collection_masonry").masonry(
 		{
 			columnWidth:  20,
 			gutter:       10,
@@ -107,8 +116,6 @@ function display_page_info(p_page_images_infos_lst,
 					"overflow-x":"hidden"
 				});
 			});
-
-			
 	}
 
 	//---------------------------------------------------
@@ -127,17 +134,29 @@ function display_page_info(p_page_images_infos_lst,
 
 		$(image_in_page_element).append(img);
 		//-----------------
-		//GIF
+		// GIF
 		if (full_img_src_str.split('.').pop() == 'gif') {
 			// $(img).addClass('gf_gif');
 			// $(img).attr("data-playon","hover"); //GIF_PLAYER API
 			// $(img).gifplayer();
 		}
+
 		//-----------------
 
-		$(gf_container).find('#collection').append(image_in_page_element);
+		$(gf_container).find('#collection_masonry').append(image_in_page_element);
 			$(img).load(() => {
-				const img_id_str = 'id_'+hash_code(full_img_src_str, p_log_fun);
+
+				//-------------------
+				// UNIQUE_IMAGE_DIV_ID - every image is assigned a unique div ID, so that it can be reference without conflicts.
+				/*
+				IMPORTANT!! - appending time_in_ms to string that is then hashed to obtain a unique div ID, because full_img_src_str
+					is not guaranteed to be unique to an image on the page. some pages on the web have the same image displayed
+					in multiple places on the same page. this would lead to several images having the same ID, and GF chrome operations
+					pontetially then applied multiple times. if an image that has duplicates on the page like this is selected
+					by the user to be added to a flow, it would then be added multiple times leading to a duplicate in the GF system.
+				*/
+				const time_in_ms_f = performance.now();
+				const img_id_str = 'id_'+hash_code(`${time_in_ms_f}_${full_img_src_str}`, p_log_fun);
 				
 				const img_id_clean_str = img_id_str.replace('-', '_');
 				p_log_fun('INFO', 'img_id_clean_str - '+img_id_clean_str);
@@ -150,7 +169,8 @@ function display_page_info(p_page_images_infos_lst,
 
 				//-------------------
 				// IMPORTANT!! - reload the masonry layout with the newly loaded image
-				$(gf_container).find('#collection').masonry();
+				$(gf_container).find('#collection_masonry').masonry();
+				
 				//-------------------
 			});
 	}
@@ -166,13 +186,13 @@ function display_page_info(p_page_images_infos_lst,
 				'<iframe src="'+embed_url_str+'"></iframe>'+
 			'</div>');
 
-		$(container).find('#collection').append(video_in_page_element);
+		$(container).find('#collection_masonry').append(video_in_page_element);
 
 		init_video_hud(video_in_page_element, p_video_map, p_log_fun);
 
 		//-------------------
 		// IMPORTANT!! - reload the masonry layout with the newly loaded image
-		$(container).find('#collection').masonry();
+		$(container).find('#collection_masonry').masonry();
 
 		//-------------------
 	}
@@ -362,6 +382,18 @@ function init_image_hud(p_image_id_str,
 
 		const gf_host_str = $(p_gf_container_element).find("input#gf_host").val();
 
+		//-------------------
+		// DISABLE_EVENTS
+		// remove the event handler so that clicking on the add_to_flow button no longer functions,
+		// since the image is in the process of been added and shouldnt be add-able anymore.
+		$(document).off("click", add_to_image_flow__selector_str, add_to_image_flow_btn_handler);
+
+		//-------------------
+		// DISPLAY_MESSAGE - to let the user know that adding the image to flow is in progress
+		$(add_to_image_flow__selector_str).append("<div class='adding_in_progress'>adding to flow in progress...</div>");
+
+		//-------------------
+
 		add_image_to_flow(full_img_src_str,
 			final_flows_names_lst,
 			gf_host_str,
@@ -375,11 +407,21 @@ function init_image_hud(p_image_id_str,
 
 				$(hud).find(".add_to_image_flow_btn").css("pointer-events", "none");
 
-				// remove the event handler so that clicking on the add_to_flow button no longer functions,
-				// since the image has already been added and shouldnt be add-able anymore.
-				$(document).off("click", add_to_image_flow__selector_str, add_to_image_flow_btn_handler);
+				// REMOVE_MESSAGE
+				$(add_to_image_flow__selector_str).find(".adding_in_progress").remove();
 			},
-			(p_data_map)=>{},
+			(p_data_map)=>{
+
+				//-------------------
+				// ENABLE_EVENTS
+				// adding an image failed for some reason, so allow the user to attempt to add it again.
+				$(document).on("click", add_to_image_flow__selector_str, add_to_image_flow_btn_handler);
+
+				//-------------------
+
+				// REMOVE_MESSAGE
+				$(add_to_image_flow__selector_str).find(".adding_in_progress").remove();
+			},
 			p_log_fun);
 	}
 
@@ -461,18 +503,6 @@ function add_image_to_flow(p_full_img_src_str,
 	p_log_fun) {
 
 	const image_origin_page_url_str = window.location.href;
-
-	/*
-	//-------------------
-	// IMPORTANT!! - since request to host_str is made from the context of the page in which the 
-	//               content is located, browser security imposes that the same protocol (http|https)
-	//               is used to communicate with host_str as with the origin-domain of the page
-	const origin_url_str = window.location.href;
-	const protocol_str   = origin_url_str.split("://")[0];
-	const host_str       = `${protocol_str}://gloflow.com`;
-	//-------------------
-	*/
-
 	const msg_map = {
 		"source_str":                "content_script",
 		"type_str":                  "add_image_to_flow",

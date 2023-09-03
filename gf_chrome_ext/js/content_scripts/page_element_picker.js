@@ -75,7 +75,6 @@ function add_image_to_post(p_image_info_map, p_log_fun) {
 
 		//---------------------------------------------------
 		function init_preview() {
-			//p_log_fun('FUN_ENTER','page_element_picker.add_image_to_post().draw().init_preview()');
 
 			const image_url_str   = p_image_info_map['full_img_src_str'];
 			const preview_element = $(

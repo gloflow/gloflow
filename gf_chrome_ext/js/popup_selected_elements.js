@@ -48,7 +48,7 @@ function get_selected_elements___bckg_pg(p_o_cComplete_fun, p_log_fun) {
 }
 
 //-------------------------------------------------
-//DRAW
+// DRAW
 //-------------------------------------------------
 function show_selected_elements(p_selected_elements_map, p_log_fun) {
 	p_log_fun('FUN_ENTER', 'popup_selected_elements.show_selected_elements()');
@@ -68,7 +68,7 @@ function show_selected_elements(p_selected_elements_map, p_log_fun) {
 }
 
 //-------------------------------------------------
-//SHOW SELECTED IMAGES
+// SHOW SELECTED IMAGES
 
 function show_selected_images(p_img_infos_lst, p_log_fun) {
 	p_log_fun('FUN_ENTER','popup_selected_elements.show_selected_images()');

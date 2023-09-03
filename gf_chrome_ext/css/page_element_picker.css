@@ -240,7 +240,7 @@
 }
 
 #page_info_container .image_in_page .hud #actions .add_to_image_flow_btn .symbol .btn_ok {
-	animation                : btn_ok_animation 0.2s;
+	animation                : btn_ok_animation 0.5s;
 	animation-iteration-count: 1;
 	background-color         : rgb(55, 171, 55);
 }
@@ -253,6 +253,34 @@
 		background-color: green;
 	}
 }
+
+
+
+.add_to_image_flow_btn .adding_in_progress {
+	position: relative;
+	top: 57px;
+	color: green;
+	animation: adding_in_progress_pulse 2s infinite ease-in-out;
+
+	background-color: white;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    left: -4px;
+
+	font-size: 10px;
+}
+
+@keyframes adding_in_progress_pulse {
+	0% {
+	  opacity: 1;
+	}
+	50% {
+	  opacity: 0.0;
+	}
+	100% {
+	  opacity: 1;
+	}
+  }
 
 /*-----------------------------------------------------*/
 #page_info_container .image_in_page .hud #actions .add_to_post_btn .symbol .icon {
@@ -277,7 +305,7 @@
 	background-color: white;
 }
 /*-----------------------------------------------------*/
-/*ACTION__ADD_GIF*/
+/* ACTION__ADD_GIF */
 #page_info_container .image_in_page .hud #actions .add_to_gif_flow_btn .symbol .icon {
 	position        : absolute;
 	left            : -49px;
@@ -293,6 +321,7 @@
 	background-color: white;
 	color:orange;
 }
+
 /*-----------------------------------------------------*/
 /*VIDEO_IN_PAGE*/
 
