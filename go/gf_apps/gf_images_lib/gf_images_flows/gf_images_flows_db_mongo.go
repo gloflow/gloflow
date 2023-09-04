@@ -281,15 +281,15 @@ func dbMongoImagesExist(pImagesExternURLsLst []string,
 		queryMap = bson.M{
 			"t": "img",
 
-			// IMPORTANT!! - return all images who's origin_url_str has a value
-			//               thats in the list pImagesExternURLsLst
-			"origin_url_str": bson.M{"$in": pImagesExternURLsLst,},
-
 			// only check for images owned by the target user, or "anon" images not owned by anyone
 			"$or": []bson.M{
 				bson.M{"user_id_str": pUserID,},
 				bson.M{"user_id_str": "anon",},
 			},
+
+			// IMPORTANT!! - return all images who's origin_url_str has a value
+			//               thats in the list pImagesExternURLsLst
+			"origin_url_str": bson.M{"$in": pImagesExternURLsLst,},
 		}
 	} else {
 
