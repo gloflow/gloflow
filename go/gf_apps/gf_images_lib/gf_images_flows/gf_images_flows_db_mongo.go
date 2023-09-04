@@ -267,44 +267,78 @@ func dbMongoGetPage(pFlowNameStr string,
 
 //-------------------------------------------------
 
-func dbMongoImagesExist(p_images_extern_urls_lst []string,
-	p_flow_name_str   string,
-	p_client_type_str string,
-	pRuntimeSys     *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+func dbMongoImagesExist(pImagesExternURLsLst []string,
+	pFlowNameStr   string,
+	pClientTypeStr string,
+	pUserID        gf_core.GF_ID,
+	pRuntimeSys    *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
 	//------------------------
-	var query_map bson.M
-	if p_flow_name_str == "all" {
+	var queryMap bson.M
+	if pFlowNameStr == "all" {
 
 		// ALL_FLOWS
-		query_map = bson.M{
+		queryMap = bson.M{
 			"t": "img",
 
-			//IMPORTANT!! - return all images who's origin_url_str has a value
-			//              thats in the list p_images_extern_urls_lst
-			"origin_url_str": bson.M{"$in": p_images_extern_urls_lst,},
+			// IMPORTANT!! - return all images who's origin_url_str has a value
+			//               thats in the list pImagesExternURLsLst
+			"origin_url_str": bson.M{"$in": pImagesExternURLsLst,},
+
+			// only check for images owned by the target user, or "anon" images not owned by anyone
+			"$or": []bson.M{
+				bson.M{"user_id_str": pUserID,},
+				bson.M{"user_id_str": "anon",},
+			},
 		}
 	} else {
 
 		// SPECIFIC_FLOWS
-		query_map = bson.M{
+		queryMap = bson.M{
 			"t": "img",
 			//------------
+
+			"$and": []bson.M{
+				bson.M{
+					"$or": []bson.M{
+
+						/*
+						DEPRECATED!! - if a img has a flow_name_str (most legacy image do,
+							should be migrating to flows_names_lst),
+							then match it with supplied flow_name_str.
+						*/
+						bson.M{"flow_name_str": pFlowNameStr,},
+
+						bson.M{"flows_names_lst": bson.M{"$in": []string{pFlowNameStr,}}},
+					},
+				},
+
+				// only check for images owned by the target user, or "anon" images not owned by anyone
+				bson.M{
+					"$or": []bson.M{
+						bson.M{"user_id": pUserID,},
+						bson.M{"user_id": "anon",},
+					},
+				},
+			},
+
+			/*
 			"$or": []bson.M{
 
 				// DEPRECATED!! - if a img has a flow_name_str (most due, but migrating to flows_names_lst),
 				//                then match it with supplied flow_name_str.
-				bson.M{"flow_name_str": p_flow_name_str,},
+				bson.M{"flow_name_str": pFlowNameStr,},
 
 				// IMPORTANT!! - new approach, images can belong to multiple flows.
 				//               check if the suplied flow_name_str in in the flows_names_lst list
-				bson.M{"flows_names_lst": bson.M{"$in": []string{p_flow_name_str,}}},
+				bson.M{"flows_names_lst": bson.M{"$in": []string{pFlowNameStr,}}},
 			},
+			*/
 
 			//------------
 			// IMPORTANT!! - return all images who's origin_url_str has a value
-			//               thats in the list p_images_extern_urls_lst
-			"origin_url_str": bson.M{"$in": p_images_extern_urls_lst,},
+			//               thats in the list pImagesExternURLsLst
+			"origin_url_str": bson.M{"$in": pImagesExternURLsLst,},
 		}
 	}
 
@@ -322,12 +356,12 @@ func dbMongoImagesExist(p_images_extern_urls_lst []string,
 	findOpts := options.Find()
 	findOpts.SetProjection(projectionMap)
 
-	cursor, gfErr := gf_core.MongoFind(query_map,
+	cursor, gfErr := gf_core.MongoFind(queryMap,
 		findOpts,
 		map[string]interface{}{
-			"images_extern_urls_lst": p_images_extern_urls_lst,
-			"flow_name_str":          p_flow_name_str,
-			"client_type_str":        p_client_type_str,
+			"images_extern_urls_lst": pImagesExternURLsLst,
+			"flow_name_str":          pFlowNameStr,
+			"client_type_str":        pClientTypeStr,
 			"caller_err_msg_str":     "failed to find images in flow when checking if images exist",
 		},
 		pRuntimeSys.Mongo_coll,
@@ -343,36 +377,13 @@ func dbMongoImagesExist(p_images_extern_urls_lst []string,
 		gfErr := gf_core.MongoHandleError("failed to find images in flow when checking if images exist",
 			"mongodb_cursor_all",
 			map[string]interface{}{
-				"images_extern_urls_lst": p_images_extern_urls_lst,
-				"flow_name_str":          p_flow_name_str,
-				"client_type_str":        p_client_type_str,
+				"images_extern_urls_lst": pImagesExternURLsLst,
+				"flow_name_str":          pFlowNameStr,
+				"client_type_str":        pClientTypeStr,
 			},
 			err, "gf_images_flows", pRuntimeSys)
 		return nil, gfErr
 	}
-
-	/*err := pRuntimeSys.Mongodb_coll.Find(query_map).
-
-				// select which fields to include in the results
-				Select(bson.M{
-					"creation_unix_time_f": 1,
-					"id_str":               1,
-					"origin_url_str":       1, // image url from a page
-					"origin_page_url_str":  1, // page url from which the image url was extracted
-				}).
-				All(&existingImagesLst)
-
-	if err != nil {
-		gfErr := gf_core.MongoHandleError("failed to find images in flow when checking if images exist",
-			"mongodb_find_error",
-			map[string]interface{}{
-				"images_extern_urls_lst": p_images_extern_urls_lst,
-				"flow_name_str":          p_flow_name_str,
-				"client_type_str":        p_client_type_str,
-			},
-			err, "gf_images_lib", pRuntimeSys)
-		return nil, gfErr
-	}*/
 
 	return existingImagesLst, nil
 }

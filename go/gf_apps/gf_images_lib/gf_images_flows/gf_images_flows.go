@@ -295,11 +295,13 @@ func resolveUserIDStoUserNames(pImagesPagesLst [][]*gf_images_core.GFimage,
 func imagesExistCheck(pImagesExternURLsLst []string,
 	pFlowNameStr   string,
 	pClientTypeStr string,
-	pRuntimeSys  *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+	pUserID        gf_core.GF_ID,
+	pRuntimeSys    *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
 	existing_images_lst, gfErr := dbMongoImagesExist(pImagesExternURLsLst,
 		pFlowNameStr,
 		pClientTypeStr,
+		pUserID,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr

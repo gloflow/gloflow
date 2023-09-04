@@ -51,7 +51,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	handlersEndpointsLst := []string{
 		"/v1/images/flows/all",
 		"/v1/images/flows/add_img",
-		"/images/flows/imgs_exist",
+		"/v1/images/flows/imgs_exist",
 		"/images/flows/browser",
 		"/images/flows/browser_page",
 	}
@@ -164,38 +164,45 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	// IMAGE_EXISTS_IN_SYSTEM - check if extern image url's exist in the system,
 	//                          if the image url has already been fetched/transformed and gf_image exists for it
 
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/imgs_exist",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/flows/imgs_exist",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 				
 				//--------------------------
 				// INPUT
-				i_map, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
+
+				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
+				iMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				images_extern_urls__untyped_lst := i_map["images_extern_urls_lst"].([]interface{})
-				images_extern_urls_lst          := []string{}
-				for _, u := range images_extern_urls__untyped_lst {
+				imagesExternURLsUntypedLst := iMap["images_extern_urls_lst"].([]interface{})
+				imagesExternURLsLst        := []string{}
+				for _, u := range imagesExternURLsUntypedLst {
 					u_str                 := u.(string)
-					images_extern_urls_lst = append(images_extern_urls_lst, u_str)
+					imagesExternURLsLst = append(imagesExternURLsLst, u_str)
 				}
 
-				flow_name_str   := i_map["flow_name_str"].(string)
-				client_type_str := i_map["client_type_str"].(string)
+				flowNameStr   := iMap["flow_name_str"].(string)
+				clientTypeStr := iMap["client_type_str"].(string)
 
 				//--------------------------
 					
-				existing_images_lst, gfErr := imagesExistCheck(images_extern_urls_lst, flow_name_str, client_type_str, pRuntimeSys)
+				existingImagesLst, gfErr := imagesExistCheck(imagesExternURLsLst,
+					flowNameStr,
+					clientTypeStr,
+					userID,
+					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 				//------------------
 				// OUTPUT
 				dataMap := map[string]interface{}{
-					"existing_images_lst": existing_images_lst,
+					"existing_images_lst": existingImagesLst,
 				}
 				
 				return dataMap, nil
@@ -205,10 +212,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 			return nil, nil
 		},
-		pHTTPmux,
-		metrics,
-		false, // pStoreRunBool
-		nil,
+		rpcHandlerRuntime,
 		pRuntimeSys)
 
 	//-------------------------------------------------
