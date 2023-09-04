@@ -272,7 +272,7 @@ func dbMongoImagesExist(pImagesExternURLsLst []string,
 	pClientTypeStr string,
 	pUserID        gf_core.GF_ID,
 	pRuntimeSys    *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
-	
+
 	//------------------------
 	var queryMap bson.M
 	if pFlowNameStr == "all" {
@@ -316,8 +316,8 @@ func dbMongoImagesExist(pImagesExternURLsLst []string,
 				// only check for images owned by the target user, or "anon" images not owned by anyone
 				bson.M{
 					"$or": []bson.M{
-						bson.M{"user_id": pUserID,},
-						bson.M{"user_id": "anon",},
+						bson.M{"user_id_str": pUserID,},
+						bson.M{"user_id_str": "anon",},
 					},
 				},
 			},
@@ -351,6 +351,7 @@ func dbMongoImagesExist(pImagesExternURLsLst []string,
 		"id_str":               1,
 		"origin_url_str":       1, // image url from a page
 		"origin_page_url_str":  1, // page url from which the image url was extracted
+		"flows_names_lst":      1, // flows in which this image is placed
 	}
 
 	findOpts := options.Find()

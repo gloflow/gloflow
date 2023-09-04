@@ -109,7 +109,7 @@ func pipelineCreateDiscoveredFlows(pCtx context.Context,
 	for _, flowMap := range allFlowsLst {
 
 		nameStr := flowMap["_id"].(string)
-		fmt.Printf("flow name - %s", nameStr)
+		pRuntimeSys.LogNewFun("DEBUG", "creating flow if missing...", map[string]interface{}{"flow_name": nameStr,})
 
 		gfErr := CreateIfMissing([]string{nameStr},
 			ownerUserID,
@@ -298,7 +298,7 @@ func imagesExistCheck(pImagesExternURLsLst []string,
 	pUserID        gf_core.GF_ID,
 	pRuntimeSys    *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
-	existing_images_lst, gfErr := dbMongoImagesExist(pImagesExternURLsLst,
+	existingImagesLst, gfErr := dbMongoImagesExist(pImagesExternURLsLst,
 		pFlowNameStr,
 		pClientTypeStr,
 		pUserID,
@@ -321,10 +321,10 @@ func imagesExistCheck(pImagesExternURLsLst []string,
 			ImagesExternURLsLst: pImagesExternURLsLst,
 		}
 
-		ctx           := context.Background()
-		coll_name_str := "gf_flows_img_exists_check" // pRuntimeSys.Mongo_coll.Name()
-		_              = gf_core.MongoInsert(check,
-			coll_name_str,
+		ctx         := context.Background()
+		collNameStr := "gf_flows_img_exists_check" // pRuntimeSys.Mongo_coll.Name()
+		_            = gf_core.MongoInsert(check,
+			collNameStr,
 			map[string]interface{}{
 				"images_extern_urls_lst": pImagesExternURLsLst,
 				"flow_name_str":          pFlowNameStr,
@@ -337,7 +337,7 @@ func imagesExistCheck(pImagesExternURLsLst []string,
 
 	//-------------------------
 
-	return existing_images_lst, nil
+	return existingImagesLst, nil
 }
 
 //-------------------------------------------------

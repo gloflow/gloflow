@@ -46,6 +46,53 @@ func TestMain(m *testing.M) {
 
 //---------------------------------------------------
 
+func TestImagesExist(pTest *testing.T) {
+
+	ctx := context.Background()
+
+	serviceNameStr := "gf_images_flows_test"
+	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	sqlHostStr   := cliArgsMap["sql_host_str"].(string)
+	runtimeSys   := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
+
+	flowNameStr := "flow_0"
+	userID := gf_core.GF_ID("test")
+	clientTypeStr := "test"
+
+	//--------------------
+	// INIT
+	gfErr := Init(runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	//------------------
+	// CREATE_TEST_IMAGES
+	
+	createTestImages(userID, pTest, ctx, runtimeSys)
+	//------------------
+
+	imagesExternURLsLst := []string{
+		"https://gloflow.com/some_url0",
+		"https://gloflow.com/some_url1",
+	}
+
+	existingImagesLst, gfErr := imagesExistCheck(imagesExternURLsLst,
+		flowNameStr,
+		clientTypeStr,
+		userID,
+		runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+	
+	spew.Dump(existingImagesLst)
+
+	assert.True(pTest, len(existingImagesLst) == 2, "2 images should be found to exist in target flow")
+}
+
+//---------------------------------------------------
+
 func TestCreate(pTest *testing.T) {
 
 	ctx := context.Background()
@@ -145,26 +192,30 @@ func createTestImages(pUserID gf_core.GF_ID,
 	testImg0 := &gf_images_core.GFimage{
 		IDstr: "test_img_0",
 		T_str: "img",
-		FlowsNamesLst: []string{"flow_0"},
-		UserID:        pUserID,
+		UserID:         pUserID,
+		FlowsNamesLst:  []string{"flow_0"},
+		Origin_url_str: "https://gloflow.com/some_url0",
 	}
 	testImg1 := &gf_images_core.GFimage{
 		IDstr: "test_img_1",
 		T_str: "img",
-		FlowsNamesLst: []string{"flow_0"},
-		UserID:        pUserID,
+		UserID:         pUserID,
+		FlowsNamesLst:  []string{"flow_0"},
+		Origin_url_str: "https://gloflow.com/some_url1",
 	}
 	testImg2 := &gf_images_core.GFimage{
 		IDstr: "test_img_2",
 		T_str: "img",
-		FlowsNamesLst: []string{"flow_0", "flow_1"},
-		UserID:        pUserID,
+		UserID:         pUserID,
+		FlowsNamesLst:  []string{"flow_0", "flow_1"},
+		Origin_url_str: "https://gloflow.com/some_url2",
 	}
 	testImg3 := &gf_images_core.GFimage{
 		IDstr: "test_img_3",
 		T_str: "img",
-		FlowsNamesLst: []string{"flow_1", "flow_2"},
-		UserID:        pUserID,
+		UserID:         pUserID,
+		FlowsNamesLst:  []string{"flow_1", "flow_2"},
+		Origin_url_str: "https://gloflow.com/some_url3",
 	}
 	gfErr := gf_images_core.DBmongoPutImage(testImg0, pCtx, pRuntimeSys)
 	if gfErr != nil {
