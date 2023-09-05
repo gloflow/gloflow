@@ -35,7 +35,19 @@ function main(p_log_fun) {
 		// 'selected_videos_lst' :[]
 	};
 	
-	chrome.runtime.onMessage.addListener(on_request_received_fun);
+	chrome.runtime.onMessage.addListener((p_request, p_sender, p_send_response_fun)=>{
+
+		on_request_received_fun(p_request, p_sender, p_send_response_fun);
+
+		/*
+		IMPORTANT!! - if some asynchronous code is being run in the background script,
+			(as is the case here, in the handle functions above)
+			returning true right away (while async ops are running) from the message listener is keeping
+			the message port open until the async operation is done and for the sendResponse() call. 
+		*/
+		return true;
+	});
+	
 	//---------------------------------------------------	
 	function on_request_received_fun(p_request, p_sender, p_send_response_fun) {		
 
@@ -200,9 +212,11 @@ function main(p_log_fun) {
 					p_log_fun('INFO', '--------------------------------------');
 					p_log_fun('INFO', 'background_page received unknonwn SELECTED_ASSETS_UI msg');
 					p_log_fun('INFO', p_request);
-					p_log_fun('INFO', "p_request['type_str']:"+p_request['type_str']);
+					p_log_fun('INFO', `p_request['type_str']:${p_request['type_str']}`);
 					break;
 			}
+
+			
 		}
 
 		//---------------------------------------------------	
@@ -240,7 +254,7 @@ function main(p_log_fun) {
 					p_log_fun('INFO', '--------------------------------------');
 					p_log_fun('INFO', 'background_page received unknonwn POPUP msg');
 					p_log_fun('INFO', p_request);
-					p_log_fun('INFO', "p_request['type_str']:"+p_request['type_str']);
+					p_log_fun('INFO', `p_request['type_str']:${p_request['type_str']}`);
 					break;
 			}
 		}
@@ -297,7 +311,7 @@ function main(p_log_fun) {
 							for a given user or "anon", instead of targeting the check at
 							a specific flow.
 						*/
-						flow_name_str = "all";
+						const flow_name_str = "all";
 
 						check_images_exist_in_flow(images_extern_urls_lst,
 							flow_name_str,
@@ -347,21 +361,13 @@ function main(p_log_fun) {
 				default:
 					p_log_fun('INFO', '--------------------------------------');
 					p_log_fun('INFO', 'background_page received unknown CONTENT_SCRIPT msg');
-					p_log_fun('INFO', conso);
-					p_log_fun('INFO', "p_request['type_str']:"+p_request['type_str']);
+					p_log_fun('INFO', p_request);
+					p_log_fun('INFO', `p_request['type_str']:${p_request['type_str']}`);
 					break;
 			}
 		}
 
 		//---------------------------------------------------
-
-		/*
-		IMPORTANT!! - if some asynchronous code is being run in the background script,
-			(as is the case here, in the handle functions above)
-			returning true right away (while async ops are running) from the message listener is keeping
-			the message port open until the async operation is done and for the sendResponse() call. 
-		*/
-		return true;
 	}
 	//---------------------------------------------------
 }

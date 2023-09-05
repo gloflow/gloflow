@@ -33,6 +33,14 @@ function main(p_log_fun) {
 		p_sender,
 		p_send_response_fun) => {
 			handle_msg(p_request, p_sender, p_send_response_fun);
+
+			/*
+			IMPORTANT!! - if some asynchronous code is being run in the content script,
+				(as is the case here, in the handle functions above)
+				returning true right away (while async ops are running) from the message listener is keeping
+				the message port open until the async operation is done and for the sendResponse() call. 
+			*/
+			return true;
 		});
 	
 	//---------------------------------------------------
