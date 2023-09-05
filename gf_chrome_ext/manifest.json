@@ -33,7 +33,10 @@
 				//---------------
 				"./js/utils/var.js",
 				"./js/utils/image_utils.js",
-				"./js/utils/post_utils.js", 
+				"./js/utils/post_utils.js",
+
+				// auto-copied by build.py from `web` dir
+				"./js/build/gf_tagger_ui.js",
 
 				"./js/content_scripts/extractor.js",
 				"./js/content_scripts/display_page_info.js",

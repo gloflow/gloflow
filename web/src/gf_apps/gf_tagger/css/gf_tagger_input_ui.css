@@ -1,62 +1,85 @@
+
+
+
+.tagging_controls {
+    background-color: gray;
+    width: 62px;
+    right: 0px;
+    top: 15px;
+    position: absolute;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    padding-left: 7px;
+    font-size: 12px;
+    cursor: pointer;
+}
+.tagging_controls:hover{
+    background-color: white;
+}
+
+/*-------------------------------------------------------*/
 #tagging_input_container {
 	padding-top   : 0px;
 	padding-bottom: 0px;
-	/*padding-left  : 7px;
-	padding-right : 7px;*/
-	
-	width : 452px;
-	height: 119px;
+	width : 369px;
+	height: 101px;
 }
 #tagging_input_container #background {
 	background-color: rgba(0,0,0,0.7);
-	width           : 452px;
-	height          : 126px;
-	position        : relative;
-	top             : 0px;
-	left            : 0px;
+    width: 368px;
+    height: 101px;
+    position: relative;
+    top: 0px;
+    left: 0px;
 }
 #tagging_input_container input {
 	
-	font-size: 22px;
-	position : absolute;
-	top      : 35px;
-	left     : 35px;
-	width    : 250px;
-	height   : 50px;
+	font-size: 14px;
+    position: absolute;
+    top: 35px;
+    left: 36px;
+    width: 200px;
+    height: 30px;
+}
+#tagging_input_container input:focus {
+    outline: none;
 }
 
-#tagging_input_container #submit_tags_button {
+#tagging_input_container #submit_btn {
 	float: left;
-    height: 36px;
+    height: 21px;
     padding-left: 15px;
     padding-right: 17px;
-    padding-top: 18px;
+    padding-top: 7px;
     margin-left: 8px;
     position: absolute;
     top: 36px;
-    left: 284px;
+    left: 227px;
     background-color: #e5e5e5;
     color: rgb(160, 160, 160);
     cursor: pointer;
+    font-size: 13px;
 }
-#tagging_input_container #submit_tags_button:hover {
+#tagging_input_container #submit_btn:hover {
 	background-color: rgb(221, 221, 221);
 }
 
-#tagging_input_container #close_tagging_input_container_button {
+#tagging_input_container #close_btn {
 	float: left;
     background-color: #cfcfcf;
-    width: 31px;
-    height: 34px;
-    padding-left: 19px;
+    width: 24px;
+    height: 23px;
+    padding-left: 12px;
     padding-right: 4px;
-    padding-top: 20px;
+    padding-top: 5px;
     margin-left: 8px;
     cursor: pointer;
     position: absolute;
     top: 36px;
-    left: 342px;
+    left: 280px;
 }
-#tagging_input_container #close_tagging_input_container_button:hover {
+#tagging_input_container #close_btn:hover {
 	background-color: white;
 }
+
+/*-------------------------------------------------------*/

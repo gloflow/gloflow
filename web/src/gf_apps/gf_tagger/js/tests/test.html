@@ -1,0 +1,174 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="./../../css/gf_tagger_input_ui.css">
+    <script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+    <script src="./../gf_tagger_ui.js"></script>
+
+    <script>
+    
+    $(document).ready(function() {
+        main();
+    });
+
+    //-------------------------------------------------
+    function main() {
+        console.log("test");
+
+        function log_fun(p_g, p_m) {console.log(`${p_g}:${p_m}`);}
+
+        const obj_id_str   = "test_element_for_tagging";
+        const obj_type_str = "image";
+        const obj_element  = $(`#${obj_id_str}`)[0];
+        const http_api_map = {
+            "gf_tagger": {
+                "add_tags_to_obj": (p_new_tags_lst,
+                    p_obj_id_str,
+                    p_obj_type_str,
+                    p_tags_meta_map,
+                    p_log_fun)=>{
+                    const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+                        p_resolve_fun({
+                            "added_tags_lst": p_new_tags_lst,
+                        });
+                    });
+                    return p;
+                }
+            }
+        };
+
+        gf_tagger__init_ui(obj_id_str,
+            obj_type_str,
+            obj_element,
+
+            // on_tags_created_fun
+            (p_tags_lst)=>{
+
+                console.log("added tags >>>>>>>>>>>", p_tags_lst)
+
+
+                p_tags_lst.forEach(t_str=>{
+
+                    const tag_link_url_str = `https://gloflow.com/v1/tags/objects?tag=${t_str}&otype=image`
+
+                    const element = $(`
+                        <div class='bubble-in auto-width tag'>
+                            <a href="${tag_link_url_str}" target="_blank" style="text-decoration: none;color: inherit;">
+                                ${t_str}
+                            </a>
+                        </div>`);
+                    $("#tags").append(element);
+
+                    // Force reflow to ensure the animations take place
+                    void element[0].offsetWidth;
+
+                    element.addClass('animate');
+                })
+
+
+            },
+            
+            // on_tag_ui_add_fun
+            ()=>{
+
+            },
+
+            // on_tag_ui_remove_fun
+            ()=>{
+
+            },
+            http_api_map,
+            log_fun);
+    }
+    
+    //-------------------------------------------------
+
+    </script>
+    <style>
+
+        body {
+            margin:      0px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+            /*turn off horizontal scroll*/
+            max-width:  100%;
+            overflow-x: hidden;
+            background-color: gray;
+        }
+        #container {
+            position: absolute;
+            top: 20%;
+            left: 40%;
+        }
+        #test_element_for_tagging {
+            background-color: green;
+            width: 200px;
+            height: 300px;
+            
+        }
+        #tags {
+            width: 200px;
+        }
+        .tag {
+            background-color: lightgray;
+            padding-left: 4px;
+            padding-right: 4px;
+            margin-top: 4px;
+            margin-right: 4px;
+            font-size: 12px;
+        }
+        /*needed for the tag element to have the width of the text in it, and from there
+        to have proper animations that depend on its width being the same as its text*/
+        .auto-width {
+            display: inline-block; /* or inline-flex */
+            white-space: nowrap;   /* prevents the text from breaking into the next line */
+        }
+
+        /*-------------------------------------------------*/
+        /* ANIMATIONS */
+        .bubble-in {
+            opacity: 0;
+            transform: scale(0);
+            transform-origin: 50% 50%;
+            animation: bounce 0.3s ease-out forwards;
+        }
+
+        .bubble-in.animate {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        @keyframes bounce {
+            0% {
+            transform: scale(0);
+            opacity: 0;
+            }
+            50% {
+            transform: scale(1.2);
+            opacity: 1;
+            }
+            100% {
+            transform: scale(1);
+            opacity: 1;
+            }
+        }
+
+        /*-------------------------------------------------*/
+
+    </style>
+</head>
+
+<body>
+
+<div id="container">
+    <div id="test_element_for_tagging">
+
+    </div>
+    <div id="tags">
+
+    </div>
+</div>
+
+</body>

@@ -141,9 +141,9 @@ export function get_objs_with_tag(p_tag_str :string,
     p_log_fun) {
     p_log_fun('FUN_ENTER', 'gf_tagger_client.get_objs_with_tag()');
   
-    //this REST api supports supplying multiple tags to the backend, and it will return all of them
-    //but Im doing loading from server per tag click, to make initial 
-    //load times fast due to minimum network transfers
+    // this REST api supports supplying multiple tags to the backend, and it will return all of them
+    // but Im doing loading from server per tag click, to make initial 
+    // load times fast due to minimum network transfers
     const url_str = '/v1/tags/objects?tags='+p_tag_str+'&otype='+p_object_type_str;
 
     $.ajax({

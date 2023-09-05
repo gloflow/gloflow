@@ -63,9 +63,9 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 		return gfErr
 	}
 
-	object_type_str      := strings.TrimSpace(pInputDataMap["otype"].(string))
-	object_extern_id_str := strings.TrimSpace(pInputDataMap["o_id"].(string))
-	tags_str             := strings.TrimSpace(pInputDataMap["tags"].(string))
+	objectTypeStr     := strings.TrimSpace(pInputDataMap["otype"].(string))
+	objectExternIDstr := strings.TrimSpace(pInputDataMap["o_id"].(string))
+	tagsStr           := strings.TrimSpace(pInputDataMap["tags"].(string))
 
 
 	var metaMap map[string]interface{}
@@ -74,7 +74,7 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 	}
 
 
-	if object_type_str == "address" {
+	if objectTypeStr == "address" {
 		if metaMap == nil {
 			gfErr := gf_core.ErrorCreate("tagging objects of type 'address' has to contain meta_map with",
 				"verify__missing_key_error",
@@ -93,9 +93,9 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 	}
 
 	//----------------
-	gfErr := addTagsToObject(tags_str,
-		object_type_str,
-		object_extern_id_str,
+	gfErr := addTagsToObject(tagsStr,
+		objectTypeStr,
+		objectExternIDstr,
 		metaMap,
 		pCtx,
 		pRuntimeSys)
@@ -117,35 +117,35 @@ func tagsPipelineGetObjects(p_req *http.Request,
 
 	//----------------
 	// INPUT
-	qs_map := p_req.URL.Query()
+	qsMap := p_req.URL.Query()
 	var err error
 
 	// responseFormatStr - "json" | "html"
-	responseFormatStr := gf_rpc_lib.GetResponseFormat(qs_map, pRuntimeSys)
+	responseFormatStr := gf_rpc_lib.GetResponseFormat(qsMap, pRuntimeSys)
 
-	if _, ok := qs_map["otype"]; !ok {
+	if _, ok := qsMap["otype"]; !ok {
 		gfErr := gf_core.ErrorCreate("input 'otype' not supplied",
 			"verify__missing_key_error",
-			map[string]interface{}{"qs_map":qs_map,},
+			map[string]interface{}{"qs_map": qsMap,},
 			nil, "gf_tagger", pRuntimeSys)
 		return nil, gfErr
 	}
 
-	if _, ok := qs_map["tag"]; !ok {
+	if _, ok := qsMap["tag"]; !ok {
 		gfErr := gf_core.ErrorCreate("input 'tag' not supplied",
 			"verify__missing_key_error",
-			map[string]interface{}{"qs_map":qs_map,},
+			map[string]interface{}{"qs_map": qsMap,},
 			nil, "gf_tagger", pRuntimeSys)
 		return nil, gfErr
 	}
 
 	// TrimSpace() - Returns the string without any leading and trailing whitespace.
-	object_type_str := strings.TrimSpace(qs_map["otype"][0])
-	tag_str         := strings.TrimSpace(qs_map["tag"][0])
+	object_type_str := strings.TrimSpace(qsMap["otype"][0])
+	tag_str         := strings.TrimSpace(qsMap["tag"][0])
 
 	// PAGE_INDEX
 	page_index_int := 0
-	if a_lst, ok := qs_map["pg_index"]; ok {
+	if a_lst, ok := qsMap["pg_index"]; ok {
 		input_val          := a_lst[0]
 		page_index_int, err = strconv.Atoi(input_val) //user supplied value
 		if err != nil {
@@ -159,7 +159,7 @@ func tagsPipelineGetObjects(p_req *http.Request,
 
 	// PAGE_SIZE
 	page_size_int := 10
-	if a_lst, ok := qs_map["pg_size"]; ok {
+	if a_lst, ok := qsMap["pg_size"]; ok {
 		input_val         := a_lst[0]
 		page_size_int, err = strconv.Atoi(input_val) //user supplied value
 		if err != nil {
@@ -177,7 +177,8 @@ func tagsPipelineGetObjects(p_req *http.Request,
 		//------------------
 		// HTML RENDERING
 		case "html":
-			pRuntimeSys.LogFun("INFO","HTML RESPONSE >>")
+			pRuntimeSys.LogNewFun("DEBUG", "HTML RESPONSE >>", nil)
+
 			gfErr := renderObjectsWithTag(tag_str,
 				p_tmpl,
 				p_subtemplates_names_lst,
@@ -192,7 +193,8 @@ func tagsPipelineGetObjects(p_req *http.Request,
 		//------------------
 		// JSON EXPORT
 		case "json":
-			pRuntimeSys.LogFun("INFO","JSON RESPONSE >>")
+			pRuntimeSys.LogFun("DEBUG", "JSON RESPONSE >>", nil)
+			
 			objectsWithTagLst, gfErr := getObjectsWithTag(tag_str,
 				object_type_str,
 				page_index_int,

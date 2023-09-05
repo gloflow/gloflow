@@ -73,6 +73,7 @@ export function init(p_http_api,
         gf_tagger_input_ui.init_tag_input(img_id_str, // p_obj_id_str
             'image',    // p_obj_type_str
             p_post_element,
+            
             // p_on_tags_created_fun
             (p_added_tags_lst :string[])=>{
                 view_added_tags(p_post_element, p_added_tags_lst, p_log_fun);
