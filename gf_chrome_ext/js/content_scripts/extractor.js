@@ -78,6 +78,54 @@ function handle_msg(p_request_type_str, p_log_fun) {
 }
 
 //---------------------------------------------------
+// GET_IMAGES_INFO
+// ->:List<:Dict()>(img_infos_lst)
+
+function get_images_info(p_log_fun) {
+	
+	const page_url_str        = window.location.toString();
+	const min_image_dimension = 20;
+
+	//---------------------------------------------------
+	function get_image_info(p_jq_element) {
+		
+		// ".src" instead of ".attr('src')" - gets the fully resolved url (including the host)
+		//                                    and not just the value thats stored in the "src" html attr
+		const full_img_src_str = $(p_jq_element)[0].src;
+		const img_name_str     = full_img_src_str.split('/').pop();
+		const img_width        = $(p_jq_element).width();
+		const img_height       = $(p_jq_element).height();
+
+		const img_info_map = {
+			'type_str':        'image',
+			'page_url_str':    page_url_str,
+			'full_img_src_str':full_img_src_str,
+			'img_name_str':    img_name_str,
+			'img_width':       img_width,
+			'img_height':      img_height
+		};
+		console.log(img_info_map);
+
+		return img_info_map;
+	}
+	//---------------------------------------------------
+
+	const img_infos_lst = [];
+	$('img').each((p_i, p_element) => {
+
+		const img_info_map = get_image_info(p_element);
+		if (img_info_map['img_width']  > min_image_dimension && img_info_map['img_height'] > min_image_dimension) {
+
+			// only use the image if both of its dimensions are larger
+			// then the minimum treshold
+			img_infos_lst.push(img_info_map);
+		}
+	});
+
+	return img_infos_lst;
+}
+
+//---------------------------------------------------
 // ADD!! - detect you tube embeds in other non-youtube.com pages
 //         via the <embed> tag
 
@@ -184,50 +232,4 @@ function get_videos_info(p_log_fun) {
 	}
 	//------------------------------------
 	return videos_info_lst;
-}
-//---------------------------------------------------
-//->:List<:Dict()>(img_infos_lst)
-function get_images_info(p_log_fun) {
-	p_log_fun('FUN_ENTER','page_info_extraction.get_images_info()')
-	
-	const page_url_str        = window.location.toString();
-	const min_image_dimension = 20;
-
-	//---------------------------------------------------
-	function get_image_info(p_jq_element) {
-		p_log_fun('FUN_ENTER','page_info_extraction.get_images_info().get_image_info()')
-		
-		//".src" instead of ".attr('src')" - gets the fully resolved url (including the host)
-		//                                   and not just the value thats stored in the "src" html attr
-		const full_img_src_str = $(p_jq_element)[0].src;
-		const img_name_str     = full_img_src_str.split('/').pop();
-		const img_width        = $(p_jq_element).width();
-		const img_height       = $(p_jq_element).height();
-
-		const img_info_map = {
-			'type_str':        'image',
-			'page_url_str':    page_url_str,
-			'full_img_src_str':full_img_src_str,
-			'img_name_str':    img_name_str,
-			'img_width':       img_width,
-			'img_height':      img_height
-		};
-		console.log(img_info_map);
-
-		return img_info_map;
-	}
-	//---------------------------------------------------
-
-	const img_infos_lst = [];
-	$('img').each((p_i,p_element) => {
-		const img_info_map = get_image_info(p_element);
-		if (img_info_map['img_width']  > min_image_dimension && img_info_map['img_height'] > min_image_dimension) {
-
-			//only use the image if both of its dimensions are larger
-			//then the minimum treshold
-			img_infos_lst.push(img_info_map);
-		}
-	});
-
-	return img_infos_lst;
 }

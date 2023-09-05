@@ -19,43 +19,54 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //---------------------------------------------------
 function http__check_imgs_exist_in_flow(p_images_extern_urls_lst,
+	p_flow_name_str,
 	p_host_str,
 	p_on_complete_fun,
 	p_on_error_fun,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER', 'image_utils.http__check_imgs_exist_in_flow()');
 
-	const url_str = p_host_str+'/images/flows/imgs_exist';
-	p_log_fun('INFO', 'url_str - '+url_str);
+	const url_str = `${p_host_str}/v1/images/flows/imgs_exist`;
+	p_log_fun('INFO', `url_str - ${url_str}`);
 
 	const data_map = {
 		'images_extern_urls_lst': p_images_extern_urls_lst,
-		'flow_name_str':          'general', //check if image exists in the custom flow
+		'flow_name_str':          p_flow_name_str,
 		'client_type_str':        'gchrome_ext'
 	};
 
 	//-------------------------
-	// HTTP AJAX
-	$.post(url_str,
-		JSON.stringify(data_map),
-		(p_data_map) => {
-			console.log('response received');
-			// const data_map = JSON.parse(p_data);
-			
-			if (p_data_map["status"] == 'OK') {
-				var existing_images_lst = p_data_map['data']['existing_images_lst'];
+	// HTTP
 
-				//FIX!! - sometimes the backend returns existing_images_lst as null
-				//        when there are no images, instead of []. look into that
-				if (existing_images_lst == null) {
-					existing_images_lst = [];
-				}
-				p_on_complete_fun(existing_images_lst);
+	fetch(url_str, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(data_map)
+	  })
+	  .then(response => response.json())
+	  .then(p_data_map => {
+		console.log('response received');
+		console.log(`status - ${p_data_map["status"]}`);
+	  
+		if (p_data_map["status"] === 'OK') {
+			var existing_images_lst = p_data_map['data']['existing_images_lst'];
+
+			// FIX!! - sometimes the backend returns existing_images_lst as null
+			//         when there are no images, instead of []. look into that
+			if (existing_images_lst == null) {
+				existing_images_lst = [];
 			}
-			else {
-				p_on_error_fun(p_data_map["data"]);
-			}
-		});
+			p_on_complete_fun(existing_images_lst);
+		}
+		else {
+			p_on_error_fun(p_data_map["data"]);
+		}
+	  })
+	.catch(error => {
+		console.log('An error occurred:', error);
+	});
+
 	//-------------------------	
 }
 
@@ -80,7 +91,7 @@ function http__add_image_to_flow(p_image_extern_url_str,
 	};
 
 	//-------------------------
-	// HTTP AJAX
+	// HTTP
 	
 	fetch(url_str, {
 		method: 'POST',

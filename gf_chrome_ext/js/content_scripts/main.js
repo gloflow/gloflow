@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-        
+
 main(log_fun)
 extractor_init(log_fun);
 
@@ -34,7 +34,7 @@ function main(p_log_fun) {
 		p_send_response_fun) => {
 			handle_msg(p_request, p_sender, p_send_response_fun);
 		});
-		
+	
 	//---------------------------------------------------
 	function handle_msg(p_request, p_sender, p_send_response_fun) {
 

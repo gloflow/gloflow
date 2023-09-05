@@ -85,9 +85,10 @@ function display_page_info(p_page_images_infos_lst,
 		});
 
 	//------------
-
+	// CHECK_IMAGES_EXIST
 	check_images_exist_in_system(p_page_images_infos_lst, p_log_fun);
 
+	//------------
 	// $(document).resize(function() {
 	// 	$('#page_info_gf_container').css('width',$(document).width());
 	//	$('#page_info_gf_container').css('height',$(document).height());
@@ -201,12 +202,14 @@ function display_page_info(p_page_images_infos_lst,
 }
 
 //---------------------------------------------------
-function check_images_exist_in_system(p_page_images_infos_lst, p_log_fun) {
-	p_log_fun('FUN_ENTER', 'display_page_info.check_images_exist_in_system()');
+// CHECK_IMAGES_EXIST_IN_SYSTEM
 
+function check_images_exist_in_system(p_page_images_infos_lst, p_log_fun) {
+
+	const gf_host_str = "https://gloflow.com"
 	const images_extern_urls_lst = []; // :List<:String>
 	$.each(p_page_images_infos_lst,
-		(p_i,p_image_map) => {
+		(p_i, p_image_map) => {
 			const full_img_src_str = p_image_map['full_img_src_str'];
 			images_extern_urls_lst.push(full_img_src_str);
 		});
@@ -223,44 +226,65 @@ function check_images_exist_in_system(p_page_images_infos_lst, p_log_fun) {
 
 	console.log(images_extern_urls_lst)
 
-	http__check_imgs_exist_in_flow(images_extern_urls_lst,
-		host_str,
-		(p_existing_images_lst)=>{
+	const msg_map = {
+		"source_str": "content_script",
+		"type_str":   "check_images_exist",
+		"images_extern_urls_lst": images_extern_urls_lst,
+		"gf_host_str":            host_str
+	}
 
-			console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-			console.log(p_existing_images_lst);
+	send_msg_to_bg_page(msg_map, (p_response_map)=>{
 
-			$.each(p_existing_images_lst,(p_i,p_e)=>{
+		switch(p_response_map["status_str"]) {
+			case "OK":
 
-				const img__id_str               = p_e['id_str'];
-				const img__origin_url_str       = p_e['origin_url_str'];
-				const img__origin_page_url_str  = p_e['origin_page_url_str'];
-				const img__creation_unix_time_f = p_e['creation_unix_time_f'];
+				const existing_images_lst = p_response_map["existing_images_lst"];
 
-				existing_img__update_view(img__origin_url_str, img__origin_page_url_str, img__creation_unix_time_f);
-			});
-		},
-		(p_error_data_map)=>{},
-		p_log_fun);
+				$.each(existing_images_lst, (p_i, p_e)=>{
+
+					const img__id_str               = p_e['id_str'];
+					const img__origin_url_str       = p_e['origin_url_str'];
+					const img__origin_page_url_str  = p_e['origin_page_url_str'];
+					const img__creation_unix_time_f = p_e['creation_unix_time_f'];
+					const img__flows_names_lst      = p_e["flows_names_lst"];
+
+					existing_img__update_view(img__origin_url_str,
+						img__origin_page_url_str,
+						img__creation_unix_time_f,
+						img__flows_names_lst);
+				});
+
+				break;
+
+			case "ERROR":
+				p_on_error_fun(p_response_map["data_map"]);
+				break;
+		}
+	});
 
 	//---------------------------------------------------
 	function existing_img__update_view(p_existing_img__origin_url_str,
 		p_existing_img__origin_page_url_str,
-		p_existing_img__creation_unix_time_f) {
-		p_log_fun('FUN_ENTER','display_page_info.check_images_exist_in_system().existing_img__update_view()');
+		p_existing_img__creation_unix_time_f,
+		p_img__flows_names_lst) {
 
 		const date                 = new Date(p_existing_img__creation_unix_time_f*1000);
-		const data_str             = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+' - '+date.getDate()+'.'+date.getMonth()+'.'+date.getFullYear();
-		const existing_img_preview = $('#page_info_container').find('img[src="'+p_existing_img__origin_url_str+'"]')[0];
+		const data_str             = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()} - ${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`;
+		const existing_img_preview = $('#page_info_container').find(`img[src="${p_existing_img__origin_url_str}"]`)[0];
+		
+		const flows_links_str = p_img__flows_names_lst
+			.map((p_name_str)=>`<a class="flow_name" href="${gf_host_str}/images/flows/browser?fname=${p_name_str}" target="_blank">${p_name_str}</a>`)
+			.join(",");
+
 		$(existing_img_preview).parent().append(
-			'<div class="img_exists">'+
-				'<div class="exists_msg">added</div>'+
-				'<div class="origin_page_url"><span>origin page url</span><a href="'+p_existing_img__origin_page_url_str+'">'+p_existing_img__origin_page_url_str+'</div>'+
-				'<div class="creation_time">'+
-					'<span class="msg">created on:</span>'+
-					'<span class="time">'+data_str+'</span>'+
-				'</div>'+
-			'</div>');
+			`<div class="img_exists">
+				<div class="exists_msg">exists in flows: <span>${flows_links_str}</span></div>
+				<div class="origin_page_url"><span>origin page url</span>: <a href="${p_existing_img__origin_page_url_str}">${p_existing_img__origin_page_url_str}</div>
+				<div class="creation_time">
+					<span class="msg">created on:</span>
+					<span class="time">${data_str}</span>
+				</div>
+			</div>`);
 	}
 	//---------------------------------------------------
 }
@@ -470,7 +494,6 @@ function init_image_hud(p_image_id_str,
 
 //---------------------------------------------------
 function init_video_hud(p_video_in_page_element, p_video_info_map, p_log_fun) {
-	// p_log_fun('FUN_ENTER','display_page_info.init_video_hud()');
 
 	const hud = $(
 		`<div class="hud">

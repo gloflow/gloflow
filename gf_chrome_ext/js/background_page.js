@@ -285,7 +285,41 @@ function main(p_log_fun) {
 						p_log_fun);
 					
 					break;
+				
+				//----------------
+				case "check_images_exist":
+					{
+						const images_extern_urls_lst = p_request["images_extern_urls_lst"];
+						const gf_host_str            = p_request["gf_host_str"];
 
+						/*
+						IMPORTANT!! - we want to check if an image exists in any of the flows,
+							for a given user or "anon", instead of targeting the check at
+							a specific flow.
+						*/
+						flow_name_str = "all";
+
+						check_images_exist_in_flow(images_extern_urls_lst,
+							flow_name_str,
+							gf_host_str,
+							// on_complete_fun
+							(p_existing_images_lst)=>{
+								p_send_response_fun({
+									"status_str": "OK",
+									"existing_images_lst": p_existing_images_lst
+								});
+							},
+							// on_error_fun
+							()=>{
+								p_send_response_fun({
+									"status_str": "ERROR",
+									"data_map":   p_data_map,
+								});
+							},
+							p_log_fun);
+					}
+					break;
+					
 				//----------------
 				// ADD_ELEMENT_TO_POST
 				case 'add_element_to_post':
@@ -360,6 +394,29 @@ function add_image_to_flow(p_full_img_src_str,
 			p_on_complete_fun();
 		},
 		(p_data_map)=>{p_on_error_fun(p_data_map)},
+		p_log_fun);
+}
+
+//---------------------------------------------------
+function check_images_exist_in_flow(p_images_extern_urls_lst,
+	p_flow_name_str,
+	p_gf_host_str,
+	p_on_complete_fun,
+	p_on_error_fun,
+	p_log_fun) {
+
+	http__check_imgs_exist_in_flow(p_images_extern_urls_lst,
+		p_flow_name_str,
+		p_gf_host_str,
+
+		// on_complete_fun
+		(p_existing_images_lst)=>{
+			p_on_complete_fun(p_existing_images_lst);
+		},
+		// on_error_fun
+		(p_data_map)=>{
+			p_on_error_fun(p_data_map);
+		},
 		p_log_fun);
 }
 
