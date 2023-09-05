@@ -20,7 +20,8 @@
 				"https://*/*" // any https url
 			],
 			"css":[
-				"./css/page_element_picker.css"
+				"./css/page_element_picker.css",
+				"./css/build/gf_tagger_ui.css"
 			],
 			// The list of JavaScript files to be injected into matching pages. 
 			// These are injected in the order they appear in this array.

@@ -22,6 +22,8 @@ function display_page_info(p_page_images_infos_lst,
 	p_page_videos_infos_lst,
 	p_log_fun) {
 
+	const gf_host_str = "https://gloflow.com";
+
 	const gf_container = $(
 		`<div id="page_info_container">
 			<div id="parameters">
@@ -35,6 +37,7 @@ function display_page_info(p_page_images_infos_lst,
 			</div>
 			<div id="selected_elements_preview"></div>
 		</div>`);
+		
 	$("body").append(gf_container);
 
 	$("body").css({
@@ -63,22 +66,19 @@ function display_page_info(p_page_images_infos_lst,
 	create_close_btn();
 
 	// IMAGES
-	$.each(p_page_images_infos_lst,
-		(p_i, p_image_map) => {
-			view_image(p_image_map);
-		});
+	p_page_images_infos_lst.forEach(p_image_map => {
+		view_image(p_image_map);
+	});
 
 	// VIDEOS
-	$.each(p_page_videos_infos_lst,
-		(p_i, p_video_map) => {
-			view_video(p_video_map);
-		});
+	p_page_videos_infos_lst.forEach(p_video_map => {
+		view_video(p_video_map);
+	});
 
 	//------------
 	// MASONRY
 
-	$(gf_container).find("#collection_masonry").masonry(
-		{
+	$(gf_container).find("#collection_masonry").masonry({
 			columnWidth:  20,
 			gutter:       10,
 			itemSelector: ".image_in_page"
@@ -89,10 +89,6 @@ function display_page_info(p_page_images_infos_lst,
 	check_images_exist_in_system(p_page_images_infos_lst, p_log_fun);
 
 	//------------
-	// $(document).resize(function() {
-	// 	$('#page_info_gf_container').css('width',$(document).width());
-	//	$('#page_info_gf_container').css('height',$(document).height());
-	// });
 
 	//---------------------------------------------------
 	function create_close_btn() {
@@ -127,13 +123,12 @@ function display_page_info(p_page_images_infos_lst,
 
 		const image_in_page_element = $(`
 			<div class="image_in_page">
-				
+				<img src="${full_img_src_str}"></img>
+				<div class="tags"></div>
 			</div>
 		`);
 		
-		const img = $('<img></img>').attr('src', full_img_src_str);
-
-		$(image_in_page_element).append(img);
+		const img = $(image_in_page_element).find("img")[0];
 		//-----------------
 		// GIF
 		if (full_img_src_str.split('.').pop() == 'gif') {
@@ -143,6 +138,8 @@ function display_page_info(p_page_images_infos_lst,
 		}
 
 		//-----------------
+
+		
 
 		$(gf_container).find('#collection_masonry').append(image_in_page_element);
 			$(img).load(() => {
@@ -162,6 +159,8 @@ function display_page_info(p_page_images_infos_lst,
 				const img_id_clean_str = img_id_str.replace('-', '_');
 				p_log_fun('INFO', 'img_id_clean_str - '+img_id_clean_str);
 
+				//-------------------
+
 				init_image_hud(img_id_clean_str,
 					image_in_page_element,
 					p_image_map,
@@ -173,7 +172,94 @@ function display_page_info(p_page_images_infos_lst,
 				$(gf_container).find('#collection_masonry').masonry();
 				
 				//-------------------
+
+				/*
+				IMPORTANT!! - need to set the width of the tags container to be the same as the image to which
+					it is attached, so that as tags are added the tags container scales in height, not in width
+					beyond the width of the image to which it is attached.
+				*/
+				$(image_in_page_element).find(".tags")[0].style.width = `${img.width}px`;
+
+				init_tagging(img_id_clean_str,
+					image_in_page_element,
+					gf_container,
+					p_log_fun);
 			});
+
+		//---------------------------------------------------
+		// TAGGING_UI
+
+		function init_tagging(p_obj_id_str,
+			p_obj_element,
+			p_gf_container,
+			p_log_fun) {
+			
+			const http_api_map = {
+				"gf_tagger": {
+					"add_tags_to_obj": (p_new_tags_lst,
+						p_obj_id_str,
+						p_obj_type_str,
+						p_tags_meta_map,
+						p_log_fun)=>{
+						const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+	
+							p_resolve_fun({
+								"added_tags_lst": p_new_tags_lst,
+							});
+						});
+						return p;
+					}
+				}
+			};
+
+			const obj_type_str = "image";
+			const input_element_parent_selector_str = "#page_info_container";
+
+			gf_tagger__init_ui(p_obj_id_str,
+				obj_type_str,
+				p_obj_element,
+				input_element_parent_selector_str,
+
+				// on_tags_created_fun
+				(p_tags_lst)=>{
+
+					console.log("added tags >>>>>>>>>>>", p_tags_lst)
+
+
+					p_tags_lst.forEach(t_str=>{
+
+						const tag_link_url_str = `${gf_host_str}/v1/tags/objects?tag=${t_str}&otype=image`
+
+						const element = $(`
+							<div class='bubble-in auto-width tag'>
+								<a href="${tag_link_url_str}" target="_blank" style="text-decoration: none;color: inherit;">
+									${t_str}
+								</a>
+							</div>`);
+						$(image_in_page_element).find(".tags").append(element);
+
+						// start the css animation
+						element.addClass('animate');
+
+						// IMPORTANT!! - reload the masonry layout with the newly added tag
+						$(p_gf_container).find('#collection_masonry').masonry();
+					})
+				},
+				
+				// on_tag_ui_add_fun
+				()=>{
+
+				},
+
+				// on_tag_ui_remove_fun
+				()=>{
+
+				},
+				http_api_map,
+				p_log_fun);
+		}
+
+		//---------------------------------------------------
 	}
 
 	//---------------------------------------------------
@@ -187,13 +273,13 @@ function display_page_info(p_page_images_infos_lst,
 				'<iframe src="'+embed_url_str+'"></iframe>'+
 			'</div>');
 
-		$(container).find('#collection_masonry').append(video_in_page_element);
+		$(gf_container).find('#collection_masonry').append(video_in_page_element);
 
 		init_video_hud(video_in_page_element, p_video_map, p_log_fun);
 
 		//-------------------
 		// IMPORTANT!! - reload the masonry layout with the newly loaded image
-		$(container).find('#collection_masonry').masonry();
+		$(gf_container).find('#collection_masonry').masonry();
 
 		//-------------------
 	}
@@ -204,24 +290,27 @@ function display_page_info(p_page_images_infos_lst,
 //---------------------------------------------------
 // CHECK_IMAGES_EXIST_IN_SYSTEM
 
-function check_images_exist_in_system(p_page_images_infos_lst, p_log_fun) {
-
-	const gf_host_str = "https://gloflow.com"
+function check_images_exist_in_system(p_page_images_infos_lst,
+	p_gf_host_str,
+	p_log_fun) {
+	
 	const images_extern_urls_lst = []; // :List<:String>
-	$.each(p_page_images_infos_lst,
-		(p_i, p_image_map) => {
+	p_page_images_infos_lst.forEach(p_image_map => {
+
 			const full_img_src_str = p_image_map['full_img_src_str'];
 			images_extern_urls_lst.push(full_img_src_str);
 		});
 
 	//-------------------
+	/*
 	// IMPORTANT!! - since request to host_str is made from the context of the page in which the 
 	//               content is located, browser security imposes that the same protocol (http|https)
 	//               is used to communicate with host_str as with the origin-domain of the page
 	const origin_url_str = window.location.href;
 	const protocol_str   = origin_url_str.split('://')[0];
 	const host_str       = `${protocol_str}://gloflow.com`;
-	
+	*/
+
 	//-------------------
 
 	console.log(images_extern_urls_lst)
@@ -230,7 +319,7 @@ function check_images_exist_in_system(p_page_images_infos_lst, p_log_fun) {
 		"source_str": "content_script",
 		"type_str":   "check_images_exist",
 		"images_extern_urls_lst": images_extern_urls_lst,
-		"gf_host_str":            host_str
+		"gf_host_str":            p_gf_host_str
 	}
 
 	send_msg_to_bg_page(msg_map, (p_response_map)=>{
@@ -390,8 +479,10 @@ function init_image_hud(p_image_id_str,
 	$(document).on("click", add_to_image_flow__selector_str, add_to_image_flow_btn_handler);
 	
 	//---------------------------------------------------
-	function add_to_image_flow_btn_handler() {
+	function add_to_image_flow_btn_handler(p_event) {
 		
+		p_event.stopImmediatePropagation();
+
 		const flows_names_str 		= $("input.flow_name").val();
 		const final_flows_names_lst = []
 
@@ -455,7 +546,9 @@ function init_image_hud(p_image_id_str,
 	//------------
 	// ADD_TO_POST
 	const add_to_post__selector_str = `#${p_image_id_str} .add_to_post_btn`;
-	$(document).on('click', add_to_post__selector_str, ()=>{
+	$(document).on('click', add_to_post__selector_str, (p_event)=>{
+		p_event.stopImmediatePropagation();
+
 		add_image_to_post(p_image_info_map, p_log_fun);
 	});
 
