@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 function gf_tagger__init_ui(p_obj_id_str,
 	p_obj_type_str,
 	p_obj_element,
+	p_input_element_parent_selector_str,
+
 	p_on_tags_created_fun,
 	p_on_tag_ui_add_fun,
 	p_on_tag_ui_remove_fun,
@@ -44,14 +46,19 @@ function gf_tagger__init_ui(p_obj_id_str,
 	// OPEN TAG INPUT UI
 	$(tagging_ui_element).find('.add_tags_button').on('click', (p_event)=>{
 
+		p_event.stopImmediatePropagation();
+
 		// remove the tagging_input_container if its already displayed
 		// for tagging another post_element
 		if ($('#tagging_input_container') != null) {
 			$('#tagging_input_container').detach();
 		}
 
+		const position_relative_to_element = p_obj_element;
+
 		gf_tagger__place_input_ui(tagging_input_ui_element,
-			p_obj_element,
+			position_relative_to_element,
+			p_input_element_parent_selector_str,
 			p_log_fun);
 
 		if (p_on_tag_ui_add_fun != null) p_on_tag_ui_add_fun();
@@ -95,7 +102,7 @@ function gf_tagger__init_ui(p_obj_id_str,
 			}
 
 			gf_tagger__place_input_ui(tagging_input_ui_element,
-                p_obj_element, //post_element,
+                p_obj_element, // post_element,
                 p_log_fun);
 
 			//prevent this handler being invoked while the user
@@ -158,6 +165,8 @@ function gf_tagger__init_input_ui(p_obj_id_str,
 	
 	$(tagging_input_ui_element).find('#submit_btn').on('click', async (p_event)=>{
 
+			p_event.stopImmediatePropagation();
+
 			const tags_lst = await add_tags_to_obj(p_obj_id_str,
 				p_obj_type_str,
 				tagging_input_ui_element,
@@ -184,6 +193,8 @@ function gf_tagger__init_input_ui(p_obj_id_str,
 	// TAG INPUT CLOSE BUTTON
 	$(tagging_input_ui_element).find('#close_btn').on('click', (p_event)=>{
 
+		p_event.stopImmediatePropagation();
+
 		const tagging_input_container_element = $(p_event.target).parent();
 
 		$(tagging_input_container_element).detach();
@@ -197,24 +208,23 @@ function gf_tagger__init_input_ui(p_obj_id_str,
 
 //-----------------------------------------------------
 function gf_tagger__place_input_ui(p_tagging_input_ui_element,
-	p_relative_to_element,
+	p_position_relative_to_element,
+	p_input_element_parent_selector_str,
 	p_log_fun) {
 	
-	$('body').append(p_tagging_input_ui_element);
+	// input element itself is attached to a different element
+	$(p_input_element_parent_selector_str).append(p_tagging_input_ui_element);
 
-	const relative_element__width_int = $(p_relative_to_element).width();
+	const relative_element__width_int = $(p_position_relative_to_element).width();
 	const input_ui_element__width_int = $(p_tagging_input_ui_element).width();
 
-	// p_tagging_input_ui_element.query('input').focus();
 	//------------------------
 	// Y_COORDINATE
-	// document.body.scrollTop - is added to get the 'y' coord relative to the whole doc, regardless of amount of scrolling done
-	// const relative_to_element_y_int :number = $(p_relative_to_element).offset().top + $('body').scrollTop(); //p_relative_to_element.getClientRects()[0].top.toInt() +	
-	const relative_to_element_y_int = $(p_relative_to_element).offset().top;						
+	const relative_to_element_y_int = $(p_position_relative_to_element).offset().top;						
 	
 	//------------------------
 	// X_COORDINATE
-	const relative_to_element_x_int        = $(p_relative_to_element).offset().left;
+	const relative_to_element_x_int        = $(p_position_relative_to_element).offset().left;
 	const input_ui_horizontal_overflow_int = (input_ui_element__width_int - relative_element__width_int)/2;
 
 	var tagging_input_x;

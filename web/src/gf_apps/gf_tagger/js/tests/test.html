@@ -1,5 +1,5 @@
 <head>
-    <link rel="stylesheet" type="text/css" href="./../../css/gf_tagger_input_ui.css">
+    <link rel="stylesheet" type="text/css" href="./../../css/gf_tagger_ui.css">
     <script
         src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
@@ -21,6 +21,8 @@
         const obj_id_str   = "test_element_for_tagging";
         const obj_type_str = "image";
         const obj_element  = $(`#${obj_id_str}`)[0];
+        const input_element_parent_selector_str = "body";
+
         const http_api_map = {
             "gf_tagger": {
                 "add_tags_to_obj": (p_new_tags_lst,
@@ -38,10 +40,11 @@
                 }
             }
         };
-
+        
         gf_tagger__init_ui(obj_id_str,
             obj_type_str,
             obj_element,
+            input_element_parent_selector_str,
 
             // on_tags_created_fun
             (p_tags_lst)=>{
@@ -60,10 +63,8 @@
                             </a>
                         </div>`);
                     $("#tags").append(element);
-
-                    // Force reflow to ensure the animations take place
-                    void element[0].offsetWidth;
-
+                    
+                    // start the css animation
                     element.addClass('animate');
                 })
 
@@ -111,51 +112,7 @@
         #tags {
             width: 200px;
         }
-        .tag {
-            background-color: lightgray;
-            padding-left: 4px;
-            padding-right: 4px;
-            margin-top: 4px;
-            margin-right: 4px;
-            font-size: 12px;
-        }
-        /*needed for the tag element to have the width of the text in it, and from there
-        to have proper animations that depend on its width being the same as its text*/
-        .auto-width {
-            display: inline-block; /* or inline-flex */
-            white-space: nowrap;   /* prevents the text from breaking into the next line */
-        }
-
-        /*-------------------------------------------------*/
-        /* ANIMATIONS */
-        .bubble-in {
-            opacity: 0;
-            transform: scale(0);
-            transform-origin: 50% 50%;
-            animation: bounce 0.3s ease-out forwards;
-        }
-
-        .bubble-in.animate {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        @keyframes bounce {
-            0% {
-            transform: scale(0);
-            opacity: 0;
-            }
-            50% {
-            transform: scale(1.2);
-            opacity: 1;
-            }
-            100% {
-            transform: scale(1);
-            opacity: 1;
-            }
-        }
-
-        /*-------------------------------------------------*/
+        
 
     </style>
 </head>
