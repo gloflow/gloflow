@@ -86,7 +86,7 @@ function display_page_info(p_page_images_infos_lst,
 
 	//------------
 	// CHECK_IMAGES_EXIST
-	check_images_exist_in_system(p_page_images_infos_lst, p_log_fun);
+	check_images_exist_in_system(p_page_images_infos_lst, gf_host_str, p_log_fun);
 
 	//------------
 
@@ -362,7 +362,7 @@ function check_images_exist_in_system(p_page_images_infos_lst,
 		const existing_img_preview = $('#page_info_container').find(`img[src="${p_existing_img__origin_url_str}"]`)[0];
 		
 		const flows_links_str = p_img__flows_names_lst
-			.map((p_name_str)=>`<a class="flow_name" href="${gf_host_str}/images/flows/browser?fname=${p_name_str}" target="_blank">${p_name_str}</a>`)
+			.map((p_name_str)=>`<a class="flow_name" href="${p_gf_host_str}/images/flows/browser?fname=${p_name_str}" target="_blank">${p_name_str}</a>`)
 			.join(",");
 
 		$(existing_img_preview).parent().append(
