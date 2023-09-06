@@ -76,6 +76,9 @@ func Run(pConfig *GFconfig,
 		spew.Dump(pConfig)
 	}
 	
+
+	authLoginURLstr := "/v1/identity/login_ui"
+	
 	//-------------
 	user, err := user.Current()
 	if err != nil {
@@ -107,8 +110,8 @@ func Run(pConfig *GFconfig,
 
 		AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
 
-		AuthLoginURLstr:                       "/v1/identity/login_ui", // on email confirm redirect user to this
-		AuthLoginSuccessRedirectURLstr:        "/v1/home/main", // on login success redirecto to home
+		AuthLoginURLstr:                authLoginURLstr, // on email confirm redirect user to this
+		AuthLoginSuccessRedirectURLstr: "/v1/home/main", // on login success redirecto to home
 		
 		// EVENTS
 		EnableEventsAppBool: true,
@@ -189,7 +192,7 @@ func Run(pConfig *GFconfig,
 
 	homeServiceInfo := &gf_home_lib.GFserviceInfo{
 		AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
-		AuthLoginURLstr:      "/v1/identity/login_ui", // if not logged in redirect users to this
+		AuthLoginURLstr:      authLoginURLstr, // if not logged in redirect users to this
 		KeyServer:            keyServer,
 	}
 
@@ -231,7 +234,7 @@ func Run(pConfig *GFconfig,
 
 		// AUTH
 		// on user trying to access authed endpoint while not logged in, redirect to this
-		AuthLoginURLstr: "/v1/identity/login_ui",
+		AuthLoginURLstr: authLoginURLstr,
 		KeyServer:       keyServer,
 		
 		//-------------------------
@@ -295,9 +298,12 @@ func Run(pConfig *GFconfig,
 
 	//-------------
 	// GF_TAGGER
-	gf_tagger_lib.InitService(pConfig.TemplatesPathsMap,
-		imagesJobsMngrCh,
+	gf_tagger_lib.InitService(pConfig.AuthSubsystemTypeStr,
+		authLoginURLstr,
+		keyServer,
 		gfSoloHTTPmux,
+		pConfig.TemplatesPathsMap,
+		imagesJobsMngrCh,
 		pRuntimeSys)
 
 	//-------------

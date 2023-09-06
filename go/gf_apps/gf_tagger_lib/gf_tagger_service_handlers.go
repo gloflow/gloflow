@@ -25,6 +25,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib/gf_tagger_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib/gf_bookmarks"
@@ -32,10 +33,13 @@ import (
 
 //-------------------------------------------------
 
-func initHandlers(pTemplatesPathsMap map[string]string,
-	pImagesJobsMngr gf_images_jobs_core.JobsMngr,
-	pMux            *http.ServeMux,
-	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
+func initHandlers(pAuthSubsystemTypeStr string,
+	pAuthLoginURLstr   string,
+	pKeyServer         *gf_identity_core.GFkeyServerInfo,
+	pHTTPmux           *http.ServeMux,
+	pTemplatesPathsMap map[string]string,
+	pImagesJobsMngr    gf_images_jobs_core.JobsMngr,
+	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	// TEMPLATES
 	gfTemplates, gfErr := gf_tagger_core.TemplatesLoad(pTemplatesPathsMap, pRuntimeSys)
@@ -56,6 +60,20 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	metricsGroupNameStr := "main"
 	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_tagger", handlers_endpoints_lst)
 	
+	//---------------------
+	// RPC_HANDLER_RUNTIME
+	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
+		Mux:             pHTTPmux,
+		Metrics:         metrics,
+		StoreRunBool:    true,
+		SentryHub:       nil,
+
+		// AUTH
+		AuthSubsystemTypeStr: pAuthSubsystemTypeStr,
+		AuthLoginURLstr:      pAuthLoginURLstr,
+		AuthKeyServer:        pKeyServer,
+	}
+
 	//---------------------
 	// BOOKMARKS
 	//---------------------
@@ -103,7 +121,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 			return nil, nil
 		},
-		pMux,
+		pHTTPmux,
 		metrics,
 		true, // pStoreRunBool
 		nil,
@@ -156,7 +174,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 			return nil, nil
 
 		},
-		pMux,
+		pHTTPmux,
 		metrics,
 		true, // pStoreRunBool
 		nil,
@@ -190,7 +208,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 			return nil, nil
 		},
-		pMux,
+		pHTTPmux,
 		metrics,
 		true, // pStoreRunBool
 		nil,
@@ -215,7 +233,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 			return nil, nil
 		},
-		pMux,
+		pHTTPmux,
 		metrics,
 		true, // pStoreRunBool
 		nil,
@@ -226,13 +244,16 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// ADD_TAGS
 	
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/create",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/tags/create",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
 				//------------
 				// INPUT
+
+				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
 				iMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
@@ -240,7 +261,10 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 				//------------
 
-				gfErr = pipelineAdd(iMap, pCtx, pRuntimeSys)
+				gfErr = pipelineAdd(iMap,
+					userID,
+					pCtx,
+					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -251,10 +275,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 			
 			return nil, nil
 		},
-		pMux,
-		metrics,
-		true, // pStoreRunBool
-		nil,
+		rpcHandlerRuntime,
 		pRuntimeSys)
 	
 	//---------------------
@@ -286,7 +307,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 			return nil, nil
 		},
-		pMux,
+		pHTTPmux,
 		metrics,
 		true, // pStoreRunBool
 		nil,

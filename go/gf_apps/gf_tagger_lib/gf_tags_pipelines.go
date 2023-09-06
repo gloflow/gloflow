@@ -34,6 +34,7 @@ import (
 // AUTHORIZED
 
 func pipelineAdd(pInputDataMap map[string]interface{},
+	pUserID     gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -97,6 +98,7 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 		objectTypeStr,
 		objectExternIDstr,
 		metaMap,
+		pUserID,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -193,7 +195,7 @@ func tagsPipelineGetObjects(p_req *http.Request,
 		//------------------
 		// JSON EXPORT
 		case "json":
-			pRuntimeSys.LogFun("DEBUG", "JSON RESPONSE >>", nil)
+			pRuntimeSys.LogNewFun("DEBUG", "JSON RESPONSE >>", nil)
 			
 			objectsWithTagLst, gfErr := getObjectsWithTag(tag_str,
 				object_type_str,

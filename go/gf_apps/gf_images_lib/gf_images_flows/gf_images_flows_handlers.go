@@ -104,6 +104,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 	//-------------------------------------------------
 	// ADD_IMAGE
+	// AUTH
+	
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/flows/add_img",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
@@ -163,6 +165,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	//-------------------------------------------------
 	// IMAGE_EXISTS_IN_SYSTEM - check if extern image url's exist in the system,
 	//                          if the image url has already been fetched/transformed and gf_image exists for it
+	// AUTH
 
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/flows/imgs_exist",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {

@@ -39,6 +39,7 @@ func addTagsToObject(pTagsStr string,
 	pObjectTypeStr     string,
 	pObjectExternIDstr string,
 	pMetaMap           map[string]interface{},
+	pUserID            gf_core.GF_ID,
 	pCtx               context.Context,
 	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 

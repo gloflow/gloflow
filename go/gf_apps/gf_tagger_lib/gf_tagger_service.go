@@ -22,19 +22,29 @@ package gf_tagger_lib
 import (
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //-------------------------------------------------
 
-func InitService(pTemplatesPathsMap map[string]string,
-	pImagesJobsMngr gf_images_jobs_core.JobsMngr,
-	pHTTPmux        *http.ServeMux,
-	pRuntimeSys     *gf_core.RuntimeSys) {
+func InitService(pAuthSubsystemTypeStr string,
+	pAuthLoginURLstr   string,
+	pKeyServer         *gf_identity_core.GFkeyServerInfo,
+	pHTTPmux           *http.ServeMux,
+	pTemplatesPathsMap map[string]string,
+	pImagesJobsMngr    gf_images_jobs_core.JobsMngr,
+	pRuntimeSys        *gf_core.RuntimeSys) {
 	
+	// DB
+	gfErr := DBsqlCreateTables(pRuntimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
+
 	//------------------------
 	// DB_INDEXES
-	gfErr := DBmongoIndexInit(pRuntimeSys)
+	gfErr = DBmongoIndexInit(pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
@@ -50,73 +60,16 @@ func InitService(pTemplatesPathsMap map[string]string,
 
 	//------------------------
 	
-	gfErr = initHandlers(pTemplatesPathsMap,
-		pImagesJobsMngr,
+	gfErr = initHandlers(pAuthSubsystemTypeStr,
+		pAuthLoginURLstr,
+		pKeyServer,
 		pHTTPmux,
+		pTemplatesPathsMap,
+		pImagesJobsMngr,
 		pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
 
 	//------------------------
-}
-
-//-------------------------------------------------
-
-func RunService(pPortStr string,
-	p_mongodb_host_str    string,
-	p_mongodb_db_name_str string,
-	p_init_done_ch        chan bool,
-	pLogFun               func(string, string)) {
-
-	pLogFun("INFO", "")
-	pLogFun("INFO", " >>>>>>>>>>> STARTING GF_TAGGER SERVICE")
-	pLogFun("INFO", "")
-	
-	runtimeSys := &gf_core.RuntimeSys{
-		ServiceNameStr: "gf_tagger",
-		LogFun:         pLogFun,
-	}
-
-	mongo_db, _, gfErr := gf_core.MongoConnectNew(p_mongodb_host_str, p_mongodb_db_name_str, nil, runtimeSys)
-	if gfErr != nil {
-		panic(-1)
-	}
-	runtimeSys.Mongo_db   = mongo_db 
-	runtimeSys.Mongo_coll = mongo_db.Collection("data_symphony")
-
-	//----------------------
-	http_mux := http.NewServeMux()
-
-	templates_dir_paths_map := map[string]string{
-		"gf_tag_objects": "./templates/gf_tag_objects/gf_tag_objects.html",
-	}
-
-	// FIX!! - jobs_mngr shouldnt be used here. when gf_tagger service is run in a separate
-	//         process from gf_images service, jobs_mngr can only be reaeched via HTTP or some other
-	//         transport mechanism (not via Go messages as a goroutine).
-	var jobs_mngr gf_images_jobs_core.JobsMngr
-
-	InitService(templates_dir_paths_map,
-		jobs_mngr,
-		http_mux,
-		runtimeSys)
-
-	//----------------------
-	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
-	if p_init_done_ch != nil {
-		p_init_done_ch <- true
-	}
-
-	//----------------------
-
-	pLogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	pLogFun("INFO", "STARTING HTTP SERVER - PORT - "+pPortStr)
-	pLogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	err := http.ListenAndServe(":"+pPortStr, nil)
-	if err != nil {
-		msg_str := "cant start listening on port - "+pPortStr
-		pLogFun("ERROR", msg_str)
-		panic(msg_str)
-	}
 }
