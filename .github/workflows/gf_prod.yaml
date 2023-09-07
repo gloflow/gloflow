@@ -95,6 +95,13 @@ jobs:
       - uses: actions/checkout@v3
 
       #-------------------------------
+
+      # GF_TAGGER
+      - name: test gf_tagger
+        run: |
+          cd /home/gf/go/gf_apps/gf_tagger
+          go test -v -mongodb_host=mongo -sql_host=postgres
+
       # GF_LANG
       - name: test gf_lang
         run: |
