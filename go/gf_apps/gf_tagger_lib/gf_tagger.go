@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"strings"
 	"context"
+	"time"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
@@ -67,7 +68,37 @@ func addTagsToObject(pTagsStr string,
 		return gfErr
 	}
 
-	pRuntimeSys.LogFun("INFO", fmt.Sprintf("tags_lst - %s", tagsLst))
+	pRuntimeSys.LogNewFun("DEBUG", "tags to be added to obj...",
+		map[string]interface{}{
+			"tags_lst":             tagsLst,
+			"object_type_str":      pObjectTypeStr,
+			"object_extern_id_str": pObjectExternIDstr,
+		})
+
+	//---------------
+	// DB_SQL
+
+
+	for _, tagStr := range tagsLst {
+		
+		tagID := generateTagID()
+		objID := gf_core.GF_ID(pObjectExternIDstr)
+
+		// ADD!! - provide a mechanism for users to specify that a tag is private
+		publicBool := true
+
+		gfErr = dbSQLcreateTag(tagID,
+			tagStr,
+			pUserID,
+			objID,
+			pObjectTypeStr,
+			publicBool,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+	}
 
 	//---------------
 	// POST
@@ -105,13 +136,14 @@ func addTagsToObject(pTagsStr string,
 		//---------------
 		// IMAGE
 		case "image":
+
 			imageIDstr := pObjectExternIDstr
 			imageID    := gf_images_core.GFimageID(imageIDstr)
-			exists_bool, gfErr := gf_images_core.DBmongoImageExists(imageID, pCtx, pRuntimeSys)
+			existsBool, gfErr := gf_images_core.DBmongoImageExists(imageID, pCtx, pRuntimeSys)
 			if gfErr != nil {
 				return gfErr
 			}
-			if exists_bool {
+			if existsBool {
 				gfErr := dbMongoAddTagsToImage(imageIDstr, tagsLst, pRuntimeSys)
 				if gfErr != nil {
 					return gfErr
@@ -225,7 +257,8 @@ func parseTags(pTagsStr string,
 	pMaxTagCharactersNumberInt int, // 20
 	pRuntimeSys                *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 	
-	tagsLst := strings.Split(pTagsStr," ")
+	tagsLst := strings.Split(pTagsStr, " ")
+
 	//---------------------
 	if len(tagsLst) > pMaxTagsBulkSizeInt {
 		gfErr := gf_core.ErrorCreate(fmt.Sprintf("too many tags supplied - max is %d", pMaxTagsBulkSizeInt),
@@ -254,4 +287,17 @@ func parseTags(pTagsStr string,
 	
 	//---------------------
 	return tagsLst, nil
+}
+
+//---------------------------------------------------
+
+func generateTagID() gf_core.GF_ID {
+
+	creationUNIXtimeF  := float64(time.Now().UnixNano())/1000000000.0
+	randomStr          := gf_core.StrRandom()
+	uniqueValsForIDlst := []string{
+		randomStr,
+	}
+	sessionIDstr := gf_core.IDcreate(uniqueValsForIDlst, creationUNIXtimeF)
+	return sessionIDstr
 }

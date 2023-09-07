@@ -94,7 +94,11 @@ func DBsqlCreateFlow(pFlowID gf_core.GF_ID,
 	defer tx.Rollback()
 
 	row := tx.QueryRow(`
-		INSERT INTO gf_images_flows (id, name, creator_user_id)
+		INSERT INTO gf_images_flows (
+			id,
+			name,
+			creator_user_id
+		)
 		VALUES ($1, $2, $3) RETURNING id
 		`,
 		string(pFlowID),

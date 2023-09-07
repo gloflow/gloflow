@@ -37,7 +37,7 @@ func InitService(pAuthSubsystemTypeStr string,
 	pRuntimeSys        *gf_core.RuntimeSys) {
 	
 	// DB
-	gfErr := DBsqlCreateTables(pRuntimeSys)
+	gfErr := dbSQLcreateTables(pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}

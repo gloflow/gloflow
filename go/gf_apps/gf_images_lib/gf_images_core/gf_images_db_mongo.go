@@ -68,9 +68,6 @@ func DBmongoGetImage(pImageIDstr GFimageID,
 	q   := bson.M{"t": "img", "id_str": pImageIDstr}
 	err := coll.FindOne(pCtx, q).Decode(&image)
 	if err != nil {
-
-		// FIX!! - a record not being found in the DB is possible valid state. it should be considered
-		//         if this should not return an error but instead just a "nil" value for the record.
 		if err == mongo.ErrNoDocuments {
 			gfErr := gf_core.MongoHandleError("image does not exist in mongodb",
 				"mongodb_not_found_error",
@@ -125,16 +122,16 @@ func DBmongoGetRandomImagesRange(pImgsNumToGetInt int, // 5
 	// reseed the random number source
 	rand.Seed(time.Now().UnixNano())
 	
-	random_cursor_position_int := rand.Intn(pMaxRandomCursorPositionInt) // new Random().nextInt(pMaxRandomCursorPositionInt)
+	randomCursorPositionInt := rand.Intn(pMaxRandomCursorPositionInt) // new Random().nextInt(pMaxRandomCursorPositionInt)
 	pRuntimeSys.LogNewFun("DEBUG", "imgs_num_to_get_int        - "+fmt.Sprint(pImgsNumToGetInt), nil)
-	pRuntimeSys.LogNewFun("DEBUG", "random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int), nil)
+	pRuntimeSys.LogNewFun("DEBUG", "random_cursor_position_int - "+fmt.Sprint(randomCursorPositionInt), nil)
 
 
 
 	ctx := context.Background()
 
 	find_opts := options.Find()
-	find_opts.SetSkip(int64(random_cursor_position_int))
+	find_opts.SetSkip(int64(randomCursorPositionInt))
     find_opts.SetLimit(int64(pImgsNumToGetInt))
 
 	collNameStr := "data_symphony"
