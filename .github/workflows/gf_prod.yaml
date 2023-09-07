@@ -99,7 +99,7 @@ jobs:
       # GF_TAGGER
       - name: test gf_tagger
         run: |
-          cd /home/gf/go/gf_apps/gf_tagger
+          cd /home/gf/go/gf_apps/gf_tagger_lib
           go test -v -mongodb_host=mongo -sql_host=postgres
 
       # GF_LANG
