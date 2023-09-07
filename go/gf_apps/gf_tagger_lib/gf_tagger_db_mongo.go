@@ -241,7 +241,13 @@ func dbMongoAddTagsToImage(pImageIDstr string,
 			"t":      "img",
 			"id_str": pImageIDstr,
 		},
-		bson.M{"$push": bson.M{"tags_lst": pTagsLst},
+		bson.M{"$push": bson.M{
+			"tags_lst": bson.M{
+
+				// extend the tags_lst DB list with elements from pTagsLst
+				"$each": pTagsLst,
+			},
+		},
 	})
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to update a gf_image with new tags in DB",
