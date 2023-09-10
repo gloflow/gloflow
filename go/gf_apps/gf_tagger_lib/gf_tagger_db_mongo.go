@@ -237,35 +237,32 @@ func dbMongoAddTagsToImage(pImageIDstr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-	updateQuery := bson.M{
-		"$set": bson.M{
-			"tags_lst": bson.M{
-				"$cond": bson.M{
-					"if": bson.M{
-						"$or": []bson.M{
-							{"$eq": []interface{}{"$tags_lst", nil}},
-
-							// this checks if the type of tags_lst is an array
-							{"$not": bson.M{"$type": "$tags_lst", "number": 4}},
-						},
-					},
-
-					/*
-					if either of the above conditions is true (nill or not array)
-					then just set the property tags_lst to be an array
-					*/
-					"then": pTagsLst,
-
-					// otherwise push each tag to this array
-					"else": bson.M{
-						"$each": pTagsLst,
-					},
-				},
+	//--------------------
+	// INITIALIZE_TAGS_ARRAY
+	_, err := pRuntimeSys.Mongo_coll.UpdateMany(
+		pCtx,
+		bson.M{
+			"t":      "img",
+			"id_str": pImageIDstr,
+			"$or": []bson.M{
+				{"tags_lst": nil},
+				{"tags_lst": bson.M{"$not": bson.M{"$type": 4}}},
 			},
 		},
+		bson.M{"$set": bson.M{"tags_lst": []string{}}})
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed initialize tags_lst property of image in the DB",
+			"mongodb_update_error",
+			map[string]interface{}{
+				"image_id_str": pImageIDstr,
+				"tags_lst":     pTagsLst,
+			},
+			err, "gf_tagger_lib", pRuntimeSys)
+		return gfErr
 	}
-	
-	/*
+
+	//--------------------
+	// PUSH_TAGS
 	updateQuery := bson.M{"$push": bson.M{
 			"tags_lst": bson.M{
 
@@ -274,9 +271,8 @@ func dbMongoAddTagsToImage(pImageIDstr string,
 			},
 		},
 	}
-	*/
 
-	_, err := pRuntimeSys.Mongo_coll.UpdateMany(pCtx, bson.M{
+	_, err = pRuntimeSys.Mongo_coll.UpdateMany(pCtx, bson.M{
 			"t":      "img",
 			"id_str": pImageIDstr,
 		},
@@ -291,5 +287,7 @@ func dbMongoAddTagsToImage(pImageIDstr string,
 			err, "gf_tagger_lib", pRuntimeSys)
 		return gfErr
 	}
+
+	//--------------------
 	return nil
 }
