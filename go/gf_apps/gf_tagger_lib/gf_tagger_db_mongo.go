@@ -234,21 +234,53 @@ func dbMongoAddTagsToPost(pPostTitleStr string,
 
 func dbMongoAddTagsToImage(pImageIDstr string,
 	pTagsLst    []string,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	
+	updateQuery := bson.M{
+		"$set": bson.M{
+			"tags_lst": bson.M{
+				"$cond": bson.M{
+					"if": bson.M{
+						"$or": []bson.M{
+							{"$eq": []interface{}{"$tags_lst", nil}},
 
-	ctx := context.Background()
-	_, err := pRuntimeSys.Mongo_coll.UpdateMany(ctx, bson.M{
-			"t":      "img",
-			"id_str": pImageIDstr,
+							// this checks if the type of tags_lst is an array
+							{"$not": bson.M{"$type": "$tags_lst", "number": 4}},
+						},
+					},
+
+					/*
+					if either of the above conditions is true (nill or not array)
+					then just set the property tags_lst to be an array
+					*/
+					"then": pTagsLst,
+
+					// otherwise push each tag to this array
+					"else": bson.M{
+						"$each": pTagsLst,
+					},
+				},
+			},
 		},
-		bson.M{"$push": bson.M{
+	}
+	
+	/*
+	updateQuery := bson.M{"$push": bson.M{
 			"tags_lst": bson.M{
 
 				// extend the tags_lst DB list with elements from pTagsLst
 				"$each": pTagsLst,
 			},
 		},
-	})
+	}
+	*/
+
+	_, err := pRuntimeSys.Mongo_coll.UpdateMany(pCtx, bson.M{
+			"t":      "img",
+			"id_str": pImageIDstr,
+		},
+		updateQuery)
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to update a gf_image with new tags in DB",
 			"mongodb_update_error",

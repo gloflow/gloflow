@@ -144,7 +144,7 @@ func addTagsToObject(pTagsStr string,
 				return gfErr
 			}
 			if existsBool {
-				gfErr := dbMongoAddTagsToImage(imageIDstr, tagsLst, pRuntimeSys)
+				gfErr := dbMongoAddTagsToImage(imageIDstr, tagsLst, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return gfErr
 				}

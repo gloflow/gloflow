@@ -157,6 +157,7 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 		Width_int:                      pImageInfo.Width_int,
 		Height_int:                     pImageInfo.Height_int,
 
+		TagsLst: []string{},
 		MetaMap: pImageInfo.Meta_map,
 	}
 
