@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 //-------------------------------------------------
-function gf_tagger__init_ui(p_obj_id_str,
-	p_obj_type_str,
+function gf_tagger__init_ui(p_obj_type_str,
 	p_obj_element,
 	p_input_element_parent_selector_str,
 
+	p_tags_create_pre_fun,
 	p_on_tags_created_fun,
 	p_on_tag_ui_add_fun,
 	p_on_tag_ui_remove_fun,
@@ -31,8 +31,8 @@ function gf_tagger__init_ui(p_obj_id_str,
 
     console.log("gf_tagger UI init...")
 
-    const tagging_input_ui_element = gf_tagger__init_input_ui(p_obj_id_str,
-		p_obj_type_str,
+    const tagging_input_ui_element = gf_tagger__init_input_ui(p_obj_type_str,
+		p_tags_create_pre_fun,
 		p_on_tags_created_fun,
 		p_on_tag_ui_remove_fun,
 		p_http_api_map,
@@ -62,6 +62,9 @@ function gf_tagger__init_ui(p_obj_id_str,
 			p_log_fun);
 
 		if (p_on_tag_ui_add_fun != null) p_on_tag_ui_add_fun();
+
+		// remove the initial controls when the full control opens
+		$(tagging_ui_element).detach();
 	});
 
 	//------------------------
@@ -114,8 +117,8 @@ function gf_tagger__init_ui(p_obj_id_str,
 }
 
 //-------------------------------------------------
-function gf_tagger__init_input_ui(p_obj_id_str,
-	p_obj_type_str,
+function gf_tagger__init_input_ui(p_obj_type_str,
+	p_tags_create_pre_fun,
 	p_on_tags_created_fun,
 	p_on_tag_ui_remove_fun,
 	p_http_api_map,
@@ -152,9 +155,10 @@ function gf_tagger__init_input_ui(p_obj_id_str,
 			if (p_event.which == 13) {
 				p_event.preventDefault();
 				
-				const tags_lst = await add_tags_to_obj(p_obj_id_str,
-					p_obj_type_str,
+				const tags_lst = await add_tags_to_obj(p_obj_type_str,
 					tagging_input_ui_element,
+
+					p_tags_create_pre_fun,
 					p_http_api_map,
 					p_log_fun);
 
@@ -167,9 +171,9 @@ function gf_tagger__init_input_ui(p_obj_id_str,
 
 			p_event.stopImmediatePropagation();
 
-			const tags_lst = await add_tags_to_obj(p_obj_id_str,
-				p_obj_type_str,
+			const tags_lst = await add_tags_to_obj(p_obj_type_str,
 				tagging_input_ui_element,
+				p_tags_create_pre_fun,
 				p_http_api_map,
 				p_log_fun);
 
@@ -212,7 +216,10 @@ function gf_tagger__place_input_ui(p_tagging_input_ui_element,
 	p_input_element_parent_selector_str,
 	p_log_fun) {
 	
-	// input element itself is attached to a different element
+	/*
+	input element itself is attached to a different element, outside of this control. it could be "body",
+	or some other parent.
+	*/
 	$(p_input_element_parent_selector_str).append(p_tagging_input_ui_element);
 
 	const relative_element__width_int = $(p_position_relative_to_element).width();
@@ -220,8 +227,15 @@ function gf_tagger__place_input_ui(p_tagging_input_ui_element,
 
 	//------------------------
 	// Y_COORDINATE
-	const relative_to_element_y_int = $(p_position_relative_to_element).offset().top;						
-	
+
+	/*
+	IMPORTANT!! - using css("top") instead of $(p_position_relative_to_element).offset().top because
+		with masonry which sets the css("top") property offset().top doesnt return the correct value.
+		css("top") also works correctly in the test cases, so using that for now.
+	*/
+	const relative_to_element_y_int = parseInt($(p_position_relative_to_element).css("top"), 10); // $(p_position_relative_to_element).offset().top;						
+	const tagging_input_y = relative_to_element_y_int; // $(p_tagging_input_ui_element).height()/2;
+
 	//------------------------
 	// X_COORDINATE
 	const relative_to_element_x_int        = $(p_position_relative_to_element).offset().left;
@@ -256,17 +270,16 @@ function gf_tagger__place_input_ui(p_tagging_input_ui_element,
 		tagging_input_x = relative_to_element_x_int-(input_ui_element__width_int-relative_element__width_int)/2;
 	}
 
-	const tagging_input_y = relative_to_element_y_int - $(p_tagging_input_ui_element).height()/2;
-
+	//------------------------
 	$(p_tagging_input_ui_element).css('position', 'absolute');
-	$(p_tagging_input_ui_element).css('left',     tagging_input_x+'px');
-	$(p_tagging_input_ui_element).css('top',      tagging_input_y+'px');
+	$(p_tagging_input_ui_element).css('left',     `${tagging_input_x}px`);
+	$(p_tagging_input_ui_element).css('top',      `${tagging_input_y}px`);
 }
 
 //-----------------------------------------------------
-async function add_tags_to_obj(p_obj_id_str,
-	p_obj_type_str,
+async function add_tags_to_obj(p_obj_type_str,
 	p_tagging_ui_element,
+	p_tags_create_pre_fun,
 	p_http_api_map,
 	p_log_fun) {
 	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
@@ -275,7 +288,6 @@ async function add_tags_to_obj(p_obj_id_str,
 		const tags_lst = tags_str.split(' ');
 		p_log_fun('INFO', `tags_lst - ${tags_lst.toString()}`);
 		
-
 		const existing_tags_lst = [];
 
 		$(p_tagging_ui_element).parent().find('.tags_container').find('a').each((p_i, p_tag)=>{
@@ -293,6 +305,12 @@ async function add_tags_to_obj(p_obj_id_str,
 			}
 		}
 
+		//------------------------
+		// CREATE_PRE_HOOK
+		const object_system_id_str = await p_tags_create_pre_fun(new_tags_lst);
+
+		//------------------------
+
 		// ADD!! - some visual success/failure indicator
 		const tags_meta_map = {};
 
@@ -300,23 +318,18 @@ async function add_tags_to_obj(p_obj_id_str,
 		if (p_http_api_map == null) {
 
 			data_map = await gf_tagger__http_add_tags_to_obj(new_tags_lst,
-				p_obj_id_str,
+				object_system_id_str,
 				p_obj_type_str,
 				tags_meta_map,
 				p_log_fun);
 
 		} else {
 
-
-            console.log("AAAAAAAAAAAAAAAa")
-			data_map = await p_http_api_map["gf_tagger"]["add_tags_to_obj"](new_tags_lst,
-				p_obj_id_str,
+        	data_map = await p_http_api_map["gf_tagger"]["add_tags_to_obj"](new_tags_lst,
+				object_system_id_str,
 				p_obj_type_str,
 				tags_meta_map,
 				p_log_fun);
-
-
-            console.log("AAAAAAAAAAAAAAAa22222222222222")
 		}
 
 		const added_tags_lst = data_map['added_tags_lst'];
@@ -325,107 +338,4 @@ async function add_tags_to_obj(p_obj_id_str,
 		p_resolve_fun(added_tags_lst);
 	});
 	return p;
-}
-
-//-----------------------------------------------------
-// HTTP
-//-----------------------------------------------------
-async function gf_tagger__http_add_tags_to_obj(p_tags_lst,  
-    p_object_id_str,
-    p_object_type_str,
-    p_meta_map,
-    p_log_fun) {
-
-    const url_str = '/v1/tags/create';
-    const tags_str = p_tags_lst.join(' ');
-    const data_map = {
-        "otype": p_object_type_str,
-        "o_id":  p_object_id_str,
-        "tags":  tags_str,
-        "meta_map": p_meta_map,
-    };
-
-    const response = await fetch(url_str, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data_map)
-    });
-
-    if (response.ok) {
-        const responseMap = await response.json();
-        const status_str = responseMap["status"];
-        const data_map   = responseMap["data"];
-        
-        if (status_str === "OK") {
-            return Promise.resolve(data_map);
-        } else {
-            return Promise.reject(data_map);
-        }
-    } else {
-        return Promise.reject(`Fetch failed: ${response.status} ${response.statusText}`);
-    }
-
-        
-    /*
-    const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
-
-        const tags_str = p_tags_lst.join(' ');
-        const data_map         = {
-            "otype": p_object_type_str,
-            "o_id":  p_object_id_str,
-            "tags":  tags_str,
-            "meta_map": p_meta_map,
-        };
-
-        const url_str = '/v1/tags/create';
-        $.ajax({
-            'url':         url_str,
-            'type':        'POST',
-            'data':        JSON.stringify(data_map),
-            'contentType': 'application/json',
-            'success':     (p_response_map)=>{
-
-                const status_str = p_response_map["status"];
-                const data_map   = p_response_map["data"];
-
-                if (status_str == "OK") {
-                    p_resolve_fun(data_map);
-                } else {
-                    p_reject_fun(data_map);
-                }
-            },
-            'error':(jqXHR, p_text_status_str)=>{
-                p_reject_fun(p_text_status_str);
-            }
-        });
-    });
-    return p;
-    */
-}
-
-//-----------------------------------------------------
-async function gf_tagger__http_get_objs_with_tag(p_tag_str, 
-    p_object_type_str,
-    p_log_fun) {
-
-    const url_str = `/v1/tags/objects?tags=${p_tag_str}&otype=${p_object_type_str}`;
-
-    const response = await fetch(url_str, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-
-    if (response.ok) {
-        const data_str = await response.text();
-        const data_map = JSON.parse(data_str);
-        const objects_with_tags_map = data_map['objects_with_tags_map'];
-        
-        return Promise.resolve(objects_with_tags_map);
-    } else {
-        return Promise.reject(`Fetch failed: ${response.status} ${response.statusText}`);
-    }
 }

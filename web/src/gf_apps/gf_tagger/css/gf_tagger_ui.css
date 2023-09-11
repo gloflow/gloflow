@@ -26,7 +26,7 @@
 }
 #tagging_input_container #background {
 	background-color: rgba(0,0,0,0.7);
-    width: 368px;
+    width: 340px;
     height: 101px;
     position: relative;
     top: 0px;
@@ -40,7 +40,9 @@
     left: 36px;
     width: 200px;
     height: 30px;
-
+    background-color: white;
+    padding: 0px;
+    
     border: none;
     outline: none;
     box-shadow: none;
@@ -51,11 +53,15 @@
 
 #tagging_input_container #submit_btn {
 	float: left;
-    height: 23px;
+    /*
     padding-left: 15px;
     padding-right: 17px;
-    padding-top: 7px;
-    margin-left: 8px;
+    padding-top: 8px;
+    */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     position: absolute;
     top: 35px;
     left: 227px;
@@ -63,6 +69,10 @@
     color: rgb(160, 160, 160);
     cursor: pointer;
     font-size: 13px;
+    padding: 0 !important;
+    
+    width: 50px;
+    height: 30px;
 }
 #tagging_input_container #submit_btn:hover {
 	background-color: rgb(221, 221, 221);
@@ -71,16 +81,22 @@
 #tagging_input_container #close_btn {
 	float: left;
     background-color: #cfcfcf;
-    width: 24px;
-    height: 24px;
-    padding-left: 12px;
-    padding-right: 4px;
-    padding-top: 6px;
-    margin-left: 8px;
+
     cursor: pointer;
     position: absolute;
     top: 35px;
-    left: 280px;
+    left: 277px;
+
+    font-size: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 30px;
+
+    padding: 0 !important;
 }
 #tagging_input_container #close_btn:hover {
 	background-color: white;

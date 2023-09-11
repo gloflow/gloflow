@@ -18,15 +18,17 @@
 
         function log_fun(p_g, p_m) {console.log(`${p_g}:${p_m}`);}
 
-        const obj_id_str   = "test_element_for_tagging";
-        const obj_type_str = "image";
-        const obj_element  = $(`#${obj_id_str}`)[0];
+        const obj_id_str    = "test_element_for_tagging";
+        const obj_id_2_str  = "test_element_for_tagging2";
+        const obj_type_str  = "image";
+        const obj_element   = $(`#${obj_id_str}`)[0];
+        const obj_element_2 = $(`#${obj_id_2_str}`)[0];
         const input_element_parent_selector_str = "body";
 
         const http_api_map = {
             "gf_tagger": {
                 "add_tags_to_obj": (p_new_tags_lst,
-                    p_obj_id_str,
+                    p_obj_system_id_str,
                     p_obj_type_str,
                     p_tags_meta_map,
                     p_log_fun)=>{
@@ -41,16 +43,23 @@
             }
         };
         
-        gf_tagger__init_ui(obj_id_str,
-            obj_type_str,
+        gf_tagger__init_ui(obj_type_str,
             obj_element,
             input_element_parent_selector_str,
 
+            // p_tags_create_pre_fun
+            (p_tags_lst)=>{
+                const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+                    const image_system_id_str = null;
+                    p_resolve_fun(image_system_id_str);
+                });
+                return p;
+            },
             // on_tags_created_fun
             (p_tags_lst)=>{
 
-                console.log("added tags >>>>>>>>>>>", p_tags_lst)
-
+                console.log("added tags >>>>>>>>>>>", p_tags_lst, obj_id_str)
 
                 p_tags_lst.forEach(t_str=>{
 
@@ -62,24 +71,63 @@
                                 ${t_str}
                             </a>
                         </div>`);
-                    $("#tags").append(element);
+                    console.log("AAA", element)
+                    $(`#container .tags`).append(element);
                     
                     // start the css animation
                     element.addClass('animate');
                 })
-
-
             },
             
             // on_tag_ui_add_fun
-            ()=>{
-
-            },
+            ()=>{},
 
             // on_tag_ui_remove_fun
-            ()=>{
+            ()=>{},
+            http_api_map,
+            log_fun);
 
+        gf_tagger__init_ui(obj_type_str,
+            obj_element_2,
+            input_element_parent_selector_str,
+
+            // p_tags_create_pre_fun
+            (p_tags_lst)=>{
+                const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+                    const image_system_id_str = null;
+                    p_resolve_fun(image_system_id_str);
+                });
+                return p;
             },
+            // on_tags_created_fun
+            (p_tags_lst)=>{
+
+                console.log("added tags >>>>>>>>>>>", p_tags_lst, obj_id_2_str)
+                p_tags_lst.forEach(t_str=>{
+
+                    const tag_link_url_str = `https://gloflow.com/v1/tags/objects?tag=${t_str}&otype=image`
+
+                    const element = $(`
+                        <div class='bubble-in auto-width tag'>
+                            <a href="${tag_link_url_str}" target="_blank" style="text-decoration: none;color: inherit;">
+                                ${t_str}
+                            </a>
+                        </div>`);
+                    
+                    console.log("AAA", element)
+                    $(`#container2 .tags`).append(element);
+                    
+                    // start the css animation
+                    element.addClass('animate');
+                })
+            },
+            
+            // on_tag_ui_add_fun
+            ()=>{},
+
+            // on_tag_ui_remove_fun
+            ()=>{},
             http_api_map,
             log_fun);
     }
@@ -108,8 +156,26 @@
             width: 200px;
             height: 300px;
             
+            
         }
-        #tags {
+
+        #container2 {
+            position: absolute;
+            top: 50%;
+            left: 20%;
+        }
+        #test_element_for_tagging2 {
+            background-color: rgb(85, 215, 85);
+            width: 200px;
+            height: 300px;
+
+            
+            
+        }
+
+        .tags {
+            position: relative;
+	        z-index: 1;
             width: 200px;
         }
         
@@ -123,7 +189,16 @@
     <div id="test_element_for_tagging">
 
     </div>
-    <div id="tags">
+    <div class="tags">
+
+    </div>
+</div>
+
+<div id="container2">
+    <div id="test_element_for_tagging2">
+
+    </div>
+    <div class="tags">
 
     </div>
 </div>
