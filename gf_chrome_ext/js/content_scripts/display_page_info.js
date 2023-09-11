@@ -92,8 +92,6 @@ function display_page_info(p_page_images_infos_lst,
 
 	//---------------------------------------------------
 	function create_close_btn() {
-		
-		p_log_fun("FUN_ENTER", "display_page_info.display_page_info().create_close_btn()");
 
 		const close_btn_element = $(`<div id="close_btn"></div>`);
 		$(gf_container).append(close_btn_element);
@@ -121,14 +119,14 @@ function display_page_info(p_page_images_infos_lst,
 		const full_img_src_str = p_image_map['full_img_src_str'];
 		const img_name_str     = p_image_map['img_name_str'];
 
-		const image_in_page_element = $(`
+		const image_container_element = $(`
 			<div class="image_in_page">
 				<img src="${full_img_src_str}"></img>
 				<div class="tags"></div>
 			</div>
 		`);
 		
-		const img = $(image_in_page_element).find("img")[0];
+		const img = $(image_container_element).find("img")[0];
 		//-----------------
 		// GIF
 		if (full_img_src_str.split('.').pop() == 'gif') {
@@ -141,7 +139,7 @@ function display_page_info(p_page_images_infos_lst,
 
 		
 
-		$(gf_container).find('#collection_masonry').append(image_in_page_element);
+		$(gf_container).find('#collection_masonry').append(image_container_element);
 			$(img).load(() => {
 
 				//-------------------
@@ -154,17 +152,20 @@ function display_page_info(p_page_images_infos_lst,
 					by the user to be added to a flow, it would then be added multiple times leading to a duplicate in the GF system.
 				*/
 				const time_in_ms_f = performance.now();
-				const img_id_str = 'id_'+hash_code(`${time_in_ms_f}_${full_img_src_str}`, p_log_fun);
+				const hash_str     = hash_code(`${time_in_ms_f}_${full_img_src_str}`, p_log_fun);
+				const img_element_id_str = `id_${hash_str}`;
 				
-				const img_id_clean_str = img_id_str.replace('-', '_');
-				p_log_fun('INFO', 'img_id_clean_str - '+img_id_clean_str);
+				const img_element_id_clean_str = img_element_id_str.replace('-', '_');
+				p_log_fun('INFO', `img_element_id_clean_str - ${img_element_id_clean_str}`);
 
 				//-------------------
 
-				init_image_hud(img_id_clean_str,
-					image_in_page_element,
+				init_image_hud(img_element_id_clean_str,
+					img,
+					image_container_element,
 					p_image_map,
 					gf_container,
+					gf_host_str,
 					p_log_fun);
 
 				//-------------------
@@ -172,92 +173,7 @@ function display_page_info(p_page_images_infos_lst,
 				$(gf_container).find('#collection_masonry').masonry();
 				
 				//-------------------
-
-				/*
-				IMPORTANT!! - need to set the width of the tags container to be the same as the image to which
-					it is attached, so that as tags are added the tags container scales in height, not in width
-					beyond the width of the image to which it is attached.
-				*/
-				$(image_in_page_element).find(".tags")[0].style.width = `${img.width}px`;
-
-				init_tagging(img_id_clean_str,
-					image_in_page_element,
-					gf_container,
-					p_log_fun);
 			});
-
-		//---------------------------------------------------
-		// TAGGING_UI
-
-		function init_tagging(p_obj_id_str,
-			p_obj_element,
-			p_gf_container,
-			p_log_fun) {
-			
-			const http_api_map = {
-				"gf_tagger": {
-					"add_tags_to_obj": (p_new_tags_lst,
-						p_obj_id_str,
-						p_obj_type_str,
-						p_tags_meta_map,
-						p_log_fun)=>{
-						const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
-	
-							p_resolve_fun({
-								"added_tags_lst": p_new_tags_lst,
-							});
-						});
-						return p;
-					}
-				}
-			};
-
-			const obj_type_str = "image";
-			const input_element_parent_selector_str = "#page_info_container";
-
-			gf_tagger__init_ui(p_obj_id_str,
-				obj_type_str,
-				p_obj_element,
-				input_element_parent_selector_str,
-
-				// on_tags_created_fun
-				(p_tags_lst)=>{
-
-					console.log("added tags >>>>>>>>>>>", p_tags_lst)
-
-
-					p_tags_lst.forEach(t_str=>{
-
-						const tag_link_url_str = `${gf_host_str}/v1/tags/objects?tag=${t_str}&otype=image`
-
-						const element = $(`
-							<div class='bubble-in auto-width tag'>
-								<a href="${tag_link_url_str}" target="_blank" style="text-decoration: none;color: inherit;">
-									${t_str}
-								</a>
-							</div>`);
-						$(image_in_page_element).find(".tags").append(element);
-
-						// start the css animation
-						element.addClass('animate');
-
-						// IMPORTANT!! - reload the masonry layout with the newly added tag
-						$(p_gf_container).find('#collection_masonry').masonry();
-					})
-				},
-				
-				// on_tag_ui_add_fun
-				()=>{
-
-				},
-
-				// on_tag_ui_remove_fun
-				()=>{
-
-				},
-				http_api_map,
-				p_log_fun);
-		}
 
 		//---------------------------------------------------
 	}
@@ -301,18 +217,6 @@ function check_images_exist_in_system(p_page_images_infos_lst,
 			images_extern_urls_lst.push(full_img_src_str);
 		});
 
-	//-------------------
-	/*
-	// IMPORTANT!! - since request to host_str is made from the context of the page in which the 
-	//               content is located, browser security imposes that the same protocol (http|https)
-	//               is used to communicate with host_str as with the origin-domain of the page
-	const origin_url_str = window.location.href;
-	const protocol_str   = origin_url_str.split('://')[0];
-	const host_str       = `${protocol_str}://gloflow.com`;
-	*/
-
-	//-------------------
-
 	console.log(images_extern_urls_lst)
 
 	const msg_map = {
@@ -337,7 +241,8 @@ function check_images_exist_in_system(p_page_images_infos_lst,
 					const img__creation_unix_time_f = p_e['creation_unix_time_f'];
 					const img__flows_names_lst      = p_e["flows_names_lst"];
 
-					existing_img__update_view(img__origin_url_str,
+					existing_img__update_view(img__id_str,
+						img__origin_url_str,
 						img__origin_page_url_str,
 						img__creation_unix_time_f,
 						img__flows_names_lst);
@@ -352,7 +257,8 @@ function check_images_exist_in_system(p_page_images_infos_lst,
 	});
 
 	//---------------------------------------------------
-	function existing_img__update_view(p_existing_img__origin_url_str,
+	function existing_img__update_view(p_img__system_id_str,
+		p_existing_img__origin_url_str,
 		p_existing_img__origin_page_url_str,
 		p_existing_img__creation_unix_time_f,
 		p_img__flows_names_lst) {
@@ -365,7 +271,8 @@ function check_images_exist_in_system(p_page_images_infos_lst,
 			.map((p_name_str)=>`<a class="flow_name" href="${p_gf_host_str}/images/flows/browser?fname=${p_name_str}" target="_blank">${p_name_str}</a>`)
 			.join(",");
 
-		$(existing_img_preview).parent().append(
+		const parent_element = $(existing_img_preview).parent();
+		$(parent_element).append(
 			`<div class="img_exists">
 				<div class="exists_msg">exists in flows: <span>${flows_links_str}</span></div>
 				<div class="origin_page_url"><span>origin page url</span>: <a href="${p_existing_img__origin_page_url_str}">${p_existing_img__origin_page_url_str}</div>
@@ -374,6 +281,19 @@ function check_images_exist_in_system(p_page_images_infos_lst,
 					<span class="time">${data_str}</span>
 				</div>
 			</div>`);
+
+		//-------------------
+		/*
+		IMPORTANT!! - mark the image as existing, in the "data" property of its container div.
+			this is read by other parts of the code, one which is the tagging UI control that checks if the image exists in the system,
+			before the tag can be added to it.
+		*/
+		$(parent_element).attr("data-img_exists_in_flow_bool", true);
+
+		// this is the GF_ID of the image
+		$(parent_element).attr("data-img_system_id_str", p_img__system_id_str);
+
+		//-------------------
 	}
 	//---------------------------------------------------
 }
@@ -381,10 +301,12 @@ function check_images_exist_in_system(p_page_images_infos_lst,
 //---------------------------------------------------
 // HUD
 //---------------------------------------------------
-function init_image_hud(p_image_id_str,
-	p_image_in_page_element,
+function init_image_hud(p_image_element_id_str,
+	p_image,
+	p_image_container_element,
 	p_image_info_map,
 	p_gf_container_element,
+	p_gf_host_str,
 	p_log_fun) {
 
 	const full_img_src_str = p_image_info_map['full_img_src_str'];
@@ -392,7 +314,7 @@ function init_image_hud(p_image_id_str,
 	const img_height = p_image_info_map['img_height'];
 	const img_width  = p_image_info_map['img_width'];
 	const hud        = $(
-		`<div id="${p_image_id_str}" class="hud">
+		`<div id="${p_image_element_id_str}" class="hud">
 			<div class="background"></div>
 			<div class="full_img_src">${full_img_src_str}</div>
 			<div id="actions">
@@ -411,7 +333,7 @@ function init_image_hud(p_image_id_str,
 		//-------------------
 		// ADD_TO_GIF_BTN
 		const gif_btn = $(
-			`<div id="${p_image_id_str}" class="add_to_gif_flow_btn" title="add gif to gif-flow">
+			`<div id="${p_image_element_id_str}" class="add_to_gif_flow_btn" title="add gif to gif-flow">
 				<div class="symbol">
 					<div class="icon">GIF</div>
 				</div>
@@ -450,7 +372,7 @@ function init_image_hud(p_image_id_str,
 	// ADD_TO_GIF_FLOW
 
 	/*
-	const add_to_gif_flow__selector_str = '#'+p_image_id_str+' .add_to_gif_flow_btn';
+	const add_to_gif_flow__selector_str = '#'+p_image_element_id_str+' .add_to_gif_flow_btn';
 	$(document).on('click', add_to_gif_flow__selector_str, ()=>{
 
 		const image_flows_names_lst = ["general", "gifs"];
@@ -475,69 +397,89 @@ function init_image_hud(p_image_id_str,
 
 	//------------
 	// ADD_TO_IMAGE_FLOW
-	const add_to_image_flow__selector_str = `#${p_image_id_str} .add_to_image_flow_btn`;
-	$(document).on("click", add_to_image_flow__selector_str, add_to_image_flow_btn_handler);
-	
-	//---------------------------------------------------
-	function add_to_image_flow_btn_handler(p_event) {
-		
+	const add_to_image_flow__selector_str = `#${p_image_element_id_str} .add_to_image_flow_btn`;
+	$(document).on("click", add_to_image_flow__selector_str, async (p_event)=>{
 		p_event.stopImmediatePropagation();
 
-		const flows_names_str 		= $("input.flow_name").val();
-		const final_flows_names_lst = []
+		await add_to_image_flow_btn_handler();
+	});
+	
+	var image_added_to_flow_bool = false;
 
-		if(flows_names_str == ""){
-			final_flows_names_lst.push("general");
-		}else{
-			const flows_names_lowercased_str = flows_names_str.toLowerCase()
-			const flows_names_lst 			 = flows_names_lowercased_str.split(" ");
-			const flows_names_filtered_lst   = flows_names_lst.filter(n => n) // removes empty strings from array
-			final_flows_names_lst.push(...flows_names_filtered_lst);
-		}
+	//---------------------------------------------------
+	async function add_to_image_flow_btn_handler() {
+		const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-		const gf_host_str = $(p_gf_container_element).find("input#gf_host").val();
+			const flows_names_str 		= $("input.flow_name").val();
+			const final_flows_names_lst = []
 
-		//-------------------
-		// DISABLE_EVENTS
-		// remove the event handler so that clicking on the add_to_flow button no longer functions,
-		// since the image is in the process of been added and shouldnt be add-able anymore.
-		$(document).off("click", add_to_image_flow__selector_str, add_to_image_flow_btn_handler);
+			if(flows_names_str == ""){
+				final_flows_names_lst.push("general");
+			}else{
+				const flows_names_lowercased_str = flows_names_str.toLowerCase()
+				const flows_names_lst 			 = flows_names_lowercased_str.split(" ");
+				const flows_names_filtered_lst   = flows_names_lst.filter(n => n) // removes empty strings from array
+				final_flows_names_lst.push(...flows_names_filtered_lst);
+			}
 
-		//-------------------
-		// DISPLAY_MESSAGE - to let the user know that adding the image to flow is in progress
-		$(add_to_image_flow__selector_str).append("<div class='adding_in_progress'>adding to flow in progress...</div>");
+			const gf_host_str = $(p_gf_container_element).find("input#gf_host").val();
 
-		//-------------------
+			//-------------------
+			// DISABLE_EVENTS
+			// remove the event handler so that clicking on the add_to_flow button no longer functions,
+			// since the image is in the process of been added and shouldnt be add-able anymore.
+			$(document).off("click", add_to_image_flow__selector_str, add_to_image_flow_btn_handler);
 
-		add_image_to_flow(full_img_src_str,
-			final_flows_names_lst,
-			gf_host_str,
+			//-------------------
+			// DISPLAY_MESSAGE - to let the user know that adding the image to flow is in progress
+			$(add_to_image_flow__selector_str).append("<div class='adding_in_progress'>adding to flow in progress...</div>");
 
-			()=>{
-				//-------------------
-				// IMPORTANT!! - adding the .btn_ok class activates the CSS animation
-				$(hud).find(".add_to_image_flow_btn .icon").addClass("btn_ok");
+			//-------------------
 
-				//-------------------
+			add_image_to_flow(full_img_src_str,
+				final_flows_names_lst,
+				gf_host_str,
 
-				$(hud).find(".add_to_image_flow_btn").css("pointer-events", "none");
+				//---------------------------------------------------
+				// on_complete_fun
+				(p_image_id_str)=>{
+					//-------------------
+					// IMPORTANT!! - adding the .btn_ok class activates the CSS animation
+					$(hud).find(".add_to_image_flow_btn .icon").addClass("btn_ok");
 
-				// REMOVE_MESSAGE
-				$(add_to_image_flow__selector_str).find(".adding_in_progress").remove();
-			},
-			(p_data_map)=>{
+					//-------------------
 
-				//-------------------
-				// ENABLE_EVENTS
-				// adding an image failed for some reason, so allow the user to attempt to add it again.
-				$(document).on("click", add_to_image_flow__selector_str, add_to_image_flow_btn_handler);
+					$(hud).find(".add_to_image_flow_btn").css("pointer-events", "none");
 
-				//-------------------
+					// REMOVE_MESSAGE
+					$(add_to_image_flow__selector_str).find(".adding_in_progress").remove();
 
-				// REMOVE_MESSAGE
-				$(add_to_image_flow__selector_str).find(".adding_in_progress").remove();
-			},
-			p_log_fun);
+					image_added_to_flow_bool = true;
+
+					p_resolve_fun(p_image_id_str);
+				},
+
+				//---------------------------------------------------
+				// on_error_fun
+				(p_data_map)=>{
+
+					//-------------------
+					// ENABLE_EVENTS
+					// adding an image failed for some reason, so allow the user to attempt to add it again.
+					$(document).on("click", add_to_image_flow__selector_str, add_to_image_flow_btn_handler);
+
+					//-------------------
+
+					// REMOVE_MESSAGE
+					$(add_to_image_flow__selector_str).find(".adding_in_progress").remove();
+
+					p_reject_fun();
+				},
+
+				//---------------------------------------------------
+				p_log_fun);
+		});
+		return p;
 	}
 
 	//---------------------------------------------------
@@ -545,7 +487,7 @@ function init_image_hud(p_image_id_str,
 
 	//------------
 	// ADD_TO_POST
-	const add_to_post__selector_str = `#${p_image_id_str} .add_to_post_btn`;
+	const add_to_post__selector_str = `#${p_image_element_id_str} .add_to_post_btn`;
 	$(document).on('click', add_to_post__selector_str, (p_event)=>{
 		p_event.stopImmediatePropagation();
 
@@ -556,10 +498,10 @@ function init_image_hud(p_image_id_str,
 	// GIF
 	if (full_img_src_str.split('.').pop() == 'gif') {
 
-		//$(p_image_in_page_element).find('.gf_gif').gifplayer();
+		//$(p_image_container_element).find('.gf_gif').gifplayer();
 
 		/*
-		const gif_element = $(p_image_in_page_element).find('img')[0];
+		const gif_element = $(p_image_container_element).find('img')[0];
 		console.log(gif_element)
 		var sup1 = new SuperGif({ gif: gif_element } );
 		sup1.load();
@@ -570,19 +512,83 @@ function init_image_hud(p_image_id_str,
 	//------------
 
 	var hud_attached_bool = false;
-	$(p_image_in_page_element).mouseenter((p_e)=>{
+	$(p_image_container_element).mouseenter((p_event)=>{
+		// p_event.stopImmediatePropagation();
 
 		if (!hud_attached_bool) {
-			$(p_image_in_page_element).append(hud);
+			$(p_image_container_element).append(hud);
 			hud_attached_bool = true;
 		}
 		else {
 			$(hud).css('visibility', 'visible');
 		}
 	});
-	$(p_image_in_page_element).mouseleave((p_e)=>{
+	$(p_image_container_element).mouseleave((p_event)=>{
+		// p_event.stopImmediatePropagation();
+
 		$(hud).css('visibility', 'hidden');
 	});
+
+	//------------
+	// TAGGER
+	/*
+	IMPORTANT!! - need to set the width of the tags container to be the same as the image to which
+		it is attached, so that as tags are added the tags container scales in height, not in width
+		beyond the width of the image to which it is attached.
+	*/
+	$(p_image_container_element).find(".tags")[0].style.width = `${p_image.width}px`;
+
+
+	init_tagging(p_image_container_element,
+		p_gf_container_element,
+
+		// tags_create_pre_fun
+		// called before a tag is about to be added to an image
+		async ()=>{
+			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+				var img_system_id_str;
+
+				/*
+				IMPORTANT!! - check that image parent contains the data property first, which indicates
+					if the image already exists in the system or not.
+					this is being checked here via the data property, because initially image_added_to_flow_bool
+					is only being set to true when user manually adds image to flow, not if the image is 
+					previously existing in the system.
+				*/
+				if (!image_added_to_flow_bool) {
+
+					if ($(p_image_container_element).attr("data-img_exists_in_flow_bool") !== undefined) {
+						const img_exists_in_flow_str = $(p_image_container_element).attr("data-img_exists_in_flow_bool");
+						if (img_exists_in_flow_str === "true") {
+
+							console.log("tags_create_pre_fun - image already exists in the system from past additions...")
+							image_added_to_flow_bool = true;
+
+
+							img_system_id_str = $(p_image_container_element).attr("data-img_system_id_str");
+							
+						}
+					}
+				}
+
+				// definitive check if the image exists in the flow, after all possible updates to image_added_to_flow_bool value
+				if (!image_added_to_flow_bool) {
+
+					console.log("tags_create_pre_fun - image definitelly doesnt exist in the system...");
+
+					// if image doesnt exist in the flow, first add it.
+					img_system_id_str = await add_to_image_flow_btn_handler();
+				}
+
+				p_resolve_fun(img_system_id_str);
+			});
+			return p;
+		},
+		p_gf_host_str,
+		p_log_fun);
+
+	//------------
 }
 
 //---------------------------------------------------
@@ -633,7 +639,8 @@ function add_image_to_flow(p_full_img_src_str,
 		switch(p_response_map["status_str"]) {
 			case "OK":
 
-				p_on_complete_fun();
+				const image_id_str = p_response_map["image_id_str"];
+				p_on_complete_fun(image_id_str);
 				break;
 
 			case "ERROR":
@@ -641,6 +648,95 @@ function add_image_to_flow(p_full_img_src_str,
 				break;
 		}
 	});
+}
+
+//---------------------------------------------------
+// TAGGING_UI
+
+function init_tagging(p_image_container_element,
+	p_gf_container,
+	p_tags_create_pre_fun,
+	p_gf_host_str,
+	p_log_fun) {
+	
+	var image_system_id_str;
+
+	const http_api_map = {
+		"gf_tagger": {
+			"add_tags_to_obj": (p_new_tags_lst,
+				p_obj_id_str,
+				p_obj_type_str,
+				p_tags_meta_map,
+				p_log_fun)=>{
+				const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+					
+
+					add_tags_to_image(p_new_tags_lst,
+						image_system_id_str,
+						p_gf_host_str,
+						p_log_fun);
+
+					p_resolve_fun({
+						"added_tags_lst": p_new_tags_lst,
+					});
+				});
+				return p;
+			}
+		}
+	};
+
+	const obj_type_str = "image";
+	const input_element_parent_selector_str = "#page_info_container";
+
+	gf_tagger__init_ui(obj_type_str,
+		p_image_container_element,
+		input_element_parent_selector_str,
+
+		//---------------------------------------------------
+		// tags_create_pre_fun
+		async (p_tags_lst)=>{
+			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+				// p_tags_create_pre_fun resolves the system_id of the item being tagged
+				image_system_id_str = await p_tags_create_pre_fun(p_tags_lst);
+
+				p_resolve_fun();
+			});
+			return p;
+		},
+
+		//---------------------------------------------------
+		// on_tags_created_fun
+		(p_tags_lst)=>{
+
+			console.log("added tags >>>>>>>>>>>", p_tags_lst)
+			console.log("DDDDDDDDDDDDDDDDDD", p_image_container_element, "ggg", $(p_image_container_element).find(".tags"))
+
+			p_tags_lst.forEach(t_str=>{
+
+				const tag_link_url_str = `${p_gf_host_str}/v1/tags/objects?tag=${t_str}&otype=image`
+
+				const element = $(`
+					<div class='bubble-in auto-width tag'>
+						<a href="${tag_link_url_str}" target="_blank" style="text-decoration: none;color: inherit;">
+							${t_str}
+						</a>
+					</div>`);
+				$(p_image_container_element).find(".tags").append(element);
+
+				// start the css animation
+				element.addClass('animate');
+
+				// IMPORTANT!! - reload the masonry layout with the newly added tag
+				$(p_gf_container).find('#collection_masonry').masonry();
+			})
+		},
+
+		//---------------------------------------------------
+		()=>{}, // on_tag_ui_add_fun
+		()=>{}, // on_tag_ui_remove_fun
+		http_api_map,
+		p_log_fun);
 }
 
 //---------------------------------------------------
@@ -658,4 +754,38 @@ function view_gif_info(p_full_img_src_str, p_host_str, p_log_fun) {
 		},
 		(p_error_data_map)=>{},
 		p_log_fun);
+}
+
+//---------------------------------------------------
+// ADD_TAGS_TO_IMAGE
+
+function add_tags_to_image(p_tags_lst,
+	p_image_system_id_str,
+	p_gf_host_str,
+	p_log_fun) {
+	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+		const image_origin_page_url_str = window.location.href;
+		const msg_map = {
+			"source_str": "content_script",
+			"type_str":   "add_tags_to_image",
+			"image_system_id_str": p_image_system_id_str,
+			"tags_lst":            p_tags_lst,
+			"gf_host_str":         p_gf_host_str
+		};
+
+		send_msg_to_bg_page(msg_map, (p_response_map)=>{
+
+			switch(p_response_map["status_str"]) {
+				case "OK":
+
+					p_resolve_fun();
+					break;
+
+				case "ERROR":
+					p_reject_fun(p_response_map["data_map"]);
+					break;
+			}
+		});
+	});
+	return p;
 }

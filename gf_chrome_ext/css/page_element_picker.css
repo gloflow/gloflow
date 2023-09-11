@@ -67,6 +67,12 @@
 	padding-top: 16px;
     padding-left: 25px;
 }
+#parameters input#gf_host {
+	background-color: white;
+	border: none;
+    outline: none;
+    box-shadow: none;
+}
 #collection{
 	top: 6px;
 	margin-bottom: 40px;
@@ -91,7 +97,10 @@
 	background-color: rgb(158, 158, 158);
 }
 
-#page_info_container .image_in_page img {
+#page_info_container .image_in_page .tags {
+	color: black;
+	position: relative;
+	z-index: 1;
 }
 
 /*
@@ -175,6 +184,8 @@
     top: 47vh;
     z-index: 1000;
 	width: 350px;
+
+		
 }
 .flow_name_field .flow_name_msg{
 	font-size: 18px;
@@ -200,6 +211,12 @@
 	font-size: 16px;
 	color: #696969;
 	margin-bottom: 4px;
+}
+.flow_name_field input {
+	background-color: white;
+	border: none;
+	outline: none;
+	box-shadow: none;
 }
 
 /*-----------------------------------------------------*/
@@ -308,6 +325,7 @@
 #page_info_container .image_in_page .hud #actions .add_to_post_btn .symbol .icon:hover {
 	background-color: white;
 }
+
 /*-----------------------------------------------------*/
 /* ACTION__ADD_GIF */
 #page_info_container .image_in_page .hud #actions .add_to_gif_flow_btn .symbol .icon {

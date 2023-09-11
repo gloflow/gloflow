@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 importScripts('utils/var.js');
 importScripts('utils/image_utils.js');
+importScripts('build/gf_tagger_http.js');
 
 main(log_fun);
 
@@ -195,12 +196,12 @@ function main(p_log_fun) {
 				//----------------
 				// GET SELECTED ASSETS
 
-				case 'get_selected_elements':
+				case "get_selected_elements":
 					get__selected_elements(ctx_map,
 						(p_selected_elements_map) => {
 							console.log(p_selected_elements_map);
 							const msg_map = {
-								'selected_elements_map': p_selected_elements_map
+								"selected_elements_map": p_selected_elements_map
 							};
 							p_send_response_fun(msg_map);
 						},
@@ -208,12 +209,6 @@ function main(p_log_fun) {
 					break;
 
 				//----------------
-				default:
-					p_log_fun('INFO', '--------------------------------------');
-					p_log_fun('INFO', 'background_page received unknonwn SELECTED_ASSETS_UI msg');
-					p_log_fun('INFO', p_request);
-					p_log_fun('INFO', `p_request['type_str']:${p_request['type_str']}`);
-					break;
 			}
 
 			
@@ -225,23 +220,23 @@ function main(p_log_fun) {
 				//----------------
 				// LOG_MSG
 				case 'log_msg':
-					console.log('POPUP:'+p_request.msg_str);
+					console.log("POPUP:${p_request.msg_str}");
 					break;
 
 				//----------------
 				// GET_SELECTED_ELEMENTS
-				case 'get__selected_elements':
+				case "get__selected_elements":
 					get__selected_elements(ctx_map,
 						(p_selected_elements_map)=>{
 							const msg_map = {
-								'selected_elements_map': p_selected_elements_map
+								"selected_elements_map": p_selected_elements_map
 							};
 							p_send_response_fun(msg_map);
 						},
 						p_log_fun);
 
 				//----------------
-				case 'clear__selected_elements':
+				case "clear__selected_elements":
 					clear__selected_elements(ctx_map,
 						()=>{
 							const msg_map = {};
@@ -250,28 +245,44 @@ function main(p_log_fun) {
 						p_log_fun);
 
 				//----------------
-				default:
-					p_log_fun('INFO', '--------------------------------------');
-					p_log_fun('INFO', 'background_page received unknonwn POPUP msg');
-					p_log_fun('INFO', p_request);
-					p_log_fun('INFO', `p_request['type_str']:${p_request['type_str']}`);
-					break;
 			}
 		}
 
 		//---------------------------------------------------
-		function handle_content_script_msg(p_msg_type_str, p_send_response_fun, p_request) {
+		async function handle_content_script_msg(p_msg_type_str, p_send_response_fun, p_request) {
 
 			switch (p_msg_type_str) {
+
+				//----------------
+				// ADD_TAGS_TO_IMAGE
+				case "add_tags_to_image":
+					{
+						const image_system_id_str = p_request["image_system_id_str"];
+						const tags_lst            = p_request["tags_lst"];
+						const gf_host_str         = p_request["gf_host_str"];
+
+						const object_type_str = "image";
+						const meta_map = {};
+						
+						const response_map = await gf_tagger__http_add_tags_to_obj(tags_lst,
+							image_system_id_str,
+							object_type_str,
+							meta_map,
+							gf_host_str,
+							p_log_fun);
+					}
+
+					break;
+
 				//----------------
 				// LOG_MSG
-				case 'log_msg':
+				case "log_msg":
 					console.log(`CONTENT_SCR:${p_request.msg_str}`);
 					break;
 
 				//----------------
 				// ADD_IMAGE_TO_FLOW
-				case 'add_image_to_flow':
+				case "add_image_to_flow":
 
 					const full_img_src_str          = p_request["full_img_src_str"];
 					const image_origin_page_url_str = p_request["image_origin_page_url_str"];
@@ -284,8 +295,11 @@ function main(p_log_fun) {
 						gf_host_str,
 
 						// p_on_complete_fun
-						()=>{
-							p_send_response_fun({"status_str": "OK"});
+						(p_image_id_str)=>{
+							p_send_response_fun({
+								"status_str":   "OK",
+								"image_id_str": p_image_id_str
+							});
 						},
 
 						// p_on_error_fun
@@ -301,6 +315,8 @@ function main(p_log_fun) {
 					break;
 				
 				//----------------
+				// CHECK_IMAGES_EXIST
+				
 				case "check_images_exist":
 					{
 						const images_extern_urls_lst = p_request["images_extern_urls_lst"];
@@ -316,6 +332,7 @@ function main(p_log_fun) {
 						check_images_exist_in_flow(images_extern_urls_lst,
 							flow_name_str,
 							gf_host_str,
+
 							// on_complete_fun
 							(p_existing_images_lst)=>{
 								p_send_response_fun({
@@ -336,14 +353,14 @@ function main(p_log_fun) {
 					
 				//----------------
 				// ADD_ELEMENT_TO_POST
-				case 'add_element_to_post':
-					var element_info_map = p_request['element_info_map'];
+				case "add_element_to_post":
+					var element_info_map = p_request["element_info_map"];
 
 					add_element_to_post(element_info_map,
 						ctx_map,
 						(p_status_str) => {
 							const msg_map = {
-								'status_str': p_status_str
+								"status_str": p_status_str
 							};
 							p_send_response_fun(msg_map);
 						},
@@ -352,23 +369,18 @@ function main(p_log_fun) {
 
 				//----------------
 				// REMOVE_ELEMENT_FROM_POST
-				case 'remove_element_from_post':
-					var element_info_map = p_request['element_info_map'];
+				case "remove_element_from_post":
+					var element_info_map = p_request["element_info_map"];
 					remove_element_from_post(element_info_map, ctx_map, p_log_fun);
 					break;
 
 				//----------------
-				default:
-					p_log_fun('INFO', '--------------------------------------');
-					p_log_fun('INFO', 'background_page received unknown CONTENT_SCRIPT msg');
-					p_log_fun('INFO', p_request);
-					p_log_fun('INFO', `p_request['type_str']:${p_request['type_str']}`);
-					break;
 			}
 		}
 
 		//---------------------------------------------------
 	}
+
 	//---------------------------------------------------
 }
 
@@ -397,7 +409,7 @@ function add_image_to_flow(p_full_img_src_str,
 			console.log(`image ID        - ${p_image_id_str}`)
 			console.log(`thumb small URL - ${p_thumbnail_small_relative_url_str}`)
 
-			p_on_complete_fun();
+			p_on_complete_fun(p_image_id_str);
 		},
 		(p_data_map)=>{p_on_error_fun(p_data_map)},
 		p_log_fun);
@@ -430,7 +442,6 @@ function check_images_exist_in_flow(p_images_extern_urls_lst,
 // POST_OPS
 //---------------------------------------------------
 function clear__selected_elements(p_ctx_map, p_on_complete_fun, p_log_fun) {
-	p_log_fun('FUN_ENTER', 'background_page.clear__selected_elements()');
 
 	// IMPORTANT!! - clear all currently selected elements
 	p_ctx_map['selected_elements_map'] = {}; 
@@ -438,7 +449,6 @@ function clear__selected_elements(p_ctx_map, p_on_complete_fun, p_log_fun) {
 
 //---------------------------------------------------
 function get__selected_elements(p_ctx_map, p_on_complete_fun, p_log_fun) {
-	p_log_fun('FUN_ENTER', 'background_page.get__selected_elements()');
 
 	//-------
 	const images_lst = [];

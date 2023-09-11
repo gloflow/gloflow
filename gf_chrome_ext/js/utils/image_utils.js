@@ -43,9 +43,9 @@ function http__check_imgs_exist_in_flow(p_images_extern_urls_lst,
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify(data_map)
-	  })
-	  .then(response => response.json())
-	  .then(p_data_map => {
+	})
+	.then(response => response.json())
+	.then(p_data_map => {
 		console.log('response received');
 		console.log(`status - ${p_data_map["status"]}`);
 	  
@@ -62,7 +62,7 @@ function http__check_imgs_exist_in_flow(p_images_extern_urls_lst,
 		else {
 			p_on_error_fun(p_data_map["data"]);
 		}
-	  })
+	})
 	.catch(error => {
 		console.log('An error occurred:', error);
 	});
