@@ -28,58 +28,60 @@ import (
 //--------------------------------------------------
 
 func renderObjectsWithTag(pTagStr string,
-	p_tmpl                   *template.Template,
-	p_subtemplates_names_lst []string,
-	p_page_index_int         int,
-	p_page_size_int          int,
-	p_resp                   io.Writer,
-	pRuntimeSys              *gf_core.RuntimeSys) *gf_core.GFerror {
+	pTemplate             *template.Template,
+	pSubtemplatesNamesLst []string,
+	pPageIndexInt         int,
+	pPageSizeInt          int,
+	pResp                 io.Writer,
+	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//-----------------------------
-	// FIX!! - SCALABILITY!! - get tag info on "image" and "post" types is a very long
-	//                         operation, and should be done in some more efficient way,
-	//                         as in with a mongodb aggregation pipeline
-
+	/*
+	FIX!! - SCALABILITY!! - get tag info on "image" and "post" types is a very long
+		operation, and should be done in some more efficient way,
+		as in with a mongodb aggregation pipeline.
+	*/
 	objectsInfosLst, gfErr := getObjectsWithTag(pTagStr,
 		"post", // p_objectTypeStr
-		p_page_index_int,
-		p_page_size_int,
+		pPageIndexInt,
+		pPageSizeInt,
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
 
 	postsWithTagLst := []map[string]interface{}{}
-	for _, p_object_info_map := range objectsInfosLst {
+	for _, objectInfoMap := range objectsInfosLst {
 
 		//----------------
-		var post_thumbnail_url_str string
-		thumb_small_str := p_object_info_map["thumbnail_small_url_str"].(string)
+		var postThumbnailURLstr string
+		thumbSmallStr := objectInfoMap["thumbnail_small_url_str"].(string)
 
-		if thumb_small_str == "" {
+		if thumbSmallStr == "" {
 			
 			// FIX!! - use some user-configurable value that is configured at startup
 			// IMPORTANT!! - some "thumbnail_small_url_str" are blank strings (""),
-			error_img_url_str     := "http://gloflow.com/images/d/gf_landing_page_logo.png"
-			post_thumbnail_url_str = error_img_url_str
+			errorImageURLstr := "https://gloflow.com/images/d/gf_landing_page_logo.png"
+
+			postThumbnailURLstr = errorImageURLstr
 		} else {
-			post_thumbnail_url_str = thumb_small_str
+			postThumbnailURLstr = thumbSmallStr
 		}
 
 		//----------------
-		post_info_map := map[string]interface{}{
-			"post_title_str":         p_object_info_map["title_str"].(string),
-			"post_tags_lst":          p_object_info_map["tags_lst"].([]string),
-			"post_url_str":           p_object_info_map["url_str"].(string),
-			"post_thumbnail_url_str": post_thumbnail_url_str,
+		postInfoMap := map[string]interface{}{
+			"post_title_str":         objectInfoMap["title_str"].(string),
+			"post_tags_lst":          objectInfoMap["tags_lst"].([]string),
+			"post_url_str":           objectInfoMap["url_str"].(string),
+			"post_thumbnail_url_str": postThumbnailURLstr,
 		}
 
-		postsWithTagLst = append(postsWithTagLst, post_info_map)
+		postsWithTagLst = append(postsWithTagLst, postInfoMap)
 	}
 	//-----------------------------
 
 
-	type tmpl_data struct {
+	type templatesData struct {
 		Tag_str                string
 		Posts_with_tag_num_int int64
 		Images_with_tag_int    int64
@@ -96,8 +98,8 @@ func renderObjectsWithTag(pTagStr string,
 	
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 
-	err := p_tmpl.Execute(p_resp,
-		tmpl_data{
+	err := pTemplate.Execute(pResp,
+		templatesData{
 			Tag_str:                pTagStr,
 			Posts_with_tag_num_int: postsWithTagCountInt,
 			Images_with_tag_int:    0, // FIX!! - image tagging is now implemented, and so counting images with tag occurance should be done ASAP. 
@@ -106,7 +108,7 @@ func renderObjectsWithTag(pTagStr string,
 			//-------------------------------------------------
 			// IS_SUBTEMPLATE_DEFINED
 			Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
-				for _, n := range p_subtemplates_names_lst {
+				for _, n := range pSubtemplatesNamesLst {
 					if n == p_subtemplate_name_str {
 						return true
 					}
@@ -121,7 +123,7 @@ func renderObjectsWithTag(pTagStr string,
 		gfErr := gf_core.ErrorCreate("failed to render the objects_with_tag template",
 			"template_render_error",
 			map[string]interface{}{"tag_str": pTagStr,},
-			err, "gf_tagger", pRuntimeSys)
+			err, "gf_tagger_lib", pRuntimeSys)
 		return gfErr
 	}
 

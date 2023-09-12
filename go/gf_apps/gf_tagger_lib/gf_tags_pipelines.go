@@ -110,16 +110,17 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 }
 
 //---------------------------------------------------
+// PIPELINE_GET_OBJECTS
 
-func tagsPipelineGetObjects(p_req *http.Request,
-	p_resp                   io.Writer,
-	p_tmpl                   *template.Template,
-	p_subtemplates_names_lst []string,
-	pRuntimeSys            *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+func tagsPipelineGetObjects(pReq *http.Request,
+	pResp                 io.Writer,
+	pTemplate             *template.Template,
+	pSubtemplatesNamesLst []string,
+	pRuntimeSys           *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	//----------------
 	// INPUT
-	qsMap := p_req.URL.Query()
+	qsMap := pReq.URL.Query()
 	var err error
 
 	// responseFormatStr - "json" | "html"
@@ -129,7 +130,7 @@ func tagsPipelineGetObjects(p_req *http.Request,
 		gfErr := gf_core.ErrorCreate("input 'otype' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"qs_map": qsMap,},
-			nil, "gf_tagger", pRuntimeSys)
+			nil, "gf_tagger_lib", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -137,38 +138,38 @@ func tagsPipelineGetObjects(p_req *http.Request,
 		gfErr := gf_core.ErrorCreate("input 'tag' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"qs_map": qsMap,},
-			nil, "gf_tagger", pRuntimeSys)
+			nil, "gf_tagger_lib", pRuntimeSys)
 		return nil, gfErr
 	}
 
 	// TrimSpace() - Returns the string without any leading and trailing whitespace.
-	object_type_str := strings.TrimSpace(qsMap["otype"][0])
-	tag_str         := strings.TrimSpace(qsMap["tag"][0])
+	objectTypeStr := strings.TrimSpace(qsMap["otype"][0])
+	tagStr         := strings.TrimSpace(qsMap["tag"][0])
 
 	// PAGE_INDEX
-	page_index_int := 0
-	if a_lst, ok := qsMap["pg_index"]; ok {
-		input_val          := a_lst[0]
-		page_index_int, err = strconv.Atoi(input_val) //user supplied value
+	pageIndexInt := 0
+	if aLst, ok := qsMap["pg_index"]; ok {
+		inputVal := aLst[0]
+		pageIndexInt, err = strconv.Atoi(inputVal) //user supplied value
 		if err != nil {
 			gfErr := gf_core.ErrorCreate("input pg_index not an integer",
 				"verify__value_not_integer_error",
-				map[string]interface{}{"input_val":input_val,},
-				nil, "gf_tagger", pRuntimeSys)
+				map[string]interface{}{"input_val": inputVal,},
+				nil, "gf_tagger_lib", pRuntimeSys)
 			return nil, gfErr
 		}
 	}
 
 	// PAGE_SIZE
-	page_size_int := 10
-	if a_lst, ok := qsMap["pg_size"]; ok {
-		input_val         := a_lst[0]
-		page_size_int, err = strconv.Atoi(input_val) //user supplied value
+	pageSizeInt := 10
+	if aLst, ok := qsMap["pg_size"]; ok {
+		inputVal := aLst[0]
+		pageSizeInt, err = strconv.Atoi(inputVal) //user supplied value
 		if err != nil {
 			gfErr := gf_core.ErrorCreate("input pg_size not an integer",
 				"verify__value_not_integer_error",
-				map[string]interface{}{"input_val":input_val,},
-				nil, "gf_tagger", pRuntimeSys)
+				map[string]interface{}{"input_val": inputVal,},
+				nil, "gf_tagger_lib", pRuntimeSys)
 			return nil, gfErr
 		}
 	}
@@ -180,13 +181,13 @@ func tagsPipelineGetObjects(p_req *http.Request,
 		// HTML RENDERING
 		case "html":
 			pRuntimeSys.LogNewFun("DEBUG", "HTML RESPONSE >>", nil)
-
-			gfErr := renderObjectsWithTag(tag_str,
-				p_tmpl,
-				p_subtemplates_names_lst,
-				page_index_int,
-				page_size_int,
-				p_resp,
+			
+			gfErr := renderObjectsWithTag(tagStr,
+				pTemplate,
+				pSubtemplatesNamesLst,
+				pageIndexInt,
+				pageSizeInt,
+				pResp,
 				pRuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr
@@ -197,18 +198,19 @@ func tagsPipelineGetObjects(p_req *http.Request,
 		case "json":
 			pRuntimeSys.LogNewFun("DEBUG", "JSON RESPONSE >>", nil)
 			
-			objectsWithTagLst, gfErr := getObjectsWithTag(tag_str,
-				object_type_str,
-				page_index_int,
-				page_size_int,
+			objectsWithTagLst, gfErr := getObjectsWithTag(tagStr,
+				objectTypeStr,
+				pageIndexInt,
+				pageSizeInt,
 				pRuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr
 			}
 
-			// FIX!! - objectsWithTagLst - have to be exported for external use, not just serialized
-			//                             from their internal representation
-
+			/*
+			FIX!! - objectsWithTagLst - have to be exported for external use, not just serialized
+				from their internal representation
+			*/
 			return objectsWithTagLst, nil
 
 		//------------------

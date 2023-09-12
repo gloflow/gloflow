@@ -21,7 +21,6 @@ package gf_tagger_lib
 
 import (
 	"net/http"
-	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
@@ -36,30 +35,17 @@ func InitService(pAuthSubsystemTypeStr string,
 	pTemplatesPathsMap map[string]string,
 	pImagesJobsMngr    gf_images_jobs_core.JobsMngr,
 	pRuntimeSys        *gf_core.RuntimeSys) {
-	
 
-	ctx := context.Background()
-
-	// DB
+	//------------------------
+	// DB_SQL_TABLES
 	gfErr := dbSQLcreateTables(pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
 
 	//------------------------
-	// DB_INDEXES
+	// DB_MONGO_INDEXES
 	gfErr = DBmongoIndexInit(pRuntimeSys)
-	if gfErr != nil {
-		panic(gfErr.Error)
-	}
-
-	//------------------------
-	// CREATE_DISCOVERED_TAGS
-	/*
-	TEMPORARY!! - once all tags are properly migrated from mongo to SQL,
-		this should be removed.
-	*/
-	gfErr = pipelineCreateDiscoveredTags(ctx, pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
