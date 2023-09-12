@@ -21,6 +21,7 @@ package gf_address
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -135,7 +136,9 @@ func DBmongoAddTag(pTagsLst []string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	_, err := pRuntimeSys.Mongo_db.Collection("gf_home_viz").UpdateMany(pCtx, bson.M{
+	collNameStr := "gf_web3_addresses"
+
+	_, err := pRuntimeSys.Mongo_db.Collection(collNameStr).UpdateMany(pCtx, bson.M{
 			"address_str":    pAddressStr,
 			"chain_name_str": pChainStr,
 			"deleted_bool":   false,
@@ -160,4 +163,70 @@ func DBmongoAddTag(pTagsLst []string,
 	}
 
 	return nil
+}
+
+//-------------------------------------------------
+// GET_ALL_TAGS
+
+func DBmongoGetAllTags(pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+	
+	collNameStr := "gf_web3_addresses"
+
+	pipeline := mongo.Pipeline{
+
+		// filter out objects that have tags_lst set to null or of length 0
+		{
+			{"$match", bson.D{
+				{"tags_lst", bson.M{"$exists": true}},
+				{"tags_lst", bson.M{"$ne": []string{}}},
+			}},
+		},
+		{
+			{"$project", bson.D{
+				{"t",        "address"},
+				{"id_str",   true},
+				{"tags_lst", true},
+
+				/*
+				if the object doesnt container the owner_user_id_str property or its set to null,
+				set the user to be "anon". otherwise set it to the owner_user_id_str value
+				and rename the field to user_id_str.
+				*/
+				{"user_id_str", bson.M{"$ifNull": []interface{}{"$owner_user_id_str", "anon"}}},
+			}},
+		},
+		{
+			{"$unwind", "$tags_lst"},
+		},
+		{
+			{"$project", bson.D{
+				{"tag_str",  "$tags_lst"},  // rename tags_lst to tag_str
+				{"t",        true},
+				{"id_str",   true},
+				{"user_id_str", true},
+			}},
+		},
+	}
+	cursor, err := pRuntimeSys.Mongo_db.Collection(collNameStr).Aggregate(pCtx, pipeline)
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to run DB aggregation to get all address tags",
+			"mongodb_aggregation_error",
+			map[string]interface{}{},
+			err, "gf_tagger_lib", pRuntimeSys)
+		return nil, gfErr
+	}
+	defer cursor.Close(pCtx)
+	
+	allTagsLst := []map[string]interface{}{}
+	err = cursor.All(pCtx, &allTagsLst)
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to get mongodb results of query to get all address tags",
+			"mongodb_cursor_all",
+			map[string]interface{}{},
+			err, "gf_tagger_lib", pRuntimeSys)
+		return nil, gfErr
+	}
+	
+	return allTagsLst, nil
 }

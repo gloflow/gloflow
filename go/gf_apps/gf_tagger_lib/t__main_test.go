@@ -46,6 +46,58 @@ func TestMain(m *testing.M) {
 
 //---------------------------------------------------
 
+func TestCreateDiscoveredTags(pTest *testing.T) {
+
+	ctx := context.Background()
+
+	serviceNameStr := "gf_images_flows_test"
+	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	sqlHostStr   := cliArgsMap["sql_host_str"].(string)
+	runtimeSys   := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
+	
+	userID := gf_core.GF_ID("test")
+
+	//--------------------
+	// INIT
+	
+	gfErr := dbSQLcreateTables(runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+	testImage := createTestImages(userID, pTest, ctx, runtimeSys)
+
+	//--------------------
+	// ADD_TAGS_TO_OBJECT
+
+	tagsStr := "tag1 tag2 tag3"
+	objectTypeStr := "image"
+
+
+	metaMap := map[string]interface{}{}
+
+	gfErr = addTagsToObject(tagsStr,
+		objectTypeStr,
+		string(testImage.IDstr), // objectExternIDstr,
+		metaMap,
+		userID,
+		ctx,
+		runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	//--------------------
+
+
+
+	gfErr = pipelineCreateDiscoveredTags(ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+}
+
+//---------------------------------------------------
+
 func TestCreate(pTest *testing.T) {
 
 	ctx := context.Background()

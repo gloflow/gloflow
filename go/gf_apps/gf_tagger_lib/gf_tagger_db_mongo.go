@@ -22,15 +22,102 @@ package gf_tagger_lib
 import (
 	"fmt"
 	"context"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_address"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 	// "github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
 // VAR
+//---------------------------------------------------
+// GET_ALL_OBJECTS_TAGS
+
+/*
+very performance heavy function, fetches all tags in the system into memory.
+really only meant to be used for small datasets of tags, and currently only for temporary
+migrations. not practical for large numbers of objects with large numbers of tags.
+*/
+func dbMongoGetAllObjectsTags(pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+
+	pipeline := mongo.Pipeline{
+		{
+			{"$match", bson.D{
+				{"t", bson.M{"$in": []string{"img", "post"}}},
+			}},
+		},
+
+		// filter out objects that have tags_lst set to null or of length 0
+		{
+			{"$match", bson.D{
+				{"tags_lst", bson.M{"$exists": true}},
+				{"tags_lst", bson.M{"$ne": []string{}}},
+			}},
+		},
+		{
+			{"$project", bson.D{
+				{"t",        true},
+				{"id_str",   true},
+				{"tags_lst", true},
+
+				/*
+				if the object doesnt container the user_id_str property or its set to null, set the
+				user to be "anon". otherwise set it to the user_id_str value.
+				*/
+				{"user_id_str", bson.M{"$ifNull": []interface{}{"$user_id_str", "anon"}}},
+			}},
+		},
+		{
+			{"$unwind", "$tags_lst"},
+		},
+		{
+			{"$project", bson.D{
+				{"tag_str",  "$tags_lst"},  // rename tags_lst to tag_str
+				{"t",        true},
+				{"id_str",   true},
+				{"user_id_str", true},
+			}},
+		},
+	}
+	cursor, err := pRuntimeSys.Mongo_coll.Aggregate(pCtx, pipeline)
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to run DB aggregation to get all image tags",
+			"mongodb_aggregation_error",
+			map[string]interface{}{},
+			err, "gf_tagger_lib", pRuntimeSys)
+		return nil, gfErr
+	}
+	defer cursor.Close(pCtx)
+	
+	allTagsLst := []map[string]interface{}{}
+	err = cursor.All(pCtx, &allTagsLst)
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to get mongodb results of query to get all image tags",
+			"mongodb_cursor_all",
+			map[string]interface{}{},
+			err, "gf_images_flows", pRuntimeSys)
+		return nil, gfErr
+	}
+	
+	//--------------------
+	// WEB3_ADDRESSES
+
+	allAddressesTagsLst, gfErr := gf_address.DBmongoGetAllTags(pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	allTagsLst = append(allTagsLst, allAddressesTagsLst...)
+
+	//--------------------
+
+	return allTagsLst, nil
+}
+
 //---------------------------------------------------
 
 func dbMongoGetObjectsWithTagCount(pTagStr string,
@@ -59,6 +146,70 @@ func dbMongoGetObjectsWithTagCount(pTagStr string,
 			return countInt, nil
 	}
 	return 0, nil
+}
+
+//---------------------------------------------------
+// IMAGES
+//---------------------------------------------------
+
+func dbMongoAddTagsToImage(pImageIDstr string,
+	pTagsLst    []string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	
+	//--------------------
+	// INITIALIZE_TAGS_ARRAY
+	_, err := pRuntimeSys.Mongo_coll.UpdateMany(
+		pCtx,
+		bson.M{
+			"t":      "img",
+			"id_str": pImageIDstr,
+			"$or": []bson.M{
+				{"tags_lst": nil},
+				{"tags_lst": bson.M{"$not": bson.M{"$type": 4}}},
+			},
+		},
+		bson.M{"$set": bson.M{"tags_lst": []string{}}})
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed initialize tags_lst property of image in the DB",
+			"mongodb_update_error",
+			map[string]interface{}{
+				"image_id_str": pImageIDstr,
+				"tags_lst":     pTagsLst,
+			},
+			err, "gf_tagger_lib", pRuntimeSys)
+		return gfErr
+	}
+
+	//--------------------
+	// PUSH_TAGS
+	updateQuery := bson.M{"$push": bson.M{
+			"tags_lst": bson.M{
+
+				// extend the tags_lst DB list with elements from pTagsLst
+				"$each": pTagsLst,
+			},
+		},
+	}
+
+	_, err = pRuntimeSys.Mongo_coll.UpdateMany(pCtx, bson.M{
+			"t":      "img",
+			"id_str": pImageIDstr,
+		},
+		updateQuery)
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to update a gf_image with new tags in DB",
+			"mongodb_update_error",
+			map[string]interface{}{
+				"image_id_str": pImageIDstr,
+				"tags_lst":     pTagsLst,
+			},
+			err, "gf_tagger_lib", pRuntimeSys)
+		return gfErr
+	}
+
+	//--------------------
+	return nil
 }
 
 //---------------------------------------------------
@@ -203,6 +354,8 @@ func dbMongoGetPostsWithTag(pTagStr string,
 }
 
 //---------------------------------------------------
+// ADD_TAGS_TO_POST
+// FIX!! - add tag to post by its ID, not by its Title!
 
 func dbMongoAddTagsToPost(pPostTitleStr string,
 	pTagsLst    []string,
@@ -225,69 +378,5 @@ func dbMongoAddTagsToPost(pPostTitleStr string,
 			err, "gf_tagger_lib", pRuntimeSys)
 		return gfErr
 	}
-	return nil
-}
-
-//---------------------------------------------------
-// IMAGES
-//---------------------------------------------------
-
-func dbMongoAddTagsToImage(pImageIDstr string,
-	pTagsLst    []string,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	
-	//--------------------
-	// INITIALIZE_TAGS_ARRAY
-	_, err := pRuntimeSys.Mongo_coll.UpdateMany(
-		pCtx,
-		bson.M{
-			"t":      "img",
-			"id_str": pImageIDstr,
-			"$or": []bson.M{
-				{"tags_lst": nil},
-				{"tags_lst": bson.M{"$not": bson.M{"$type": 4}}},
-			},
-		},
-		bson.M{"$set": bson.M{"tags_lst": []string{}}})
-	if err != nil {
-		gfErr := gf_core.MongoHandleError("failed initialize tags_lst property of image in the DB",
-			"mongodb_update_error",
-			map[string]interface{}{
-				"image_id_str": pImageIDstr,
-				"tags_lst":     pTagsLst,
-			},
-			err, "gf_tagger_lib", pRuntimeSys)
-		return gfErr
-	}
-
-	//--------------------
-	// PUSH_TAGS
-	updateQuery := bson.M{"$push": bson.M{
-			"tags_lst": bson.M{
-
-				// extend the tags_lst DB list with elements from pTagsLst
-				"$each": pTagsLst,
-			},
-		},
-	}
-
-	_, err = pRuntimeSys.Mongo_coll.UpdateMany(pCtx, bson.M{
-			"t":      "img",
-			"id_str": pImageIDstr,
-		},
-		updateQuery)
-	if err != nil {
-		gfErr := gf_core.MongoHandleError("failed to update a gf_image with new tags in DB",
-			"mongodb_update_error",
-			map[string]interface{}{
-				"image_id_str": pImageIDstr,
-				"tags_lst":     pTagsLst,
-			},
-			err, "gf_tagger_lib", pRuntimeSys)
-		return gfErr
-	}
-
-	//--------------------
 	return nil
 }

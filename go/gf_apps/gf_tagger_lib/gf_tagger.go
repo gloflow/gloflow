@@ -31,6 +31,125 @@ import (
 )
 
 //---------------------------------------------------
+/*
+TEMPORARY - this is mainly needed while tags are held as a property of images
+	and discovered there in aggregate to get the total list.
+	going forward tags are held in the SQL db and this function
+	migrates/creates them in SQL if they dont already exist.
+
+	in the future this function wont be necessary, unless there's some
+	need for copying of tags from DB to DB.
+*/
+
+func pipelineCreateDiscoveredTags(pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	
+	// get all objects tags from the current Mongodb
+	allTagsLst, gfErr := dbMongoGetAllObjectsTags(pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//----------------------
+
+	// SQL
+	for _, tagInfoMap := range allTagsLst {
+
+		tagNameStr    := tagInfoMap["tag_str"].(string)
+		objectID      := gf_core.GF_ID(tagInfoMap["id_str"].(string))
+		objectTypeStr := tagInfoMap["t"].(string)
+		userID        := gf_core.GF_ID(tagInfoMap["user_id_str"].(string))
+
+		pRuntimeSys.LogNewFun("DEBUG", "creating tag if missing...",
+			map[string]interface{}{
+				"tag_name":    tagNameStr,
+				"object_type": objectTypeStr,
+				"user_id":     userID,
+			})
+
+		gfErr := CreateIfMissing([]string{tagNameStr},
+			objectID,
+			objectTypeStr,
+			userID,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+	}
+
+	return nil
+}
+
+//-------------------------------------------------
+// CREATE_IF_MISSING
+
+func CreateIfMissing(pTagsLst []string,
+	pObjID         gf_core.GF_ID,
+	pObjectTypeStr string,
+	pUserID        gf_core.GF_ID,
+	pCtx           context.Context,
+	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	for _, tagStr := range pTagsLst {
+
+		existsBool, gfErr := DBsqlCheckTagExists(tagStr, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+
+		// create tag if it doesnt exist
+		if !existsBool {
+
+			//----------------------
+			// CREATE_TAG
+			gfErr := Create(tagStr,
+				pObjID,
+				pObjectTypeStr,
+				pUserID,
+				pCtx,
+				pRuntimeSys)
+
+			if gfErr != nil {
+				return gfErr
+			}
+
+			//----------------------
+		}
+	}
+	return nil
+}
+
+//---------------------------------------------------
+
+func Create(pTagStr string,
+	pObjID         gf_core.GF_ID,
+	pObjectTypeStr string,
+	pUserID        gf_core.GF_ID,
+	pCtx           context.Context,
+	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	tagID := generateTagID()
+
+	// ADD!! - provide a mechanism for users to specify that a tag is private
+	publicBool := true
+
+	// DB
+	gfErr := dbSQLcreateTag(tagID,
+		pTagStr,
+		pUserID,
+		pObjID,
+		pObjectTypeStr,
+		publicBool,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+	return nil
+}
+
+//---------------------------------------------------
 // pTagsStr           - "," separated list of strings
 // pObjectExternIDstr - this is an external identifier for an object, not necessarily its internal. 
 //                      for posts - their p_object_extern_id_str is their Title, but internally they have
@@ -56,13 +175,13 @@ func addTagsToObject(pTagsStr string,
 				"tags_str":        pTagsStr,
 				"object_type_str": pObjectTypeStr,
 			},
-			nil, "gf_tagger", pRuntimeSys)
+			nil, "gf_tagger_lib", pRuntimeSys)
 		return gfErr
 	}
 	
 	tagsLst, gfErr := parseTags(pTagsStr,
-		500, // pMaxTagsBulkSizeInt        int, // 500
-		20,  // pMaxTagCharactersNumberInt int, // 20	
+		500, // pMaxTagsBulkSizeInt
+		20,  // pMaxTagCharactersNumberInt
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
@@ -81,18 +200,12 @@ func addTagsToObject(pTagsStr string,
 
 	for _, tagStr := range tagsLst {
 		
-		tagID := generateTagID()
 		objID := gf_core.GF_ID(pObjectExternIDstr)
 
-		// ADD!! - provide a mechanism for users to specify that a tag is private
-		publicBool := true
-
-		gfErr = dbSQLcreateTag(tagID,
-			tagStr,
-			pUserID,
+		gfErr = Create(tagStr,
 			objID,
 			pObjectTypeStr,
-			publicBool,
+			pUserID,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -101,13 +214,17 @@ func addTagsToObject(pTagsStr string,
 	}
 
 	//---------------
-	// POST
-	
 	switch pObjectTypeStr {
 		//---------------
 		// POST
 		case "post":
-			postTitleStr      := pObjectExternIDstr
+			
+			//---------------
+			// FIX!! - post ID should not be its Title!!!!!
+			postTitleStr := pObjectExternIDstr
+
+			//---------------
+
 			existsBool, gfErr := gf_publisher_core.DBmongoCheckPostExists(postTitleStr,
 				pRuntimeSys)
 			if gfErr != nil {
@@ -129,7 +246,7 @@ func addTagsToObject(pTagsStr string,
 						"post_title_str": postTitleStr,
 						"tags_lst":       tagsLst,
 					},
-					nil, "gf_tagger", pRuntimeSys)
+					nil, "gf_tagger_lib", pRuntimeSys)
 				return gfErr
 			}
 
@@ -221,7 +338,7 @@ func getObjectsWithTag(pTagStr string,
 				"tag_str":         pTagStr,
 				"object_type_str": pObjectTypeStr,
 			},
-			nil, "gf_tagger", pRuntimeSys)
+			nil, "gf_tagger_lib", pRuntimeSys)
 		return nil, gfErr
 	}
 	

@@ -79,12 +79,12 @@ func Init(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 //-------------------------------------------------
 /*
 TEMPORARY - this is mainly needed while flows are held as a property of images
-        	and discovered there in aggregate to get the total list.
-			going forward flows are held in the SQL db and this function
-			migrates/creates them in SQL if they dont already exist.
+	and discovered there in aggregate to get the total list.
+	going forward flows are held in the SQL db and this function
+	migrates/creates them in SQL if they dont already exist.
 
-			in the future this function wont be necessary, unless there's some
-			need for copying of flows from DB to DB.
+	in the future this function wont be necessary, unless there's some
+	need for copying of flows from DB to DB.
 */
 
 // consistency function that discovers all flows listed in images
@@ -124,13 +124,12 @@ func pipelineCreateDiscoveredFlows(pCtx context.Context,
 }
 
 //-------------------------------------------------
+// CREATE_IF_MISSING
 
 func CreateIfMissing(pFlowsNamesLst []string,
 	pUserID     gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-
-
 
 	for _, flowNameStr := range pFlowsNamesLst {
 
