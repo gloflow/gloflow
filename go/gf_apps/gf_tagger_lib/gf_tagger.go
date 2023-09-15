@@ -24,6 +24,7 @@ import (
 	"strings"
 	"context"
 	"time"
+	"encoding/json"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
@@ -300,18 +301,20 @@ func addTagsToObject(pTagsStr string,
 
 //---------------------------------------------------
 
-func getObjectsWithTags(pTagsLst []string,
+func exportObjectsWithTags(pTagsLst []string,
 	pObjectTypeStr string,
 	pPageIndexInt  int,
 	pPageSizeInt   int,
+	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) (map[string][]map[string]interface{}, *gf_core.GFerror) {
 		
 	objectsWithTagsMap := map[string][]map[string]interface{}{}
 	for _, tagStr := range pTagsLst {
-		objectsWithTagLst, gfErr := getObjectsWithTag(tagStr,
+		objectsWithTagLst, gfErr := exportObjectsWithTag(tagStr,
 			pObjectTypeStr,
 			pPageIndexInt,
 			pPageSizeInt,
+			pCtx,
 			pRuntimeSys)
 
 		if gfErr != nil {
@@ -324,15 +327,17 @@ func getObjectsWithTags(pTagsLst []string,
 
 //---------------------------------------------------
 
-func getObjectsWithTag(pTagStr string,
+func exportObjectsWithTag(pTagStr string,
 	pObjectTypeStr string,
 	pPageIndexInt  int,
 	pPageSizeInt   int,
+	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
-	// ADD!! - add support for tagging "image" pObjectTypeStr's
-	if pObjectTypeStr != "post" {
-		gfErr := gf_core.ErrorCreate(fmt.Sprintf("trying to get objects with a tag (%s) for objects type thats not supported - %s", pTagStr, pObjectTypeStr),
+	if pObjectTypeStr != "post" && pObjectTypeStr != "image" {
+		gfErr := gf_core.ErrorCreate(fmt.Sprintf("trying to get objects with a tag (%s) for objects type thats not supported - %s",
+			pTagStr,
+			pObjectTypeStr),
 			"verify__invalid_value_error",
 			map[string]interface{}{
 				"tag_str":         pTagStr,
@@ -342,28 +347,91 @@ func getObjectsWithTag(pTagStr string,
 		return nil, gfErr
 	}
 	
-	postsWithTagLst, gfErr := dbMongoGetPostsWithTag(pTagStr,
-		pPageIndexInt,
-		pPageSizeInt,
-		pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
+	var objectsInfosLst []map[string]interface{}
 
-	// package up info of each post that was found with tag 
-	minPostsInfosLst := []map[string]interface{}{}
-	for _, post := range postsWithTagLst {
-		postInfoMap := map[string]interface{}{
-			"title_str":               post.TitleStr,
-			"tags_lst":                post.TagsLst,
-			"url_str":                 fmt.Sprintf("/posts/%s", post.TitleStr),
-			"object_type_str":         pObjectTypeStr,
-			"thumbnail_small_url_str": post.ThumbnailURLstr,
+	switch pObjectTypeStr {
+	
+	//---------------------
+	// IMAGES
+	case "image":
+
+		var imagesLst []*gf_images_core.GFimage
+		gfErr := dbMongoGetObjectsWithTag(pTagStr,
+			"img",
+			&imagesLst,
+			pPageIndexInt,
+			pPageSizeInt,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
 		}
-		minPostsInfosLst = append(minPostsInfosLst, postInfoMap)
+
+		// plugin
+		metadataFilterDefinedBool := false
+		if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback != nil {
+			metadataFilterDefinedBool = true
+		}
+		
+		exportedImagesInfosLst := []map[string]interface{}{}
+		for _, image := range imagesLst {
+
+			// META
+			var filteredMetaJSONstr string
+			if metadataFilterDefinedBool {
+				filteredMetaMap := pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback(image.MetaMap)
+				metaJSONbytesLst, _ := json.Marshal(filteredMetaMap)
+				filteredMetaJSONstr = string(metaJSONbytesLst)
+			}
+
+			imageInfoMap := map[string]interface{}{
+				"id_str": image.IDstr,            
+				"creation_unix_time_str":    image.Creation_unix_time_f,
+				"owner_user_name_str":       image.UserID,
+				"image_origin_page_url_str": image.Origin_page_url_str,
+				"thumbnail_medium_url_str":  image.Thumbnail_medium_url_str,
+				"thumbnail_large_url_str":   image.Thumbnail_large_url_str,
+				"format_str":                image.Format_str,
+				"tags_lst":                  image.TagsLst,
+				"meta_json_str":             filteredMetaJSONstr,    
+			}
+			exportedImagesInfosLst = append(exportedImagesInfosLst, imageInfoMap)
+		}
+
+		objectsInfosLst = exportedImagesInfosLst
+	
+	//---------------------
+	// POSTS
+	case "post":
+
+		var postsLst []*gf_publisher_core.GFpost
+		gfErr := dbMongoGetObjectsWithTag(pTagStr,
+			"post",
+			&postsLst,
+			pPageIndexInt,
+			pPageSizeInt,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+
+		exportedPostsInfosLst := []map[string]interface{}{}
+		for _, post := range postsLst {
+			postInfoMap := map[string]interface{}{
+				"title_str":               post.TitleStr,
+				"tags_lst":                post.TagsLst,
+				"url_str":                 fmt.Sprintf("/posts/%s", post.TitleStr),
+				"thumbnail_small_url_str": post.ThumbnailURLstr,
+			}
+			exportedPostsInfosLst = append(exportedPostsInfosLst, postInfoMap)
+		}
+
+		objectsInfosLst = exportedPostsInfosLst
 	}
 
-	objectsInfosLst := minPostsInfosLst
+	//---------------------
+
 	return objectsInfosLst, nil
 }
 

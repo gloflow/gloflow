@@ -50,7 +50,7 @@ func TestCreateDiscoveredTags(pTest *testing.T) {
 
 	ctx := context.Background()
 
-	serviceNameStr := "gf_images_flows_test"
+	serviceNameStr := "gf_tagger_test"
 	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	sqlHostStr   := cliArgsMap["sql_host_str"].(string)
 	runtimeSys   := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
@@ -71,7 +71,6 @@ func TestCreateDiscoveredTags(pTest *testing.T) {
 
 	tagsStr := "tag1 tag2 tag3"
 	objectTypeStr := "image"
-
 
 	metaMap := map[string]interface{}{}
 
@@ -139,7 +138,7 @@ func TestCreate(pTest *testing.T) {
 	}
 
 	//--------------------
-
+	// DB_GET_IMAGE
 
 	image, gfErr := gf_images_core.DBmongoGetImage(testImage.IDstr, ctx, runtimeSys)
 	if gfErr != nil {
@@ -147,9 +146,30 @@ func TestCreate(pTest *testing.T) {
 	}
 
 	spew.Dump(image)
-
 	assert.True(pTest, len(image.TagsLst) == 3, "image should have 3 tags added to it")
 
+	//--------------------
+	// DB_GET_OBJECTS_WITH_TAG
+
+	pageIndexInt := 0
+	pageSizeInt := 5
+
+	imagesLst := []*gf_images_core.GFimage{}
+	gfErr = dbMongoGetObjectsWithTag("tag1",
+		"img",
+		&imagesLst,
+		pageIndexInt,
+		pageSizeInt,
+		ctx,
+		runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	spew.Dump(imagesLst)
+	assert.True(pTest, len(imagesLst) == 1, "there should be 1 image with tag1 tag in the DB")
+
+	//--------------------
 }
 
 //---------------------------------------------------

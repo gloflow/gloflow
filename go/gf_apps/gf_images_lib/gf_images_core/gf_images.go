@@ -31,7 +31,6 @@ import (
 //---------------------------------------------------
 
 type GFimage struct {
-
 	Id                   primitive.ObjectID `json:"-"               bson:"_id,omitempty"`
 	IDstr                GFimageID     `json:"id_str"               bson:"id_str"`
 	T_str                string        `json:"-"                    bson:"t"` // "img"
@@ -44,20 +43,24 @@ type GFimage struct {
 	FlowsNamesLst        []string      `json:"flows_names_lst"      bson:"flows_names_lst"` // image can bellong to multiple flows
 
 	//---------------
-	// RESOLVED_SOURCE_URL
-	// IMPORTANT!! - when the image comes from an external url (as oppose to it being 
-	//               created internally, or uploaded directly to the system).
-	//               this is different from Origin_page_url_str in that the page_url is the url 
-	//               of the page in which the image is found, whereas this origin_url is the url
-	//               of the file on some file server from which the image is served
+	/*
+	RESOLVED_SOURCE_URL
+	IMPORTANT!! - when the image comes from an external url (as oppose to it being 
+		created internally, or uploaded directly to the system).
+		this is different from Origin_page_url_str in that the page_url is the url 
+		of the page in which the image is found, whereas this origin_url is the url
+		of the file on some file server from which the image is served
+	*/
 	Origin_url_str string `json:"origin_url_str" bson:"origin_url_str"`
 
 	// if the image is extracted from a page, this holds the page_url
 	Origin_page_url_str string `json:"origin_page_url_str,omitempty" bson:"origin_page_url_str,omitempty"`
 
-	// DEPRECATED!! - is this used? images are stored in S3, and accessible via URL.
-	// actual path on the OS filesystem, of the fullsized image gotten from origin_url_str durring
-	// processing (download/transformation/s3_upload).
+	/*
+	DEPRECATED!! - is this used? images are stored in S3, and accessible via URL.
+		actual path on the OS filesystem, of the fullsized image gotten from origin_url_str durring
+		processing (download/transformation/s3_upload).
+	*/
 	Original_file_internal_uri_str string `json:"original_file_internal_uri_str,omitempty" bson:"original_file_internal_uri_str,omitempty"`
 
 	//---------------
@@ -67,14 +70,14 @@ type GFimage struct {
 	Thumbnail_large_url_str  string `json:"thumbnail_large_url_str"  bson:"thumbnail_large_url_str"`
 	
 	//---------------
-	Format_str string `json:"format_str" bson:"format_str"` // "jpeg"|"png"|"gif"
+	Format_str string `json:"format_str" bson:"format_str"` // "jpeg" | "png" | "gif"
 	Width_int  int    `json:"width_str"  bson:"width_int"`
 	Height_int int    `json:"height_str" bson:"height_int"`
 
 	//---------------
 	// COLORS
-	DominantColorHexStr string `json:"dominant_color_hex_str"`
-	PalleteStr          string `json:"pallete_str"`
+	DominantColorHexStr string `json:"dominant_color_hex_str" bson:"dominant_color_hex_str"`
+	PalleteStr          string `json:"pallete_str"            bson:"pallete_str"`
 
 	//---------------
 	// META
@@ -82,10 +85,6 @@ type GFimage struct {
 	TagsLst []string               `json:"tags_lst" bson:"tags_lst"` // human facing tags assigned to an image
 
 	//---------------
-
-	// DEPRECATED!! - all images have the flows_names_lst member now, so flow_name_str can be removed both here from the 
-	//                struct and from DB records
-	// Flow_name_str   string   `json:"flow_name_str"   bson:"flow_name_str"`
 }
 
 type GFimageExport struct {

@@ -3,10 +3,10 @@
 
 	{{/*--------------------------------------------------------------*/}}
 	{{/*METADATA*/}}
-	<meta property="og:title" content="gloflow.com:tag:{{ .Tag_str }}"/>
+	<meta property="og:title" content="gloflow.com:tag:{{ .TagStr }}"/>
 	
 	{{/*--------------------------------------------------------------*/}}
-	<!-- <link rel="stylesheet" type="text/css" href="./../../css/gf_tag_objects/gf_tag_objects.css"> -->
+	<link rel="stylesheet" type="text/css" href="./../../css/gf_tag_objects.css">
 	<link rel="stylesheet" type="text/css" href="./../../../../gf_sys_panel/css/gf_sys_panel.css"/>
 
 	{{/*--------------------------------------------------------------*/}}
@@ -14,22 +14,58 @@
 
 <body>
 
-<div id='tag_name'>#{{ .Tag_str }}</div>
+<div id='tag_name'>#{{ .TagStr }}</div>
 
 <!-- TAG STATS -->
 <div id='tag_stats'>
-	<div id='posts_count'>
-		<div class='title'>posts</div>
-		<div class='count'>{{ .Posts_with_tag_num_int }}</div>
-	</div>
 	<div id='images_count'>
 		<div class='title'>images</div>
-		<div class='count'>{{ .Images_with_tag_int }}</div>
+		<div class='count'>{{ .ImagesWithTagCountInt }}</div>
+	</div>
+	<div id='posts_count'>
+		<div class='title'>posts</div>
+		<div class='count'>{{ .PostsWithTagCountInt }}</div>
 	</div>
 </div>
 
+<div id='images_container'>
+	{{ range .ImagesWithTagLst }}
+		<div class='gf_image'
+			data-img_id='{{- .id_str }}'
+			data-img_format='{{- .format_Str }}'
+			data-img_meta_json='{{- .meta_json_str }}'>
+
+			{{- /*--------------------------------------------------------------*/}}
+			<img src="{{ .thumbnail_medium_url_str }}"
+				data-img_thumb_medium_url="{{ .thumbnail_medium_url_str }}"
+				data-img_thumb_large_url="{{ .thumbnail_large_url_str }}"></img>
+
+			{{- /*------------------------------------------------------*/}}
+			{{- /* TAGS */}}
+			<div class='tags_container'>
+			
+				{{- range .tags_lst }}
+				<a class='gf_image_tag' href='/v1/tags/objects?tag={{ . }}&otype=image'>#{{ . }}</a>
+				{{- end }}
+			
+			</div>
+			
+			{{- /*------------------------------------------------------*/}}
+			<div class="origin_page_url">
+				<a href="{{ .image_origin_page_url_str }}" target="_blank">{{ .image_origin_page_url_str }}</a>
+			</div>
+			
+			{{- /*------------------------------------------------------*/}}
+			<div class="creation_time">{{ .creation_unix_time_str }}</div>
+			<div class="owner_user_name">by <span>{{ .owner_user_name_str }}</span></div>
+			
+			{{/*--------------------------------------------------------------*/}}
+		</div>
+	{{end}}
+</div>
+
 <div id='posts_container'>
-	{{range .Posts_with_tag_lst}}
+	{{range .PostsWithTagLst}}
 		<div class='gf_post'>
 			{{/*--------------------------------------------------------------*/}}
 			<div class='post_thumbnail'>
@@ -38,7 +74,7 @@
 				</a>
 			</div>
 			{{/*--------------------------------------------------------------*/}}
-			{{/*one data-thumb_small_url attribute (for the <a> tag) per post_thumb_small_url_str*/}}
+			{{/* one data-thumb_small_url attribute (for the <a> tag) per post_thumb_small_url_str */}}
 
 			<div class='post_title'>
 				{{ .post_title_str }}
@@ -54,6 +90,7 @@
 		</div>
 	{{end}}
 </div>
+
 {{/*--------------------------------------------------------------*/}}
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="./../../../../../libs/js/masonry.pkgd.min.js"></script>

@@ -36,10 +36,10 @@ type GFtemplates struct {
 
 //-------------------------------------------------
 
-func TemplatesLoad(p_templates_paths_map map[string]string,
+func TemplatesLoad(pTemplatesPathsMap map[string]string,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFtemplates, *gf_core.GFerror) {
 
-	mainTemplateFilepathStr := p_templates_paths_map["gf_tag_objects"]
+	mainTemplateFilepathStr := pTemplatesPathsMap["gf_tag_objects"]
 	tagObjectsTmpl, subtemplatesNamesLst, gfErr := gf_core.TemplatesLoad(mainTemplateFilepathStr, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -47,7 +47,7 @@ func TemplatesLoad(p_templates_paths_map map[string]string,
 
 
 
-	bookmarksTemplateFilepathStr := p_templates_paths_map["gf_bookmarks"]
+	bookmarksTemplateFilepathStr := pTemplatesPathsMap["gf_bookmarks"]
 	bookmarksTmpl, bookmarksSubtemplatesNamesLst, gfErr := gf_core.TemplatesLoad(bookmarksTemplateFilepathStr, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr

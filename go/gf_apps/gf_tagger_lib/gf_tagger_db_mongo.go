@@ -27,6 +27,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_address"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -122,30 +123,115 @@ func dbMongoGetAllObjectsTags(pCtx context.Context,
 
 func dbMongoGetObjectsWithTagCount(pTagStr string,
 	pObjectTypeStr string,
+	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) (int64, *gf_core.GFerror) {
 
+	var countInt int64
+
 	switch pObjectTypeStr {
-		case "post":
+	
+	// IMAGE
+	case "image":
 
-			ctx := context.Background()
-			countInt, err := pRuntimeSys.Mongo_coll.CountDocuments(ctx, bson.M{
-				"t":        "post",
-				"tags_lst": bson.M{"$in": []string{pTagStr,}},
-			})
+		imageCountInt, err := pRuntimeSys.Mongo_coll.CountDocuments(pCtx, bson.M{
+			"t":        "img",
+			"tags_lst": bson.M{"$in": []string{pTagStr,}},
+		})
 
-			if err != nil {
-				gfErr := gf_core.MongoHandleError(fmt.Sprintf("failed to count of posts with tag - %s in DB", pTagStr),
-					"mongodb_find_error",
-					map[string]interface{}{
-						"tag_str":         pTagStr,
-						"object_type_str": pObjectTypeStr,
-					},
-					err, "gf_tagger_lib", pRuntimeSys)
-				return 0, gfErr
-			}
-			return countInt, nil
+		if err != nil {
+			gfErr := gf_core.MongoHandleError(fmt.Sprintf("failed to count of images with tag - %s in DB", pTagStr),
+				"mongodb_find_error",
+				map[string]interface{}{
+					"tag_str":         pTagStr,
+					"object_type_str": pObjectTypeStr,
+				},
+				err, "gf_tagger_lib", pRuntimeSys)
+			return 0, gfErr
+		}
+		countInt = imageCountInt
+
+	// POST
+	case "post":
+		countPostsInt, err := pRuntimeSys.Mongo_coll.CountDocuments(pCtx, bson.M{
+			"t":        "post",
+			"tags_lst": bson.M{"$in": []string{pTagStr,}},
+		})
+
+		if err != nil {
+			gfErr := gf_core.MongoHandleError(fmt.Sprintf("failed to count of posts with tag - %s in DB", pTagStr),
+				"mongodb_find_error",
+				map[string]interface{}{
+					"tag_str":         pTagStr,
+					"object_type_str": pObjectTypeStr,
+				},
+				err, "gf_tagger_lib", pRuntimeSys)
+			return 0, gfErr
+		}
+		countInt = countPostsInt
 	}
-	return 0, nil
+	return countInt, nil
+}
+
+//---------------------------------------------------
+
+func dbMongoGetObjectsWithTag(pTagStr string,
+	pTargetTypeStr string,
+	pTargetType    interface{},
+	pPageIndexInt  int,
+	pPageSizeInt   int,
+	pCtx           context.Context,
+	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	findOpts := options.Find()
+	findOpts.SetSort(map[string]interface{}{"creation_datetime": -1})
+	findOpts.SetSkip(int64(pPageIndexInt))
+	findOpts.SetLimit(int64(pPageSizeInt))
+
+	cursor, gfErr := gf_core.MongoFind(bson.M{
+			"t":        pTargetTypeStr,
+			"tags_lst": bson.M{"$in": []string{pTagStr,}},
+		},
+		findOpts,
+		map[string]interface{}{
+			"tag_str":            pTagStr,
+			"target_type_str":    pTargetTypeStr,
+			"page_index_int":     pPageIndexInt,
+			"page_size_int":      pPageSizeInt,
+			"caller_err_msg_str": fmt.Sprintf("failed to get %s with specified tag in DB", pTargetTypeStr),
+		},
+		pRuntimeSys.Mongo_coll,
+		pCtx,
+		pRuntimeSys)
+
+	if gfErr != nil {
+		return gfErr
+	}
+
+	var err error
+	switch target := pTargetType.(type) {
+	
+	// IMAGE
+	case *[]*gf_images_core.GFimage:
+		err = cursor.All(pCtx, target)
+
+	// POST
+	case *[]*gf_publisher_core.GFpost:
+		err = cursor.All(pCtx, target)
+	}
+
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to get objects with specified tag in DB",
+			"mongodb_cursor_decode",
+			map[string]interface{}{
+				"tag_str":        pTagStr,
+				"page_index_int": pPageIndexInt,
+				"page_size_int":  pPageSizeInt,
+			},
+			err, "gf_tagger_lib", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
 }
 
 //---------------------------------------------------
@@ -275,82 +361,6 @@ func dbMongoAddPostNote(pNote *GFnote,
 		return gfErr
 	}
 	return nil
-}
-
-//---------------------------------------------------
-
-func dbMongoGetPostsWithTag(pTagStr string,
-	p_page_index_int int,
-	p_page_size_int  int,
-	pRuntimeSys      *gf_core.RuntimeSys) ([]*gf_publisher_core.GFpost, *gf_core.GFerror) {
-
-	// FIX!! - potentially DOESNT SCALE. if there is a huge number of posts
-	//         with a tag, toList() will accumulate a large collection in memory. 
-	//         instead use a Stream-oriented way where results are streamed lazily
-	//         in some fashion
-
-	ctx := context.Background()
-
-	find_opts := options.Find()
-	find_opts.SetSort(map[string]interface{}{"creation_datetime": -1})
-	find_opts.SetSkip(int64(p_page_index_int))
-    find_opts.SetLimit(int64(p_page_size_int))
-
-	cursor, gfErr := gf_core.MongoFind(bson.M{
-			"t":        "post",
-			"tags_lst": bson.M{"$in": []string{pTagStr,}},
-		},
-		find_opts,
-		map[string]interface{}{
-			"tag_str":            pTagStr,
-			"page_index_int":     p_page_index_int,
-			"page_size_int":      p_page_size_int,
-			"caller_err_msg_str": fmt.Sprintf("failed to get posts with specified tag in DB"),
-		},
-		pRuntimeSys.Mongo_coll,
-		ctx,
-		pRuntimeSys)
-
-	if gfErr != nil {
-		return nil, gfErr
-	}
-
-	var posts_lst []*gf_publisher_core.GFpost
-	err := cursor.All(ctx, &posts_lst)
-	if err != nil {
-		gfErr := gf_core.MongoHandleError("failed to get posts with specified tag in DB",
-			"mongodb_cursor_decode",
-			map[string]interface{}{
-				"tag_str":        pTagStr,
-				"page_index_int": p_page_index_int,
-				"page_size_int":  p_page_size_int,
-			},
-			err, "gf_tagger_lib", pRuntimeSys)
-		return nil, gfErr
-	}
-
-	/*err := pRuntimeSys.Mongodb_coll.Find(bson.M{
-			"t":        "post",
-			"tags_lst": bson.M{"$in": []string{pTagStr,}},
-		}).
-		Sort("-creation_datetime"). // descending:true
-		Skip(p_page_index_int).
-		Limit(p_page_size_int).
-		All(&posts_lst)
-
-	if gfErr != nil {
-		gfErr := gf_core.MongoHandleError("failed to get posts with specified tag",
-			"mongodb_find_error",
-			map[string]interface{}{
-				"tag_str":        pTagStr,
-				"page_index_int": p_page_index_int,
-				"page_size_int":  p_page_size_int,
-			},
-			err, "gf_tagger", pRuntimeSys)
-		return nil, gfErr
-	}*/
-
-	return posts_lst, nil
 }
 
 //---------------------------------------------------

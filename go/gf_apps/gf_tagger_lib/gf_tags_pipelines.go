@@ -116,6 +116,7 @@ func tagsPipelineGetObjects(pReq *http.Request,
 	pResp                 io.Writer,
 	pTemplate             *template.Template,
 	pSubtemplatesNamesLst []string,
+	pCtx                  context.Context,
 	pRuntimeSys           *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	//----------------
@@ -182,26 +183,29 @@ func tagsPipelineGetObjects(pReq *http.Request,
 		case "html":
 			pRuntimeSys.LogNewFun("DEBUG", "HTML RESPONSE >>", nil)
 			
-			gfErr := renderObjectsWithTag(tagStr,
+			templateRenderedStr, gfErr := renderObjectsWithTag(tagStr,
 				pTemplate,
 				pSubtemplatesNamesLst,
 				pageIndexInt,
 				pageSizeInt,
-				pResp,
+				pCtx,
 				pRuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr
 			}
+
+			pResp.Write([]byte(templateRenderedStr))
 
 		//------------------
 		// JSON EXPORT
 		case "json":
 			pRuntimeSys.LogNewFun("DEBUG", "JSON RESPONSE >>", nil)
 			
-			objectsWithTagLst, gfErr := getObjectsWithTag(tagStr,
+			objectsWithTagLst, gfErr := exportObjectsWithTag(tagStr,
 				objectTypeStr,
 				pageIndexInt,
 				pageSizeInt,
+				pCtx,
 				pRuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr

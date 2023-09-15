@@ -289,6 +289,7 @@ func initHandlers(pAuthSubsystemTypeStr string,
 				objectsWithTagLst, gfErr := tagsPipelineGetObjects(pReq, pResp, 
 					gfTemplates.TagObjects,
 					gfTemplates.TagObjectsSubtemplatesNamesLst,
+					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
