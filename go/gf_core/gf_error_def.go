@@ -324,6 +324,9 @@ func errorGetDefs() map[string]ErrorDef {
 		"sql_row_scan": ErrorDef{
 			DescrStr:"failed to scan a row of results of a SQL query",
 		},
+		"sql_prepare_statement": ErrorDef{
+			DescrStr:"failed to prepare an SQL statement with Prepare()",
+		},
 		
 		//---------------
 		// ELASTICSEARCH
