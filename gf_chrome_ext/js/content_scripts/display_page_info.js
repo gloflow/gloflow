@@ -581,6 +581,11 @@ function init_image_hud(p_image_element_id_str,
 					img_system_id_str = await add_to_image_flow_btn_handler();
 				}
 
+				// image exists in the flow, so just get its data system_id
+				else {
+					img_system_id_str = $(p_image_container_element).attr("data-img_system_id_str");
+				}
+
 				p_resolve_fun(img_system_id_str);
 			});
 			return p;
