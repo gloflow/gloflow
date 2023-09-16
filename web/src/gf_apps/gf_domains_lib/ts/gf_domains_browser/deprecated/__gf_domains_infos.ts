@@ -17,9 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../../../d/pixi.js.d.ts" />
-
-import * as gf_color from "./../../../../gf_core/ts/gf_color";
+import * as gf_color from "../../../../../gf_core/ts/gf_color";
 
 //-----------------------------------------------------
 export function draw(p_domains_lst :Object[],

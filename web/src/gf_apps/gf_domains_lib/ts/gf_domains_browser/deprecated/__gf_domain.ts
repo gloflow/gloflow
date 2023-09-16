@@ -17,8 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../../../d/pixi.js.d.ts" />
-
 //-----------------------------------------------------
 export function draw(p_name_str :string,
 	p_width_int                   :number,
