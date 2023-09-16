@@ -90,7 +90,6 @@ body {
     grid-column: 2 / 3;
 }
 
-/*small_view*/
 #images_container .gf_image {
 	position:         relative;
 	float:            left;
@@ -160,6 +159,57 @@ body {
     background-color: gray;
     width: 100%;
     grid-column: 4 / 5;
+}
+
+.gf_post_image_view {
+	position: relative;
+
+	float: left;
+	text-align: center;
+	background-color: lightgray;
+	margin: 6px;
+	width: 200px;
+	padding-top: 6px;
+	
+	/*
+    to better show the outline, due to shadows. also in case css shadows
+    are not supported this is the only way to show the outline of the post box
+    */
+	border: 2px;
+	border-style: solid;
+	border-color: #F5F5F5;
+
+	padding: 7px;
+}
+
+.gf_post_image_view .post_image img {
+	width: 100%;
+}
+.gf_post_image_view .post_title {
+	background-color: #EEE;
+	padding: 4px;
+	text-decoration: none;
+	color: #919191;
+	font-size: 14px;
+}
+
+.gf_post_image_view .tags_container {
+	background-color: #E0E0E0;
+	padding-left: 8px;
+	padding-right: 9px;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	font-size: 14px;
+
+	overflow: hidden;
+}
+
+.gf_post_image_view .tags_container .gf_post_tag {
+	font-size: 14px;
+	
+	/*so that there's spacing between tags*/
+	margin-right: 4px; 
+	color: rgb(134, 134, 134);
 }
 
 /*----------------------------------------------------------*/
