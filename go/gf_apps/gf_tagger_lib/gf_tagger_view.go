@@ -54,6 +54,12 @@ func renderObjectsWithTag(pTagStr string,
 		return "", gfErr
 	}
 
+	imagesUserNamesLst := resolveUserIDStoUserNames(imagesWithTagLst, pCtx, pRuntimeSys)
+
+	for i, imageMap := range imagesWithTagLst {
+		imageMap["owner_user_name_str"] = imagesUserNamesLst[i]
+	}
+
 	//-----------------------------
 	// POSTS
 

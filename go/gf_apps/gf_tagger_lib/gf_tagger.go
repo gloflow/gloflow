@@ -26,6 +26,7 @@ import (
 	"time"
 	"encoding/json"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_address"
@@ -387,7 +388,7 @@ func exportObjectsWithTag(pTagStr string,
 			imageInfoMap := map[string]interface{}{
 				"id_str": image.IDstr,            
 				"creation_unix_time_str":    image.Creation_unix_time_f,
-				"owner_user_name_str":       image.UserID,
+				"owner_user_id_str":         image.UserID,
 				"image_origin_page_url_str": image.Origin_page_url_str,
 				"thumbnail_medium_url_str":  image.Thumbnail_medium_url_str,
 				"thumbnail_large_url_str":   image.Thumbnail_large_url_str,
@@ -485,4 +486,35 @@ func generateTagID() gf_core.GF_ID {
 	}
 	sessionIDstr := gf_core.IDcreate(uniqueValsForIDlst, creationUNIXtimeF)
 	return sessionIDstr
+}
+
+//-------------------------------------------------
+// RESOLVE_USER_IDS_TO_USER_NAMES
+
+func resolveUserIDStoUserNames(pImagesWithTagLst []map[string]interface{},
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) []gf_identity_core.GFuserName {
+
+	usernamesCacheMap := map[gf_core.GF_ID]gf_identity_core.GFuserName{}
+	
+
+	userNamesLst := []gf_identity_core.GFuserName{}
+	for _, imageMap := range pImagesWithTagLst {
+		
+		
+		userID := gf_core.GF_ID(imageMap["owner_user_id_str"].(string))
+		var userNameStr gf_identity_core.GFuserName
+
+		// resolve user_id to user_name, or use cached result if its already present.
+		if cachedUserNameStr, ok := usernamesCacheMap[userID]; ok {
+			userNameStr = cachedUserNameStr
+		} else {
+			resolvedUserNameStr := gf_identity_core.ResolveUserName(userID, pCtx, pRuntimeSys)
+			userNameStr               = resolvedUserNameStr
+			usernamesCacheMap[userID] = resolvedUserNameStr
+		}
+		userNamesLst = append(userNamesLst, userNameStr)
+	}
+	
+	return userNamesLst
 }
