@@ -15,17 +15,19 @@
 
 <body>
 
-<div id='tag_name'>#{{ .TagStr }}</div>
+<div id="tag">
+	<div id='tag_name'>#{{ .TagStr }}</div>
 
-<!-- TAG STATS -->
-<div id='tag_stats'>
-	<div id='images_count'>
-		<div class='title'>images</div>
-		<div class='count'>{{ .ImagesWithTagCountInt }}</div>
-	</div>
-	<div id='posts_count'>
-		<div class='title'>posts</div>
-		<div class='count'>{{ .PostsWithTagCountInt }}</div>
+	<!-- TAG STATS -->
+	<div id='tag_stats'>
+		<div id='images_count'>
+			<div class='title'>images</div>
+			<div class='count'>{{ .ImagesWithTagCountInt }}</div>
+		</div>
+		<div id='posts_count'>
+			<div class='title'>posts</div>
+			<div class='count'>{{ .PostsWithTagCountInt }}</div>
+		</div>
 	</div>
 </div>
 

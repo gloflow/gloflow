@@ -10,10 +10,15 @@ body {
 }
 
 /*----------------------------------------------------------*/
-#tag_name {
-	position: fixed;
+#tag {
+    position: fixed;
     top: 55px;
     left: 0px;
+    display: flex;
+}
+
+/*----------------------------------------------------------*/
+#tag_name {
     background-color: #f7f7f7;
     padding-left: 9px;
     padding-top: 7px;
@@ -21,20 +26,22 @@ body {
     padding-right: 11px;
     font-size: 21px;
 	z-index: 10;
+
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 
 /*----------------------------------------------------------*/
 #tag_stats {
-    position: fixed;
     height: 31px;
     width: 90px;
     background-color: #b9b9b9;
     font-size: 12px;
-    left: 119px;
-    top: 55px;
     padding-left: 5px;
     padding-top: 3px;
     padding-bottom: 3px;
+
+    flex-grow: 1;
 }
 #tag_stats #images_count {
     width: 80px;
