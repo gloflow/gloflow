@@ -50,6 +50,12 @@ type GFtestUserInfo struct {
 func TestCreateUserInDB(pTest *testing.T,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, gf_identity_core.GFuserName) {
+	
+	// DB
+	gfErr := gf_identity_core.DBsqlCreateTables(pCtx, pRuntimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
 
 	userID := gf_core.GF_ID(fmt.Sprintf("test_user_id_%s", gf_core.StrRandom()))
 	userNameStr := gf_identity_core.GFuserName("test_user")
@@ -67,7 +73,7 @@ func TestCreateUserInDB(pTest *testing.T,
 	}
 	
 	// DB
-	gfErr := gf_identity_core.DBsqlUserCreate(user, pCtx, pRuntimeSys)
+	gfErr = gf_identity_core.DBsqlUserCreate(user, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}

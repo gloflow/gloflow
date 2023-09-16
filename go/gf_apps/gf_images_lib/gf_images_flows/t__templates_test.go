@@ -49,13 +49,9 @@ func getTemplateTestData(pTest *testing.T) ([][]*gf_images_core.GFimage, [][]gf_
 	sqlHostStr     := cliArgsMap["sql_host_str"].(string)
 	runtimeSys     := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
 
-	gfErr := gf_identity_core.DBsqlCreateTables(ctx, runtimeSys)
-	if gfErr != nil {
-		pTest.Fail()
-	}
-
 	//-------------------
 	// CREATE USER
+
 	userID, userNameStr := gf_identity.TestCreateUserInDB(pTest, ctx, runtimeSys)
 
 	//-------------------
