@@ -68,22 +68,24 @@ export function init(p_log_fun) {
 	init_upload(flow_name_str, p_log_fun);
 
 	//---------------------
-
-	//-----------------
-	// IMPORTANT!! - as each image loads call masonry to reconfigure the view.
-	//               this is necessary so that initial images in the page, before
-	//               load_new_page() starts getting called, are properly laid out
-	//               by masonry.
-	$('.gf_image img').on('load', ()=>{
-		$('#gf_images_flow_container #items').masonry();
-	});
-
+	// MASONRY
 	$('#gf_images_flow_container #items').masonry({
 		// options...
 		itemSelector: '.item',
 		columnWidth:  6
 	});
 
+	/*
+	IMPORTANT!! - as each image loads call masonry to reconfigure the view.
+		this is necessary so that initial images in the page, before
+		load_new_page() starts getting called, are properly laid out
+		by masonry.
+	*/
+	$('.gf_image img').on('load', ()=>{
+		$('#gf_images_flow_container #items').masonry();
+	});
+
+	//---------------------
 	$('.gf_image').each((p_i, p_e)=>{
 
 		const image_element = p_e;
