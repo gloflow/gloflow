@@ -15,7 +15,7 @@
 
 <body>
 
-<div id="tag">
+<div id="tag_info">
 	<div id='tag_name'>#{{ .TagStr }}</div>
 
 	<!-- TAG STATS -->
@@ -31,67 +31,75 @@
 	</div>
 </div>
 
-<div id='images_container'>
-	{{ range .ImagesWithTagLst }}
-		<div class='gf_image'
-			data-img_id='{{- .id_str }}'
-			data-img_format='{{- .format_Str }}'
-			data-img_meta_json='{{- .meta_json_str }}'>
+<div id="objects_container">
+	<div id="left_space"></div>
 
-			{{- /*--------------------------------------------------------------*/}}
-			<img src="{{ .thumbnail_medium_url_str }}"
-				data-img_thumb_medium_url="{{ .thumbnail_medium_url_str }}"
-				data-img_thumb_large_url="{{ .thumbnail_large_url_str }}"></img>
+	<div id='images_container'>
+		{{ range .ImagesWithTagLst }}
+			<div class='gf_image'
+				data-img_id='{{- .id_str }}'
+				data-img_format='{{- .format_Str }}'
+				data-img_meta_json='{{- .meta_json_str }}'>
 
-			{{- /*------------------------------------------------------*/}}
-			{{- /* TAGS */}}
-			<div class='tags_container'>
-			
-				{{- range .tags_lst }}
-				<a class='gf_image_tag' href='/v1/tags/objects?tag={{ . }}&otype=image'>#{{ . }}</a>
-				{{- end }}
-			
-			</div>
-			
-			{{- /*------------------------------------------------------*/}}
-			<div class="origin_page_url">
-				<a href="{{ .image_origin_page_url_str }}" target="_blank">{{ .image_origin_page_url_str }}</a>
-			</div>
-			
-			{{- /*------------------------------------------------------*/}}
-			<div class="creation_time">{{ .creation_unix_time_str }}</div>
-			<div class="owner_user_name">by <span>{{ .owner_user_name_str }}</span></div>
-			
-			{{/*--------------------------------------------------------------*/}}
-		</div>
-	{{end}}
-</div>
+				{{- /*--------------------------------------------------------------*/}}
+				<img src="{{ .thumbnail_medium_url_str }}"
+					data-img_thumb_medium_url="{{ .thumbnail_medium_url_str }}"
+					data-img_thumb_large_url="{{ .thumbnail_large_url_str }}"></img>
 
-<div id='posts_container'>
-	{{range .PostsWithTagLst}}
-		<div class='gf_post'>
-			{{/*--------------------------------------------------------------*/}}
-			<div class='post_thumbnail'>
-				<a href ='{{ .post_url_str }}'>
-					<img src="{{ .post_thumbnail_url_str }}"></img>
-				</a>
+				{{- /*------------------------------------------------------*/}}
+				{{- /* TAGS */}}
+				<div class='tags_container'>
+				
+					{{- range .tags_lst }}
+					<a class='gf_image_tag' href='/v1/tags/objects?tag={{ . }}&otype=image'>#{{ . }}</a>
+					{{- end }}
+				
+				</div>
+				
+				{{- /*------------------------------------------------------*/}}
+				<div class="origin_page_url">
+					<a href="{{ .image_origin_page_url_str }}" target="_blank">{{ .image_origin_page_url_str }}</a>
+				</div>
+				
+				{{- /*------------------------------------------------------*/}}
+				<div class="creation_time">{{ .creation_unix_time_str }}</div>
+				<div class="owner_user_name">by <span>{{ .owner_user_name_str }}</span></div>
+				
+				{{/*--------------------------------------------------------------*/}}
 			</div>
-			{{/*--------------------------------------------------------------*/}}
-			{{/* one data-thumb_small_url attribute (for the <a> tag) per post_thumb_small_url_str */}}
+		{{end}}
+	</div>
 
-			<div class='post_title'>
-				{{ .post_title_str }}
+	<div id="gap"></div>
+	
+	<div id='posts_container'>
+		{{range .PostsWithTagLst}}
+			<div class='gf_post'>
+				{{/*--------------------------------------------------------------*/}}
+				<div class='post_thumbnail'>
+					<a href ='{{ .post_url_str }}'>
+						<img src="{{ .post_thumbnail_url_str }}"></img>
+					</a>
+				</div>
+				{{/*--------------------------------------------------------------*/}}
+				{{/* one data-thumb_small_url attribute (for the <a> tag) per post_thumb_small_url_str */}}
+
+				<div class='post_title'>
+					{{ .post_title_str }}
+				</div>
+				{{/*--------------------------------------------------------------*/}}
+				<!-- TAGS -->
+				<div class='tags_container'>
+				{{range .post_tags_lst}}
+					<a class='gf_post_tag' target="_blank" href='/v1/tags/objects?tag={{ . }}&otype=post'>#{{ . }}</a>
+				{{end}}
+				</div>
+				{{/*--------------------------------------------------------------*/}}
 			</div>
-			{{/*--------------------------------------------------------------*/}}
-			<!-- TAGS -->
-			<div class='tags_container'>
-			{{range .post_tags_lst}}
-				<a class='gf_post_tag' target="_blank" href='/v1/tags/objects?tag={{ . }}&otype=post'>#{{ . }}</a>
-			{{end}}
-			</div>
-			{{/*--------------------------------------------------------------*/}}
-		</div>
-	{{end}}
+		{{end}}
+	</div>
+	
+	<div id="right_space"></div>
 </div>
 
 {{/*------------------------------------------------------*/}}

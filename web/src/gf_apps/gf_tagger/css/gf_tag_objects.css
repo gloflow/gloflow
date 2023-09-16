@@ -10,14 +10,15 @@ body {
 }
 
 /*----------------------------------------------------------*/
-#tag {
+/* TAG INFO */
+#tag_info {
     position: fixed;
     top: 55px;
     left: 0px;
     display: flex;
+    z-index: 1;
 }
 
-/*----------------------------------------------------------*/
 #tag_name {
     background-color: #f7f7f7;
     padding-left: 9px;
@@ -31,7 +32,6 @@ body {
     flex-shrink: 0;
 }
 
-/*----------------------------------------------------------*/
 #tag_stats {
     height: 31px;
     width: 90px;
@@ -65,12 +65,29 @@ body {
 }
 
 /*----------------------------------------------------------*/
+#objects_container {
+    display: grid;
+    grid-template-columns: 15% 1fr 10px 1fr 15%;
+    width: 100%;
+    position: absolute;
+    top: 55px;
+}
+
+#left_space, #right_space {
+    background: transparent; /* Empty space */
+}
+
+#gap {
+    grid-column: 3 / 4;
+}
+
+/*----------------------------------------------------------*/
+/* IMAGES */
 #images_container {
     position: absolute;
     background-color: gray;
-    top: 55px;
-    left: 15%;
-    width: 30%;
+    width: 100%;
+    grid-column: 2 / 3;
 }
 
 /*small_view*/
@@ -138,10 +155,11 @@ body {
 }
 
 /*----------------------------------------------------------*/
+/* POSTS */
 #posts_container {
-    position: absolute;
     background-color: gray;
-    top: 55px;
-    right: 15%;
-    width: 30%;
+    width: 100%;
+    grid-column: 4 / 5;
 }
+
+/*----------------------------------------------------------*/
