@@ -502,7 +502,7 @@ func resolveUserIDStoUserNames(pImagesWithTagLst []map[string]interface{},
 	for _, imageMap := range pImagesWithTagLst {
 		
 		
-		userID := gf_core.GF_ID(imageMap["owner_user_id_str"].(string))
+		userID := imageMap["owner_user_id_str"].(gf_core.GF_ID)
 		var userNameStr gf_identity_core.GFuserName
 
 		// resolve user_id to user_name, or use cached result if its already present.

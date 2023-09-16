@@ -24,7 +24,7 @@ import (
 	"testing"
 	"context"
 	// "github.com/stretchr/testify/assert"
-	"github.com/gloflow/gloflow/go/gf_core"
+	// "github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib/gf_tagger_core"
 	// "github.com/davecgh/go-spew/spew"
@@ -41,7 +41,9 @@ func TestTemplates(pTest *testing.T) {
 	sqlHostStr   := cliArgsMap["sql_host_str"].(string)
 	runtimeSys   := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
 	
-	userID := gf_core.GF_ID("test")
+	//-------------------
+	// CREATE USER
+	userID, _ := gf_identity.TestCreateUserInDB(pTest, ctx, runtimeSys)
 
 	//--------------------
 	// INIT
@@ -63,6 +65,8 @@ func TestTemplates(pTest *testing.T) {
 	if gfErr != nil {
 		pTest.Fail()
 	}
+
+	
 
 	//--------------------
 	// ADD_TAGS_TO_OBJECT
