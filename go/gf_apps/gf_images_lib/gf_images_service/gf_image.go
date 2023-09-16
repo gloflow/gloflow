@@ -22,6 +22,7 @@ package gf_images_service
 import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
@@ -45,7 +46,7 @@ func ImageGet(pImageIDstr gf_images_core.GFimageID,
 			return nil, false, gfErr
 		}
 
-		resolvedUserNameStr := gf_images_core.ImageGetUserName(image, pCtx, pRuntimeSys)
+		resolvedUserNameStr := gf_identity_core.ResolveUserName(image.UserID, pCtx, pRuntimeSys)
 
 		imageExport := &gf_images_core.GFimageExport{
 			Creation_unix_time_f:     image.Creation_unix_time_f,

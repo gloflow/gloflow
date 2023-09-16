@@ -119,21 +119,6 @@ type GFloginAttemptUpdateOp struct {
 }
 
 //---------------------------------------------------
-// CREATE_ID
-
-func usersCreateID(pUserIdentifierStr string,
-	pCreationUNIXtimeF float64) gf_core.GF_ID {
-
-	fieldsForIDlst := []string{
-		pUserIdentifierStr,
-	}
-	gfIDstr := gf_core.IDcreate(fieldsForIDlst,
-		pCreationUNIXtimeF)
-
-	return gfIDstr
-}
-
-//---------------------------------------------------
 // PIPELINE_LOGOUT
 
 func UsersPipelineLogout(pUserID gf_core.GF_ID,

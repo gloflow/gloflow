@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"context"
 	"path"
 	"path/filepath"
 	"net/url"
@@ -32,45 +31,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
-
-//---------------------------------------------------
-// GET_USER_NAME
-
-func ImageGetUserName(pImage *GFimage,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) gf_identity_core.GFuserName {
-
-	var userNameStr gf_identity_core.GFuserName
-
-	/*
-	LEGACY!! - old images dont have a user_id associated with them.
-		before the user system was fully integrated into gf_images, images were added anonimously
-		and did not have a user ID associated with them.
-		for those images it is not possible to associate user_names with them. 
-	*/
-	if pImage.UserID != "" {
-
-		userID := pImage.UserID
-
-		resolvedUserNameStr, gfErr := gf_identity_core.DBsqlGetUserNameByID(userID, pCtx, pRuntimeSys)
-		if gfErr != nil {
-
-			// failing to resolve user_name should still return a user_name
-			userNameStr = gf_identity_core.GFuserName("?")
-			return userNameStr
-		}
-		userNameStr = resolvedUserNameStr
-		
-	} else {
-
-		// IMPORTANT!! - pre-auth-system images are marked as owned by anonymous users.
-		userNameStr = gf_identity_core.GFuserName("anon")
-	}
-
-	return userNameStr
-}
 
 //------------------------------------------------
 

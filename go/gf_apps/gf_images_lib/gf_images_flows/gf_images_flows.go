@@ -277,7 +277,7 @@ func resolveUserIDStoUserNames(pImagesPagesLst [][]*gf_images_core.GFimage,
 			if cachedUserNameStr, ok := usernamesCacheMap[userID]; ok {
 				userNameStr = cachedUserNameStr
 			} else {
-				resolvedUserNameStr := gf_images_core.ImageGetUserName(image, pCtx, pRuntimeSys)
+				resolvedUserNameStr := gf_identity_core.ResolveUserName(userID, pCtx, pRuntimeSys)
 				userNameStr               = resolvedUserNameStr
 				usernamesCacheMap[userID] = resolvedUserNameStr
 			}

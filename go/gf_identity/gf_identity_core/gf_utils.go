@@ -45,6 +45,57 @@ type GFuserHTTPinputEmailConfirm struct {
 }
 
 //---------------------------------------------------
+
+func ResolveUserName(pUserID gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) GFuserName {
+
+	var userNameStr GFuserName
+
+	/*
+	LEGACY!! - old images dont have a user_id associated with them.
+		before the user system was fully integrated into gf_images, images were added anonimously
+		and did not have a user ID associated with them.
+		for those images it is not possible to associate user_names with them. 
+	*/
+	if pUserID != "" {
+
+		userID := pUserID
+
+		resolvedUserNameStr, gfErr := DBsqlGetUserNameByID(userID, pCtx, pRuntimeSys)
+		if gfErr != nil {
+
+			// failing to resolve user_name should still return a user_name
+			userNameStr = GFuserName("?")
+			return userNameStr
+		}
+		userNameStr = resolvedUserNameStr
+		
+	} else {
+
+		// IMPORTANT!! - pre-auth-system images are marked as owned by anonymous users.
+		userNameStr = GFuserName("anon")
+	}
+
+	return userNameStr
+}
+
+//---------------------------------------------------
+// CREATE_ID
+
+func usersCreateID(pUserIdentifierStr string,
+	pCreationUNIXtimeF float64) gf_core.GF_ID {
+
+	fieldsForIDlst := []string{
+		pUserIdentifierStr,
+	}
+	gfIDstr := gf_core.IDcreate(fieldsForIDlst,
+		pCreationUNIXtimeF)
+
+	return gfIDstr
+}
+
+//---------------------------------------------------
 // GET_USER_NAME_FROM_CTX
 
 func GetUserIDfromCtx(pCtx context.Context) (gf_core.GF_ID, bool) {
