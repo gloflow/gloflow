@@ -183,7 +183,7 @@ func dbMongoGetObjectsWithTag(pTagStr string,
 	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	findOpts := options.Find()
-	findOpts.SetSort(map[string]interface{}{"creation_datetime": -1})
+	findOpts.SetSort(map[string]interface{}{"creation_datetime": 1})
 	findOpts.SetSkip(int64(pPageIndexInt))
 	findOpts.SetLimit(int64(pPageSizeInt))
 
