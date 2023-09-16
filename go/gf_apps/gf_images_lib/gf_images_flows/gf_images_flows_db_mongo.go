@@ -352,6 +352,7 @@ func dbMongoImagesExist(pImagesExternURLsLst []string,
 		"origin_url_str":       1, // image url from a page
 		"origin_page_url_str":  1, // page url from which the image url was extracted
 		"flows_names_lst":      1, // flows in which this image is placed
+		"tags_lst":             1, // tags attached to an image
 	}
 
 	findOpts := options.Find()
