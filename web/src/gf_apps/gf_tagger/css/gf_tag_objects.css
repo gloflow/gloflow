@@ -22,11 +22,13 @@ body {
     font-size: 21px;
 	z-index: 10;
 }
+
+/*----------------------------------------------------------*/
 #tag_stats {
     position: fixed;
     height: 31px;
     width: 90px;
-    background-color: #d7d7d7;
+    background-color: #b9b9b9;
     font-size: 12px;
     left: 119px;
     top: 55px;
@@ -53,4 +55,86 @@ body {
     position: absolute;
     top: 0px;
     left: 50px;
+}
+
+/*----------------------------------------------------------*/
+#images_container {
+    position: absolute;
+    background-color: gray;
+    top: 55px;
+    left: 15%;
+    width: 30%;
+}
+
+/*small_view*/
+#images_container .gf_image {
+	position:         relative;
+	float:            left;
+	text-align:       center;
+	background-color: rgb(59, 124, 156);
+	margin:           6px;
+	width:            200px;
+	padding:          10px;
+	box-shadow:       1px 1px 10px grey;
+	
+	/*elements are not initially visible, but instead become visible
+	after masonry finishes their layout*/
+	visibility: false; 
+}
+
+#images_container .gf_image img {
+	width : 100%;
+    cursor: pointer;
+}
+
+#images_container .gf_image .owner_user_name {
+	font-size: 10px;
+    color: white;
+	text-align: center;
+	padding-top: 3px;
+}
+#images_container .gf_image .owner_user_name span {
+	font-weight: bold;
+    font-size: 12px;
+}
+
+#images_container .gf_image .origin_page_url {
+	padding-top:      6px;
+    padding-bottom:   6px;
+    text-align:       center;
+    background-color: #669ab3;
+    width:            180px;
+    padding-left:     9px;
+    padding-right:    11px;
+	margin-top:       -4px;
+}
+
+#images_container .gf_image .origin_page_url a {
+	font-size: 12px;
+    color: white;
+    text-decoration: none;
+    word-wrap: break-word;
+}
+#images_container .gf_image .creation_time {
+	font-size:        14px;
+	background-color: rgb(59, 124, 156);
+    color:            white;
+    padding-top:      5px;
+}
+
+#images_container .gf_image .creation_time .full_creation_date {
+	background-color: #3992bd;
+    color:            #1d3d4c;
+    padding-top:      3px;
+    padding-bottom:   3px;
+    margin-top:       4px;
+}
+
+/*----------------------------------------------------------*/
+#posts_container {
+    position: absolute;
+    background-color: gray;
+    top: 55px;
+    right: 15%;
+    width: 30%;
 }
