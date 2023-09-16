@@ -5,6 +5,10 @@
 Media publishing/management/manipulation system.
 
 screenshots:
+
+<img align="right" width="500" height="300" src="https://gloflow.com/images/d/thumbnails/105ccd932b0e03dae0d666553f5927fa_thumb_medium.png">
+<img align="right" width="500" height="300" src="https://gloflow.com/images/d/thumbnails/d146d87828623a1628a5c8568ed35eee_thumb_medium.png">
+
 <img align="left" width="500" height="300" src="https://gloflow.com/images/d/thumbnails/34235e14afaa6baaff802c659ff5cd06_thumb_large.png">
 <img align="left" width="500" height="300" src="https://gloflow.com/images/d/thumbnails/4ae445a94deea001d04d2b4068391c1f_thumb_large.png">
 
