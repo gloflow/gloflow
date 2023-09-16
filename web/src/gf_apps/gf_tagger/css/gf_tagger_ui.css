@@ -23,6 +23,7 @@
 	padding-bottom: 0px;
 	width : 369px;
 	height: 101px;
+    z-index: 1;
 }
 #tagging_input_container #background {
 	background-color: rgba(0,0,0,0.7);
