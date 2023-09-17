@@ -240,12 +240,14 @@ function check_images_exist_in_system(p_page_images_infos_lst,
 					const img__origin_page_url_str  = p_e['origin_page_url_str'];
 					const img__creation_unix_time_f = p_e['creation_unix_time_f'];
 					const img__flows_names_lst      = p_e["flows_names_lst"];
+					const tags_lst                  = p_e["tags_lst"];
 
 					existing_img__update_view(img__id_str,
 						img__origin_url_str,
 						img__origin_page_url_str,
 						img__creation_unix_time_f,
-						img__flows_names_lst);
+						img__flows_names_lst,
+						tags_lst);
 				});
 
 				break;
@@ -261,7 +263,8 @@ function check_images_exist_in_system(p_page_images_infos_lst,
 		p_existing_img__origin_url_str,
 		p_existing_img__origin_page_url_str,
 		p_existing_img__creation_unix_time_f,
-		p_img__flows_names_lst) {
+		p_img__flows_names_lst,
+		p_tags_lst) {
 
 		const date                 = new Date(p_existing_img__creation_unix_time_f*1000);
 		const data_str             = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()} - ${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`;
@@ -271,8 +274,8 @@ function check_images_exist_in_system(p_page_images_infos_lst,
 			.map((p_name_str)=>`<a class="flow_name" href="${p_gf_host_str}/images/flows/browser?fname=${p_name_str}" target="_blank">${p_name_str}</a>`)
 			.join(",");
 
-		const parent_element = $(existing_img_preview).parent();
-		$(parent_element).append(
+		const image_container_element = $(existing_img_preview).parent();
+		$(image_container_element).append(
 			`<div class="img_exists">
 				<div class="exists_msg">exists in flows: <span>${flows_links_str}</span></div>
 				<div class="origin_page_url"><span>origin page url</span>: <a href="${p_existing_img__origin_page_url_str}">${p_existing_img__origin_page_url_str}</div>
@@ -281,17 +284,25 @@ function check_images_exist_in_system(p_page_images_infos_lst,
 					<span class="time">${data_str}</span>
 				</div>
 			</div>`);
-
+		
+		//-------------------
+		// TAGS - add existing tags to displayed existing image
+		if (p_tags_lst != null) {
+			p_tags_lst.forEach(p_tag_str=>{
+				tag_display(p_tag_str, image_container_element, p_gf_host_str);
+			});
+		}
+			
 		//-------------------
 		/*
 		IMPORTANT!! - mark the image as existing, in the "data" property of its container div.
 			this is read by other parts of the code, one which is the tagging UI control that checks if the image exists in the system,
 			before the tag can be added to it.
 		*/
-		$(parent_element).attr("data-img_exists_in_flow_bool", true);
+		$(image_container_element).attr("data-img_exists_in_flow_bool", true);
 
 		// this is the GF_ID of the image
-		$(parent_element).attr("data-img_system_id_str", p_img__system_id_str);
+		$(image_container_element).attr("data-img_system_id_str", p_img__system_id_str);
 
 		//-------------------
 	}
@@ -714,23 +725,13 @@ function init_tagging(p_image_container_element,
 		// on_tags_created_fun
 		(p_tags_lst)=>{
 
-			console.log("added tags >>>>>>>>>>>", p_tags_lst)
-			console.log("DDDDDDDDDDDDDDDDDD", p_image_container_element, "ggg", $(p_image_container_element).find(".tags"))
+			console.log("added tags >>>>>>>>>>>", p_tags_lst);
 
-			p_tags_lst.forEach(t_str=>{
+			p_tags_lst.forEach(p_tag_str=>{
 
-				const tag_link_url_str = `${p_gf_host_str}/v1/tags/objects?tag=${t_str}&otype=image`
+				tag_display(p_tag_str, p_image_container_element, p_gf_host_str);
 
-				const element = $(`
-					<div class='bubble-in auto-width tag'>
-						<a href="${tag_link_url_str}" target="_blank" style="text-decoration: none;color: inherit;">
-							${t_str}
-						</a>
-					</div>`);
-				$(p_image_container_element).find(".tags").append(element);
-
-				// start the css animation
-				element.addClass('animate');
+				
 
 				// IMPORTANT!! - reload the masonry layout with the newly added tag
 				$(p_gf_container).find('#collection_masonry').masonry();
@@ -742,6 +743,22 @@ function init_tagging(p_image_container_element,
 		()=>{}, // on_tag_ui_remove_fun
 		http_api_map,
 		p_log_fun);
+}
+
+//---------------------------------------------------
+function tag_display(p_tag_str, p_image_container_element, p_gf_host_str) {
+	const tag_link_url_str = `${p_gf_host_str}/v1/tags/objects?tag=${p_tag_str}&otype=image`
+
+	const element = $(`
+		<div class='bubble-in auto-width tag'>
+			<a href="${tag_link_url_str}" target="_blank" style="text-decoration: none;color: inherit;">
+				${p_tag_str}
+			</a>
+		</div>`);
+	$(p_image_container_element).find(".tags").append(element);
+
+	// start the css animation
+	element.addClass('animate');
 }
 
 //---------------------------------------------------

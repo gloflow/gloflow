@@ -85,7 +85,7 @@ body {
 /* IMAGES */
 #images_container {
     position: absolute;
-    background-color: gray;
+    background-color: #3b7c9c1c;
     width: 100%;
     grid-column: 2 / 3;
 }
