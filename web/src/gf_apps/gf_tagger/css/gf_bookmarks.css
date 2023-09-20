@@ -20,13 +20,6 @@ body {
     background: transparent; /* Empty space */
 }
 
-
-
-
-
-
-
-
 /*----------------------------------------------------------*/
 /* BOOKMARK */
 .bookmark {
@@ -36,8 +29,6 @@ body {
     padding-top: 6px;
     padding-bottom: 3px;
 	position: relative;
-
-	
 }
 
 .bookmark .url {

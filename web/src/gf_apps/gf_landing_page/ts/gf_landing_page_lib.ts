@@ -41,13 +41,15 @@ export async function init(p_log_fun) {
 	};
 
 	//---------------------
-	
-	gf_procedural_art.init(p_log_fun);
-
+	// POSTS_INIT
 	posts_init();
+
+	//---------------------
+	// GF_IMAGES_INIT
 	gf_images.init(p_log_fun);
 
-	// draw a new canvas when the view is resized, and delete the old one (with the old dimensions)
+	//---------------------
+	// WINDOW_RESIZE - draw a new canvas when the view is resized, and delete the old one (with the old dimensions)
 	$(window).on("resize", ()=>{
 
 		// small screen widths dont display procedural_art
@@ -61,6 +63,10 @@ export async function init(p_log_fun) {
 			gf_procedural_art.init(p_log_fun);
 		}
 	});
+
+	//---------------------
+	// GF_PROCEDURAL_ART
+	gf_procedural_art.init(p_log_fun);
 
 	// regenerate new piece on click 
 	$("#randomized_art").on("click", ()=>{
@@ -112,10 +118,12 @@ export async function init(p_log_fun) {
 		home_url_str);
 
 	//---------------------
-
+	// ABOUT_SECTION
 	$("#about_section").on('click', function() {
 		$("#about_section #desc").css("visibility", "visible");
 	});
+
+	//---------------------
 }
 
 //--------------------------------------------------------
@@ -137,6 +145,7 @@ function posts_init() {
 			(p_color_dominant_hex_str,
 			p_colors_hexes_lst)=>{
 
+				// set the background color of the post to its dominant color
 				$(p_post_info_element).css("background-color", `#${p_color_dominant_hex_str}`);
 
 			});

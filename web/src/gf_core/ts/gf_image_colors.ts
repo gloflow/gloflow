@@ -40,6 +40,14 @@ export function init_pallete(p_image,
             console.log("dominant color - ", color_dominant_hex_str);
 
             const color_info_element = $(`<div class="colors_info">
+                <div class="color_pallete">
+                    <div class="colors">
+                    </div>
+                </div>
+            </div>`);	
+            
+            /*
+            const color_info_element = $(`<div class="colors_info">
                 <div class="color_dominant">
                     <div class="color" style="background-color:#${color_dominant_hex_str};">
                     </div>
@@ -48,7 +56,9 @@ export function init_pallete(p_image,
                     <div class="colors">
                     </div>
                 </div>
-            </div>`);			
+            </div>`);	
+            */
+
             
             color_info_element.insertAfter(image);
 
@@ -63,6 +73,8 @@ export function init_pallete(p_image,
 
             //-------------
             // COLOR_DOMINANT
+
+            /*
             const color_dominant_element       = $(color_info_element).find(".color_dominant");
             var   color_dominant_label_element = $(`<div class="color_dominant_label">dominant color</div>`);
             var   color_dominant__copy_to_clipboard_btn;
@@ -111,6 +123,7 @@ export function init_pallete(p_image,
                 color_dominant__copy_to_clipboard_btn = null;
 
             });
+            */
 
             //-------------
             // COLOR_PALLETE
