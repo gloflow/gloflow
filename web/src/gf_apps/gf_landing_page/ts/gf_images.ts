@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../d/jquery.d.ts" />
 ///<reference path="../../../d/jquery.timeago.d.ts" />
 
-import * as gf_color        from "./../../../gf_core/ts/gf_color.ts";
+import * as gf_color        from "./../../../gf_core/ts/gf_color";
 import * as gf_image_colors from "./../../../gf_core/ts/gf_image_colors";
 import * as gf_time         from "./../../../gf_core/ts/gf_time";
 
