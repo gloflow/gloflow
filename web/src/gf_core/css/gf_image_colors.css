@@ -67,7 +67,7 @@
 .colors_info .color_pallete_label {
 	position: absolute;
     left: -78px;
-    top: 25px;
+    /* top: 25px; */
     background-color: inherit;
     padding-left: 12px;
     padding-right: 12px;
@@ -80,7 +80,7 @@
 
 .colors_info .color_pallete #copy_to_clipboard_btn {
     position: absolute;
-    top: 25px;
+    /* top: 25px; */
     right: -27px;
     box-shadow: 9px 0px 11px #0000007a;
 }
