@@ -72,12 +72,15 @@ export function init(p_log_fun) {
 				$(p_image_info_element).find(".origin_page_url").css("background-color", `#${p_color_dominant_hex_str}`);
 
 
-
+				//----------------------
+				// COLOR_CLASSIFY
 				const color_class_str = gf_color.classify(p_color_dominant_hex_str);
+
+				//----------------------
 
 				switch (color_class_str) {
 
-
+					// LIGHT
 					case "light":
 
 						/*

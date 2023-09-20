@@ -94,10 +94,10 @@ export function init(p_id_str: string,
 
     //------------------------*/
 
-    const packery_grid = init_packery(items_container);
+    const packery_instance = init_packery(items_container);
 
     // enable draggability
-    init_draggability(container, packery_grid);
+    init_draggability(container, packery_instance);
 
     //------------------------
     // INIT_RANDOM_ACCESS
@@ -107,7 +107,7 @@ export function init(p_id_str: string,
         p_props.random_access_viz_props,
 
         //-------------------------------------------------
-        // p_viz_group_reset_fun
+        // RESET
         (p_page_index_to_seek_to_int :number,
         p_on_complete_fun)=>{
             
@@ -115,6 +115,7 @@ export function init(p_id_str: string,
 
             reset_with_new_start_pages(container,
                 start_page_int,
+                packery_instance,
                 p_element_create_fun,
                 p_elements_page_get_fun);
 
@@ -146,7 +147,7 @@ export function init(p_id_str: string,
 			if (!page_is_loading_bool) {
 
 
-                await load_new_pages(current_page_int,
+                load_new_pages(current_page_int,
                     pages_container,
                     p_element_create_fun,
                     p_elements_page_get_fun);
@@ -165,8 +166,11 @@ export function init(p_id_str: string,
 }
 
 //-------------------------------------------------
+// RESET_WITH_NEW_START_PAGES
+
 async function reset_with_new_start_pages(p_container,
     p_start_page_int :number, // this is where it was seeked to, and is different from first_page/last_page
+    p_packery_instance,
     p_element_create_fun,
     p_elements_page_get_fun,
 
@@ -176,8 +180,9 @@ async function reset_with_new_start_pages(p_container,
 
     
 
-    console.log("RESET")
+    console.log("RESET", p_packery_instance)
 
+    p_packery_instance.layout();
 
     // remove all items currently displayed by viz_group, 
     // since new ones have to be shown
@@ -185,7 +190,7 @@ async function reset_with_new_start_pages(p_container,
 
     const pages_container = $(p_container).find("#items");
 
-    await load_new_pages(p_start_page_int,
+    load_new_pages(p_start_page_int,
         pages_container,
         p_element_create_fun,
         p_elements_page_get_fun,
@@ -203,6 +208,10 @@ async function load_new_pages(p_page_index_int :number,
     // fetch page
     const elements_lst = await p_elements_page_get_fun(p_page_index_int, p_pages_to_get_num_int);
     
+
+
+    console.log("AAPPPPENDING NEW.............")
+
 
     // create elements
     for (let element_map of elements_lst) {
@@ -230,6 +239,8 @@ async function load_new_pages(p_page_index_int :number,
             });*/
         });
     }
+
+    return elements_lst;
 }
 
 //-------------------------------------------------
@@ -240,20 +251,20 @@ function init_packery(p_container) {
         $(p_container).packery();
     });
 
-    const packery_grid = $(p_container).packery({
+    const packery_instance = $(p_container).packery({
         itemSelector: '.item',
         gutter: 10,
         // columnWidth: 60
     });
 
     // trigger initial layout
-    packery_grid.packery();
-    return packery_grid;
+    packery_instance.packery("layout");
+    return packery_instance;
 }
 
 //-------------------------------------------------
 function init_draggability(p_container,
-    p_packery_grid) {
+    p_packery_instance) {
     const draggable_items_lst = $(p_container).find(".item");
     $(draggable_items_lst).each((p_i, p_e)=>{
 
@@ -263,6 +274,6 @@ function init_draggability(p_container,
             // options...
         });
 
-        p_packery_grid.packery('bindDraggabillyEvents', draggie);
+        p_packery_instance.packery('bindDraggabillyEvents', draggie);
     });
 }

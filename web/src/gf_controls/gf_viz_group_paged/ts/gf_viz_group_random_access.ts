@@ -287,7 +287,7 @@ function init_seeking(p_seeker_bar_button_element,
         });
 
         // MOUSEUP
-        $(button).on("mouseup", (p_event)=>{
+        $(button).on("mouseup", async (p_event)=>{
 
             $(button).off("mousemove");
 
@@ -297,14 +297,10 @@ function init_seeking(p_seeker_bar_button_element,
 			// FIX!! - how is the mousewheel seeking handled? (no mouse seeking? since it cant
 			//         be done on touch devices anyway)
 			
-			seek_to_new_value(seek_percentage_int,
+			await seek_to_new_value(seek_percentage_int,
 				p_seek_start_page_int,
 				p_seek_end_page_int,
-
-				p_viz_group_reset_fun,
-				()=>{
-					
-				});
+				p_viz_group_reset_fun);
 
 			//--------------
         });
@@ -336,6 +332,8 @@ function init_seeking(p_seeker_bar_button_element,
 }
 
 //-------------------------------------------------
+// USER_SEEK_EVENT
+
 function handle_user_seek_event(p_seek_start_page_int :number,
     p_seek_end_page_int   :number,
     p_button_new_y_int    :number,
@@ -364,7 +362,7 @@ function handle_user_seek_event(p_seek_start_page_int :number,
             p_button_new_y_int);
 
 		//-----------
-		// CONN POSITIONING
+		// CONNECTION POSITIONING
 		
 		// 'conn' has negligable height and so its positioning is different from the buttom itself
 		// 1. p_seeker_range_bar_height_px_int : 100 = x : seek_percentage
@@ -373,11 +371,13 @@ function handle_user_seek_event(p_seek_start_page_int :number,
 		$(p_conn_element).css("top", `${Math.floor(conn_y)}px`);
 		
 		//-----------
-		
+        // GET_SEEK_PAGE_INDEX
 		const seek_page_index_int = get_seek_page_index(seek_percentage_int,
 			p_seek_start_page_int,
 			p_seek_end_page_int);
 		
+        //-----------
+
 		if (p_button_seek_info_element != null && p_seek_page_index_element != null) {
 
             const button_seek_info_y_offset_int = $(p_button_seek_info_element).offset().top;
@@ -407,24 +407,35 @@ function handle_user_seek_event(p_seek_start_page_int :number,
 }
 
 //------------------------------------------------
-function seek_to_new_value(p_seek_percentage_int :number,
+async function seek_to_new_value(p_seek_percentage_int :number,
 	p_seek_start_page_int :number,
 	p_seek_end_page_int   :number,
 
-	p_viz_group_reset_fun,
-	p_on_complete_fun) {
+	p_viz_group_reset_fun) {
     
-	const page_index_to_seek_to_int = get_seek_page_index(p_seek_percentage_int,
-		p_seek_start_page_int,
-		p_seek_end_page_int);
-    
-	p_viz_group_reset_fun(page_index_to_seek_to_int,
-		// p_on_complete_fun
-		()=>{
-			p_on_complete_fun();
-		});
+    const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+        const page_index_to_seek_to_int = get_seek_page_index(p_seek_percentage_int,
+            p_seek_start_page_int,
+            p_seek_end_page_int);
+        
+
+        console.log("DDDDDDDDDDDDDDDDDDDDDD", page_index_to_seek_to_int)
+
+        // RESET
+        p_viz_group_reset_fun(page_index_to_seek_to_int,
+            // p_on_complete_fun
+            ()=>{
+
+                console.log("DDDDDDD2222")
+                p_resolve_fun({});
+            });
+    });
+    return p;
 }
 
+//------------------------------------------------
+// UTILS
 //-------------------------------------------------
 function init_range_bar_background_canvas(p_first_page_int :number,
     p_last_page_int :number,
