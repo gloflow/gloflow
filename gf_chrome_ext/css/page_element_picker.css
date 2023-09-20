@@ -180,18 +180,18 @@
 /*GF EXTENTION INPUT FIELD*/
 .flow_name_field{
 	position: fixed;
-    right: 16px;
-    top: 47vh;
+	top: 8vh;
+    right: -10px;
     z-index: 1000;
 	width: 350px;
 
 		
 }
 .flow_name_field .flow_name_msg{
-	font-size: 18px;
-	margin-bottom: 3px;
-	color: #000;
-	font-weight: 700;
+	font-size: 14px;
+    left: -17px;
+    position: absolute;
+    color: black;
 }
 .flow_name_field .flow_name{
 	font-size: 20px;
@@ -217,6 +217,14 @@
 	border: none;
 	outline: none;
 	box-shadow: none;
+
+    padding-top: 6px;
+    padding-bottom: 9px;
+
+	position: absolute;
+    top: 38px;
+    right: 0px;
+
 }
 
 /*-----------------------------------------------------*/
