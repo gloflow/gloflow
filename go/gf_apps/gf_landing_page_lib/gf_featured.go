@@ -40,6 +40,7 @@ type GFfeaturedPost struct {
 }
 
 type GFfeaturedImage struct {
+	IDstr                      gf_images_core.GFimageID
 	TitleStr                   string
 	ImageURLstr                string
 	ImageThumbnailMediumURLstr string
@@ -48,6 +49,7 @@ type GFfeaturedImage struct {
 	CreationUNIXtimeStr        string
 	FlowNameStr                string
 	OwnerUserNameStr           gf_identity_core.GFuserName
+	TagsLst                    []string
 }
 
 //------------------------------------------
@@ -116,6 +118,7 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 
 
 		featured := &GFfeaturedImage{
+			IDstr:                      image.IDstr,
 			TitleStr:                   image.TitleStr,
 			ImageURLstr:                image.Thumbnail_medium_url_str,
 			ImageThumbnailMediumURLstr: image.Thumbnail_medium_url_str,
@@ -124,6 +127,7 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 			CreationUNIXtimeStr:        strconv.FormatFloat(image.Creation_unix_time_f, 'f', 6, 64),
 			FlowNameStr:                pFlowNameStr,
 			OwnerUserNameStr:           userNameStr,
+			TagsLst:                    image.TagsLst,
 		}
 		featuredImagesLst = append(featuredImagesLst, featured)
 	}

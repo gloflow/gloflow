@@ -60,6 +60,7 @@ func pipelineRenderLandingPage(pImagesMaxRandomCursorPositionInt int, // 500
 	}
 
 	//-------------------
+	// FEATURED_POSTS
 	featuredPostsLst, gfErr := getFeaturedPosts(pPostsMaxRandomCursorPositionInt,
 		pFeaturedPostsToGetInt,
 		pRuntimeSys)
@@ -67,6 +68,8 @@ func pipelineRenderLandingPage(pImagesMaxRandomCursorPositionInt int, // 500
 		return "", gfErr
 	}
 
+	//-------------------
+	// RENDER
 	templateRenderedStr, gfErr := renderTemplate(featuredPostsLst,
 		featuredImages0lst,
 		featuredImages1lst,

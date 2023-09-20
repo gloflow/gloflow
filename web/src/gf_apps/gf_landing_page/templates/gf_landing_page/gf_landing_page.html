@@ -100,15 +100,26 @@
 			   href   = '/images/flows/browser?fname=general'>
 				Images
 			</a>
+			
 			{{- /* IMAGES */}}
 			<div id='featured_images_0'>
 				{{- range .FeaturedImages0lst }}
-					<div class='image_info'>
+					<div class='image_info' data-img_system_id_str="{{ .IDstr }}">
 						<div class="image_title">{{ .TitleStr }}</div>
 						
 						<div class="image">
 							<img class="image_resource" src="{{ .ImageURLstr }}" data-img_thumb_medium_url="{{ .ImageThumbnailMediumURLstr }}" crossOrigin="anonymous"></img>
 						</div>
+
+						{{- /* TAGS */}}
+						<div class='tags_container'>
+						
+							{{- range .tags_lst }}
+							<a class='gf_image_tag' href='/v1/tags/objects?tag={{ . }}&otype=image'>#{{ . }}</a>
+							{{- end }}
+						
+						</div>
+
 						<div class="origin_page_url">
 							<a href='{{ .ImageOriginPageURLstr }}' target="_blank">
 								{{- .ImageOriginPageURLhostStr}}
@@ -122,12 +133,22 @@
 
 			<div id='featured_images_1'>
 				{{- range .FeaturedImages1lst }}
-					<div class='image_info'>
+					<div class='image_info' data-img_system_id_str="{{ .IDstr }}">
 						<div class="image_title">{{ .TitleStr }}</div>
 						
 						<div class="image">
 							<img class="image_resource" src="{{ .ImageURLstr }}" data-img_thumb_medium_url="{{ .ImageThumbnailMediumURLstr }}" crossOrigin="anonymous"></img>
 						</div>
+
+						{{- /* TAGS */}}
+						<div class='tags_container'>
+						
+							{{- range .tags_lst }}
+							<a class='gf_image_tag' href='/v1/tags/objects?tag={{ . }}&otype=image'>#{{ . }}</a>
+							{{- end }}
+						
+						</div>
+						
 						<div class="origin_page_url">
 							<a href='{{ .ImageOriginPageURLstr }}' target="_blank">
 								{{- .ImageOriginPageURLhostStr }}
@@ -138,6 +159,7 @@
 					</div>
 				{{ end }}
 			</div>
+			
 		</div>
 		{{- /*-----------------------------------------------------*/}}
 		{{- /* PUBLISHER_APP */}}
@@ -214,8 +236,10 @@
 	<script type="text/javascript" src="./../../../../../libs/js/svg.min.js"></script>
 
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.5/web3.min.js"></script>
-
+	
 	<script type="text/javascript" src="./../../../../gf_core/ts/gf_image_upload.js"></script>
+	<script type="text/javascript" src="./../../../gf_tagger/js/gf_tagger_ui.js"></script>
+	<script type="text/javascript" src="./../../../gf_tagger/js/gf_tagger_http.js"></script>
 	<script type="text/javascript" src="./../../ts/gf_landing_page.ts"></script>
 	
 	<script>
