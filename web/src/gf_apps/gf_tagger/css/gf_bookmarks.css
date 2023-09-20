@@ -11,7 +11,7 @@ body {
 #main_container {
     display: grid;
     grid-template-columns: 15% 70% 15%;
-    position: absolute;
+    position: relative;
     top: 55px;
 }
 

@@ -93,6 +93,8 @@ export function init(p_log_fun) {
 						$(p_image_info_element).find(".owner_user_name").css("color", "black");
 
 						break;
+
+					// DARK
 					case "dark":
 
 						/*
