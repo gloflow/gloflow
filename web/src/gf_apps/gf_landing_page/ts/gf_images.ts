@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../d/jquery.d.ts" />
 ///<reference path="../../../d/jquery.timeago.d.ts" />
 
+import * as gf_color        from "./../../../gf_core/ts/gf_color.ts";
 import * as gf_image_colors from "./../../../gf_core/ts/gf_image_colors";
 import * as gf_time         from "./../../../gf_core/ts/gf_time";
 
@@ -70,6 +71,33 @@ export function init(p_log_fun) {
 				$(p_image_info_element).find(".image_title").css("background-color", `#${p_color_dominant_hex_str}`);
 				$(p_image_info_element).find(".origin_page_url").css("background-color", `#${p_color_dominant_hex_str}`);
 
+
+
+				const color_class_str = gf_color.classify(p_color_dominant_hex_str);
+
+				switch (color_class_str) {
+
+
+					case "light":
+
+						/*
+						if background is light, then the text should be dark, so setting it here explicitly
+						on dominant color classification.
+						*/
+						$(p_image_info_element).find(".image_title").css("color", "black");
+						$(p_image_info_element).find(".origin_page_url").css("color", "black");
+
+
+						break;
+					case "dark":
+
+						/*
+						css rules external to this function set the default color of
+						text to white, so dark background dominant-color works fine.
+						no need to set anything here yet.
+						*/
+						break;
+				};
 			});
 
 		//----------------------
@@ -77,7 +105,7 @@ export function init(p_log_fun) {
 
 	//-------------------------------------------------
 }
-
+  
 //-------------------------------------------------
 // DEPRECATED!!
 // REMOVE!!

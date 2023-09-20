@@ -18,6 +18,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 //-----------------------------------------------------
+export function hexToRgb(hex) {
+	const bigint = parseInt(hex.replace('#', ''), 16);
+	const r = (bigint >> 16) & 255;
+	const g = (bigint >> 8) & 255;
+	const b = bigint & 255;
+	
+	return { r, g, b };
+  }
+  
+export function calculateLuminance({ r, g, b }) {
+	return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+}
+
+export function classify(hex) {
+	const rgb = hexToRgb(hex);
+	const luminance = calculateLuminance(rgb);
+
+	return luminance > 0.5 ? 'light' : 'dark';
+}
+
+//-----------------------------------------------------
 export function get_int(p_color_str :string) :number {
 	return parseInt(get_hex(p_color_str).replace('#',''),16);
 }
