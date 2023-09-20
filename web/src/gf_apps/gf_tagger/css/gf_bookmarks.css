@@ -8,20 +8,31 @@ body {
 }
 
 /*----------------------------------------------------------*/
-#bookmarks {
+#main_container {
     display: grid;
     grid-template-columns: 15% 70% 15%;
-    width: 100%;
     position: absolute;
     top: 55px;
 }
 
-#left_space, #right_space {
+#main_container #left_space {
+    /* grid-column: 1 / 2; */
+}
+#main_container #right_space {
+    /* grid-column: 3 / 4; */
+}
+
+#main_container #left_space, #right_space {
     background: transparent; /* Empty space */
 }
 
 /*----------------------------------------------------------*/
 /* BOOKMARK */
+
+#main_container #bookmarks {
+    /* grid-column: 2 / 3; */
+}
+
 .bookmark {
 	background-color: #a9eaa9;
 	padding-left: 6px;
@@ -29,11 +40,15 @@ body {
     padding-top: 6px;
     padding-bottom: 3px;
 	position: relative;
+    margin-bottom: 9px;
 }
 
 .bookmark .url {
 	padding-left: 5px;
     font-weight: bold;
+}
+.bookmark .url a {
+    word-wrap: break-word;
 }
 
 .bookmark .description {
