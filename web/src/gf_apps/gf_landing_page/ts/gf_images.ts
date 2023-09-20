@@ -24,8 +24,13 @@ import * as gf_color        from "./../../../gf_core/ts/gf_color";
 import * as gf_image_colors from "./../../../gf_core/ts/gf_image_colors";
 import * as gf_time         from "./../../../gf_core/ts/gf_time";
 
+// GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
+declare var gf_tagger__init_ui;
+declare var gf_tagger__http_add_tags_to_obj;
+
 //-------------------------------------------------
-export function init(p_log_fun) {
+export function init(p_gf_host_str,
+	p_log_fun) {
 
 	$('#featured_images_0').find('.image_info').each((p_i, p_image_info_element)=>{
 		
@@ -107,11 +112,121 @@ export function init(p_log_fun) {
 			});
 
 		//----------------------
+
+		const gf_container_element = $("body");
+
+		init_tagging(p_image_info_element,
+			gf_container_element,
+	
+			// tags_create_pre_fun
+			// called before a tag is about to be added to an image
+			async ()=>{
+				const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+					
+					/*
+					IMPORTANT!! - img_system_id is attached as a data property to the image container element
+						in the server template rendering.
+					*/
+					var img_system_id_str = $(p_image_info_element).attr("data-img_system_id_str");
+					p_resolve_fun(img_system_id_str);
+
+				});
+				return p;
+			},
+			p_gf_host_str,
+			p_log_fun);
 	}
 
 	//-------------------------------------------------
 }
-  
+
+//---------------------------------------------------
+// TAGGING_UI
+
+function init_tagging(p_image_container_element,
+	p_gf_container,
+	p_tags_create_pre_fun,
+	p_gf_host_str,
+	p_log_fun) {
+	
+	var image_system_id_str;
+
+	const http_api_map = {
+		"gf_tagger": {
+			"add_tags_to_obj": async (p_new_tags_lst,
+				p_obj_id_str,
+				p_obj_type_str,
+				p_tags_meta_map,
+				p_log_fun)=>{
+				const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+					
+					const object_type_str = "img";
+
+					await gf_tagger__http_add_tags_to_obj(p_new_tags_lst,
+						image_system_id_str,
+						object_type_str,
+						{}, // meta_map
+						p_gf_host_str,
+						p_log_fun);
+
+					p_resolve_fun({
+						"added_tags_lst": p_new_tags_lst,
+					});
+				});
+				return p;
+			}
+		}
+	};
+
+	const obj_type_str = "image";
+	const input_element_parent_selector_str = "#page_info_container";
+
+	gf_tagger__init_ui(obj_type_str,
+		p_image_container_element,
+		input_element_parent_selector_str,
+
+		//---------------------------------------------------
+		// tags_create_pre_fun
+		async (p_tags_lst)=>{
+			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+				// p_tags_create_pre_fun resolves the system_id of the item being tagged
+				image_system_id_str = await p_tags_create_pre_fun(p_tags_lst);
+
+				p_resolve_fun(image_system_id_str);
+			});
+			return p;
+		},
+
+		//---------------------------------------------------
+		// on_tags_created_fun
+		(p_tags_lst)=>{
+
+			console.log("added tags >>>>>>>>>>>", p_tags_lst);
+
+			p_tags_lst.forEach(p_tag_str=>{
+
+				tag_display(p_tag_str);
+			})
+		},
+
+		//---------------------------------------------------
+		()=>{}, // on_tag_ui_add_fun
+		()=>{}, // on_tag_ui_remove_fun
+		http_api_map,
+		p_log_fun);
+
+	//-------------------------------------------------
+	function tag_display(p_tag_str) {
+
+		$(p_image_container_element)
+			.find(".tags_container")
+			.append(`<a class='gf_image_tag' href='/v1/tags/objects?tag=${p_tag_str}&otype=image'>#${p_tag_str}</a>`)
+	}
+
+	//-------------------------------------------------
+}
+
 //-------------------------------------------------
 // DEPRECATED!!
 // REMOVE!!

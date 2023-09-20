@@ -32,6 +32,8 @@ declare var gf_upload__init;
 // INIT
 export async function init(p_log_fun) {
 	
+	const gf_host_str = window.location.href;
+
     $("time.timeago").timeago();
     
 	//---------------------
@@ -46,7 +48,7 @@ export async function init(p_log_fun) {
 
 	//---------------------
 	// GF_IMAGES_INIT
-	gf_images.init(p_log_fun);
+	gf_images.init(gf_host_str, p_log_fun);
 
 	//---------------------
 	// WINDOW_RESIZE - draw a new canvas when the view is resized, and delete the old one (with the old dimensions)
@@ -176,29 +178,3 @@ function posts_init() {
 
 	//--------------------------------------------------------
 }
-
-//--------------------------------------------------------
-/*
-function load_static_data(p_log_fun) :Object[] {
-	
-	const featured_elements_infos_lst :Object[] = []; 
-
-	$("#posts .post_info").each((p_i)=>{
-		const element = this;
-		const featured_element_image_url_str  :string = $(element).find("img").attr("src");
-		const featured_element_images_num_str :string = $(element).find(".post_images_number").find(".num").text();
-		const featured_element_title_str      :string = $(element).find(".post_title").text();
-
-		const featured_element_info_map :Object = {
-			"element":    $(element),
-			"image_src":  featured_element_image_url_str,
-			"images_num": featured_element_images_num_str,
-			"title_str":  featured_element_title_str
-		};
-
-		featured_elements_infos_lst.push(featured_element_info_map);
-	});
-
-	return featured_elements_infos_lst;
-}
-*/

@@ -31,11 +31,8 @@ declare var gf_upload__init;
 //-------------------------------------------------
 export function init(p_log_fun) {
 
-
-
+	// SYS_PANEL
     gf_sys_panel.init_with_auth(p_log_fun);
-
-
 
     //---------------------
 	// MASONRY
