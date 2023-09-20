@@ -88,8 +88,9 @@ export function init(p_log_fun) {
 						on dominant color classification.
 						*/
 						$(p_image_info_element).find(".image_title").css("color", "black");
-						$(p_image_info_element).find(".origin_page_url").css("color", "black");
-
+						$(p_image_info_element).find(".origin_page_url a").css("color", "black");
+						$(p_image_info_element).find(".creation_time").css("color", "black");
+						$(p_image_info_element).find(".owner_user_name").css("color", "black");
 
 						break;
 					case "dark":

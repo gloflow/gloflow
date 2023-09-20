@@ -42,6 +42,7 @@ export function classify(hex) {
 export function get_int(p_color_str :string) :number {
 	return parseInt(get_hex(p_color_str).replace('#',''),16);
 }
+
 //-----------------------------------------------------
 export function get_hex(p_color_str :string) :string {
     const colours_lst = {
