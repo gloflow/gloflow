@@ -12,37 +12,44 @@
 
 </head>
 <body>
-    {{/*------------------------------------------------------*/}}
-    <div id="bookmarks">
-        {{ range .Bookmarks_lst -}}
-        <div class="bookmark">
-            
-            <div class='url'>
-                <a href='{{ .Url_str }}'>{{ .Url_str }}</a>
-            </div>
+    <div id="main_container">
 
-            <div class='description'>
-                {{ .Description_str }}
-            </div>
-
-            <div class='screenshot' data-img_id="{{- .Screenshot_image_thumbnail_url_str }}">
+        <div id="left_space"></div>
+        {{- /*------------------------------------------------------*/}}
+        <div id="bookmarks">
+            {{ range .Bookmarks_lst -}}
+            <div class="bookmark">
                 
-            </div>
+                <div class='url'>
+                    <a href='{{ .Url_str }}'>{{ .Url_str }}</a>
+                </div>
 
-            <div class="tags">
-                <div class='label'>tags</div>
-                <div class='tags_list'>
-                    {{ range .Tags_lst -}}
-                    <span class="tag"><a href="/v1/tags/objects?tag={{ . }}&otype=bookmark">{{- . -}}</a></span>
-                    {{ end -}}
+                <div class='description'>
+                    {{ .Description_str }}
+                </div>
+
+                <div class='screenshot' data-img_id="{{- .Screenshot_image_thumbnail_url_str }}">
+                    
+                </div>
+
+                <div class="tags">
+                    <div class='label'>tags:</div>
+                    <div class='tags_list'>
+                        {{ range .Tags_lst -}}
+                        <span class="tag"><a href="/v1/tags/objects?tag={{ . }}&otype=bookmark">{{- . -}}</a></span>
+                        {{ end -}}
+                    </div>
+                </div>
+
+                <div class='creation_time'>
+                    {{ printf "%f" .Creation_unix_time_f }}
                 </div>
             </div>
-
-            <div class='creation_time'>
-                {{ printf "%f" .Creation_unix_time_f }}
-            </div>
+            {{end -}}
         </div>
-        {{end -}}
+        {{- /*------------------------------------------------------*/}}
+
+        <div id="right_space"></div>
     </div>
 
     {{/*------------------------------------------------------*/}}

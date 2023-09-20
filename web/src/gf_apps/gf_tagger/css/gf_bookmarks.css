@@ -7,19 +7,35 @@ body {
     overflow-x: hidden;
 }
 
-
-
-
+/*----------------------------------------------------------*/
 #bookmarks {
-	position: absolute;
-	top: 55px;
+    display: grid;
+    grid-template-columns: 15% 70% 15%;
+    width: 100%;
+    position: absolute;
+    top: 55px;
+}
+
+#left_space, #right_space {
+    background: transparent; /* Empty space */
 }
 
 
 
+
+
+
+
+
+/*----------------------------------------------------------*/
+/* BOOKMARK */
 .bookmark {
 	background-color: #a9eaa9;
-    margin-bottom: 5px;
+	padding-left: 6px;
+    font-weight: bold;
+    padding-top: 6px;
+    padding-bottom: 3px;
+	position: relative;
 
 	
 }
@@ -30,5 +46,27 @@ body {
 }
 
 .bookmark .description {
-	font-size: 13px;
+	font-size: 14px;
+	padding-left: 6px;
+}
+.bookmark .creation_time {
+	font-size: 12px;
+    padding-left: 5px;
+    padding-bottom: 4px;
+}
+.bookmark .tags {
+	position: absolute;
+    width: 30%;
+    height: 21px;
+    right: 0px;
+}
+.bookmark .tags .label {
+	font-size: 12px;
+    padding-left: 0px;
+    position: absolute;
+}
+.bookmark .tags .tags_list {
+	padding-left: 4px;
+    left: 28px;
+    position: absolute;
 }
