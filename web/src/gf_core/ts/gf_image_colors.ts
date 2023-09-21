@@ -44,22 +44,8 @@ export function init_pallete(p_image,
                     <div class="colors">
                     </div>
                 </div>
-            </div>`);	
-            
-            /*
-            const color_info_element = $(`<div class="colors_info">
-                <div class="color_dominant">
-                    <div class="color" style="background-color:#${color_dominant_hex_str};">
-                    </div>
-                </div>
-                <div class="color_pallete">
-                    <div class="colors">
-                    </div>
-                </div>
-            </div>`);	
-            */
+            </div>`);
 
-            
             color_info_element.insertAfter(image);
 
 
@@ -70,60 +56,6 @@ export function init_pallete(p_image,
             $(color_info_element).on("mouseleave", ()=>{
                 $(color_info_element).css("box-shadow", "")
             })
-
-            //-------------
-            // COLOR_DOMINANT
-
-            /*
-            const color_dominant_element       = $(color_info_element).find(".color_dominant");
-            var   color_dominant_label_element = $(`<div class="color_dominant_label">dominant color</div>`);
-            var   color_dominant__copy_to_clipboard_btn;
-            $(color_dominant_element).on("mouseenter", ()=>{
-
-                // COLOR_DOMINANT_LABEL
-                color_info_element.append(color_dominant_label_element);
-
-                //-------------
-                // COLOR_INSPECTOR
-                var color_inspect_element = $(`<div class="color_inspect">
-                    <div class='color_hex'>#${color_dominant_hex_str}</div>
-                    <div class='color_large' style="background-color:#${color_dominant_hex_str};"></div>
-                </div>`);
-                $(color_info_element).append(color_inspect_element);
-                
-                //-------------
-
-                //-------------
-                // COPY_TO_CLIPBOARD
-                if (color_dominant__copy_to_clipboard_btn == null) {
-                    color_dominant__copy_to_clipboard_btn = init_copy_to_clipboard_btn([color_dominant_hex_str]);
-                    $(color_dominant_element).append(color_dominant__copy_to_clipboard_btn);
-                }
-
-                //-------------
-            });
-
-            // IMPORTANT!! - using "mouseleave" so that label and clipboard btn are only removed when the whole
-            //               color_dominant element is left, not just the .color element thats a child of .color_dominant
-            // mouseenter and mouseleave - triggered when you enter and leave a hierarchy of nodes,
-            //                             but not when you navigate that hierarchy's descendance.
-            // mouseover and mouseout    - triggered when the mouse respectively enters and leaves
-            //                             a node's "exclusive" space, so you get a "out" when the
-            //                             mouse gets into a child node.
-            $(color_dominant_element).on("mouseleave", (p_e)=>{
-
-                // remove label
-                $(color_dominant_label_element).remove();
-
-                // remove color_inspect
-                $(color_info_element).find(".color_inspect").remove();
-
-                // remove copy_to_clipboard button
-                $(color_dominant__copy_to_clipboard_btn).remove();
-                color_dominant__copy_to_clipboard_btn = null;
-
-            });
-            */
 
             //-------------
             // COLOR_PALLETE
@@ -174,6 +106,16 @@ export function init_pallete(p_image,
 
                 //-------------
             });
+
+            /*
+            IMPORTANT!! - using "mouseleave" so that label and clipboard btn are only removed when the whole
+                color_dominant element is left, not just the .color element thats a child of .color_dominant
+                mouseenter and mouseleave - triggered when you enter and leave a hierarchy of nodes,
+                    but not when you navigate that hierarchy's descendance.
+                mouseover and mouseout - triggered when the mouse respectively enters and leaves
+                    a node's "exclusive" space, so you get a "out" when the
+                    mouse gets into a child node.
+            */
             $(color_pallete_element).on("mouseleave", ()=>{
                 $(color_pallete_label_element).remove();
 

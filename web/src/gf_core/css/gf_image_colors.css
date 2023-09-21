@@ -20,36 +20,6 @@
 }
 
 /*---------------------------*/
-/*COLOR_DOMINANT*/
-/*
-.colors_info .color_dominant .color {
-	height: 25px;
-    cursor: pointer;
-}
-
-.colors_info .color_dominant_label {
-	position: absolute;
-    left: -89px;
-    top: 0px;
-    background-color: inherit;
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 6px;
-    padding-bottom: 7px;
-    color: white;
-    font-size: 10px;
-    box-shadow: -9px 0px 11px #0000007a;
-}
-
-.colors_info .color_dominant #copy_to_clipboard_btn {
-    position: absolute;
-    top: 0px;
-    right: -27px;
-    box-shadow: 9px 0px 11px #0000007a;
-}
-*/
-
-/*---------------------------*/
 /* COLOR_PALETTE */
 
 .colors_info .color_pallete .colors {
