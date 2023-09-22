@@ -22,11 +22,10 @@ files_lst = [
 	'./src/dashboard/gf_analytics_dashboard.ts',
 ]
 
-print 'files_lst - %s'%(files_lst)
+print('files_lst - %s'%(files_lst))
 
-print 'RUNNING COMPILE...'
-r = envoy.run('tsc --out %s %s'%(output_file_str,
-								' '.join(files_lst)))
+print('RUNNING COMPILE...')
+r = envoy.run('tsc --out %s %s'%(output_file_str, ' '.join(files_lst)))
 
-print r.std_out
-print r.std_err
+print(r.std_out)
+print(r.std_err)

@@ -121,12 +121,14 @@ func InitService(pHTTPmux *http.ServeMux,
 		panic(gfErr.Error)
 	}
 
-	/*gf_gif_lib.Init_img_to_gif_migration(*p_images_store_local_dir_path_str,
+	/*
+	gf_gif_lib.Init_img_to_gif_migration(*p_images_store_local_dir_path_str,
 		*p_images_main_s3_bucket_name_str,
 		s3_client,
-		s3_uploader, //s3_client,
+		s3_uploader, // s3_client,
 		mongodb_coll,
-		pLogFun)*/
+		pLogFun)
+	*/
 
 	//-------------
 	// IMAGE_EDITOR

@@ -227,7 +227,8 @@ func DBmongoGetDomainsImages(pRuntimeSys *gf_core.RuntimeSys) ([]GFdomainImages,
 	}
 
 
-	/*pipe := pRuntimeSys.Mongo_coll.Pipe([]bson.M{
+	/*
+	pipe := pRuntimeSys.Mongo_coll.Pipe([]bson.M{
 		//-------------------
 		bson.M{"$match":bson.M{
 				"t":                   "img",
@@ -255,7 +256,8 @@ func DBmongoGetDomainsImages(pRuntimeSys *gf_core.RuntimeSys) ([]GFdomainImages,
 
 		//-------------------
 		bson.M{"$sort": bson.M{"count_int": -1},},
-	})*/
+	})
+	*/
 	
 	cursor, err := pRuntimeSys.Mongo_coll.Aggregate(ctx, pipeline)
 	if err != nil {
@@ -273,7 +275,8 @@ func DBmongoGetDomainsImages(pRuntimeSys *gf_core.RuntimeSys) ([]GFdomainImages,
 		Count_int           int    `bson:"count_int"`
 	}
 
-	/*results_lst := []Images_Origin_Page{}
+	/*
+	results_lst := []Images_Origin_Page{}
 	err         := pipe.All(&results_lst)
 
 	if err != nil {
@@ -281,7 +284,8 @@ func DBmongoGetDomainsImages(pRuntimeSys *gf_core.RuntimeSys) ([]GFdomainImages,
 			"mongodb_aggregation_error",
 			nil, err, "gf_domains_lib", pRuntimeSys)
 		return nil, gfErr
-	}*/
+	}
+	*/
 
 	resultsLst := []ImagesOriginPage{}
 	for cursor.Next(ctx) {

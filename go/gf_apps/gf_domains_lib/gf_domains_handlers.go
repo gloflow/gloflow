@@ -29,14 +29,14 @@ import (
 
 //-------------------------------------------------
 
-func InitHandlers(p_templates_paths_map map[string]string,
-	p_mux         *http.ServeMux,
+func InitHandlers(pTemplatesPathsMap map[string]string,
+	pMux        *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
 
-	gfTemplates, gfErr := tmplLoad(p_templates_paths_map, pRuntimeSys)
+	gfTemplates, gfErr := tmplLoad(pTemplatesPathsMap, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -46,32 +46,34 @@ func InitHandlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// DOMAIN_BROWSER
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/domains/browser",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "GET" {
+			if pReq.Method == "GET" {
 				
 				//--------------------
 				//response_format_str - "json"|"html"
 
-				qs_map := p_req.URL.Query()
-				fmt.Println(qs_map)
+				qsMap := pReq.URL.Query()
+				fmt.Println(qsMap)
 
-				/*//response_format_str - "j"(for json)|"h"(for html)
-				response_format_str := gf_rpc_lib.Get_response_format(qs_map,
-																pLogFun)*/
+				/*
+				// response_format_str - "j"(for json)|"h"(for html)
+				response_format_str := gf_rpc_lib.Get_response_format(qsMap, pLogFun)
+				*/
+
 				//--------------------
 				// GET DOMAINS FROM DB
-				domains_lst, gfErr := dbMongoGetDomains(pRuntimeSys)
+				domainsLst, gfErr := dbMongoGetDomains(pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
 				//--------------------
 				// RENDER TEMPLATE
-				gfErr = domainsBrowserRenderTemplate(domains_lst,
+				gfErr = domainsBrowserRenderTemplate(domainsLst,
 					gfTemplates.domains_browser__tmpl,
 					gfTemplates.domains_browser__subtemplates_names_lst,
-					p_resp,
+					pResp,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
@@ -80,7 +82,7 @@ func InitHandlers(p_templates_paths_map map[string]string,
 			}
 			return nil, nil
 		},
-		p_mux,
+		pMux,
 		nil,
 		true, // pStoreRunBool
 		nil,

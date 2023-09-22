@@ -59,7 +59,7 @@ type GFserviceInfo struct {
 //-------------------------------------------------
 
 func InitService(pServiceInfo *GFserviceInfo,
-	p_http_mux  *http.ServeMux,
+	pHTTPmux  *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	//-----------------
@@ -75,14 +75,14 @@ func InitService(pServiceInfo *GFserviceInfo,
 	fmt.Println("ELASTIC_SEARCH_CLIENT >>> OK")
 
 	//-----------------
-	initHandlers(pServiceInfo.Templates_paths_map, p_http_mux, pRuntimeSys)
+	initHandlers(pServiceInfo.Templates_paths_map, pHTTPmux, pRuntimeSys)
 
 	//------------------------
 	// GF_DOMAINS
 	gf_domains_lib.DBmongoIndexInit(pRuntimeSys)
 	gf_domains_lib.InitDomainsAggregation(pRuntimeSys)
 	gfErr = gf_domains_lib.InitHandlers(pServiceInfo.Templates_paths_map,
-		p_http_mux,
+		pHTTPmux,
 		pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
@@ -106,7 +106,7 @@ func InitService(pServiceInfo *GFserviceInfo,
 		pServiceInfo.Templates_paths_map,
 		
 		esearch_client,
-		p_http_mux,
+		pHTTPmux,
 		pRuntimeSys)
 
 	//------------------------
@@ -122,8 +122,12 @@ func InitService(pServiceInfo *GFserviceInfo,
 
 	//------------------------
 	// STATIC FILES SERVING
-	static_files__url_base_str := "/a"
-	gf_core.HTTPinitStaticServing(static_files__url_base_str, pRuntimeSys)
+	staticFilesURLbaseStr := "/a"
+	localDirPathStr       := "./static"
+	gf_core.HTTPinitStaticServingWithMux(staticFilesURLbaseStr,
+		localDirPathStr,
+		pHTTPmux,
+		pRuntimeSys)
 
 	//------------------------
 

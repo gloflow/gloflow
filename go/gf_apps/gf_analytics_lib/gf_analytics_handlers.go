@@ -39,7 +39,6 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	// METRICS
 	handlers_endpoints_lst := []string{
 		"/v1/a/ue",
-		"/v1/a/dashboard",
 	}
 	metricsGroupNameStr := "main"
 	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_analytics", handlers_endpoints_lst)
