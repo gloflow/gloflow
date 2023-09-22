@@ -30,6 +30,7 @@ def run(p_notify_completion_url_str,
 	# the entity thats receiving the completion notification needs to know what the tag
 	# is of the newly created container.
 	if not p_git_commit_hash_str == None:
+		
 		url = urllib.parse.urlparse(p_notify_completion_url_str)
 		
 		# QUERY_STRING

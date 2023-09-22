@@ -121,22 +121,6 @@ export function init(p_logged_in_bool,
 				
 			init_tagging(p_image_info_element,
 				gf_container_element,
-		
-				// tags_create_pre_fun
-				// called before a tag is about to be added to an image
-				async (p_tags_lst)=>{
-					const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
-						
-						/*
-						IMPORTANT!! - img_system_id is attached as a data property to the image container element
-							in the server template rendering.
-						*/
-						var img_system_id_str = $(p_image_info_element).attr("data-img_system_id_str");
-						p_resolve_fun(img_system_id_str);
-
-					});
-					return p;
-				},
 				p_gf_host_str,
 				p_log_fun);
 		}
@@ -150,7 +134,6 @@ export function init(p_logged_in_bool,
 
 function init_tagging(p_image_container_element,
 	p_gf_container,
-	p_tags_create_pre_fun,
 	p_gf_host_str,
 	p_log_fun) {
 	
@@ -191,13 +174,18 @@ function init_tagging(p_image_container_element,
 		input_element_parent_selector_str,
 
 		//---------------------------------------------------
+		// TAGS
+		//---------------------------------------------------
 		// tags_create_pre_fun
 		async (p_tags_lst)=>{
 			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 				// p_tags_create_pre_fun resolves the system_id of the item being tagged
-				image_system_id_str = await p_tags_create_pre_fun(p_tags_lst);
-
+				/*
+				IMPORTANT!! - img_system_id is attached as a data property to the image container element
+					in the server template rendering.
+				*/
+				var image_system_id_str = $(p_image_container_element).attr("data-img_system_id_str");
 				p_resolve_fun(image_system_id_str);
 			});
 			return p;
@@ -216,8 +204,28 @@ function init_tagging(p_image_container_element,
 		},
 
 		//---------------------------------------------------
-		()=>{}, // on_tag_ui_add_fun
-		()=>{}, // on_tag_ui_remove_fun
+		// NOTES
+		//---------------------------------------------------
+		// p_notes_create_pre_fun
+		(p_notes_lst)=>{
+			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+				var image_system_id_str = $(p_image_container_element).attr("data-img_system_id_str");
+				p_resolve_fun(image_system_id_str);
+			});
+			return p;
+		},
+
+		//---------------------------------------------------
+		// on_notes_created_fun
+		(p_notes_lst)=>{
+
+			console.log("added notes >>>>>>>>>>>", p_notes_lst)
+		},
+
+		//---------------------------------------------------		
+		()=>{}, // on_tagging_ui_add_fun
+		()=>{}, // on_tagging_ui_remove_fun
 		http_api_map,
 		p_log_fun);
 
