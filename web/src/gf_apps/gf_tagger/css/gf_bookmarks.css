@@ -36,7 +36,7 @@ body {
 }
 
 .bookmark {
-	background-color: #a9eaa9;
+	background-color: #fffeda;
 	padding-left: 6px;
     font-weight: bold;
     padding-top: 6px;
@@ -51,6 +51,7 @@ body {
 }
 .bookmark .url a {
     word-wrap: break-word;
+    text-decoration: none;
 }
 
 .bookmark .description {
@@ -59,6 +60,7 @@ body {
 }
 .bookmark .creation_time {
 	font-size: 12px;
+    font-weight: normal;
     padding-left: 5px;
     padding-bottom: 4px;
 }
@@ -72,9 +74,19 @@ body {
 	font-size: 12px;
     padding-left: 0px;
     position: absolute;
+    font-weight: normal;
 }
 .bookmark .tags .tags_list {
 	padding-left: 4px;
     left: 28px;
     position: absolute;
+}
+.bookmark .tags .tags_list .tag {
+    background-color: #ede9a8;
+    padding-bottom: 3px;
+    padding-top: 2px;
+    text-decoration: none;
+}
+.tag a {
+    text-decoration: none;
 }
