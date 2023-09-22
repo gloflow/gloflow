@@ -27,29 +27,42 @@
 	top: 100px;
 	left: 120px;
 	z-index: 2;
+
+	width: 480px;
+    height: 200px;
+	
 }
 
 /* BACKGROUND */
 #notes_panel #background {
 	position        : absolute;
-	top             : -27px;
-	left            : -288px;
 	background-color: black;
-	height          : 123px;
-	width           : 409px;
 	opacity         : 0.6;
+
+	height: 100%;
+    width: 100%;
+}
+
+#notes_panel #container {
+	position: absolute;
+    top: 37px;
+    left: 43px;
 }
 
 /* ADD_NOTE BUTTON */
 #notes_panel #add_note_btn {
 	background-color: rgb(255, 150, 54);	
+	left: 300px;
+    position: absolute;
 	width           : 90px;
-	height          : 48px;	
+	height          : 103px;	
 	font-weight     : bold;
 	padding-top     : 21px;
 	margin-bottom   : 5px;
 	cursor          : pointer;
 	opacity         : 0.9;
+
+	
 }
 /*
 #notes_panel #add_note_btn:hover {
@@ -57,6 +70,8 @@
 }
 */
 #notes_panel #add_note_btn .icon {
+	text-align: center;
+	padding-top: 26px;
 	-webkit-user-select: none; /*prevent the text from being selected by accident*/
 	font-size: 25px;
 }
@@ -106,12 +121,13 @@
 
 #notes_panel .note_input_panel {
 	position: absolute;
-	top     : 6px;
-	left    : -172px;
-	height  : 52px;
+	height: 125px;
+    width: 300px;
 }
 #notes_panel .note_input_panel textarea {
 	position: absolute;
-	left: -86px;
 	height: 56px;
+	left: 0px;
+	height: 100%;
+    width: 100%;
 }

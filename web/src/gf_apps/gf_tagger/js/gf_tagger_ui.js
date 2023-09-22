@@ -94,7 +94,7 @@ function gf_tagger__init_ui(p_obj_type_str,
 
 		const position_relative_to_element = p_obj_element;
 
-		gf_tagger__place_notes_input_ui(notes_input_ui_element,
+		gf_tagger__place_tags_input_ui(notes_input_ui_element,
 			position_relative_to_element,
 			p_input_element_parent_selector_str,
 			p_log_fun);
@@ -169,6 +169,10 @@ function gf_tagger__init_notes_input_ui(p_obj_type_str,
 			<div id='background'></div>
 
 			<div id='container'>
+				<div class='note_input_panel'>
+					<textarea name="note_input" cols="30" rows="3"></textarea>
+				</div>
+
 				<div id='add_note_btn'>
 					<div class='icon'>+</div>
 				</div>
@@ -178,18 +182,6 @@ function gf_tagger__init_notes_input_ui(p_obj_type_str,
 		</div>`);
 
 	return notes_input_ui_element;
-}
-
-function gf_tagger__place_notes_input_ui(p_input_ui_element,
-	p_position_relative_to_element,
-	p_input_element_parent_selector_str,
-	p_log_fun) {
-
-	/*
-	input element itself is attached to a different element, outside of this control. it could be "body",
-	or some other parent.
-	*/
-	$(p_input_element_parent_selector_str).append(p_input_ui_element);
 }
 
 //-------------------------------------------------
@@ -303,6 +295,8 @@ function gf_tagger__place_tags_input_ui(p_input_ui_element,
 	const relative_element__width_int = $(p_position_relative_to_element).width();
 	const input_ui_element__width_int = $(p_input_ui_element).width();
 
+
+	console.log("input ui element width", input_ui_element__width_int)
 	//------------------------
 	// Y_COORDINATE
 
@@ -338,23 +332,32 @@ function gf_tagger__place_tags_input_ui(p_input_ui_element,
 		// input_ui is cutoff on the left side
 		if ((relative_to_element_x_int - input_ui_horizontal_overflow_int) < 0) {
 
+			console.log("left cutoff...")
 			// position input_ui with its left side aligned with left edge of element to be tagged
 			tagging_input_x = relative_to_element_x_int;
 		}
 		// input_ui is cutoff on the right side
 		else if (((relative_to_element_x_int+relative_element__width_int) + input_ui_horizontal_overflow_int) > $(window).innerWidth()) {
 
+			console.log("right cutoff...")
+
 			// position inpout_ui with its right edge aligned with the right edge of element to be tagged
 			tagging_input_x = (relative_to_element_x_int+relative_element__width_int) - input_ui_element__width_int;
 		}
 		// no cutoff
 		else {
+
+			console.log("no cutoff...")
+
 			// positions that tag input container in the middle, and above, of the post_element
 			tagging_input_x = relative_to_element_x_int-(input_ui_element__width_int-relative_element__width_int)/2;
 		}
 	}
 	// input_ui is narrower then element, so just position normally
 	else {
+
+		console.log("regular positioning...")
+
 		// positions that tag input container in the middle, and above, of the post_element
 		tagging_input_x = relative_to_element_x_int-(input_ui_element__width_int-relative_element__width_int)/2;
 	}
