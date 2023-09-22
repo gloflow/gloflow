@@ -2,7 +2,7 @@ body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	margin:      0;
 
-	/*turn off horizontal scroll*/
+	/* turn off horizontal scroll */
 	max-width:  100%;
     overflow-x: hidden;
 
