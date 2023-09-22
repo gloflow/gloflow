@@ -29,6 +29,8 @@ declare const window: any;
 declare var Web3;
 
 //-------------------------------------------------
+// INIT_ME_CONTROL
+
 export async function init_me_control(p_parent_node,
     p_auth_http_api_map,
     p_home_url_str) {

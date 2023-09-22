@@ -43,12 +43,33 @@ export async function init(p_log_fun) {
 	};
 
 	//---------------------
+	// IDENTITY
+	// first complete main initialization and only then initialize gf_identity
+	const urls_map          = gf_identity_http.get_standard_http_urls();
+	const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
+	gf_identity.init_with_http(notifications_meta_map, urls_map);
+	
+
+	
+	const parent_node = $("#right_section");
+	const home_url_str = urls_map["home"];
+
+	gf_identity.init_me_control(parent_node,
+		auth_http_api_map,
+		home_url_str);
+	
+	// inspect if user is logged-in or not
+	const logged_in_bool = await auth_http_api_map["general"]["logged_in"]();
+
+	//---------------------
 	// POSTS_INIT
 	posts_init();
 
 	//---------------------
 	// GF_IMAGES_INIT
-	gf_images.init(gf_host_str, p_log_fun);
+	gf_images.init(logged_in_bool,
+		gf_host_str,
+		p_log_fun);
 
 	//---------------------
 	// WINDOW_RESIZE - draw a new canvas when the view is resized, and delete the old one (with the old dimensions)
@@ -102,22 +123,6 @@ export async function init(p_log_fun) {
 		(p_upload_gf_image_id_str)=>{
 
 		});
-
-	//---------------------
-	// IDENTITY
-	// first complete main initialization and only then initialize gf_identity
-	const urls_map = gf_identity_http.get_standard_http_urls();
-	const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
-	gf_identity.init_with_http(notifications_meta_map, urls_map);
-	
-
-	
-	const parent_node = $("#right_section");
-	const home_url_str = urls_map["home"];
-
-	gf_identity.init_me_control(parent_node,
-		auth_http_api_map,
-		home_url_str);
 
 	//---------------------
 	// ABOUT_SECTION

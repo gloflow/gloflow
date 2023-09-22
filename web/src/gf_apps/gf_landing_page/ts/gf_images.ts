@@ -29,7 +29,8 @@ declare var gf_tagger__init_ui;
 declare var gf_tagger__http_add_tags_to_obj;
 
 //-------------------------------------------------
-export function init(p_gf_host_str,
+export function init(p_logged_in_bool,
+	p_gf_host_str,
 	p_log_fun) {
 
 	$('#featured_images_0').find('.image_info').each((p_i, p_image_info_element)=>{
@@ -113,28 +114,32 @@ export function init(p_gf_host_str,
 
 		//----------------------
 
-		const gf_container_element = $("body");
+		// only initialize tagging UI for logged-in users
+		if (p_logged_in_bool) {
+			
+			const gf_container_element = $("body");
+				
+			init_tagging(p_image_info_element,
+				gf_container_element,
+		
+				// tags_create_pre_fun
+				// called before a tag is about to be added to an image
+				async ()=>{
+					const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+						
+						/*
+						IMPORTANT!! - img_system_id is attached as a data property to the image container element
+							in the server template rendering.
+						*/
+						var img_system_id_str = $(p_image_info_element).attr("data-img_system_id_str");
+						p_resolve_fun(img_system_id_str);
 
-		init_tagging(p_image_info_element,
-			gf_container_element,
-	
-			// tags_create_pre_fun
-			// called before a tag is about to be added to an image
-			async ()=>{
-				const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
-					
-					/*
-					IMPORTANT!! - img_system_id is attached as a data property to the image container element
-						in the server template rendering.
-					*/
-					var img_system_id_str = $(p_image_info_element).attr("data-img_system_id_str");
-					p_resolve_fun(img_system_id_str);
-
-				});
-				return p;
-			},
-			p_gf_host_str,
-			p_log_fun);
+					});
+					return p;
+				},
+				p_gf_host_str,
+				p_log_fun);
+		}
 	}
 
 	//-------------------------------------------------
