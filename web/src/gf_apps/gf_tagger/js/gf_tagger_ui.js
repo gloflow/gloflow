@@ -23,7 +23,11 @@ function gf_tagger__init_ui(p_obj_type_str,
 	p_input_element_parent_selector_str,
 
 	p_tags_create_pre_fun,
+	p_notes_create_pre_fun,
+
 	p_on_tags_created_fun,
+	p_on_notes_created_fun,
+
 	p_on_tag_ui_add_fun,
 	p_on_tag_ui_remove_fun,
 	p_http_api_map,
@@ -37,12 +41,21 @@ function gf_tagger__init_ui(p_obj_type_str,
 		p_on_tag_ui_remove_fun,
 		p_http_api_map,
 		p_log_fun);
+
+	const tagging_notes_input_ui_element = gf_tagger__init_notes_input_ui(p_obj_type_str,
+		p_notes_create_pre_fun,
+		p_on_notes_created_fun,
+		p_on_tag_ui_remove_fun,
+		p_http_api_map,
+		p_log_fun);
 		
 	const tagging_ui_element = $(`
 		<div class="tagging_controls">
 			<div class="add_tags_button">add tags</div>
+			<div class="add_notes_button">add notes</div>
 		</div>`);
 
+	//------------------------------
 	// OPEN TAG INPUT UI
 	$(tagging_ui_element).find('.add_tags_button').on('click', (p_event)=>{
 
@@ -56,7 +69,32 @@ function gf_tagger__init_ui(p_obj_type_str,
 
 		const position_relative_to_element = p_obj_element;
 
-		gf_tagger__place_input_ui(tagging_input_ui_element,
+		gf_tagger__place_tags_input_ui(tagging_input_ui_element,
+			position_relative_to_element,
+			p_input_element_parent_selector_str,
+			p_log_fun);
+
+		if (p_on_tag_ui_add_fun != null) p_on_tag_ui_add_fun();
+
+		// remove the initial controls when the full control opens
+		$(tagging_ui_element).detach();
+	});
+
+	//------------------------------
+	// OPEN NOTES INPUT UI
+	$(tagging_ui_element).find('.add_notes_button').on('click', (p_event)=>{
+
+		p_event.stopImmediatePropagation();
+
+		// remove the tagging_input_container if its already displayed
+		// for tagging another post_element
+		if ($('#tagging_input_container') != null) {
+			$('#tagging_input_container').detach();
+		}
+
+		const position_relative_to_element = p_obj_element;
+
+		gf_tagger__place_notes_input_ui(tagging_input_ui_element,
 			position_relative_to_element,
 			p_input_element_parent_selector_str,
 			p_log_fun);
@@ -104,7 +142,7 @@ function gf_tagger__init_ui(p_obj_type_str,
 				query('#tagging_input_container').remove();
 			}
 
-			gf_tagger__place_input_ui(tagging_input_ui_element,
+			gf_tagger__place_tags_input_ui(tagging_input_ui_element,
                 p_obj_element, // post_element,
                 p_log_fun);
 
@@ -211,7 +249,7 @@ function gf_tagger__init_input_ui(p_obj_type_str,
 }
 
 //-----------------------------------------------------
-function gf_tagger__place_input_ui(p_tagging_input_ui_element,
+function gf_tagger__place_tags_input_ui(p_tagging_input_ui_element,
 	p_position_relative_to_element,
 	p_input_element_parent_selector_str,
 	p_log_fun) {

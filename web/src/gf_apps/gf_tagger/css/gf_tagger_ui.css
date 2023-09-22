@@ -1,6 +1,8 @@
 
 
 
+/*-------------------------------------------------------*/
+/* TAGGING CONTROLS */
 .tagging_controls {
     background-color: gray;
     width: 62px;
@@ -15,6 +17,9 @@
 }
 .tagging_controls:hover{
     background-color: white;
+}
+.tagging_controls .add_notes_button {
+    
 }
 
 /*-------------------------------------------------------*/
