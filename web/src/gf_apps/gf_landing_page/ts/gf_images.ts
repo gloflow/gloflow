@@ -124,7 +124,7 @@ export function init(p_logged_in_bool,
 		
 				// tags_create_pre_fun
 				// called before a tag is about to be added to an image
-				async ()=>{
+				async (p_tags_lst)=>{
 					const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 						
 						/*
