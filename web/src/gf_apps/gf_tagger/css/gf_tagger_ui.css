@@ -4,22 +4,42 @@
 /*-------------------------------------------------------*/
 /* TAGGING CONTROLS */
 .tagging_controls {
-    background-color: gray;
     width: 62px;
     right: 0px;
     top: 15px;
     position: absolute;
-    padding-top: 5px;
-    padding-bottom: 4px;
-    padding-left: 7px;
+   
     font-size: 12px;
     cursor: pointer;
 }
-.tagging_controls:hover{
+
+
+.tagging_controls .add_tags_button {
+    right: 0px;
+    width: 62px;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    padding-left: 7px;
+    background-color: gray;
+    position: absolute;
+    top: 0px;
+}
+.tagging_controls .add_tags_button:hover{
     background-color: white;
 }
+
 .tagging_controls .add_notes_button {
-    
+    right: 0px;
+    width: 62px;
+    position: absolute;
+    top: 30px;
+    background-color: gray;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    padding-left: 7px;
+}
+.tagging_controls .add_notes_button:hover{
+    background-color: white;
 }
 
 /*-------------------------------------------------------*/

@@ -23,13 +23,13 @@ function gf_tagger__init_ui(p_obj_type_str,
 	p_input_element_parent_selector_str,
 
 	p_tags_create_pre_fun,
-	p_notes_create_pre_fun,
-
 	p_on_tags_created_fun,
+
+	p_notes_create_pre_fun,
 	p_on_notes_created_fun,
 
-	p_on_tag_ui_add_fun,
-	p_on_tag_ui_remove_fun,
+	p_on_tagging_ui_add_fun,
+	p_on_tagging_ui_remove_fun,
 	p_http_api_map,
 	p_log_fun) {
 
@@ -38,14 +38,14 @@ function gf_tagger__init_ui(p_obj_type_str,
     const tagging_input_ui_element = gf_tagger__init_input_ui(p_obj_type_str,
 		p_tags_create_pre_fun,
 		p_on_tags_created_fun,
-		p_on_tag_ui_remove_fun,
+		p_on_tagging_ui_remove_fun,
 		p_http_api_map,
 		p_log_fun);
 
-	const tagging_notes_input_ui_element = gf_tagger__init_notes_input_ui(p_obj_type_str,
+	const notes_input_ui_element = gf_tagger__init_notes_input_ui(p_obj_type_str,
 		p_notes_create_pre_fun,
 		p_on_notes_created_fun,
-		p_on_tag_ui_remove_fun,
+		p_on_tagging_ui_remove_fun,
 		p_http_api_map,
 		p_log_fun);
 		
@@ -74,7 +74,7 @@ function gf_tagger__init_ui(p_obj_type_str,
 			p_input_element_parent_selector_str,
 			p_log_fun);
 
-		if (p_on_tag_ui_add_fun != null) p_on_tag_ui_add_fun();
+		if (p_on_tagging_ui_add_fun != null) p_on_tagging_ui_add_fun();
 
 		// remove the initial controls when the full control opens
 		$(tagging_ui_element).detach();
@@ -94,12 +94,12 @@ function gf_tagger__init_ui(p_obj_type_str,
 
 		const position_relative_to_element = p_obj_element;
 
-		gf_tagger__place_notes_input_ui(tagging_input_ui_element,
+		gf_tagger__place_notes_input_ui(notes_input_ui_element,
 			position_relative_to_element,
 			p_input_element_parent_selector_str,
 			p_log_fun);
 
-		if (p_on_tag_ui_add_fun != null) p_on_tag_ui_add_fun();
+		if (p_on_tagging_ui_add_fun != null) p_on_tagging_ui_add_fun();
 
 		// remove the initial controls when the full control opens
 		$(tagging_ui_element).detach();
@@ -155,10 +155,50 @@ function gf_tagger__init_ui(p_obj_type_str,
 }
 
 //-------------------------------------------------
+// NOTES
+//-------------------------------------------------
+function gf_tagger__init_notes_input_ui(p_obj_type_str,
+	p_notes_create_pre_fun,
+	p_on_notes_created_fun,
+	p_on_tagging_ui_remove_fun,
+	p_http_api_map,
+	p_log_fun) {
+
+	const notes_input_ui_element = $(`
+		<div id='notes_panel'>
+			<div id='background'></div>
+
+			<div id='container'>
+				<div id='add_note_btn'>
+					<div class='icon'>+</div>
+				</div>
+				<div id='notes'>
+				</div>
+			</div>
+		</div>`);
+
+	return notes_input_ui_element;
+}
+
+function gf_tagger__place_notes_input_ui(p_input_ui_element,
+	p_position_relative_to_element,
+	p_input_element_parent_selector_str,
+	p_log_fun) {
+
+	/*
+	input element itself is attached to a different element, outside of this control. it could be "body",
+	or some other parent.
+	*/
+	$(p_input_element_parent_selector_str).append(p_input_ui_element);
+}
+
+//-------------------------------------------------
+// TAGS
+//-------------------------------------------------
 function gf_tagger__init_input_ui(p_obj_type_str,
 	p_tags_create_pre_fun,
 	p_on_tags_created_fun,
-	p_on_tag_ui_remove_fun,
+	p_on_tagging_ui_remove_fun,
 	p_http_api_map,
 	p_log_fun) {
 	
@@ -179,8 +219,8 @@ function gf_tagger__init_input_ui(p_obj_type_str,
 
 			// remove any previously present tagging_input_container's
 			$(tagging_input_ui_element).detach();
-			if (p_on_tag_ui_remove_fun != null) {
-				p_on_tag_ui_remove_fun();
+			if (p_on_tagging_ui_remove_fun != null) {
+				p_on_tagging_ui_remove_fun();
 			}
 		}
 	});
@@ -226,8 +266,8 @@ function gf_tagger__init_input_ui(p_obj_type_str,
         $(tagging_input_ui_element).find("input").val("");
 
 		$(tagging_input_ui_element).detach();
-		if (p_on_tag_ui_remove_fun != null) {
-			p_on_tag_ui_remove_fun();
+		if (p_on_tagging_ui_remove_fun != null) {
+			p_on_tagging_ui_remove_fun();
 		}
 	}
 
@@ -240,8 +280,8 @@ function gf_tagger__init_input_ui(p_obj_type_str,
 		const tagging_input_container_element = $(p_event.target).parent();
 
 		$(tagging_input_container_element).detach();
-		if (p_on_tag_ui_remove_fun != null) {
-			p_on_tag_ui_remove_fun();
+		if (p_on_tagging_ui_remove_fun != null) {
+			p_on_tagging_ui_remove_fun();
 		}
 	});
 	
@@ -249,7 +289,7 @@ function gf_tagger__init_input_ui(p_obj_type_str,
 }
 
 //-----------------------------------------------------
-function gf_tagger__place_tags_input_ui(p_tagging_input_ui_element,
+function gf_tagger__place_tags_input_ui(p_input_ui_element,
 	p_position_relative_to_element,
 	p_input_element_parent_selector_str,
 	p_log_fun) {
@@ -258,10 +298,10 @@ function gf_tagger__place_tags_input_ui(p_tagging_input_ui_element,
 	input element itself is attached to a different element, outside of this control. it could be "body",
 	or some other parent.
 	*/
-	$(p_input_element_parent_selector_str).append(p_tagging_input_ui_element);
+	$(p_input_element_parent_selector_str).append(p_input_ui_element);
 
 	const relative_element__width_int = $(p_position_relative_to_element).width();
-	const input_ui_element__width_int = $(p_tagging_input_ui_element).width();
+	const input_ui_element__width_int = $(p_input_ui_element).width();
 
 	//------------------------
 	// Y_COORDINATE
@@ -283,7 +323,7 @@ function gf_tagger__place_tags_input_ui(p_tagging_input_ui_element,
 		relative_to_element_y_int = parseInt($(p_position_relative_to_element).css("top"), 10);	
 	}
 						
-	const tagging_input_y = relative_to_element_y_int; // $(p_tagging_input_ui_element).height()/2;
+	const tagging_input_y = relative_to_element_y_int; // $(p_input_ui_element).height()/2;
 
 	//------------------------
 	// X_COORDINATE
@@ -320,9 +360,9 @@ function gf_tagger__place_tags_input_ui(p_tagging_input_ui_element,
 	}
 
 	//------------------------
-	$(p_tagging_input_ui_element).css('position', 'absolute');
-	$(p_tagging_input_ui_element).css('left',     `${tagging_input_x}px`);
-	$(p_tagging_input_ui_element).css('top',      `${tagging_input_y}px`);
+	$(p_input_ui_element).css('position', 'absolute');
+	$(p_input_ui_element).css('left',     `${tagging_input_x}px`);
+	$(p_input_ui_element).css('top',      `${tagging_input_y}px`);
 }
 
 //-----------------------------------------------------

@@ -48,6 +48,9 @@
             obj_element,
             input_element_parent_selector_str,
 
+            //-------------------------------
+            // TAGS
+            //-------------------------------
             // p_tags_create_pre_fun
             (p_tags_lst)=>{
                 const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
@@ -80,10 +83,29 @@
                 })
             },
             
-            // on_tag_ui_add_fun
+            //-------------------------------
+            // NOTES
+            //-------------------------------
+            // p_notes_create_pre_fun
+            (p_notes_lst)=>{
+                const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+                    const image_system_id_str = null;
+                    p_resolve_fun(image_system_id_str);
+                });
+                return p;
+            },
+            // on_notes_created_fun
+            (p_notes_lst)=>{
+
+                console.log("added notes >>>>>>>>>>>", p_notes_lst, obj_id_str)
+            },
+
+            //-------------------------------
+            // on_tagging_ui_add_fun
             ()=>{},
 
-            // on_tag_ui_remove_fun
+            // on_taggaing_ui_remove_fun
             ()=>{},
             http_api_map,
             log_fun);
@@ -92,6 +114,9 @@
             obj_element_2,
             input_element_parent_selector_str,
 
+            //-------------------------------
+            // TAGS
+            //-------------------------------
             // p_tags_create_pre_fun
             (p_tags_lst)=>{
                 const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
@@ -124,10 +149,29 @@
                 })
             },
             
-            // on_tag_ui_add_fun
+            //-------------------------------
+            // NOTES
+            //-------------------------------
+            // p_notes_create_pre_fun
+            (p_notes_lst)=>{
+                const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+                    const image_system_id_str = null;
+                    p_resolve_fun(image_system_id_str);
+                });
+                return p;
+            },
+            // on_notes_created_fun
+            (p_notes_lst)=>{
+
+                console.log("added notes >>>>>>>>>>>", p_notes_lst, obj_id_str)
+            },
+
+            //-------------------------------
+            // on_tagging_ui_add_fun
             ()=>{},
 
-            // on_tag_ui_remove_fun
+            // on_taggaing_ui_remove_fun
             ()=>{},
             http_api_map,
             log_fun);
