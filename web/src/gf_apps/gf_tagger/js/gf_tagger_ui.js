@@ -233,7 +233,18 @@ function gf_tagger__place_input_ui(p_tagging_input_ui_element,
 		with masonry which sets the css("top") property offset().top doesnt return the correct value.
 		css("top") also works correctly in the test cases, so using that for now.
 	*/
-	const relative_to_element_y_int = parseInt($(p_position_relative_to_element).css("top"), 10); // $(p_position_relative_to_element).offset().top;						
+
+	var relative_to_element_y_int;
+
+	// some elements dont have the css "top" property set, and their offset().top value has to be used
+	if ($(p_position_relative_to_element).css("top") == "auto") {
+		relative_to_element_y_int = $(p_position_relative_to_element).offset().top;	
+	} else {
+
+		// for other elements who's "top" is explicitly set, using css("top", 10) is the more precise way
+		relative_to_element_y_int = parseInt($(p_position_relative_to_element).css("top"), 10);	
+	}
+						
 	const tagging_input_y = relative_to_element_y_int; // $(p_tagging_input_ui_element).height()/2;
 
 	//------------------------
