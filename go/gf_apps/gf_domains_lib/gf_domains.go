@@ -49,27 +49,6 @@ func accumulateDomains(pPostsDomainsLst []GFdomainPosts,
 	domainsMap := map[string]GFdomain{}
 
 	//--------------------------------------------------
-	// POSTS DOMAINS
-	// IMPORTANT!! - these run first so they just create a Domain struct without checks
-
-	for _, domain_posts := range pPostsDomainsLst {
-
-		domain_name_str := domain_posts.Name_str
-
-		// IMPORTANT!! - no existing domain with this domain_str has been found
-		creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-		id_str               := fmt.Sprintf("domain:%f", creation_unix_time_f)
-		new_domain           := GFdomain{
-			Id_str:       id_str,
-			T_str:        "domain",
-			Name_str:     domain_name_str,
-			Count_int:    domain_posts.Count_int,
-			Domain_posts: domain_posts,
-		}
-		domainsMap[domain_name_str] = new_domain
-	}
-
-	//--------------------------------------------------
 	// IMAGES DOMAINS
 	for _, imagesDomain := range pImagesDomainsLst {
 
@@ -91,6 +70,27 @@ func accumulateDomains(pPostsDomainsLst []GFdomainPosts,
 			}
 			domainsMap[domainNameStr] = new_domain
 		}
+	}
+	
+	//--------------------------------------------------
+	// POSTS DOMAINS
+	// IMPORTANT!! - these run first so they just create a Domain struct without checks
+
+	for _, domain_posts := range pPostsDomainsLst {
+
+		domain_name_str := domain_posts.Name_str
+
+		// IMPORTANT!! - no existing domain with this domain_str has been found
+		creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+		id_str               := fmt.Sprintf("domain:%f", creation_unix_time_f)
+		new_domain           := GFdomain{
+			Id_str:       id_str,
+			T_str:        "domain",
+			Name_str:     domain_name_str,
+			Count_int:    domain_posts.Count_int,
+			Domain_posts: domain_posts,
+		}
+		domainsMap[domain_name_str] = new_domain
 	}
 
 	//--------------------------------------------------
