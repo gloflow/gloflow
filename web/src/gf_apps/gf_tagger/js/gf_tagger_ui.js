@@ -443,29 +443,11 @@ async function add_tags_to_obj(p_obj_type_str,
 		// ADD!! - some visual success/failure indicator
 		const tags_meta_map = {};
 
-		var data_map;
-		if (p_http_api_map == null) {
-
-			const domain_str   = window.location.hostname;
-			const protocol_str = window.location.protocol;
-			const domain_full_str = `${protocol_str}//${domain_str}`;
-			console.log("domain_full", domain_full_str);
-			
-			data_map = await gf_tagger__http_add_tags_to_obj(new_tags_lst,
-				object_system_id_str,
-				p_obj_type_str,
-				tags_meta_map,
-				domain_full_str,
-				p_log_fun);
-
-		} else {
-
-        	data_map = await p_http_api_map["gf_tagger"]["add_tags_to_obj"](new_tags_lst,
-				object_system_id_str,
-				p_obj_type_str,
-				tags_meta_map,
-				p_log_fun);
-		}
+		const data_map = await p_http_api_map["gf_tagger"]["add_tags_to_obj"](new_tags_lst,
+			object_system_id_str,
+			p_obj_type_str,
+			tags_meta_map,
+			p_log_fun);
 
 		const added_tags_lst = data_map['added_tags_lst'];
 		p_log_fun('INFO', `added_tags_lst: ${added_tags_lst}`);

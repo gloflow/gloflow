@@ -75,7 +75,7 @@
                                 ${t_str}
                             </a>
                         </div>`);
-                    console.log("AAA", element)
+                    
                     $(`#container .tags`).append(element);
                     
                     // start the css animation
@@ -87,7 +87,7 @@
             // NOTES
             //-------------------------------
             // p_notes_create_pre_fun
-            (p_notes_lst)=>{
+            (p_note_str)=>{
                 const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
                     const image_system_id_str = null;
@@ -96,9 +96,16 @@
                 return p;
             },
             // on_notes_created_fun
-            (p_notes_lst)=>{
+            (p_note_str)=>{
 
-                console.log("added notes >>>>>>>>>>>", p_notes_lst, obj_id_str)
+                console.log("added notes >>>>>>>>>>>", p_note_str, obj_id_str)
+
+
+                const element = $(`
+                    <div class='bubble-in auto-width note'>
+                        <div class="body">${p_note_str}</div>
+                    </div>`);
+                $("#container .notes").append(element);
             },
 
             //-------------------------------
@@ -153,7 +160,7 @@
             // NOTES
             //-------------------------------
             // p_notes_create_pre_fun
-            (p_notes_lst)=>{
+            (p_note_str)=>{
                 const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
                     const image_system_id_str = null;
@@ -162,9 +169,15 @@
                 return p;
             },
             // on_notes_created_fun
-            (p_notes_lst)=>{
+            (p_note_str)=>{
 
-                console.log("added notes >>>>>>>>>>>", p_notes_lst, obj_id_str)
+                console.log("added notes >>>>>>>>>>>", p_note_str, obj_id_str)
+
+                const element = $(`
+                    <div class='bubble-in auto-width note'>
+                        <div class="body">${p_note_str}</div>
+                    </div>`);
+                $("#container .notes").append(element);
             },
 
             //-------------------------------
@@ -237,6 +250,9 @@
     <div class="tags">
 
     </div>
+    <div class="notes">
+
+    </div>
 </div>
 
 <div id="container2">
@@ -245,6 +261,9 @@
     </div>
     <div class="tags">
 
+    </div>
+    <div class="notes">
+        
     </div>
 </div>
 

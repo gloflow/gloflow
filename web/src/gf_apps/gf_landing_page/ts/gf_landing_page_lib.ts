@@ -32,7 +32,10 @@ declare var gf_upload__init;
 // INIT
 export async function init(p_log_fun) {
 	
-	const gf_host_str = window.location.href;
+	const domain_str   = window.location.hostname;
+	const protocol_str = window.location.protocol;
+	const gf_host_str = `${protocol_str}//${domain_str}`;
+	console.log("gf_host", gf_host_str);
 
     $("time.timeago").timeago();
     

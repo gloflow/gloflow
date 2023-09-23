@@ -686,7 +686,7 @@ function init_tagging(p_image_container_element,
 				p_log_fun)=>{
 				const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 					
-
+					// sends a message to background_worker to add tag to an image over HTTP
 					add_tags_to_image(p_new_tags_lst,
 						image_system_id_str,
 						p_gf_host_str,
@@ -716,7 +716,7 @@ function init_tagging(p_image_container_element,
 				// p_tags_create_pre_fun resolves the system_id of the item being tagged
 				image_system_id_str = await p_tags_create_pre_fun(p_tags_lst);
 
-				p_resolve_fun();
+				p_resolve_fun(image_system_id_str);
 			});
 			return p;
 		},
@@ -800,7 +800,7 @@ function add_tags_to_image(p_tags_lst,
 			switch(p_response_map["status_str"]) {
 				case "OK":
 
-					p_resolve_fun();
+					p_resolve_fun({});
 					break;
 
 				case "ERROR":
