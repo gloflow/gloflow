@@ -170,7 +170,7 @@ function gf_tagger__init_notes_input_ui(p_obj_type_str,
 
 			<div id='container'>
 				<div class='note_input_panel'>
-					<textarea name="note_input" cols="30" rows="3"></textarea>
+					<textarea id="note_input" cols="30" rows="3"></textarea>
 				</div>
 
 				<div id='add_note_btn'>
@@ -195,24 +195,18 @@ function gf_tagger__init_notes_input_ui(p_obj_type_str,
 
 	const tags_input_element = $(input_ui_element).find('#note_input');
 
-	// to handlers for the same thing, one for the user clicking on the button,
-	// the other for the user pressing 'enter'  
-	$(tags_input_element).on('keyup', async (p_event)=>{
+	$(input_ui_element).find('#add_note_btn').on('click', async (p_event)=>{
 
-		// 'ENTER' key
-		if (p_event.which == 13) {
-			p_event.preventDefault();
+		p_event.stopImmediatePropagation();
 			
-			const tags_lst = await add_tags_to_obj(p_obj_type_str,
-				input_ui_element,
+		const note_str = await add_note_to_obj(p_obj_type_str,
+			p_notes_create_pre_fun,
+			input_ui_element,
+			p_http_api_map,
+			p_log_fun);
 
-				p_tags_create_pre_fun,
-				p_http_api_map,
-				p_log_fun);
-
-			close();
-			p_on_tags_created_fun(tags_lst);
-		  }
+		close();
+		p_on_notes_created_fun(note_str);
 	});
 
 	return input_ui_element;
@@ -452,10 +446,16 @@ async function add_tags_to_obj(p_obj_type_str,
 		var data_map;
 		if (p_http_api_map == null) {
 
+			const domain_str   = window.location.hostname;
+			const protocol_str = window.location.protocol;
+			const domain_full_str = `${protocol_str}//${domain_str}`;
+			console.log("domain_full", domain_full_str);
+			
 			data_map = await gf_tagger__http_add_tags_to_obj(new_tags_lst,
 				object_system_id_str,
 				p_obj_type_str,
 				tags_meta_map,
+				domain_full_str,
 				p_log_fun);
 
 		} else {
@@ -471,6 +471,26 @@ async function add_tags_to_obj(p_obj_type_str,
 		p_log_fun('INFO', `added_tags_lst: ${added_tags_lst}`);
 
 		p_resolve_fun(added_tags_lst);
+	});
+	return p;
+}
+
+//-----------------------------------------------------
+async function add_note_to_obj(p_obj_type_str,
+	p_tags_create_pre_fun,
+	p_tagging_ui_element,
+	p_http_api_map,
+	p_log_fun) {
+	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+		console.log("AAAAAAAAAAAAA", p_tagging_ui_element)
+		const note_str = $(p_tagging_ui_element).find('#note_input').val();
+		p_log_fun('INFO', `note_str - ${note_str}`);
+
+
+
+		p_resolve_fun(note_str);
+
 	});
 	return p;
 }
