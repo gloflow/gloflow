@@ -117,10 +117,7 @@ export function init(p_logged_in_bool,
 		// only initialize tagging UI for logged-in users
 		if (p_logged_in_bool) {
 			
-			const gf_container_element = $("body");
-				
 			init_tagging(p_image_info_element,
-				gf_container_element,
 				p_gf_host_str,
 				p_log_fun);
 		}
@@ -133,7 +130,6 @@ export function init(p_logged_in_bool,
 // TAGGING_UI
 
 function init_tagging(p_image_container_element,
-	p_gf_container,
 	p_gf_host_str,
 	p_log_fun) {
 	
@@ -167,7 +163,7 @@ function init_tagging(p_image_container_element,
 	};
 
 	const obj_type_str = "image";
-	const input_element_parent_selector_str = "#page_info_container";
+	const input_element_parent_selector_str = "body";
 
 	gf_tagger__init_ui(obj_type_str,
 		p_image_container_element,
