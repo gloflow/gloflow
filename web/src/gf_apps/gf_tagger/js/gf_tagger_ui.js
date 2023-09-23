@@ -164,7 +164,7 @@ function gf_tagger__init_notes_input_ui(p_obj_type_str,
 	p_http_api_map,
 	p_log_fun) {
 
-	const notes_input_ui_element = $(`
+	const input_ui_element = $(`
 		<div id='notes_panel'>
 			<div id='background'></div>
 
@@ -180,8 +180,42 @@ function gf_tagger__init_notes_input_ui(p_obj_type_str,
 				</div>
 			</div>
 		</div>`);
+	
+	// 'ESCAPE' key
+	$(document).on('keyup', (p_event)=>{
+		if (p_event.which == 27) {
 
-	return notes_input_ui_element;
+			// remove any previously present tagging_input_container's
+			$(input_ui_element).detach();
+			if (p_on_tagging_ui_remove_fun != null) {
+				p_on_tagging_ui_remove_fun();
+			}
+		}
+	});
+
+	const tags_input_element = $(input_ui_element).find('#note_input');
+
+	// to handlers for the same thing, one for the user clicking on the button,
+	// the other for the user pressing 'enter'  
+	$(tags_input_element).on('keyup', async (p_event)=>{
+
+		// 'ENTER' key
+		if (p_event.which == 13) {
+			p_event.preventDefault();
+			
+			const tags_lst = await add_tags_to_obj(p_obj_type_str,
+				input_ui_element,
+
+				p_tags_create_pre_fun,
+				p_http_api_map,
+				p_log_fun);
+
+			close();
+			p_on_tags_created_fun(tags_lst);
+		  }
+	});
+
+	return input_ui_element;
 }
 
 //-------------------------------------------------
@@ -195,7 +229,7 @@ function gf_tagger__init_input_ui(p_obj_type_str,
 	p_log_fun) {
 	
 
-	const tagging_input_ui_element = $(`
+	const input_ui_element = $(`
 		<div id="tagging_input_container" class="bubble-in">
 			<div id="background"></div>
 			<input type="text" id="tags_input" placeholder="(space) separated tags">
@@ -203,14 +237,14 @@ function gf_tagger__init_input_ui(p_obj_type_str,
 			<div id="close_btn">&#10006;</div>
 		</div>`);
 	
-	const tags_input_element = $(tagging_input_ui_element).find('#tags_input');
+	const tags_input_element = $(input_ui_element).find('#tags_input');
 
 	// 'ESCAPE' key
 	$(document).on('keyup', (p_event)=>{
 		if (p_event.which == 27) {
 
 			// remove any previously present tagging_input_container's
-			$(tagging_input_ui_element).detach();
+			$(input_ui_element).detach();
 			if (p_on_tagging_ui_remove_fun != null) {
 				p_on_tagging_ui_remove_fun();
 			}
@@ -226,7 +260,7 @@ function gf_tagger__init_input_ui(p_obj_type_str,
 				p_event.preventDefault();
 				
 				const tags_lst = await add_tags_to_obj(p_obj_type_str,
-					tagging_input_ui_element,
+					input_ui_element,
 
 					p_tags_create_pre_fun,
 					p_http_api_map,
@@ -237,12 +271,12 @@ function gf_tagger__init_input_ui(p_obj_type_str,
       		}
 		});
 	
-	$(tagging_input_ui_element).find('#submit_btn').on('click', async (p_event)=>{
+	$(input_ui_element).find('#submit_btn').on('click', async (p_event)=>{
 
 			p_event.stopImmediatePropagation();
 
 			const tags_lst = await add_tags_to_obj(p_obj_type_str,
-				tagging_input_ui_element,
+				input_ui_element,
 				p_tags_create_pre_fun,
 				p_http_api_map,
 				p_log_fun);
@@ -255,9 +289,9 @@ function gf_tagger__init_input_ui(p_obj_type_str,
 	function close() {
 
         // clear input field before closing, so its empty next time its oepend by the user
-        $(tagging_input_ui_element).find("input").val("");
+        $(input_ui_element).find("input").val("");
 
-		$(tagging_input_ui_element).detach();
+		$(input_ui_element).detach();
 		if (p_on_tagging_ui_remove_fun != null) {
 			p_on_tagging_ui_remove_fun();
 		}
@@ -265,7 +299,7 @@ function gf_tagger__init_input_ui(p_obj_type_str,
 
 	//-----------------------------------------------------
 	// TAG INPUT CLOSE BUTTON
-	$(tagging_input_ui_element).find('#close_btn').on('click', (p_event)=>{
+	$(input_ui_element).find('#close_btn').on('click', (p_event)=>{
 
 		p_event.stopImmediatePropagation();
 
@@ -277,7 +311,7 @@ function gf_tagger__init_input_ui(p_obj_type_str,
 		}
 	});
 	
-	return tagging_input_ui_element;
+	return input_ui_element;
 }
 
 //-----------------------------------------------------
@@ -300,20 +334,29 @@ function gf_tagger__place_tags_input_ui(p_input_ui_element,
 	//------------------------
 	// Y_COORDINATE
 
+	var relative_to_element_y_int;
+
+	/*
+	IMPORTANT!! - some elements dont have the css "top" property set, its computed instead by the browser
+		as a result of other styles and elements.
+		for these situations the elements "top" property is either set to "auto", or when checked via style.top
+		its set to "".
+		in those cases the computed offset().top value has to be used.
+	*/
 	/*
 	IMPORTANT!! - using css("top") instead of $(p_position_relative_to_element).offset().top because
 		with masonry which sets the css("top") property offset().top doesnt return the correct value.
 		css("top") also works correctly in the test cases, so using that for now.
 	*/
-
-	var relative_to_element_y_int;
-
-	// some elements dont have the css "top" property set, and their offset().top value has to be used
-	if ($(p_position_relative_to_element).css("top") == "auto") {
+	if ($(p_position_relative_to_element).css("top") == "auto" || p_position_relative_to_element.style.top == "") {
 		relative_to_element_y_int = $(p_position_relative_to_element).offset().top;	
 	} else {
 
-		// for other elements who's "top" is explicitly set, using css("top", 10) is the more precise way
+		/*
+		for other elements who's "top" is explicitly set, using css("top", 10) is the more precise way
+		(it leads to accurate values that reflect actual position, while offset().top in those situations
+		can be give the wrong value.
+		*/
 		relative_to_element_y_int = parseInt($(p_position_relative_to_element).css("top"), 10);	
 	}
 						
