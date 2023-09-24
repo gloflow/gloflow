@@ -70,6 +70,10 @@ type RuntimeSys struct {
 type ExternalPlugins struct {
 
 	//---------------------------
+	// RPC_HANDLERS
+	RPChandlersGetCallback func(*RuntimeSys) ([]HTTPhandlerInfo, *GFerror)
+
+	//---------------------------
 	// IMAGES
 	ImageFilterMetadataCallback func(map[string]interface{}) map[string]interface{}
 	

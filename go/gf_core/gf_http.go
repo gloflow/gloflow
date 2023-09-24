@@ -36,7 +36,7 @@ import (
 )
 
 //---------------------------------------------------
-
+type HTTPfetch = GF_http_fetch
 type GF_http_fetch = Gf_http_fetch
 
 type Gf_http_fetch struct {
@@ -46,6 +46,13 @@ type Gf_http_fetch struct {
 	Req_time_f       float64           `bson:"req_time_f"`
 	Resp_time_f      float64           `bson:"resp_time_f"`
 	Resp             *http.Response    `bson:"-"`
+}
+
+type HTTPhandler func(context.Context, http.ResponseWriter, *http.Request) (map[string]interface{}, *GFerror)
+type HTTPhandlerInfo struct {
+	AuthBool   bool
+	PathStr    string
+	HandlerFun HTTPhandler
 }
 
 //---------------------------------------------------

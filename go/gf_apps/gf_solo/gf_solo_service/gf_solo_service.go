@@ -104,6 +104,8 @@ func Run(pConfig *GFconfig,
 	//-------------
 	// GF_IDENTITY
 
+	
+
 	gfIdentityServiceInfo := &gf_identity_core.GFserviceInfo{
 		NameStr:       "gf_identity",
 		DomainBaseStr: pConfig.DomainBaseStr,
@@ -132,6 +134,11 @@ func Run(pConfig *GFconfig,
 	if gfErr != nil {
 		return
 	}
+
+
+	
+
+
 
 	//-------------
 	// GF_ADMIN - its started in a separate goroutine and listening on a diff
@@ -350,6 +357,42 @@ func Run(pConfig *GFconfig,
 	coreMetrics := gf_core.MetricsInit("/metrics", portMetricsInt)
 	pRuntimeSys.Metrics = coreMetrics
 	
+	
+
+	//-------------
+	// REGISTER_EXTERN_HTTP_HANDLERS
+
+
+
+	if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.RPChandlersGetCallback != nil {
+
+		//-------------
+		// USER_RPC_HANDLERS
+		handlersLst, gfErr := pRuntimeSys.ExternalPlugins.RPChandlersGetCallback(pRuntimeSys)
+		if gfErr != nil {
+			return
+		}
+		
+		//-------------
+
+
+		authSubsystemTypeStr := pConfig.AuthSubsystemTypeStr
+		metricsGroupNameStr  := "gf_solo__plugin_rpc_handlers"
+		
+
+		gf_rpc_lib.CreateHandlersHTTP(metricsGroupNameStr,
+			handlersLst,
+			gfSoloHTTPmux,
+			authSubsystemTypeStr,
+			authLoginURLstr,
+			keyServer,
+			pRuntimeSys)
+	}
+
+	
+
+
+
 	//-------------
 	// SERVER_INIT - blocking
 	gf_rpc_lib.ServerInitWithMux("gf_solo", portInt, gfSoloHTTPmux)

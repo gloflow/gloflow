@@ -56,13 +56,60 @@ type GFrpcHandlerRun struct {
 	EndTimeUNIXf   float64 `bson:"endTimeUNIXf"`
 }
 
-type handlerHTTP func(context.Context, http.ResponseWriter, *http.Request) (map[string]interface{}, *gf_core.GFerror)
+//-------------------------------------------------
 
+func CreateHandlersHTTP(pMetricsGroupNameStr string,
+	pHandlersLst          []gf_core.HTTPhandlerInfo,
+	pHTTPmux              *http.ServeMux,
+	pAuthSubsystemTypeStr string,
+	pAuthLoginURLstr      string,
+	pKeyServer            *gf_identity_core.GFkeyServerInfo,
+	pRuntimeSys           *gf_core.RuntimeSys) {
+
+	//---------------------
+	// METRICS
+	handlersEndpointsLst := []string{}
+	for _, handlerInfo := range pHandlersLst {
+		pathStr := handlerInfo.PathStr
+		handlersEndpointsLst = append(handlersEndpointsLst, pathStr)
+	}
+
+	metrics := MetricsCreateForHandlers(pMetricsGroupNameStr, "gf_solo", handlersEndpointsLst)
+
+	//---------------------
+	// RPC_HANDLER_RUNTIME
+	rpcHandlerRuntime := &GFrpcHandlerRuntime {
+		Mux:             pHTTPmux,
+		Metrics:         metrics,
+		StoreRunBool:    true,
+		SentryHub:       nil,
+
+		// AUTH
+		AuthSubsystemTypeStr: pAuthSubsystemTypeStr,
+		AuthLoginURLstr:      pAuthLoginURLstr,
+		AuthKeyServer:        pKeyServer,
+	}
+
+	
+	for _, handlerDescr := range pHandlersLst {
+
+		// CREATE_HANDLER
+		CreateHandlerHTTPwithAuth(handlerDescr.AuthBool,
+			handlerDescr.PathStr,
+			handlerDescr.HandlerFun,
+			rpcHandlerRuntime,
+			pRuntimeSys)
+	}
+
+}
+
+//-------------------------------------------------
+// CREATE
 //-------------------------------------------------
 // HTTP
 
 func CreateHandlerHTTP(pPathStr string,
-	pHandlerFun handlerHTTP,
+	pHandlerFun gf_core.HTTPhandler,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	CreateHandlerHTTPwithMetrics(pPathStr,
@@ -77,7 +124,7 @@ func CreateHandlerHTTP(pPathStr string,
 
 func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication or not
 	pPathStr        string,
-	pHandlerFun     handlerHTTP,
+	pHandlerFun     gf_core.HTTPhandler,
 	pHandlerRuntime *GFrpcHandlerRuntime,
 	pRuntimeSys     *gf_core.RuntimeSys) {
 
@@ -227,7 +274,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 // HTTP_WITH_MUX
 
 func CreateHandlerHTTPwithMux(pPathStr string,
-	pHandlerFun   handlerHTTP,
+	pHandlerFun   gf_core.HTTPhandler,
 	pMux          *http.ServeMux,
 	pMetrics      *GF_metrics,
 	pStoreRunBool bool,
@@ -250,7 +297,7 @@ func CreateHandlerHTTPwithMux(pPathStr string,
 // HTTP_WITH_METRICS
 
 func CreateHandlerHTTPwithMetrics(pPathStr string,
-	pHandlerFun   handlerHTTP,
+	pHandlerFun   gf_core.HTTPhandler,
 	pMetrics      *GF_metrics,
 	pStoreRunBool bool,
 	pRuntimeSys   *gf_core.RuntimeSys) {
@@ -271,7 +318,7 @@ func CreateHandlerHTTPwithMetrics(pPathStr string,
 
 func getHandler(pAuthBool bool,
 	pPathStr         string,
-	pHandlerFun      handlerHTTP,
+	pHandlerFun      gf_core.HTTPhandler,
 	pMetrics         *GF_metrics,
 	pStoreRunBool    bool,
 	pSentryHub       *sentry.Hub,
