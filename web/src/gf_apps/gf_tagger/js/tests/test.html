@@ -148,7 +148,6 @@
                             </a>
                         </div>`);
                     
-                    console.log("AAA", element)
                     $(`#container2 .tags`).append(element);
                     
                     // start the css animation
@@ -177,7 +176,7 @@
                     <div class='bubble-in auto-width note'>
                         <div class="body">${p_note_str}</div>
                     </div>`);
-                $("#container .notes").append(element);
+                $("#container2 .notes").append(element);
             },
 
             //-------------------------------
@@ -235,6 +234,26 @@
             position: relative;
 	        z-index: 1;
             width: 200px;
+        }
+
+        .notes {
+            position: relative;
+            z-index: 1;
+            width: 200px;
+            margin-top: 4px;
+        }
+        .notes .note {
+            width: 100%;
+        }
+        .notes .note .body {
+            width: 100%;
+            overflow: hidden;
+            word-wrap: break-word;
+            word-break: break-all;
+            white-space: normal;
+            hyphens: auto;
+            background-color: #b5b5b5;
+            font-size: 14px;
         }
         
 

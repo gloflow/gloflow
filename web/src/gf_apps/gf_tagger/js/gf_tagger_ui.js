@@ -210,6 +210,20 @@ function gf_tagger__init_notes_input_ui(p_obj_type_str,
 	});
 
 	return input_ui_element;
+
+	//-----------------------------------------------------
+	function close() {
+
+        // clear input field before closing, so its empty next time its oepend by the user
+        $(input_ui_element).find("input").val("");
+
+		$(input_ui_element).detach();
+		if (p_on_tagging_ui_remove_fun != null) {
+			p_on_tagging_ui_remove_fun();
+		}
+	}
+
+	//-----------------------------------------------------
 }
 
 //-------------------------------------------------
@@ -466,6 +480,7 @@ async function add_note_to_obj(p_obj_type_str,
 	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 		console.log("AAAAAAAAAAAAA", p_tagging_ui_element)
+
 		const note_str = $(p_tagging_ui_element).find('#note_input').val();
 		p_log_fun('INFO', `note_str - ${note_str}`);
 
