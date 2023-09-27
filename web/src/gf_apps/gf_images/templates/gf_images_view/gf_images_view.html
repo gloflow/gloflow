@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title>gloflow - the universe of creativity and art</title>
+	<meta name="description" content="platform for media (image, video, sound) usage and editing, creation and sharing of culture"/>
+	<meta name="revisit-after" content="1 days"/>
+	{{- /*-----------------------------------------------------*/}}
+	<!-- directs fb to use the specified image when the page is shared -->
+	<meta property="og:image" content="data/gf_landingpage_5.png"/> 
+	<meta property="og:title" content="gloflow - a parallel space for artistic expression"/>
+
+	<!-- canonical address  -->
+	<meta property="og:url"       content="https://gloflow.com"/>
+	<meta property="og:site_name" content="GloFlow"/>
+
+	<meta property="og:type" content="photos"/>
+	<meta property="og:type" content="videos"/>
+	<meta property="og:type" content="culture"/>
+	<meta property="og:type" content="art"/>
+	<meta property="og:type" content="architecture"/>
+	<meta property="og:type" content="design"/>
+	<meta property="og:type" content="photography"/>
+	<meta property="og:type" content="fashion"/>
+	<meta property="og:type" content="music"/>
+	<meta property="og:type" content="vr"/>
+	{{- /*-----------------------------------------------------*/}}
+	<link rel="stylesheet" type="text/css" href="./../../css/gf_images_view/gf_images_view.css"/>
+	<link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_image_upload.css"/>
+	<link rel="stylesheet" type="text/css" href="./../../../../gf_sys_panel/css/gf_sys_panel.css"/>
+</head>
+<body>
+	{{- /*------------------------------------------------------*/}}
+	
+
+	<div id="image">
+		<img src="{{ .ThumbnailMediumURLstr }}"></img>
+	</div>
+
+
+
+
+	{{- /*------------------------------------------------------*/}}
+	<div id='sys_release_info'>
+		<div id='version'>v <span>{{- .SysReleaseInfo.Version_str }}</span></div>
+		<div id='name'>name <span>{{- .SysReleaseInfo.Name_str }}</span></div>
+		<div id='description'>description <span>{{- .SysReleaseInfo.Description_str }}</span></div>
+		<div id='git_commit'>Git commit <a target="_blank" href='https://github.com/gloflow/gloflow/commit/{{- .SysReleaseInfo.Git_commit_str }}'>{{- .SysReleaseInfo.Git_commit_str }}</a></div>
+	</div>
+	{{- /*-----------------------------------------------------*/}}
+	<script type="text/javascript" src="./../../../../../libs/js/system.min.js"></script>
+	<script type="text/javascript" src="./../../../../../libs/js/system_named_register_ext.js"></script> <!-- without this SystemJS extension modules dont load -->
+
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="./../../../../../libs/js/jquery.timeago.js"></script>
+	
+	<script type="text/javascript" src="./../../../../gf_core/ts/gf_image_upload.js"></script>
+	<script type="text/javascript" src="./../../ts/gf_images_view/gf_images_view.ts"></script>
+
+	<script>
+		System.import('gf_apps/gf_images/ts/gf_images_view/gf_images_view').then(function(m){});
+	</script>
+	{{- /*------------------------------------------------------*/}}
+	{{- /*SUBTEMPLATE*/}}
+	{{ if (call .IsSubtmplDef "gf_footer")}}
+		{{ template "gf_footer" }}
+	{{ end }}
+	{{- /*------------------------------------------------------*/}}
+</body>
+</html>
