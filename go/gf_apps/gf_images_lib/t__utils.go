@@ -111,15 +111,7 @@ func TstartService(pMongoHostStr string,
 		ImagesStoreLocalDirPathStr:           test__images_local_dir_path_str,
 		ImagesThumbnailsStoreLocalDirPathStr: test__images_thumbs_local_dir_path_str,
 		Images_main_s3_bucket_name_str:       config.Main_s3_bucket_name_str, // test__s3_bucket_name_str,
-		
-		/*
-		// DEPRECATE!!
-		AWS_access_key_id_str:                s3testInfo.AWSaccessKeyIDstr,
-		AWS_secret_access_key_str:            s3testInfo.AWSsecretAccessKeyStr,
-		AWS_token_str:                        s3testInfo.AWStokenStr,
-		*/
-
-		Templates_paths_map:                  testServiceTemplatesDirPathsMap,
+		TemplatesPathsMap:                    testServiceTemplatesDirPathsMap,
 		Config_file_path_str:                 testConfigFilePathStr,
 	}
 

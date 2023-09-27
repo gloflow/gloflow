@@ -233,7 +233,7 @@ func Run(pConfig *GFconfig,
 		Media_domain_str:                     imagesConfig.Media_domain_str,
 		Images_main_s3_bucket_name_str:       imagesConfig.Main_s3_bucket_name_str,
 
-		Templates_paths_map: pConfig.TemplatesPathsMap,
+		TemplatesPathsMap: pConfig.TemplatesPathsMap,
 
 		//-------------------------
 		// AUTH_SUBSYSTEM_TYPE

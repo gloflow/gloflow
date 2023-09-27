@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2019 Ivan Trajkovic
+Copyright (C) 2023 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_flows
+package gf_images_service
 
 import (
 	// "fmt"
@@ -27,28 +27,27 @@ import (
 
 //-------------------------------------------------
 
-type gf_templates struct {
-	flows_browser__tmpl                   *template.Template
-	flows_browser__subtemplates_names_lst []string
+type gfTemplates struct {
+	imagesViewTmpl                 *template.Template
+	imagesViewSubtemplatesNamesLst []string
 }
 
 //-------------------------------------------------
 
-func tmplLoad(pTemplatesPathsMap map[string]string,
-	pRuntimeSys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_templates.tmpl__load()")
+func templateLoad(pTemplatesPathsMap map[string]string,
+	pRuntimeSys *gf_core.RuntimeSys) (*gfTemplates, *gf_core.GFerror) {
 
-	mainTemplateFilepathStr := pTemplatesPathsMap["gf_images_flows_browser"]
+	imagesViewTemplateFilepathStr := pTemplatesPathsMap["gf_images_view"]
 
-	flowsBrowserTmpl, subtemplatesNamesLst, gfErr := gf_core.TemplatesLoad(mainTemplateFilepathStr,
+	imagesViewTmpl, subtemplatesNamesSst, gf_err := gf_core.TemplatesLoad(imagesViewTemplateFilepathStr,
 		pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
+	if gf_err != nil {
+		return nil, gf_err
 	}
 
-	gf_templates := &gf_templates{
-		flows_browser__tmpl:                   flowsBrowserTmpl,
-		flows_browser__subtemplates_names_lst: subtemplatesNamesLst,
+	gfTemplates := &gfTemplates{
+		imagesViewTmpl:                 imagesViewTmpl,
+		imagesViewSubtemplatesNamesLst: subtemplatesNamesSst,
 	}
-	return gf_templates, nil
+	return gfTemplates, nil
 }

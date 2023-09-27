@@ -34,11 +34,13 @@ import (
 )
 
 //-------------------------------------------------
+// INIT_HANDLERS
 
 func InitHandlers(pAuthSubsystemTypeStr string,
-	pAuthLoginURLstr string,
-	pKeyServer       *gf_identity_core.GFkeyServerInfo,
-	pHTTPmux         *http.ServeMux,
+	pAuthLoginURLstr   string,
+	pKeyServer         *gf_identity_core.GFkeyServerInfo,
+	pHTTPmux           *http.ServeMux,
+	pTemplatesPathsMap map[string]string,
 	pJobsMngrCh      chan gf_images_jobs_core.JobMsg,
 	pImgConfig       *gf_images_core.GFconfig,
 	pServiceInfo     *gf_images_core.GFserviceInfo,
@@ -47,12 +49,29 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	pS3info          *gf_aws.GFs3Info,
 	pMetrics         *gf_images_core.GFmetrics,
 	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_handlers.init_handlers()")
 	
+	//---------------------
+	// TEMPLATES
+	templates, gfErr := templateLoad(pTemplatesPathsMap, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
 	//---------------------
 	// METRICS
 	handlersEndpointsLst := []string{
+		
+		//-------------
+		/*
+		PUBLIC_URLS
+		IMPORTANT!! - these are url's from the GF system embedded into third-party pages and text,
+			and cannot be versioned, its permanent. so these handlers dont have /v1 in them (versioning segment). 
+		*/
 		"/images/d/",
+		"/images/view/",
+
+		//-------------
+
 		"/v1/images/get",
 		"/v1/images/upload_init",
 		"/v1/images/upload_complete",
@@ -72,6 +91,55 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		AuthLoginURLstr:      pAuthLoginURLstr,
 		AuthKeyServer:        pKeyServer,
 	}
+
+	//---------------------
+	// VIEW_IMAGE
+	// renders a solo image
+	
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/view/",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+			if pReq.Method == "GET" {
+
+				//-----------------
+				// INPUT
+
+				userID := gf_core.GF_ID("anon")
+
+				pathStr    := pReq.URL.Path
+				imageIDstr := strings.Replace(pathStr, "/images/view/", "", 1)
+				imageID    := gf_images_core.GFimageID(imageIDstr)
+
+				/*
+				qsMap       := pReq.URL.Query()
+				flowNameStr := "general"
+				if aLst, ok := qsMap["fname"]; ok {
+					flowNameStr = aLst[0]
+				}
+				*/
+
+				//-----------------
+				// RENDER_TEMPLATE
+				templateRenderedStr, gfErr := renderImageViewPage(imageID,
+					templates.imagesViewTmpl,
+					templates.imagesViewSubtemplatesNamesLst,
+					userID,
+					pCtx,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				//-----------------
+				pResp.Write([]byte(templateRenderedStr))
+			}
+
+			return nil, nil
+		},
+		pHTTPmux,
+		metrics,
+		true, // pStoreRunBool
+		nil,
+		pRuntimeSys)
 
 	//---------------------
 	// GET_IMAGE
@@ -130,8 +198,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 				//-----------------
 				// INPUT
-				path_str         := pReq.URL.Path
-				imagePathNameStr := strings.Replace(path_str, "/images/d/", "", 1)
+				pathStr          := pReq.URL.Path
+				imagePathNameStr := strings.Replace(pathStr, "/images/d/", "", 1)
 
 				qsMap       := pReq.URL.Query()
 				flowNameStr := "general"
@@ -141,6 +209,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				
 				//-----------------
 
+				// check if flow exists
 				if _, ok := pImgConfig.ImagesFlowToS3bucketMap[flowNameStr]; !ok {
 					gfErr := gf_core.ErrorCreate("image to resolve in unexisting flow",
 						"verify__invalid_value_error",

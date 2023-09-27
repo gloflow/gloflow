@@ -39,7 +39,7 @@ type GFserviceInfo struct {
 
 	Media_domain_str                     string
 	Images_main_s3_bucket_name_str       string
-	Templates_paths_map                  map[string]string
+	TemplatesPathsMap                    map[string]string
 	Config_file_path_str                 string
 
 	//------------------------

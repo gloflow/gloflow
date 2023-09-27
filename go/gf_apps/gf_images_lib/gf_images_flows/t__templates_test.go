@@ -44,7 +44,7 @@ func getTemplateTestData(pTest *testing.T) ([][]*gf_images_core.GFimage, [][]gf_
 
 	ctx := context.Background()
 
-	serviceNameStr := "gf_identity_test"
+	serviceNameStr := "gf_images_flows_tests"
 	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	sqlHostStr     := cliArgsMap["sql_host_str"].(string)
 	runtimeSys     := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
@@ -56,7 +56,7 @@ func getTemplateTestData(pTest *testing.T) ([][]*gf_images_core.GFimage, [][]gf_
 
 	//-------------------
 	// CREATE_TEST_IMAGES
-	createTestImages(userID, pTest, ctx, runtimeSys)
+	gf_images_core.CreateTestImages(userID, pTest, ctx, runtimeSys)
 
 	//-------------------
 	flowNameStr        := "flow_0"
