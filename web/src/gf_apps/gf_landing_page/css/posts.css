@@ -3,8 +3,11 @@
 
 #posts {
 	position: absolute;
-	left:     418px;
-	top:      0px;
+    left: 418px;
+    top: 0px;
+    width: 216px;
+    height: 3361px;
+    background-color: #f3774224;
 }
 
 /*------------------------------------------------------------*/
@@ -64,7 +67,7 @@
 
 /*---------------------------*/
 #posts .post_info .post_image {
-	width:195px;
+	width: 100%;
 	position: relative;
 	background-color: inherit;
 }
@@ -74,8 +77,7 @@
 }
 
 #posts .post_info .post_image .image_resource {
-	width       : 100%;
-	padding-left: 10px;
+	width: 100%;
 }
 
 /*---------------------------*/

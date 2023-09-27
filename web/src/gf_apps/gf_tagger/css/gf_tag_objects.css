@@ -95,9 +95,8 @@ body {
 	float:            left;
 	text-align:       center;
 	background-color: rgb(59, 124, 156);
-	margin:           6px;
 	width:            200px;
-	padding:          10px;
+	padding-bottom:   10px;
 	box-shadow:       1px 1px 10px grey;
 	
 	/*elements are not initially visible, but instead become visible
@@ -156,7 +155,7 @@ body {
 /*----------------------------------------------------------*/
 /* POSTS */
 #posts_container {
-    background-color: gray;
+    background-color: #f3774224;;
     width: 100%;
     grid-column: 4 / 5;
 }
@@ -167,19 +166,8 @@ body {
 	float: left;
 	text-align: center;
 	background-color: lightgray;
-	margin: 6px;
 	width: 200px;
-	padding-top: 6px;
-	
-	/*
-    to better show the outline, due to shadows. also in case css shadows
-    are not supported this is the only way to show the outline of the post box
-    */
-	border: 2px;
-	border-style: solid;
-	border-color: #F5F5F5;
-
-	padding: 7px;
+    box-shadow: 1px 1px 10px grey;
 }
 
 .gf_post_image_view .post_image img {
