@@ -63,12 +63,12 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		
 		//-------------
 		/*
-		PUBLIC_URLS
+		PERMANENT_URLS
 		IMPORTANT!! - these are url's from the GF system embedded into third-party pages and text,
-			and cannot be versioned, its permanent. so these handlers dont have /v1 in them (versioning segment). 
+			and cannot be versioned, they're permanent. so these handlers dont have /v1 in them (versioning segment). 
 		*/
 		"/images/d/",
-		"/images/view/",
+		"/images/v/",
 
 		//-------------
 
@@ -93,10 +93,64 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	}
 
 	//---------------------
+	// PERMANENT_URLS
+	//---------------------
+	// GET_IMAGE_URL
+	// ADD!! - /images/d/bulk - return resolved final url's from a list of source /images/d/image_name urls
+
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/d/",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+			if pReq.Method == "GET" {
+
+				//-----------------
+				// INPUT
+				pathStr          := pReq.URL.Path
+				imagePathNameStr := strings.Replace(pathStr, "/images/d/", "", 1)
+
+				qsMap       := pReq.URL.Query()
+				flowNameStr := "general"
+				if aLst, ok := qsMap["fname"]; ok {
+					flowNameStr = aLst[0]
+				}
+				
+				//-----------------
+
+				// check if flow exists
+				if _, ok := pImgConfig.ImagesFlowToS3bucketMap[flowNameStr]; !ok {
+					gfErr := gf_core.ErrorCreate("image to resolve in unexisting flow",
+						"verify__invalid_value_error",
+						map[string]interface{}{
+							"flow_name_str":    flowNameStr,
+							"handler_path_str": "/images/d/",
+						},
+						nil, "gf_images_lib", pRuntimeSys)
+					return nil, gfErr
+				}
+
+				imageURLstr := gf_images_core.ImageGetPublicURL(imagePathNameStr,
+					pMediaDomainStr,
+					pRuntimeSys)
+
+				// redirect user to image url
+				http.Redirect(pResp,
+					pReq,
+					imageURLstr,
+					301)
+			}
+
+			return nil, nil
+		},
+		pHTTPmux,
+		metrics,
+		true, // pStoreRunBool
+		nil,
+		pRuntimeSys)
+	
+	//---------------------
 	// VIEW_IMAGE
 	// renders a solo image
 	
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/view/",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/v/",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "GET" {
 
@@ -106,7 +160,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				userID := gf_core.GF_ID("anon")
 
 				pathStr    := pReq.URL.Path
-				imageIDstr := strings.Replace(pathStr, "/images/view/", "", 1)
+				imageIDstr := strings.Replace(pathStr, "/images/v/", "", 1)
 				imageID    := gf_images_core.GFimageID(imageIDstr)
 
 				/*
@@ -183,61 +237,6 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 			return nil, nil
 		},
 		rpcHandlerRuntime,
-		pRuntimeSys)
-
-	//---------------------
-
-	//---------------------
-	// ADD!! - /images/d/bulk - return resolved final url's from a list of source /images/d/image_name urls
-	//---------------------
-	// GET_IMAGE_URL
-	
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/d/",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
-			if pReq.Method == "GET" {
-
-				//-----------------
-				// INPUT
-				pathStr          := pReq.URL.Path
-				imagePathNameStr := strings.Replace(pathStr, "/images/d/", "", 1)
-
-				qsMap       := pReq.URL.Query()
-				flowNameStr := "general"
-				if aLst, ok := qsMap["fname"]; ok {
-					flowNameStr = aLst[0]
-				}
-				
-				//-----------------
-
-				// check if flow exists
-				if _, ok := pImgConfig.ImagesFlowToS3bucketMap[flowNameStr]; !ok {
-					gfErr := gf_core.ErrorCreate("image to resolve in unexisting flow",
-						"verify__invalid_value_error",
-						map[string]interface{}{
-							"flow_name_str":    flowNameStr,
-							"handler_path_str": "/images/d/",
-						},
-						nil, "gf_images_lib", pRuntimeSys)
-					return nil, gfErr
-				}
-
-				imageURLstr := gf_images_core.ImageGetPublicURL(imagePathNameStr,
-					pMediaDomainStr,
-					pRuntimeSys)
-
-				// redirect user to image url
-				http.Redirect(pResp,
-					pReq,
-					imageURLstr,
-					301)
-			}
-
-			return nil, nil
-		},
-		pHTTPmux,
-		metrics,
-		true, // pStoreRunBool
-		nil,
 		pRuntimeSys)
 
 	//---------------------
