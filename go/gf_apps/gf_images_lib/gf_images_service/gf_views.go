@@ -56,27 +56,29 @@ func renderImageViewPage(pImageID gf_images_core.GFimageID,
 
 
 	type tmplData struct {
-		ImageID             gf_images_core.GFimageID
-		CreationUNIXtimeF   float64
-		OwnerUserID         gf_core.GF_ID
-		FlowsNamesLst       []string
-		OriginPageURLstr    string
-		TagsLst             []string
-		FilteredMetaJSONstr string
-		SysReleaseInfo      gf_core.SysReleaseInfo
-		IsSubtmplDef        func(string) bool //used inside the main_template to check if the subtemplate is defined
+		ImageID               gf_images_core.GFimageID
+		CreationUNIXtimeF     float64
+		OwnerUserID           gf_core.GF_ID
+		FlowsNamesLst         []string
+		OriginPageURLstr      string
+		ThumbnailMediumURLstr string
+		TagsLst               []string
+		FilteredMetaJSONstr   string
+		SysReleaseInfo        gf_core.SysReleaseInfo
+		IsSubtmplDef          func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 
 	buff := new(bytes.Buffer)
 	err := pTemplate.Execute(buff, tmplData{
-		ImageID:             pImageID,
-		CreationUNIXtimeF:   image.Creation_unix_time_f,
-		OwnerUserID:         image.UserID,
-		FlowsNamesLst:       image.FlowsNamesLst,
-		OriginPageURLstr:    image.Origin_page_url_str,
-		TagsLst:             image.TagsLst,
-		FilteredMetaJSONstr: filteredMetaJSONstr,
-		SysReleaseInfo:      sysReleaseInfo,
+		ImageID:               pImageID,
+		CreationUNIXtimeF:     image.Creation_unix_time_f,
+		OwnerUserID:           image.UserID,
+		FlowsNamesLst:         image.FlowsNamesLst,
+		OriginPageURLstr:      image.Origin_page_url_str,
+		ThumbnailMediumURLstr: image.Thumbnail_medium_url_str,
+		TagsLst:               image.TagsLst,
+		FilteredMetaJSONstr:   filteredMetaJSONstr,
+		SysReleaseInfo:        sysReleaseInfo,
 
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
