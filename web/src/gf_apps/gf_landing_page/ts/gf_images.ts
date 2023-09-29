@@ -52,6 +52,10 @@ export function init(p_logged_in_bool,
 			$(p_image_info_element).find(".origin_page_url").remove();
 		}
 
+		// some images dont have a title set, so for those remove the title element
+		if ($(p_image_info_element).find(".image_title").text().trim() === "") {
+			$(p_image_info_element).find(".image_title").remove();
+		}
 
 		// FIX!! - this function has been moved to gf_core/gf_images_viewer.ts, as a general viewer,
 		//         to use universaly gf_images/gf_landing_page.
