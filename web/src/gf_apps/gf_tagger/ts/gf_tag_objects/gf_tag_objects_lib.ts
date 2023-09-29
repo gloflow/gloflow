@@ -72,11 +72,11 @@ function init_images(p_log_fun) {
 		const image_element = p_e;
 		gf_utils.init_image_date(image_element, p_log_fun);
 
-		const image_id_str = $(image_element).data('data-img_id');
-		const image_flows_names_lst = $(image_element).data('data-img_flows_names').split(",");
+		const image_id_str = $(image_element).data('img_id');
+		const image_flows_names_lst = $(image_element).data('img_flows_names').split(",");
 		const img_thumb_medium_url_str = $(image_element).find('img').data('img_thumb_medium_url');
 		const img_thumb_large_url_str  = $(image_element).find('img').data('img_thumb_large_url');
-		const img_format_str           = $(image_element).attr('data-img_format');
+		const img_format_str           = $(image_element).data('img_format');
 		const origin_page_url_link = $(image_element).find(".origin_page_url a")[0];
 
 		//----------------

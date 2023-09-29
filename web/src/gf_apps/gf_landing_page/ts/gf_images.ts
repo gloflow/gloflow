@@ -64,7 +64,7 @@ export function init(p_logged_in_bool,
 		const image_id_str = $(p_image_info_element).data("data-img_system_id");
 		const img_thumb_medium_url = $(p_image_info_element).find("img").data("img_thumb_medium_url");
 		const img_thumb_large_url  = $(p_image_info_element).find("img").data("img_thumb_medium_url");
-		const flows_names_lst = $(p_image_info_element).data("data-img_flows_names").split(",")
+		const flows_names_lst = $(p_image_info_element).data("img_flows_names").split(",")
 
 		gf_image_viewer.init(p_image_info_element,
 			image_id_str,

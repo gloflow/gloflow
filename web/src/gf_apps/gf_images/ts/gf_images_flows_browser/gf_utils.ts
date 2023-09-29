@@ -68,6 +68,7 @@ export function init_image_element(p_image_id_str :string,
 		<div class="gf_image item ${p_current_image_view_type_str}"
 			data-img_id="${p_image_id_str}"
 			data-img_format="${p_img__format_str}"
+			data-img_flows_names="${p_flows_names_lst.join(',')}"
 			style='visibility:hidden;'>
 
 			<img src="${img_url_str}" data-img_thumb_medium_url="${p_img__thumbnail_medium_url_str}"></img>
