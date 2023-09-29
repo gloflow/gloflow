@@ -24,7 +24,6 @@ import (
 	"testing"
 	"context"
 	// "github.com/stretchr/testify/assert"
-	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	// "github.com/davecgh/go-spew/spew"
@@ -40,7 +39,12 @@ func TestTemplates(pTest *testing.T) {
 	sqlHostStr     := cliArgsMap["sql_host_str"].(string)
 	runtimeSys     := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
 
-	userID := gf_core.GF_ID("test_user")
+	//-------------------
+	// CREATE USER
+	userID, _ := gf_identity.TestCreateUserInDB(pTest, ctx, runtimeSys)
+
+	//-------------------
+
 	firstTestImage := gf_images_core.CreateTestImages(userID, pTest, ctx, runtimeSys)
 
 	// TEMPLATES

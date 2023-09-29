@@ -25,6 +25,7 @@ import (
 	"text/template"
 	"encoding/json"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
@@ -54,16 +55,17 @@ func renderImageViewPage(pImageID gf_images_core.GFimageID,
 
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 
+	resolvedUserNameStr := gf_identity_core.ResolveUserName(pUserID, pCtx, pRuntimeSys)
 
 	type tmplData struct {
 		ImageID               gf_images_core.GFimageID
 		CreationUNIXtimeF     float64
-		OwnerUserID           gf_core.GF_ID
+		OwnerUserNameStr      gf_identity_core.GFuserName
 		FlowsNamesLst         []string
 		OriginPageURLstr      string
 		ThumbnailMediumURLstr string
 		TagsLst               []string
-		FilteredMetaJSONstr   string
+		MetaJSONstr           string
 		SysReleaseInfo        gf_core.SysReleaseInfo
 		IsSubtmplDef          func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
@@ -72,12 +74,12 @@ func renderImageViewPage(pImageID gf_images_core.GFimageID,
 	err := pTemplate.Execute(buff, tmplData{
 		ImageID:               pImageID,
 		CreationUNIXtimeF:     image.Creation_unix_time_f,
-		OwnerUserID:           image.UserID,
+		OwnerUserNameStr:      resolvedUserNameStr,
 		FlowsNamesLst:         image.FlowsNamesLst,
 		OriginPageURLstr:      image.Origin_page_url_str,
 		ThumbnailMediumURLstr: image.Thumbnail_medium_url_str,
 		TagsLst:               image.TagsLst,
-		FilteredMetaJSONstr:   filteredMetaJSONstr,
+		MetaJSONstr:           filteredMetaJSONstr,
 		SysReleaseInfo:        sysReleaseInfo,
 
 		//-------------------------------------------------
