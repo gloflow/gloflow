@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"context"
 	"strconv"
+	"strings"
 	"net/url"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
@@ -47,7 +48,7 @@ type GFfeaturedImage struct {
 	ImageOriginPageURLstr      string // for each featured image this is the URL used in links
 	ImageOriginPageURLhostStr  string // this is displayed in the user UI for each featured image
 	CreationUNIXtimeStr        string
-	FlowNameStr                string
+	FlowsNamesStr              string
 	OwnerUserNameStr           gf_identity_core.GFuserName
 	TagsLst                    []string
 }
@@ -125,7 +126,7 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 			ImageOriginPageURLstr:      image.Origin_page_url_str,
 			ImageOriginPageURLhostStr:  originPageURL.Host,
 			CreationUNIXtimeStr:        strconv.FormatFloat(image.Creation_unix_time_f, 'f', 6, 64),
-			FlowNameStr:                pFlowNameStr,
+			FlowsNamesStr:              strings.Join(image.FlowsNamesLst, ","),
 			OwnerUserNameStr:           userNameStr,
 			TagsLst:                    image.TagsLst,
 		}
