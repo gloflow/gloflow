@@ -50,7 +50,7 @@ func TestTemplates(pTest *testing.T) {
 	
 	gfTemplates, gfErr := templateLoad(templatesPathsMap, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	imageID := firstTestImage.IDstr
@@ -61,7 +61,7 @@ func TestTemplates(pTest *testing.T) {
 		ctx,
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	fmt.Println(templateRenderedStr)

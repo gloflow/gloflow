@@ -50,7 +50,7 @@ func Test__contract_opcodes(pTest *testing.T) {
 		ctx,
 		runtime.Runtime_sys)
 	if gf_err != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	spew.Dump(gf_tx_trace)
@@ -67,7 +67,7 @@ func Test__contract_opcodes(pTest *testing.T) {
 		plugins_info,
 		runtime.Runtime_sys)
 	if gf_err != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	//--------------------

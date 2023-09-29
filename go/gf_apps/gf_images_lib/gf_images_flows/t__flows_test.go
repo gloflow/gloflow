@@ -62,7 +62,7 @@ func TestImagesExist(pTest *testing.T) {
 	// INIT
 	gfErr := Init(runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	//------------------
@@ -82,7 +82,7 @@ func TestImagesExist(pTest *testing.T) {
 		userID,
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 	
 	spew.Dump(existingImagesLst)
@@ -109,7 +109,7 @@ func TestCreate(pTest *testing.T) {
 	// INIT
 	gfErr := Init(runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	//--------------------
@@ -120,7 +120,7 @@ func TestCreate(pTest *testing.T) {
 		runtimeSys)
 
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	spew.Dump(flow)
@@ -149,7 +149,7 @@ func TestGetAll(pTest *testing.T) {
 
 	allFlowsNamesLst, gfErr := pipelineGetAll(ctx, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	spew.Dump(allFlowsNamesLst)

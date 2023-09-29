@@ -53,7 +53,7 @@ func Test__plugins(pTest *testing.T) {
 		plugins_info,
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 

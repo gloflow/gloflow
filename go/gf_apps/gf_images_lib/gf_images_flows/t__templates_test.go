@@ -66,7 +66,7 @@ func getTemplateTestData(pTest *testing.T) ([][]*gf_images_core.GFimage, [][]gf_
 		initialPagesNumInt, pageSizeInt,
 		ctx, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	spew.Dump(pagesLst)
@@ -107,7 +107,7 @@ func TestTemplates(pTest *testing.T) {
 	
 	gfTemplates, gfErr := tmplLoad(templatesPathsMap, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	/*
@@ -146,7 +146,7 @@ func TestTemplates(pTest *testing.T) {
 		userID,
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	fmt.Println(templateRenderedStr)

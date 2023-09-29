@@ -299,7 +299,7 @@ func TestUsersETHunit(pTest *testing.T) {
 	// KEY_SERVER
 	keyServerInfo, gfErr := gf_identity_core.KSinit(false, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	//------------------

@@ -44,14 +44,14 @@ func TestAuth0(pTest *testing.T) {
 
 	gfErr := gf_identity_core.DBsqlCreateTables(ctx, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	auth0config := gf_auth0.LoadConfig(runtimeSys)
 
 	auth0keyIDstr, auth0publicKey, gfErr := gf_auth0.JWTgetPublicKeyForTenant(auth0config, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	pubKeyPEMstr := gf_core.CryptoConvertPubKeyToPEM(auth0publicKey)
@@ -70,7 +70,7 @@ func TestAuth0(pTest *testing.T) {
 	// LOGIN
 	sessionID, gfErr := gf_identity_core.Auth0loginPipeline(ctx, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	runtimeSys.LogNewFun("INFO", "Auth0 login pipeline complete...", map[string]interface{}{
@@ -81,7 +81,7 @@ func TestAuth0(pTest *testing.T) {
 	// GET_SESSION
 	session, gfErr := gf_identity_core.DBsqlAuth0getSession(sessionID, ctx, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	spew.Dump(session)
@@ -102,21 +102,21 @@ func TestAuth0(pTest *testing.T) {
 	}
 	gfErr = gf_identity_core.DBsqlLoginAttemptUpdateBySessionID(sessionID, updateOp, ctx, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	//----------------------
 	// LOGOUT
 	gfErr = gf_identity_core.Auth0logoutPipeline(sessionID, ctx, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	//----------------------
 	// GET_SESSION
 	session, gfErr = gf_identity_core.DBsqlAuth0getSession(sessionID, ctx, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	spew.Dump(session)

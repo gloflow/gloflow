@@ -55,7 +55,7 @@ func testJWTmain(pTest *testing.T,
 	// KEY_SERVER
 	keyServerInfo, gfErr := gf_identity_core.KSinit(false, pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	//------------------------
@@ -68,7 +68,7 @@ func testJWTmain(pTest *testing.T,
 		ctx,
 		pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 	
 	// JWT_VALIDATE
@@ -78,7 +78,7 @@ func testJWTmain(pTest *testing.T,
 		ctx,
 		pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	assert.True(pTest, userIdentifierStr == string(testUserAddressETH),

@@ -84,7 +84,7 @@ func testBookmarkingFlow(pTest *testing.T,
 		ctx,
 		pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	//------------------
@@ -100,7 +100,7 @@ func testBookmarkingFlow(pTest *testing.T,
 		ctx,
 		pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	spew.Dump(output.Bookmarks_lst)
@@ -118,7 +118,7 @@ func testBookmarkingFlow(pTest *testing.T,
 	// TEMPLATES
 	gfTemplates, gfErr := gf_tagger_core.TemplatesLoad(templatesPathsMap, pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 
@@ -134,7 +134,7 @@ func testBookmarkingFlow(pTest *testing.T,
 		ctx,
 		pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	fmt.Println(outputHTML.TemplateRenderedStr)

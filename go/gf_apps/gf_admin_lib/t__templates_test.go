@@ -70,7 +70,7 @@ func TestTemplates(pTest *testing.T) {
 
 	templates, gfErr := templatesLoad(adminTemplatesPathsMap, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	//------------------
@@ -83,7 +83,7 @@ func TestTemplates(pTest *testing.T) {
 		context.Background(),
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	fmt.Println(templateRenderedStr)
@@ -93,7 +93,7 @@ func TestTemplates(pTest *testing.T) {
 		templates.dashboardSubtemplatesNamesLst,
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	fmt.Println(templateRenderedStr)

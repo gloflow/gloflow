@@ -74,7 +74,7 @@ func testLandingPage(pTest *testing.T,
 	// TEMPLATES
 	gfTemplates, gfErr := templatesLoad(templatesPathsMap, pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 
@@ -93,7 +93,7 @@ func testLandingPage(pTest *testing.T,
 		ctx,
 		pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	fmt.Println(templateRenderedStr)

@@ -50,7 +50,7 @@ func TestTemplates(pTest *testing.T) {
 	
 	gfErr := dbSQLcreateTables(runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 	testImage := createTestImages(userID, pTest, ctx, runtimeSys)
 
@@ -63,7 +63,7 @@ func TestTemplates(pTest *testing.T) {
 	// TEMPLATES
 	gfTemplates, gfErr := gf_tagger_core.TemplatesLoad(templatesPathsMap, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	
@@ -84,7 +84,7 @@ func TestTemplates(pTest *testing.T) {
 		ctx,
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	//--------------------
@@ -100,7 +100,7 @@ func TestTemplates(pTest *testing.T) {
 		ctx,
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	fmt.Println(templateRenderedStr)

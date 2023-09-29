@@ -201,13 +201,13 @@ func testUserHTTPupdate(pTest *testing.T,
 
 	if len(errs) > 0 {
 		spew.Dump(errs)
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	bodyMap := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
 		fmt.Println(err)
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	spew.Dump(bodyMap)
@@ -233,13 +233,13 @@ func testUserHTTPgetMe(pTest *testing.T,
 
 	if len(errs) > 0 {
 		spew.Dump(errs)
-		pTest.Fail()
+		pTest.FailNow()
 	}
 	
 	bodyMap := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
 		fmt.Println(err)
-        pTest.Fail()
+        pTest.FailNow()
     }
 
 	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user get me http request failed")

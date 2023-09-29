@@ -46,7 +46,7 @@ func TestTemplates(pTest *testing.T) {
 	
 	templates, gfErr := templatesLoad(templatesPathsMap, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	//------------------

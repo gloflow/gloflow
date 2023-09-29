@@ -42,7 +42,7 @@ func TestPolicy(pTest *testing.T) {
 
 	gfErr := DBsqlCreateTables(runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 
@@ -61,7 +61,7 @@ func TestPolicy(pTest *testing.T) {
 		ctx,
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	spew.Dump(policy)
@@ -70,7 +70,7 @@ func TestPolicy(pTest *testing.T) {
 
 	gfErr = gf_core.DBsqlViewTableStructure("gf_policy", runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	// add some third-party user to a list of editors
@@ -84,7 +84,7 @@ func TestPolicy(pTest *testing.T) {
 		ctx,
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 

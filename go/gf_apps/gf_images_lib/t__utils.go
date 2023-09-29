@@ -78,7 +78,7 @@ func TstartService(pMongoHostStr string,
 		runtimeSys)
 	if gfErr != nil {
 		fmt.Println(gfErr.Error)
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	mongodbColl := mongodbDB.Collection("data_symphony")

@@ -64,19 +64,19 @@ func CreateTestImages(pUserID gf_core.GF_ID,
 	}
 	gfErr := DBmongoPutImage(testImg0, pCtx, pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 	gfErr = DBmongoPutImage(testImg1, pCtx, pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 	gfErr = DBmongoPutImage(testImg2, pCtx, pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 	gfErr = DBmongoPutImage(testImg3, pCtx, pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	return testImg0

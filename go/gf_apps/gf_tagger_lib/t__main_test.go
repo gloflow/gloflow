@@ -62,7 +62,7 @@ func TestCreateDiscoveredTags(pTest *testing.T) {
 	
 	gfErr := dbSQLcreateTables(runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 	testImage := createTestImages(userID, pTest, ctx, runtimeSys)
 
@@ -82,7 +82,7 @@ func TestCreateDiscoveredTags(pTest *testing.T) {
 		ctx,
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	//--------------------
@@ -91,7 +91,7 @@ func TestCreateDiscoveredTags(pTest *testing.T) {
 
 	gfErr = pipelineCreateDiscoveredTags(ctx, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 }
 
@@ -113,7 +113,7 @@ func TestCreate(pTest *testing.T) {
 	
 	gfErr := dbSQLcreateTables(runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 	testImage := createTestImages(userID, pTest, ctx, runtimeSys)
 
@@ -134,7 +134,7 @@ func TestCreate(pTest *testing.T) {
 		ctx,
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	//--------------------
@@ -142,7 +142,7 @@ func TestCreate(pTest *testing.T) {
 
 	image, gfErr := gf_images_core.DBmongoGetImage(testImage.IDstr, ctx, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	spew.Dump(image)
@@ -163,7 +163,7 @@ func TestCreate(pTest *testing.T) {
 		ctx,
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	spew.Dump(imagesLst)
@@ -191,7 +191,7 @@ func createTestImages(pUserID gf_core.GF_ID,
 	}
 	gfErr := gf_images_core.DBmongoPutImage(testImg0, pCtx, pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	return testImg0

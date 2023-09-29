@@ -54,7 +54,7 @@ func TestCreateUserInDB(pTest *testing.T,
 	// DB
 	gfErr := gf_identity_core.DBsqlCreateTables(pCtx, pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	userID := gf_core.GF_ID(fmt.Sprintf("test_user_id_%s", gf_core.StrRandom()))
@@ -75,7 +75,7 @@ func TestCreateUserInDB(pTest *testing.T,
 	// DB
 	gfErr = gf_identity_core.DBsqlUserCreate(user, pCtx, pRuntimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	return userID, userNameStr

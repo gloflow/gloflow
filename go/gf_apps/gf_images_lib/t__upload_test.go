@@ -61,7 +61,7 @@ func TestUpload(pTest *testing.T) {
 	mongodbDB, _, gfErr := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, logFun)
 	if gfErr != nil {
 		fmt.Println(gfErr.Error)
-		pTest.Fail()
+		pTest.FailNow()
 	}
 	mongodbColl := mongodbDB.Collection("data_symphony")
 	
