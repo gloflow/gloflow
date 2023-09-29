@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/masonry.layout.d.ts" />
 ///<reference path="../../../../d/jquery.timeago.d.ts" />
 
+import * as gf_time from "./../../../../gf_core/ts/gf_time";
 import * as gf_sys_panel from "./../../../../gf_sys_panel/ts/gf_sys_panel";
 
 //-------------------------------------------------
@@ -34,6 +35,9 @@ export function init(p_log_fun) {
 	
 	gf_sys_panel.init_with_auth(p_log_fun);
 
+	const image_info_element = $("#gf_image")[0];
+	gf_time.init_creation_date(image_info_element, p_log_fun);
+	
 	//---------------------
 	// UPLOAD__INIT
 
