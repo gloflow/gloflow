@@ -51,6 +51,7 @@ export async function load_new_page(p_flow_name_str :string,
 				const img__id_str                   = p_e['id_str'];
 				const img__format_str               = p_e['format_str'];
 				const img__creation_unix_time_f     = p_e['creation_unix_time_f'];
+				const img__flows_names_lst          = p_e["flows_names_lst"];
 				const img__origin_url_str           = p_e['origin_url_str'];
 				const img__thumbnail_small_url_str  = p_e['thumbnail_small_url_str'];
 				const img__thumbnail_medium_url_str = p_e['thumbnail_medium_url_str'];
@@ -68,7 +69,7 @@ export async function load_new_page(p_flow_name_str :string,
 					img__thumbnail_large_url_str,
 					img__tags_lst,
 					img__owner_user_name_str,
-					p_flow_name_str,
+					img__flows_names_lst,
 					p_current_image_view_type_str,
 
 					//---------------------------------------------------

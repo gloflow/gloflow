@@ -144,9 +144,10 @@ function init__viz_group_view(p_flow_name_str :string,
 	// ELEMENT_CREATE
     function element_create_fun(p_element_map) {
 
-		const img__id_str                   = p_element_map['id_str'];
+		const image_id_str                   = p_element_map['id_str'];
 		const img__format_str               = p_element_map['format_str'];
 		const img__creation_unix_time_f     = p_element_map['creation_unix_time_f'];
+		const img__flows_names_lst          = p_element_map["flows_names_lst"];
 		const img__thumbnail_medium_url_str = p_element_map['thumbnail_medium_url_str'];
 		const img__thumbnail_large_url_str  = p_element_map['thumbnail_large_url_str'];
 		const img__origin_page_url_str      = p_element_map['origin_page_url_str'];
@@ -156,7 +157,7 @@ function init__viz_group_view(p_flow_name_str :string,
 		// IMPORTANT!! - '.gf_image' is initially invisible, and is faded into view when its image is fully loaded
 		//               and its positioned appropriatelly in the Masonry grid
 		const image_container = $(`
-			<div class="gf_image item ${current_image_view_type_str}" data-img_id="${img__id_str}" data-img_format="${img__format_str}" style='visibility:hidden;'>
+			<div class="gf_image item ${current_image_view_type_str}" data-img_id="${image_id_str}" data-img_format="${img__format_str}" style='visibility:hidden;'>
 				<img src="${img_url_str}" data-img_thumb_medium_url="${img__thumbnail_medium_url_str}"></img>
 				<div class="tags_container"></div>
 				<div class="origin_page_url">
@@ -169,12 +170,13 @@ function init__viz_group_view(p_flow_name_str :string,
 		// VIEWER_INIT
 
 		if (img__format_str == 'gif') {
-			gf_gifs_viewer.init(image_container, img__id_str, p_flow_name_str, p_log_fun);
+			gf_gifs_viewer.init(image_container, image_id_str, img__flows_names_lst, p_log_fun);
 		} else {
 			gf_image_viewer.init(image_container,
+				image_id_str,
 				img__thumbnail_medium_url_str,
 				img__thumbnail_large_url_str,
-				p_flow_name_str,
+				img__flows_names_lst,
 				p_log_fun);
 		}
 
@@ -196,18 +198,6 @@ function init__viz_group_view(p_flow_name_str :string,
 			const pages_lst = await gf_images_http.get_page(p_flow_name_str,
 				p_new_page_number_int,
 				p_log_fun);
-
-			/*gf_images_http.get_page(p_flow_name_str,
-				p_new_page_number_int,
-
-				// p_on_complete_fun
-				(p_page_elements_lst)=>{
-					p_resolve_fun(p_page_elements_lst);
-				},
-				(p_error)=>{
-					p_reject_fun();
-				},
-				p_log_fun);*/
         });
         return p;
     }

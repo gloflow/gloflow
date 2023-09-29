@@ -36,7 +36,7 @@ export function masonry_layout_after_img_load(p_image_container) {
 }
 
 //-------------------------------------------------
-export function init_image_element(p_img__id_str :string,
+export function init_image_element(p_image_id_str :string,
 	p_img__format_str               :string,
 	p_img__creation_unix_time_f     :string,
 	p_img__origin_page_url_str      :string,
@@ -45,7 +45,7 @@ export function init_image_element(p_img__id_str :string,
 	p_img__thumbnail_large_url_str  :string,
 	p_img__tags_lst                 :string[],
 	p_img__owner_user_name_str      :string,
-	p_flow_name_str                 :string,
+	p_flows_names_lst               :string[],
 	p_current_image_view_type_str   :string,
 
 	p_on_img_load_fun,
@@ -66,7 +66,7 @@ export function init_image_element(p_img__id_str :string,
 	//               and its positioned appropriatelly in the Masonry grid
 	const image_container = $(`
 		<div class="gf_image item ${p_current_image_view_type_str}"
-			data-img_id="${p_img__id_str}"
+			data-img_id="${p_image_id_str}"
 			data-img_format="${p_img__format_str}"
 			style='visibility:hidden;'>
 
@@ -114,12 +114,14 @@ export function init_image_element(p_img__id_str :string,
 		// VIEWER_INIT
 
 		if (p_img__format_str == 'gif') {
-			gf_gifs_viewer.init(image_container, p_img__id_str, p_flow_name_str, p_log_fun);
+			gf_gifs_viewer.init(image_container, p_image_id_str, p_flows_names_lst, p_log_fun);
 		} else {
+			
 			gf_image_viewer.init(image_container,
+				p_image_id_str,
 				p_img__thumbnail_medium_url_str,
 				p_img__thumbnail_large_url_str,
-				p_flow_name_str,
+				p_flows_names_lst,
 				p_log_fun);
 		}
 

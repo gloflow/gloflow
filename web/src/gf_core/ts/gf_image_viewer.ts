@@ -21,35 +21,38 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //-------------------------------------------------
 export function init(p_image_element,
+	p_image_id_str             :string,
 	p_img_thumb_medium_url_str :string,
 	p_img_thumb_large_url_str  :string,
-	p_flow_name_str            :string,
+	p_flows_names_lst          :string[],
 	p_log_fun) {
-	// p_log_fun("FUN_ENTER", "gf_image_viewer.init()");
-
-	// const img_thumb_medium_url = $(p_image_element).find('img').data('img_thumb_medium_url');
 
 	$(p_image_element).find("img").click(()=>{
 
 		console.log("click")
 
-		const image_view = $(`
+		const gf_link_str = `/images/v/${p_image_id_str}`;
+
+		const image_view_element = $(`
 			<div id="image_viewer">
 				<div id="background"></div>
 				<div id="image_detail">
 					<img src="${p_img_thumb_large_url_str}"></img>
-					<div class="flow_name">${p_flow_name_str}</div>
+					<div class="flows_names">${p_flows_names_lst}</div>
+					<div class="image_view_link">
+						<a href="${gf_link_str}">gf link</a>
+					</div>
 				</div>
 			</div>`);
 
-		$('body').append(image_view);
+		$('body').append(image_view_element);
 
-		const image_detail_element = $(image_view).find("#image_detail");
+		const image_detail_element = $(image_view_element).find("#image_detail");
 		$(image_detail_element).css("position", "absolute");
 
 		//----------------------
 		// BAKCGROUND
-		const bg = $(image_view).find("#background");
+		const bg = $(image_view_element).find("#background");
 
 		// position the background vertically where the user has scrolled to
 		$(bg).css("top", `${$(window).scrollTop()}px`);
@@ -60,7 +63,7 @@ export function init(p_image_element,
 
 		//----------------------
 		// IMG_ONLOAD
-		$(image_view).find("img").on("load", ()=>{
+		$(image_view_element).find("img").on("load", ()=>{
 			image_position_and_scale(image_detail_element);
 		});
 
@@ -75,7 +78,7 @@ export function init(p_image_element,
 
 	    //----------------------
 	    $(bg).click(()=>{
-	    	$(image_view).remove();
+	    	$(image_view_element).remove();
 			$(window).off("resize", resize_handler); // stop positioning on resize
 
 	    	// turn vertical scrolling back on when done viewing the image
@@ -83,14 +86,11 @@ export function init(p_image_element,
 	    });
 
 	    //----------------------
-
-		
 	});
 }
 
 //-------------------------------------------------
 function image_position_and_scale(p_image_detail_element) {
-
 
 	const window_width_int        = $(window).width() - 100;  // some padding removed from real window width
 	const window_height_int       = $(window).height() - 100; // some padding removed from real window height

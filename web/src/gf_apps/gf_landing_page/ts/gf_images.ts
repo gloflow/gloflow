@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_color        from "./../../../gf_core/ts/gf_color";
 import * as gf_image_colors from "./../../../gf_core/ts/gf_image_colors";
 import * as gf_time         from "./../../../gf_core/ts/gf_time";
+import * as gf_image_viewer from "./../../../gf_core/ts/gf_image_viewer";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
 declare var gf_tagger__init_ui;
@@ -57,11 +58,23 @@ export function init(p_logged_in_bool,
 			$(p_image_info_element).find(".image_title").remove();
 		}
 
-		// FIX!! - this function has been moved to gf_core/gf_images_viewer.ts, as a general viewer,
-		//         to use universaly gf_images/gf_landing_page.
-		//         gf_images flows_browser already uses the version from gf_core.
-		init_image_viewer(p_image_info_element, p_log_fun);
+		//----------------------
+		// IMAGE_VIEWER
 
+		const image_id_str = $(p_image_info_element).data("data-img_system_id");
+		const img_thumb_medium_url = $(p_image_info_element).find("img").data("img_thumb_medium_url");
+		const img_thumb_large_url  = $(p_image_info_element).find("img").data("img_thumb_medium_url");
+		const flows_names_lst = $(p_image_info_element).data("data-img_flows_names").split(",")
+
+		gf_image_viewer.init(p_image_info_element,
+			image_id_str,
+			img_thumb_medium_url,
+			img_thumb_large_url,
+			flows_names_lst,
+			p_log_fun);
+
+		//----------------------
+		// CREATION_DATE
 		gf_time.init_creation_date(p_image_info_element, p_log_fun);
 
 		//----------------------
@@ -239,72 +252,3 @@ function init_tagging(p_image_container_element,
 
 	//-------------------------------------------------
 }
-
-//-------------------------------------------------
-// DEPRECATED!!
-// REMOVE!!
-function init_image_viewer(p_image_element, p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_landing_page.init_image_viewer()');
-
-	const img_thumb_medium_url = $(p_image_element).find('img').data('img_thumb_medium_url');
-	const image_view           = $(`
-		<div id="image_view">
-			<div id="background"></div>
-			<div id="image_detail">
-				<img src="${img_thumb_medium_url}"></img>
-			</div>
-		</div>`);
-
-	$(p_image_element).find('img').click(()=>{
-		
-		console.log(img_thumb_medium_url)
-		$('body').append(image_view);
-
-		//----------------------
-		// BAKCGROUND
-		const bg = $(image_view).find('#background');
-
-		// position the background vertically where the user has scrolled to
-		$(bg).css('top', $(window).scrollTop()+'px');
-
-		//----------------------
-		// IMPORTANT!! - turn off vertical scrolling while viewing the image
-		$("body").css("overflow-y", "hidden");
-
-		//----------------------
-		const image_detail = $(image_view).find('#image_detail');
-		$(image_detail).css("position", "absolute");
-	    $(image_detail).css("top",  Math.max(0, (($(window).height() - $(image_detail).outerHeight()) / 2) + $(window).scrollTop())  + "px");
-	    $(image_detail).css("left", Math.max(0, (($(window).width()  - $(image_detail).outerWidth()) / 2)  + $(window).scrollLeft()) + "px");
-	    
-		//----------------------
-	    $(bg).click(()=>{
-	    	$(image_view).remove();
-	    	$("body").css("overflow-y", "auto"); // turn vertical scrolling back on when done viewing the image
-	    });
-
-	    //----------------------
-	});
-}
-
-//-------------------------------------------------
-/*function init_image_date(p_target_element, p_log_fun) {
-
-	const creation_time_element = $(p_target_element).find('.creation_time');
-	const creation_time_f       = parseFloat($(creation_time_element).text());
-	const creation_date         = new Date(creation_time_f*1000);
-
-	const date_msg_str = $.timeago(creation_date);
-	$(creation_time_element).text(date_msg_str);
-
-	const creation_date__readable_str = creation_date.toDateString();
-	const creation_date__readble      = $('<div class="full_creation_date">'+creation_date__readable_str+'</div>');
-
-	$(creation_time_element).mouseover((p_e)=>{
-		$(creation_time_element).append(creation_date__readble);
-	});
-
-	$(creation_time_element).mouseout((p_e)=>{
-		$(creation_date__readble).remove();
-	});
-}*/

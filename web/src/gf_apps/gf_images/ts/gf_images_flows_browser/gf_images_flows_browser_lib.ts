@@ -91,10 +91,11 @@ export function init(p_log_fun) {
 		const image_element = p_e;
 		gf_utils.init_image_date(image_element, p_log_fun);
 
+		const img_id_str = $(image_element).attr('data-img_id');
 		const img_thumb_medium_url_str = $(image_element).find('img').data('img_thumb_medium_url');
 		const img_thumb_large_url_str  = $(image_element).find('img').data('img_thumb_large_url');
 		const img_format_str           = $(image_element).attr('data-img_format');
-
+		const flows_names_lst          = $(image_element).attr('data-img_flows_names').split(",");
 
 		const origin_page_url_link = $(image_element).find(".origin_page_url a")[0];
 
@@ -120,18 +121,17 @@ export function init(p_log_fun) {
 
 		//----------------
 		// GIFS
-		if (img_format_str == 'gif') {
-
-			const img_id_str = $(image_element).attr('data-img_id');
+		if (img_format_str == 'gif') {			
 			gf_gifs_viewer.init(image_element, img_id_str, flow_name_str, p_log_fun);
 		}
 
 		//----------------
 		else {
 			gf_image_viewer.init(image_element,
+				img_id_str,
 				img_thumb_medium_url_str,
 				img_thumb_large_url_str,
-				flow_name_str,
+				flows_names_lst,
 				p_log_fun);
 		}
 
@@ -245,6 +245,7 @@ function init_upload(p_flow_name_str :string,
 				const img__format_str               = image_export_map["format_str"];
 				const img__creation_unix_time_f     = image_export_map["creation_unix_time_f"];
 				const img__owner_user_name_str      = image_export_map["user_name_str"];
+				const img__flows_names_lst          = image_export_map["flows_names_lst"];
 				const img__origin_page_url_str      = image_export_map["origin_page_url_str"];
 				const img__thumbnail_small_url_str  = image_export_map["thumbnail_small_url_str"];
 				const img__thumbnail_medium_url_str = image_export_map["thumbnail_medium_url_str"];
@@ -263,7 +264,7 @@ function init_upload(p_flow_name_str :string,
 					img__thumbnail_large_url_str,
 					img__tags_lst,
 					img__owner_user_name_str,
-					p_flow_name_str,
+					img__flows_names_lst,
 					current_image_view_type_str,
 
 					//---------------------------------------------------

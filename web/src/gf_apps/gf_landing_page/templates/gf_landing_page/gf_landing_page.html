@@ -106,7 +106,9 @@
 			{{- /* IMAGES */}}
 			<div id='featured_images_0'>
 				{{- range .FeaturedImages0lst }}
-					<div class='image_info' data-img_system_id_str="{{ .IDstr }}">
+					<div class='image_info'
+						data-img_system_id="{{ .IDstr }}"
+						data-img_flows_names="{{ .FlowsNamesStr }}">
 						<div class="image_title">{{ .TitleStr }}</div>
 						
 						<div class="image">
@@ -135,7 +137,9 @@
 
 			<div id='featured_images_1'>
 				{{- range .FeaturedImages1lst }}
-					<div class='image_info' data-img_system_id_str="{{ .IDstr }}">
+					<div class='image_info'
+						data-img_system_id="{{ .IDstr }}"
+						data-img_flows_names="{{ .FlowsNamesStr }}">
 						<div class="image_title">{{ .TitleStr }}</div>
 						
 						<div class="image">

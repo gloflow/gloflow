@@ -23,8 +23,8 @@ import * as gf_gifs from "./gf_gifs";
 
 //-------------------------------------------------
 export function init(p_image_element,
-	p_img_id_str    :string,
-	p_flow_name_str :string,
+	p_img_id_str      :string,
+	p_flows_names_lst :string[],
 	p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_gifs_viewer.init()');
 
@@ -61,7 +61,7 @@ export function init(p_image_element,
 	//----------------------
 
 
-	$(p_image_element).find('img').on('click', ()=>{
+	$(p_image_element).find("img").on("click", ()=>{
 
 		console.log('click');
 
