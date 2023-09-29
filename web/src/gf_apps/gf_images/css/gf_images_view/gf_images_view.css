@@ -30,7 +30,8 @@ body {
 }
 
 #gf_image img {
-    width: 100%;
+    width: auto;
+    max-height: 100vh;
 }
 #gf_image .tags_container {
     text-align: center;
