@@ -27,13 +27,43 @@
 	<link rel="stylesheet" type="text/css" href="./../../css/gf_images_view/gf_images_view.css"/>
 	<link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_image_upload.css"/>
 	<link rel="stylesheet" type="text/css" href="./../../../../gf_sys_panel/css/gf_sys_panel.css"/>
+	<link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_sys_release_info.css"/>
 </head>
 <body>
 	{{- /*------------------------------------------------------*/}}
 	
 
-	<div id="image">
-		<img src="{{ .ThumbnailMediumURLstr }}"></img>
+	<div id="main_container">
+		<div id="left_space"></div>
+		<div id="gf_image"
+			data-img_id='{{- .ImageID }}'
+			data-img_meta_json='{{- .MetaJSONstr }}'>
+			
+			<img src="{{ .ThumbnailMediumURLstr }}"></img>
+
+			{{- /*------------------------------------------------------*/}}
+			{{- /* TAGS */}}
+			<div class='tags_container'>
+			
+				{{- range .TagsLst }}
+				<a class='gf_image_tag' href='/v1/tags/objects?tag={{ . }}&otype=image'>#{{ . }}</a>
+				{{- end }}
+			
+			</div>
+
+			{{- /*------------------------------------------------------*/}}
+			<div class="origin_page_url">
+				<a href="{{ .OriginPageURLstr }}" target="_blank">{{ .OriginPageURLstr }}</a>
+			</div>
+			
+			{{- /*------------------------------------------------------*/}}
+			<div class="creation_time">{{ .CreationUNIXtimeF }}</div>
+			<div class="owner_user_name">by <span>{{ .OwnerUserNameStr }}</span></div>
+
+			{{- /*------------------------------------------------------*/}}
+
+		</div>
+		<div id="right_space"></div>
 	</div>
 
 

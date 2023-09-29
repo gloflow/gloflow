@@ -8,3 +8,23 @@ body {
 
 	background-color: #d7d7d7;
 }
+
+/*----------------------------------------------------------*/
+#main_container {
+    display: grid;
+    grid-template-columns: 15% 1fr 15%;
+    width: 100%;
+    position: absolute;
+    top: 55px;
+}
+
+#left_space, #right_space {
+    background: transparent; /* Empty space */
+}
+
+/*----------------------------------------------------------*/
+#gf_image {
+    position: absolute;
+    width: 100%;
+    grid-column: 2 / 3;
+}
