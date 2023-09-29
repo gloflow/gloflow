@@ -72,6 +72,8 @@ function init_images(p_log_fun) {
 		const image_element = p_e;
 		gf_utils.init_image_date(image_element, p_log_fun);
 
+		const image_id_str = $(image_element).data('data-img_id');
+		const image_flows_names_lst = $(image_element).data('data-img_flows_names').split(",");
 		const img_thumb_medium_url_str = $(image_element).find('img').data('img_thumb_medium_url');
 		const img_thumb_large_url_str  = $(image_element).find('img').data('img_thumb_large_url');
 		const img_format_str           = $(image_element).attr('data-img_format');
@@ -100,11 +102,11 @@ function init_images(p_log_fun) {
 		//----------------
 		else {
 
-            const flow_name_str = "";
 			gf_image_viewer.init(image_element,
+				image_id_str,
 				img_thumb_medium_url_str,
 				img_thumb_large_url_str,
-				flow_name_str,
+				image_flows_names_lst,
 				p_log_fun);
 		}
 
