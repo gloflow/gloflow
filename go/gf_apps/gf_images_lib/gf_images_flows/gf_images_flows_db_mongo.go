@@ -253,7 +253,7 @@ func dbMongoGetPage(pFlowNameStr string,
 	}
 	
 	imagesLst := []*gf_images_core.GFimage{}
-	err        := cursor.All(pCtx, &imagesLst)
+	err       := cursor.All(pCtx, &imagesLst)
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to get a page of images from a flow",
 			"mongodb_cursor_decode",

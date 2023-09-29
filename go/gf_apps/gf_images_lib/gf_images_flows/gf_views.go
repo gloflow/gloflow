@@ -24,6 +24,7 @@ import (
 	"context"
 	"strconv"
 	"bytes"
+	"strings"
 	"text/template"
 	"encoding/json"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -168,6 +169,7 @@ func renderTemplate(pFlowNameStr string,
 				"id_str":                    image.IDstr,
 				"title_str":                 image.TitleStr,
 				"meta_json_str":             filteredMetaJSONstr,
+				"flows_names_str":           strings.Join(image.FlowsNamesLst, ","),
 				"format_str":                image.Format_str,
 				"thumbnail_small_url_str":   image.Thumbnail_small_url_str,
 				"thumbnail_medium_url_str":  image.Thumbnail_medium_url_str,
