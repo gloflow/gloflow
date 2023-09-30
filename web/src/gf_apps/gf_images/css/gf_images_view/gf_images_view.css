@@ -27,6 +27,7 @@ body {
     position: absolute;
     width: 100%;
     grid-column: 2 / 3;
+    text-align: center;
 }
 
 #gf_image img {
