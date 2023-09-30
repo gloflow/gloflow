@@ -45,6 +45,7 @@ export function init(p_logged_in_bool,
 
 	//-------------------------------------------------
 	function init_img(p_image_info_element) {
+		
 		// CLEANUP - for images that dont come from some origin page (direct uploads, or generated images)
 		//           this origin_page_url is set to empty string. check for that and remove it.
 		// FIX!! - potentially on the server/template-generation side this div node shouldnt get included
