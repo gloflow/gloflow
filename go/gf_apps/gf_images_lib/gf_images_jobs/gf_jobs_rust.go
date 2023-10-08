@@ -1,3 +1,5 @@
+// +build withrust
+
 // SPDX-License-Identifier: GPL-2.0
 /*
 GloFlow application and media management/publishing platform
@@ -16,6 +18,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+/*
+IMPORTANT!! - "// +build withrust" only included in this file because only this file
+	is selectively compiled, based on whether the build-tag "withrust" is specified or not.
+	this allows for usage of this package in tests, where we mostly dont want to
+	link with any binary libs (via "ld").
 */
 
 package gf_images_jobs

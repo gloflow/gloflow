@@ -177,7 +177,16 @@ def run(p_name_str,
 
             # force rebuilding of packages that are already up-to-date.
             "-a",
-
+            
+            #-----------------------------
+            # IMPORTANT!! - important to build apps with this buildtag, which enables files
+            #   that import C libs that are compiled from the GF Rust codebase into a binary dynamic lib.
+            #   without this tag that file is excluded, and golang tests can execute without being able
+            #   to dynamically link with Rust libs.
+            "-tags withrust",
+            
+            #-----------------------------
+            
             # "-installsuffix cgo",
 
             # LINKER_FLAGS
@@ -205,7 +214,15 @@ def run(p_name_str,
         print("--------------------")
         print(f"{fg('yellow')}DYNAMIC LINKING{attr(0)}\n")
 
-        c_str = f"{LD_paths_str} go build -buildvcs=false -o {p_go_output_path_str}"
+        #-----------------------------
+        # IMPORTANT!! - important to build apps with this buildtag, which enables files
+        #   that import C libs that are compiled from the GF Rust codebase into a binary dynamic lib.
+        #   without this tag that file is excluded, and golang tests can execute without being able
+        #   to dynamically link with Rust libs.
+        "-tags withrust",
+        
+        #-----------------------------
+        c_str = f"{LD_paths_str} go build -tags withrust -buildvcs=false -o {p_go_output_path_str}"
 
     #-----------------------------
     
