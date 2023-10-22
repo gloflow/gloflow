@@ -26,10 +26,10 @@ import (
 
 //---------------------------------------------------
 
-func Breadcrumbs__add(p_category_str string,
-	p_msg_str   string,
-	p_data_map  map[string]interface{},
-	p_local_hub *sentry.Hub) {
+func BreadcrumbsAdd(pCategoryStr string,
+	pMsgStr   string,
+	pDataMap  map[string]interface{},
+	pLocalHub *sentry.Hub) {
 
 	/*const (
 		LevelDebug   Level = "debug"
@@ -41,13 +41,14 @@ func Breadcrumbs__add(p_category_str string,
 	
 	// https://pkg.go.dev/github.com/getsentry/sentry-go#Breadcrumb
 	crumb := &sentry.Breadcrumb{
+		
 		// Type: "some_type", 
-		Category:  p_category_str, // "auth",
-		Message:   p_msg_str,
-		Data:      p_data_map,
+		Category:  pCategoryStr, // "auth",
+		Message:   pMsgStr,
+		Data:      pDataMap,
 		Level:     sentry.LevelInfo,
 		Timestamp: time.Now(),
 	}
 
-	p_local_hub.AddBreadcrumb(crumb, nil);
+	pLocalHub.AddBreadcrumb(crumb, nil);
 }

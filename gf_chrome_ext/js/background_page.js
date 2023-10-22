@@ -56,6 +56,7 @@ function main(p_log_fun) {
 
 		switch (p_request.source_str) {
 			
+			// AUTH
 			case 'popup_auth':
 				handle_auth_msg(p_request.type_str, p_send_response_fun)
 					.then(() => {
@@ -137,28 +138,8 @@ function main(p_log_fun) {
 					chrome.cookies.get({ url: `https://${main_domain_str}`, name: p_name_str },
 						function(p_cookie) {
 							if (p_cookie) {
-
-								/*
-								const cookie_val_str    = p_cookie.value;
-								const cookie_expiration = p_cookie.expirationDate;
-    							const cookie_path_str   = p_cookie.path;
-
-								// SET_COOKIE
-								chrome.cookies.set({
-										"name":   p_name_str,
-										"value":  cookie_val_str,
-										"url":    `https://${main_domain_str}`,
-										"secure": true,
-										"expirationDate": cookie_expiration,
-										"path":           cookie_path_str
-									}, function(cookie) {
-										
-									});
-
-								console.log(cookie_val_str);
-								*/
-
 								p_resolve_fun("cookie found");
+								
 							} else {
 								// console.log(`Cookie ${p_name_str} not found`);
 								p_reject_fun("cookie not found");

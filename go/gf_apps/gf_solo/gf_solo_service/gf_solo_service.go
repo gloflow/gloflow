@@ -104,8 +104,6 @@ func Run(pConfig *GFconfig,
 	//-------------
 	// GF_IDENTITY
 
-	
-
 	gfIdentityServiceInfo := &gf_identity_core.GFserviceInfo{
 		NameStr:       "gf_identity",
 		DomainBaseStr: pConfig.DomainBaseStr,
@@ -135,14 +133,11 @@ func Run(pConfig *GFconfig,
 		return
 	}
 
-
-	
-
-
-
 	//-------------
-	// GF_ADMIN - its started in a separate goroutine and listening on a diff
-	//            port than the main service.
+	/*
+	GF_ADMIN - its started in a separate goroutine and listening on a diff
+		port than the main service.
+	*/
 	sentryHubClone := sentry.CurrentHub().Clone()
 	go func(pLocalHub *sentry.Hub) {
 

@@ -323,7 +323,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 
 	
 	// BREADCRUMB
-	gf_core.Breadcrumbs__add("auth", "admin user checked for existence",
+	gf_core.BreadcrumbsAdd("auth", "admin user checked for existence",
 		map[string]interface{}{"user_exists_bool": userExistsBool, "user_name_str": pInput.UserNameStr},
 		pLocalHub)
 
@@ -349,7 +349,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 			}
 
 			// BREADCRUMB
-			gf_core.Breadcrumbs__add("auth", "creating new admin user",
+			gf_core.BreadcrumbsAdd("auth", "creating new admin user",
 				map[string]interface{}{"email_str": pInput.EmailStr, "user_name_str": pInput.UserNameStr},
 				pLocalHub)
 			
@@ -385,7 +385,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 	}
 
 	// BREADCRUMB
-	gf_core.Breadcrumbs__add("auth", "got user_id for admin user",
+	gf_core.BreadcrumbsAdd("auth", "got user_id for admin user",
 		map[string]interface{}{"user_id_str": userID, "user_name_str": pInput.UserNameStr},
 		pLocalHub)
 

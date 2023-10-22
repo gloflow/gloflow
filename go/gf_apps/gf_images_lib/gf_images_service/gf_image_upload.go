@@ -193,7 +193,7 @@ func UploadInit(pImageNameStr string,
 	//------------------
 	/*
 	CREATE_FLOWS - check if flows to which this image is being added exist,
-	               and create if needed.
+		and create if needed.
 	*/
 
 	gfErr = gf_images_flows.CreateIfMissing(pFlowsNamesLst,
@@ -216,7 +216,6 @@ func UploadInit(pImageNameStr string,
 	}
 
 	//------------------
-
 
 	return uploadInfo, nil
 }

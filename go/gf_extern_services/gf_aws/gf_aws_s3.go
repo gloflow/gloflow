@@ -89,10 +89,7 @@ func S3getFile(pTargetFileS3pathStr string,
 //---------------------------------------------------
 // S3_INIT
 
-func S3init(// pAccessKeyIDstr string,
-	// pSecretAccessKeyStr string,
-	// pTokenStr           string,
-	pRuntimeSys         *gf_core.RuntimeSys) (*GFs3Info, *gf_core.GFerror) {
+func S3init(pRuntimeSys *gf_core.RuntimeSys) (*GFs3Info, *gf_core.GFerror) {
 	
 	config := &aws.Config{
 		Region:           aws.String("us-east-1"),
