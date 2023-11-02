@@ -56,6 +56,30 @@ type HTTPhandlerInfo struct {
 }
 
 //---------------------------------------------------
+// INPUT
+//---------------------------------------------------
+// GET
+
+func HTTPgetInput(pReq *http.Request,
+	pRuntimeSys *RuntimeSys) (map[string]interface{}, *GFerror) {
+
+	bodyBytesLst, _ := ioutil.ReadAll(pReq.Body)
+
+	// parse body bytes only if they're larger than 0
+	if len(bodyBytesLst) > 0 {
+
+		i, gfErr := ParseJSONfromByteList(bodyBytesLst, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+
+		return i, nil
+	}
+
+	return nil, nil
+}
+
+//---------------------------------------------------
 // COOKIES
 //---------------------------------------------------
 
@@ -192,27 +216,6 @@ func HTTPdetectMIMEtypeFromURL(pURLstr string,
 	contentTypeStr := http.DetectContentType(bodyBytesLst)
 
 	return contentTypeStr, nil
-}
-
-//---------------------------------------------------
-
-func HTTPgetInput(pReq *http.Request,
-	pRuntimeSys *RuntimeSys) (map[string]interface{}, *GFerror) {
-
-	bodyBytesLst, _ := ioutil.ReadAll(pReq.Body)
-
-	// parse body bytes only if they're larger than 0
-	if len(bodyBytesLst) > 0 {
-
-		i, gfErr := ParseJSONfromByteList(bodyBytesLst, pRuntimeSys)
-		if gfErr != nil {
-			return nil, gfErr
-		}
-
-		return i, nil
-	}
-
-	return nil, nil
 }
 
 //---------------------------------------------------

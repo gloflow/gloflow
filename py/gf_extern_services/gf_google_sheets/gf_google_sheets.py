@@ -76,11 +76,12 @@ def get_column_by_name(p_column_name_str,
     i=0
     for column_vals_lst in columns_vals_lst:
 
+        # has to be before testing for column name equality
+        i+=1
+
         column_name_str = column_vals_lst[p_column_name__row_index_int]
         if column_name_str == p_column_name_str:
             return column_vals_lst, i
-
-        i+=1
 
     '''
     range_name_str = f"{p_subsheet_name_str}!A:Z"
