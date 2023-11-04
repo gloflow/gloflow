@@ -65,6 +65,8 @@ def run_cmd_in_os_proc(p_cmd_str, p_log_fun):
 	process.start()
 
 #---------------------------------------------------
+# GET_SELF_IP
+
 def get_self_ip():
 
 	#---------------------------------------------------
@@ -85,7 +87,7 @@ def get_self_ip():
 		return self_ip_str
 
 	#---------------------------------------------------
-	def extern_service_method():
+	def extern_service_ipinfoio_method():
 
 		#---------------------------------------------------
 		def get_remote():
@@ -133,16 +135,19 @@ def get_self_ip():
 	#               access point (mobile router); and each of these methods determines a different IP.
 	#               so we're executing them all here and returning them all.
 	dns__self_ip_str        = dns_method()
-	ipinfo__self_ip_str     = extern_service_method()
-	ifconfigme__self_ip_str = extern_service_ifconfigme_method()
+	# ipinfo__self_ip_str     = extern_service_ipinfoio_method()
+	# ifconfigme__self_ip_str = extern_service_ifconfigme_method()
 	print(f"self IP:")
 	print(f"dns         - {dns__self_ip_str}")
-	print(f"ipinfo.io   - {ipinfo__self_ip_str}")
-	print(f"ifconfig.me - {ifconfigme__self_ip_str}")
+	# print(f"ipinfo.io   - {ipinfo__self_ip_str}")
+	# print(f"ifconfig.me - {ifconfigme__self_ip_str}")
 	
 	# some users of this function expect the list of self-ips to be
 	# unique and will cause errors otherwise.
 	ips_no_dups_lst = list(set([
-		dns__self_ip_str, ipinfo__self_ip_str, ifconfigme__self_ip_str]))
+		dns__self_ip_str,
+		# ipinfo__self_ip_str,
+		# ifconfigme__self_ip_str
+	]))
 		
 	return ips_no_dups_lst
