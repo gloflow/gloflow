@@ -34,16 +34,9 @@ def handle_exception(p_exception,
 	else:
 		assert isinstance(p_surrounding_context_attribs_tpl, tuple)
 		msg_str = p_formated_msg_str%(p_surrounding_context_attribs_tpl)
-		
-	#print p_exception.message
-	#print p_pymods_dict[p_pymods_dict.keys()[0]]
-	#traceback_mod_ref = p_pymods_dict[p_pymods_dict.keys()[0]]
-	
-	#print traceback_mod_ref
-	#print traceback_mod_ref.__name__
-	#print dir(traceback_mod_ref)
 	
 	p_log_fun('INFO', 'p_exception.message:%s'%(p_exception.message))
+	
 	
 	with_trace_msg_str = '''
 		%s
