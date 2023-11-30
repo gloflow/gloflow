@@ -38,6 +38,7 @@ import (
 )
 
 //-------------------------------------------------
+// CLIENT_REQUEST_SSE
 
 func ClientRequestSSE(pURLstr string,
 	pRespDataCh chan(map[string]interface{}),
@@ -146,6 +147,7 @@ func ClientRequestSSE(pURLstr string,
 }
 
 //-------------------------------------------------
+// CLIENT_REQUEST
 
 func ClientRequest(pURLstr string,
 	pHeadersMap map[string]string,

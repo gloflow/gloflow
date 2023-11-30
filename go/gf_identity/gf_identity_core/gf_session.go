@@ -125,9 +125,23 @@ func CreateAuthCookie(pJWTtokenStr string,
 
 	cookieNameStr := "Authorization"
 	cookieDataStr := fmt.Sprintf("Bearer %s", pJWTtokenStr)
-	gf_core.HTTPsetCookieOnReq(cookieNameStr,
+	gf_core.HTTPsetCookieOnResp(cookieNameStr,
 		cookieDataStr,
 		pResp,
+		sessionTTLhoursInt)
+}
+
+func CreateAuthCookieOnReq(pJWTtokenStr string,
+	pReq *http.Request) {
+
+	sessionTTLhoursInt, _ := GetSessionTTL()
+
+	cookieNameStr := "Authorization"
+	cookieDataStr := fmt.Sprintf("Bearer %s", pJWTtokenStr)
+
+	gf_core.HTTPsetCookieOnReq(cookieNameStr,
+		cookieDataStr,
+		pReq,
 		sessionTTLhoursInt)
 }
 
@@ -140,7 +154,7 @@ func CreateSessionIDcookie(pSessionIDstr string,
 
 	cookieNameStr := "gf_sess"
 	cookieDataStr := pSessionIDstr
-	gf_core.HTTPsetCookieOnReq(cookieNameStr,
+	gf_core.HTTPsetCookieOnResp(cookieNameStr,
 		cookieDataStr,
 		pResp,
 		sessionTTLhoursInt)
