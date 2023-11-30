@@ -113,7 +113,7 @@ func HTTPgetAllCookies(pReq *http.Request) map[string]interface{} {
 
 //---------------------------------------------------
 
-func HTTPsetCookieOnReq(pCookieNameStr string,
+func HTTPsetCookieOnResp(pCookieNameStr string,
 	pDataStr     string,
 	pResp        http.ResponseWriter,
 	pTTLhoursInt int) {
@@ -161,6 +161,20 @@ func HTTPsetCookieOnReq(pCookieNameStr string,
 	http.SetCookie(pResp, &cookie)
 }
 
+func HTTPsetCookieOnReq(pCookieNameStr string,
+	pDataStr     string,
+	pReq         *http.Request,
+	pTTLhoursInt int) {
+
+	cookie := &http.Cookie{
+        Name:  pCookieNameStr,
+        Value: pDataStr,
+        Path:  "/",
+    }
+
+    pReq.AddCookie(cookie)
+}
+
 //---------------------------------------------------
 
 func HTTPdeleteCookieOnResp(pCookieNameStr string,
@@ -177,6 +191,20 @@ func HTTPdeleteCookieOnResp(pCookieNameStr string,
 	}
 	
 	http.SetCookie(pResp, &expiredCookie)
+}
+
+//---------------------------------------------------
+
+func HTTPserializeCookies(pCookiesLst []*http.Cookie,
+	pRuntimeSys *RuntimeSys) string {
+
+	buffer := bytes.NewBufferString("")
+	for _, cookie := range pCookiesLst {
+		cookieStr := cookie.Raw
+		buffer.WriteString("; "+cookieStr)
+	}
+	cookiesStr := buffer.String()
+	return cookiesStr
 }
 
 //---------------------------------------------------
@@ -219,6 +247,7 @@ func HTTPdetectMIMEtypeFromURL(pURLstr string,
 }
 
 //---------------------------------------------------
+// FETCH_URL
 
 func HTTPfetchURL(pURLstr string,
 	pHeadersMap   map[string]string,
@@ -462,6 +491,8 @@ func HTTPputFile(pTargetURLstr string,
 }
 
 //-------------------------------------------------
+// STATIC_FILES
+//-------------------------------------------------
 
 func HTTPinitStaticServingWithMux(pURLbaseStr string,
 	p_local_dir_path_str string,
@@ -545,19 +576,7 @@ func HTTPserveFile(pLocalDirStr string,
 }
 
 //-------------------------------------------------
-
-func HTTPserializeCookies(pCookiesLst []*http.Cookie,
-	pRuntimeSys *RuntimeSys) string {
-
-	buffer := bytes.NewBufferString("")
-	for _, cookie := range pCookiesLst {
-		cookieStr := cookie.Raw
-		buffer.WriteString("; "+cookieStr)
-	}
-	cookiesStr := buffer.String()
-	return cookiesStr
-}
-
+// SSE
 //-------------------------------------------------
 
 func HTTPinitSSE(pResp http.ResponseWriter,
@@ -592,6 +611,8 @@ func HTTPinitSSE(pResp http.ResponseWriter,
 	return flusher, nil
 }
 
+//-------------------------------------------------
+// VAR
 //-------------------------------------------------
 
 func HTTPgetStreamingResponse(pURLstr string,
