@@ -430,6 +430,11 @@ func errorGetDefs() map[string]ErrorDef {
 			DescrStr: "failed to download a file from S3 to a local FS",
 		},
 
+		// IAM
+		"iam_error": ErrorDef{
+			DescrStr: "failed to interact with the IAM AWS service",
+		},
+
 		//---------------
 		// LIBRARY_ERROR
 		"library_error": ErrorDef{

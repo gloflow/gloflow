@@ -36,9 +36,7 @@ func UsersEmailPipelineVerify(pEmailAddressStr string,
 	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-	//------------------------
-	// EMAIL_CONFIRM
-
+	// EMAIL_CONFIRMM
 	confirmCodeStr := usersEmailGenerateConfirmationCode()
 
 	// DB
@@ -58,6 +56,21 @@ func UsersEmailPipelineVerify(pEmailAddressStr string,
 	// sender address
 	senderAddressStr := fmt.Sprintf("gf-email-confirm@%s", pDomainBaseStr)
 
+	//------------------------
+	// PLUGIN
+	//------------------------
+	// EMAIL_PLUGIN
+	gfErr = pRuntimeSys.ExternalPlugins.EmailSendingCallback(pEmailAddressStr,
+		senderAddressStr,
+		msgSubjectStr,
+		"email_address_confirmation",
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+	
+	//------------------------
+	// AWS
 	gfErr = gf_aws.SESsendMessage(pEmailAddressStr,
 		senderAddressStr,
 		msgSubjectStr,

@@ -87,6 +87,12 @@ type ExternalPlugins struct {
 	SecretGetCallback    func(string, *RuntimeSys) (map[string]interface{}, *GFerror)
 
 	//---------------------------
+	// EMAIL
+	
+	// called on every sending of email in the system
+	EmailSendingCallback: func(string, string, string, string, *gf_core.RuntimeSys)
+
+	//---------------------------
 	// NFT
 	// get metadata on defined fetchers
 	NFTgetFetchersMetaCallback func() map[string]map[string]interface{}
