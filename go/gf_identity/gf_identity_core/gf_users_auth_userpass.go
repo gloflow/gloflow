@@ -42,6 +42,8 @@ type GFuserpassInputLogin struct {
 
 	// for certain emails allow email-login
 	EmailStr string `validate:"omitempty,email"`
+
+	AudienceStr string
 }
 type GFuserpassOutputLogin struct {
 	UserExistsBool     bool
@@ -55,6 +57,7 @@ type GFuserpassOutputLogin struct {
 // io_login_finalize
 type GFuserpassInputLoginFinalize struct {
 	UserNameStr GFuserName `validate:"required,min=3,max=50"`
+	AudienceStr string     `validate:"required,max=100"`
 }
 type GFuserpassOutputLoginFinalize struct {
 	EmailConfirmedBool bool
@@ -144,6 +147,7 @@ func UserpassPipelineLogin(pInput *GFuserpassInputLogin,
 	// LOGIN_FINALIZE
 	input := &GFuserpassInputLoginFinalize{
 		UserNameStr: GFuserName(pInput.UserNameStr),
+		AudienceStr: pInput.AudienceStr,
 	}
 	loginFinalizeOutput, gfErr := UserpassPipelineLoginFinalize(input,
 		pKeyServerInfo,
@@ -213,8 +217,10 @@ func UserpassPipelineLoginFinalize(pInput *GFuserpassInputLoginFinalize,
 	
 	JWTtokenVal, gfErr := JWTpipelineGenerate(userIdentifierStr,
 		authSubsystemTypeStr,
+		pInput.AudienceStr,
 		pKeyServerInfo,
-		pCtx, pRuntimeSys)
+		pCtx,
+		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

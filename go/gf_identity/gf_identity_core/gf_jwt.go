@@ -40,6 +40,7 @@ type GFjwtTokenVal string
 
 func JWTpipelineGenerate(pUserIdentifierStr string,
 	pAuthSubsystemTypeStr string,
+	pAudienceStr          string,
 	pKeyServerInfo        *GFkeyServerInfo,
 	pCtx                  context.Context,
 	pRuntimeSys           *gf_core.RuntimeSys) (*GFjwtTokenVal, *gf_core.GFerror) {
@@ -56,6 +57,7 @@ func JWTpipelineGenerate(pUserIdentifierStr string,
 	// JWT_GENERATE
 	tokenValStr, gfErr := jwtGenerate(pUserIdentifierStr,
 		signingKey,
+		pAudienceStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -70,9 +72,10 @@ func JWTpipelineGenerate(pUserIdentifierStr string,
 //---------------------------------------------------
 
 func jwtGenerate(pUserIdentifierStr string,
-	pSigningKey *rsa.PrivateKey,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GFjwtTokenVal, *gf_core.GFerror) {
+	pSigningKey  *rsa.PrivateKey,
+	pAudienceStr string,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) (*GFjwtTokenVal, *gf_core.GFerror) {
 	
 	pRuntimeSys.LogNewFun("DEBUG", "JWT generated for user", map[string]interface{}{
 		"user_identifier_str": pUserIdentifierStr,})
@@ -100,7 +103,7 @@ func jwtGenerate(pUserIdentifierStr string,
 
 		//----------------------
 		// standard claims
-		"aud": "",                     // audience
+		"aud": pAudienceStr,           // audience
 		"exp": expirationUNIXtimeInt,  // expires_at
 
 		//-----------

@@ -121,6 +121,7 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				input :=&gf_identity_core.GFethInputLogin{
 					UserAddressETH:   userAddressETHstr,
 					AuthSignatureStr: authSignatureStr,
+					AudienceStr:      "",
 				}
 
 				//---------------------

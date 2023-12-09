@@ -40,6 +40,7 @@ type GFethOutputPreflight struct {
 type GFethInputLogin struct {
 	UserAddressETH   GFuserAddressETH `validate:"required,eth_addr"`
 	AuthSignatureStr GFauthSignature  `validate:"required,len=132"` // singature length with "0x"
+	AudienceStr      string           `validate:"required,len=100"`
 }
 type GFethOutputLogin struct {
 	NonceExistsBool        bool
@@ -196,8 +197,10 @@ func ETHpipelineLogin(pInput *GFethInputLogin,
 	authSubsystemTypeStr := GF_AUTH_SUBSYSTEM_TYPE__ETH
 	jwtTokenVal, gfErr   := JWTpipelineGenerate(userIdentifierStr,
 		authSubsystemTypeStr,
+		pInput.AudienceStr,
 		pKeyServerInfo,
-		pCtx, pRuntimeSys)
+		pCtx,
+		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

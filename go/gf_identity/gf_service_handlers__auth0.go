@@ -42,6 +42,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// METRICS
 	handlersEndpointsLst := []string{
+		"/v1/identity/auth0/api_token/generate",
 		"/v1/identity/auth0/login",
 		"/v1/identity/auth0/login_callback",
 		"/v1/identity/auth0/logout",
@@ -64,6 +65,33 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 		AuthLoginURLstr: "/v1/identity/login_ui",
 		AuthKeyServer:   pKeyServer,
 	}
+
+	//---------------------
+	// API_TOKEN_GENERATE
+
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/auth0/api_token/generate",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+			if pReq.Method == "GET" {
+
+				tokenStr, gfErr := gf_identity_core.Auth0apiTokenGeneratePipeline(pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				//------------------
+				// OUTPUT
+				outputMap := map[string]interface{}{
+					"token_str": tokenStr,
+				}
+				return outputMap, nil
+
+				//------------------
+			}
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
 
 	//---------------------
 	// Auth0 may need to redirect back to the application's Login Initiation endpoint, using OIDC third-party initiated login

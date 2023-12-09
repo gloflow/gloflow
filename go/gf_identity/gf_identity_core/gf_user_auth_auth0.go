@@ -59,6 +59,18 @@ type GFauth0outputLoginCallback struct {
 }
 
 //---------------------------------------------------
+// TOKEN_GENERATE_PIPELINE
+
+func Auth0apiTokenGeneratePipeline(pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+
+
+
+	return "", nil
+}
+
+//---------------------------------------------------
+// LOGOUT_PIPELINE
 
 func Auth0logoutPipeline(pGFsessionID gf_core.GF_ID,
 	pCtx        context.Context,
