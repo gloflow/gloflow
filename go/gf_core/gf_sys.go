@@ -90,7 +90,7 @@ type ExternalPlugins struct {
 	// EMAIL
 	
 	// called on every sending of email in the system
-	EmailSendingCallback: func(string, string, string, string, *gf_core.RuntimeSys)
+	EmailSendingCallback func(string, string, string, string, *RuntimeSys)
 
 	//---------------------------
 	// NFT
