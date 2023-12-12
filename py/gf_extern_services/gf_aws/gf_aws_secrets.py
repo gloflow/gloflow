@@ -18,13 +18,26 @@
 import boto3
 
 #--------------------------------------------------
+def init_client(p_region_str):
+    aws_client = boto3.client("secretsmanager",
+        region_name = p_region_str)
+    return aws_client
+
+#--------------------------------------------------
+def get_secret(p_secret_name_str,
+    p_client):
+    secret_value = p_client.get_secret_value(SecretId=p_secret_name_str)
+    secret_value_str = secret_value["SecretString"]
+    return secret_value_str
+
+#--------------------------------------------------
 def create_or_update_batch(p_secrets_map,
     p_region_str,
     p_aws_creds_map):
     assert isinstance(p_secrets_map, dict)
     assert isinstance(p_aws_creds_map, dict)
 
-    aws_client = boot3.client("secretsmanager",
+    aws_client = boto3.client("secretsmanager",
         aws_access_key_id     = p_aws_creds_map["AWS_ACCESS_KEY_ID"],
         aws_secret_access_key = p_aws_creds_map["AWS_SECRET_ACCESS_KEY"],
         region_name           = p_region_str)

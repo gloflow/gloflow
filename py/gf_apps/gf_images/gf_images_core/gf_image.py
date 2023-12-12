@@ -59,7 +59,6 @@ class Image_ADT():
 def create(p_image_info_map,
 	p_db_context_map,
 	p_log_fun):
-	p_log_fun('FUN_ENTER', 'gf_image.create()')
 	
 	new_image_info_dict = gf_image_verify.verify_image_info(p_image_info_map,
 		p_db_context_map,
