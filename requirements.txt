@@ -10,3 +10,6 @@ Pillow
 numpy
 matplotlib
 requests
+
+google-auth
+google-cloud-bigquery
