@@ -23,12 +23,12 @@ def get_image_metadata(p_image_path_str):
 
 	with Image.open(p_image_path_str) as img:
 		width, height = img.size
-		img_type = img.format
+		img_type_str = img.format
 
 	meta_map = {
 		"width_int":  width,
 		"height_int": height,
-		"format_str": img_type
+		"format_str": img_type_str
 	}
 
 	return meta_map
