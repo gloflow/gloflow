@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+from urllib.parse import urlparse
 import requests
 
 #---------------------------------------------------------------------------------
@@ -47,3 +48,8 @@ def download_file_chunked(p_url_str,
         print(f"image downloaded: {p_local_file_path_str}")
     else:
         print(f"failed to download image. Status code: {response.status_code}")
+
+#---------------------------------------------------------------------------------
+def is_absolute_url(url):
+    parsed_url = urlparse(url)
+    return bool(parsed_url.netloc)
