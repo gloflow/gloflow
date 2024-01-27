@@ -275,17 +275,13 @@ def get():
             },
 
             #-------------
-            # GF_BUILDER
-            # DEPRECATED!! - is it?
-            "gf_builder": {
+            # GF_BUILDER_WEB
+            "gf_builder_web": {
                 "type_str":            "custom",
                 "version_str":         "latest",
-                "cont_image_name_str": "gf_builder",
+                "cont_image_name_str": "gf_builder_web",
                 "image_tag_str":       "latest",
-
-                # gf_builder has its Dockerfile in the root of the whole repo because it orchestrates potentially complex
-                # build procedures that files/modules from many different directories. 
-                "dockerfile_path_str": "%s/../Dockerfile__gf_builder"%(modd_str)
+                "dockerfile_path_str": "%s/../Dockerfile__gf_builder_web"%(modd_str)
             },
 
             #-------------
@@ -295,9 +291,6 @@ def get():
                 "version_str":         "latest",
                 "cont_image_name_str": "gf_builder_go_ubuntu",
                 "image_tag_str":       "latest",
-
-                # gf_builder has its Dockerfile in the root of the whole repo because it orchestrates potentially complex
-                # build procedures that files/modules from many different directories. 
                 "dockerfile_path_str": "%s/../Dockerfile__gf_builder_go__ubuntu"%(modd_str)
             },
 
@@ -308,9 +301,6 @@ def get():
                 "version_str":         "latest",
                 "cont_image_name_str": "gf_builder_rust_ubuntu",
                 "image_tag_str":       "latest",
-
-                # gf_builder has its Dockerfile in the root of the whole repo because it orchestrates potentially complex
-                # build procedures that files/modules from many different directories. 
                 "dockerfile_path_str": "%s/../Dockerfile__gf_builder_rust__ubuntu"%(modd_str)
             },
 

@@ -1,4 +1,4 @@
-FROM ubuntu:22.10
+FROM ubuntu:22.04
 
 RUN echo "2"
 RUN mkdir /home/gf

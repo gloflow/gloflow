@@ -251,6 +251,12 @@ def main():
 		dockerhub_pass_str = args_map["dockerhub_pass"]
 		docker_sudo_bool   = args_map["docker_sudo"]
 
+		if not isinstance(dockerhub_pass_str, str):
+			print("dockerhub pass not specified")
+			print("expected ENV vars: GF_DOCKERHUB_USER, GF_DOCKERHUB_P")
+			
+			exit()
+
 		assert app_name_str in build_meta_map.keys()
 		app_build_meta_map = build_meta_map[app_name_str]
 
@@ -341,7 +347,7 @@ def parse_args():
 - '''+fg('yellow')+'gf_images_jobs'+attr(0)+'''
 - '''+fg('yellow')+'gf_ml_worker'+attr(0)+'''
 
-- '''+fg('yellow')+'gf_builder'+attr(0)+'''
+- '''+fg('yellow')+'gf_builder_web'+attr(0)+'''
 - '''+fg('yellow')+'gf_builder_go_ubuntu'+attr(0)+'''
 - '''+fg('yellow')+'gf_builder_rust_ubuntu'+attr(0)+'''
 
@@ -371,7 +377,7 @@ def parse_args():
 	#-------------
 	# BUILD_OUTOF_CONT
 	arg_parser.add_argument("-build_outof_cont", action = "store_true", default=False,
-		help = "build outside of a gf_builder container")
+		help = "build outside of a gf_builder_* containers")
 
 	#-------------
 	# FETCH_DEPENDENCIES

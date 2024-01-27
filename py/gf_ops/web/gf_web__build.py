@@ -57,7 +57,6 @@ def build(p_apps_names_lst,
 	p_apps_meta_map,
 	p_log_fun,
 	p_page_name_str=None):
-	p_log_fun("FUN_ENTER", "gf_web__build.build()")
 	assert isinstance(p_apps_names_lst, list)
 	assert len(p_apps_names_lst) > 0
 	assert isinstance(p_apps_meta_map, dict)
@@ -183,11 +182,11 @@ def build_page(p_page_name_str,
 						
 						"tsc",
 						"--module system", # needed with the "--out" option
-						"--target es2017", # "--target es6",
+						"--target ES2020", # "--target es2017", # "--target es6",
 
 						# Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports
 						# '--esModuleInterop',
-						f"--out {p_out_file_str}",
+						f"--outFile {p_out_file_str}",
 						main_ts_file_str
 					]
 					cmd_str = " ".join(cmd_lst)
