@@ -5,7 +5,8 @@ RUN mkdir /home/gf
 
 RUN apt-get update
 RUN apt-get install -y \
-    curl
+    curl \
+    git
 
 #-----------------------------
 # PYTHON
@@ -24,17 +25,8 @@ RUN pip3 install \
 #-----------------------------
 # NODEJS_TOOLS
 
-# RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-# RUN apt-get update
-
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs
-
-# RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y \
-#     # nodejs \
-#     npm
-
 RUN node -v && npm -v
-
 
 RUN npm install -g typescript
 RUN npm install -g uglify-js
