@@ -69,12 +69,40 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// API_TOKEN_GENERATE
 
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/auth0/api_token/generate",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/auth0/api_token/generate",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
+			//---------------------
+			// INPUT
+
+			userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
+			iMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
+			if gfErr != nil {
+				return nil, gfErr
+			}
+			
+			audienceStr := iMap["audience_str"].(string)
+			
+
+			// ADD!! - set these to proper secret values
+			appClientIDstr := ""
+			appClientSecretStr := ""
+
+			input := &gf_identity_core.GFauth0inputAPItokenGenerate{
+				UserID:             userID,
+				AppClientIDstr:     appClientIDstr,
+				AppClientSecretStr: appClientSecretStr,
+				AudienceStr:        audienceStr,
+				Auth0appDomainStr:  pConfig.Auth0domainStr,
+			}
+
+			//---------------------
+			
 			if pReq.Method == "GET" {
 
-				tokenStr, gfErr := gf_identity_core.Auth0apiTokenGeneratePipeline(pCtx, pRuntimeSys)
+				tokenStr, gfErr := gf_identity_core.Auth0apiTokenGeneratePipeline(input,
+					pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

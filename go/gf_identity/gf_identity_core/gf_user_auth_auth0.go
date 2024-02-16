@@ -24,6 +24,8 @@ import (
 	"time"
 	"context"
 	"strings"
+	// "github.com/parnurzeal/gorequest"
+	// "encoding/json"
 	"github.com/golang-jwt/jwt"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
@@ -58,15 +60,35 @@ type GFauth0outputLoginCallback struct {
 	JWTtokenStr string     
 }
 
+type GFauth0inputAPItokenGenerate struct {
+	UserID             gf_core.GF_ID
+	AppClientIDstr     string
+	AppClientSecretStr string
+	AudienceStr        string
+	Auth0appDomainStr  string
+	
+}
+
 //---------------------------------------------------
 // TOKEN_GENERATE_PIPELINE
 
-func Auth0apiTokenGeneratePipeline(pCtx context.Context,
+func Auth0apiTokenGeneratePipeline(pInput *GFauth0inputAPItokenGenerate,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
+	
+	
+	tokenStr, gfErr := gf_auth0.GenerateAccessToken(pInput.AppClientIDstr,
+		pInput.AppClientSecretStr,
+		pInput.AudienceStr,
+		pInput.Auth0appDomainStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
+	}
 
-
-	return "", nil
+	return tokenStr, nil
 }
 
 //---------------------------------------------------

@@ -39,10 +39,18 @@ import (
 //-------------------------------------------------------------
 
 type GFconfig struct {
-	Auth0domainStr       string
+	
+	// AUTH0_DOMAIN
+	Auth0domainStr string
+
+	// CLIENT_ID/SECRET
 	Auth0clientIDstr     string
 	Auth0clientSecretStr string
+
+	// AUDIENCE
 	Auth0apiAudienceStr  string
+	
+	// CALLBACK_URLS
 	Auth0loginCallbackURLstr  string
 	Auth0logoutCallbackURLstr string
 }
@@ -57,6 +65,63 @@ type GFonLoginSuccessProfileInfo struct {
 type GFauthenticator struct {
 	*oidc.Provider
 	oauth2.Config
+}
+
+//-------------------------------------------------------------
+func GenerateAccessToken(pAppClientIDstr string,
+	pAppClientSecretStr string,
+	pAudienceStr        string,
+	pAuth0appDomainStr  string,
+	pCtx                context.Context,
+	pRuntimeSys         *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+
+	// URL
+	urlStr := fmt.Sprintf("https://%s/oauth/token", pAuth0appDomainStr)
+	
+	// INPUT
+	inputMap := map[string]string{
+		"grant_type":    "client_credentials",
+		"client_id":     pAppClientIDstr,
+		"client_secret": pAppClientSecretStr,
+		"audience":      pAudienceStr,
+	}
+
+	dataLst, _ := json.Marshal(inputMap)
+
+
+
+	// HTTP_POST
+	_, bodyStr, errs := gorequest.New().
+		Post(urlStr).
+		Set("accept", "application/json").
+		// Set("authorization", fmt.Sprintf("Bearer %s", pGithubBearerTokenStr)).
+		Send(string(dataLst)).
+		End()
+	if len(errs) > 0 {
+		err   := errs[0]
+		gfErr := gf_core.ErrorCreate("failed to execute http request to Auth0 to issue a new access token",
+			"http_client_req_error",
+			map[string]interface{}{
+				"url_str": urlStr,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return "", gfErr
+	}
+
+	// OUTPUT
+	result, gfErr := gf_core.ParseJSONfromString(bodyStr, pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
+	}
+	
+	resultMap := result.(map[string]interface{})
+	tokenStr := resultMap["access_token"].(string)
+
+
+		
+
+	return tokenStr, nil
+
 }
 
 //-------------------------------------------------------------
