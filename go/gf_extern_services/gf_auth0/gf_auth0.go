@@ -330,6 +330,13 @@ func LoadConfig(pRuntimeSys *gf_core.RuntimeSys) *GFconfig {
 		"auth0_login_callback_url_str":  auth0loginCallbackURLstr,
 		"auth0_logout_callback_url_str": auth0logoutCallbackURLstr,
 	})
+	
+	if auth0domainStr == "" {
+		fmt.Println("Auth0 domain not supplied...")
+		panic(1)
+	}
+
+	
 
 	config := &GFconfig{
 		Auth0domainStr:       auth0domainStr,

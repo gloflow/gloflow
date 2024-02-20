@@ -40,7 +40,7 @@ type GFethOutputPreflight struct {
 type GFethInputLogin struct {
 	UserAddressETH   GFuserAddressETH `validate:"required,eth_addr"`
 	AuthSignatureStr GFauthSignature  `validate:"required,len=132"` // singature length with "0x"
-	AudienceStr      string           `validate:"len=100"`
+	AudienceStr      string           `validate:"omitempty,len=100"`
 }
 type GFethOutputLogin struct {
 	NonceExistsBool        bool

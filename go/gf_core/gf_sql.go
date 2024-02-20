@@ -57,7 +57,7 @@ func DBsqlConnect(pDBnameStr string,
 
 	for retriesInt := 0; retriesInt < maxRetriesInt; retriesInt++ {
 
-		pRuntimeSys.LogNewFun("INFO", "connecting to SQL DB...", nil)
+		pRuntimeSys.LogNewFun("INFO", "attempt - connecting to SQL DB...", nil)
 		db, err = sql.Open("postgres", urlStr)
 		if err == nil {
 
@@ -69,8 +69,8 @@ func DBsqlConnect(pDBnameStr string,
 		}
 
 		if retriesInt < maxRetriesInt-1 {
-			pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("retrying SQL DB connect in %d...", retryIntervalSecsInt), nil)
-			time.Sleep(2 * time.Second)
+			pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("retry %d - SQL DB connect in %ds...", retriesInt, retryIntervalSecsInt), nil)
+			time.Sleep(time.Duration(retryIntervalSecsInt) * time.Second)
 		}
 	}
 	

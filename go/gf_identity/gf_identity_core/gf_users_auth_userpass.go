@@ -57,7 +57,7 @@ type GFuserpassOutputLogin struct {
 // io_login_finalize
 type GFuserpassInputLoginFinalize struct {
 	UserNameStr GFuserName `validate:"required,min=3,max=50"`
-	AudienceStr string     `validate:"max=100"`
+	AudienceStr string     `validate:"omitempty,max=100"`
 }
 type GFuserpassOutputLoginFinalize struct {
 	EmailConfirmedBool bool
@@ -197,7 +197,7 @@ func UserpassPipelineLoginFinalize(pInput *GFuserpassInputLoginFinalize,
 			output.EmailConfirmedBool = true
 		}
 	}
-
+	
 	//------------------------
 	// USER_ID
 	
