@@ -34,16 +34,18 @@ import (
 // RUNTIME_SYS
 
 type RuntimeSys struct {
+	
 	ServiceNameStr string
 	EnvStr         string
-	
-	LogFun           func(string, string)
-	LogNewFun        GFlogFun
+	Debug_bool     bool // if debug mode is enabled (some places will print extra info in debug mode)
+	LogFun         func(string, string)
+	LogNewFun      GFlogFun
 
-	SQLdb            *sql.DB
-	Mongo_db         *mongo.Database
-	Mongo_coll       *mongo.Collection // main mongodb collection to use when none is specified
-	Debug_bool       bool              // if debug mode is enabled (some places will print extra info in debug mode)
+	// DB
+	SQLdb      *sql.DB
+	Mongo_db   *mongo.Database
+	Mongo_coll *mongo.Collection // main mongodb collection to use when none is specified
+	
 
 	// ERRORS
 	Errors_send_to_mongodb_bool bool // if errors should be persisted to Mongodb

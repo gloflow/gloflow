@@ -468,32 +468,30 @@ func MongoConnectNew(pMongoServerURLstr string,
 		mongo_options.SetTLSConfig(pTLScustomConfig)
 	}
 
-	mongo_client, err := mongo.Connect(ctx, mongo_options)
+	mongoClient, err := mongo.Connect(ctx, mongo_options)
 	if err != nil {
 
 		gfErr := ErrorCreate("failed to connect to a MongoDB server at target url",
 			"mongodb_connect_error",
-			map[string]interface{}{
-				// "mongo_server_url_str": pMongoServerURLstr,
-			}, err, "gf_core", pRuntimeSys)
+			map[string]interface{}{},
+			err, "gf_core", pRuntimeSys)
 		return nil, nil, gfErr
 	}
 
 	// test new connection
 	ctx, _ = context.WithTimeout(context.Background(), time.Duration(connect_timeout_in_sec_int) * time.Second)
-	err = mongo_client.Ping(ctx, readpref.Primary())
+	err = mongoClient.Ping(ctx, readpref.Primary())
 	if err != nil {
 		gfErr := ErrorCreate("failed to ping a MongoDB server at target url",
 			"mongodb_ping_error",
-			map[string]interface{}{
-				// "mongo_server_url_str": pMongoServerURLstr,
-			}, err, "gf_core", pRuntimeSys)
+			map[string]interface{}{},
+			err, "gf_core", pRuntimeSys)
 		return nil, nil, gfErr
 	}
 
-	mongo_db := mongo_client.Database(pDBnameStr)
+	mongoDB := mongoClient.Database(pDBnameStr)
 
-	return mongo_db, mongo_client, nil
+	return mongoDB, mongoClient, nil
 }
 
 //--------------------------------------------------------------------

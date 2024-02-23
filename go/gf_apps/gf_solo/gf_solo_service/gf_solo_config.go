@@ -25,6 +25,7 @@ import (
 )
 
 //-------------------------------------------------------------
+
 type GFconfig struct {
 
 	// ENVIRONMENT
@@ -93,9 +94,9 @@ type GFconfig struct {
 }
 
 //-------------------------------------------------------------
+
 func ConfigInit(pConfigDirPathStr string,
 	pConfigFileNameStr string) (*GFconfig, error) {
-
 
 	configNameStr := strings.Split(pConfigFileNameStr, ".")[0] // viper expects just the file name, without extension
 	

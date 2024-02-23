@@ -352,12 +352,8 @@ func Run(pConfig *GFconfig,
 	coreMetrics := gf_core.MetricsInit("/metrics", portMetricsInt)
 	pRuntimeSys.Metrics = coreMetrics
 	
-	
-
 	//-------------
 	// REGISTER_EXTERN_HTTP_HANDLERS
-
-
 
 	if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.RPChandlersGetCallback != nil {
 
@@ -370,11 +366,9 @@ func Run(pConfig *GFconfig,
 		
 		//-------------
 
-
 		authSubsystemTypeStr := pConfig.AuthSubsystemTypeStr
 		metricsGroupNameStr  := "gf_solo__plugin_rpc_handlers"
 		
-
 		gf_rpc_lib.CreateHandlersHTTP(metricsGroupNameStr,
 			handlersLst,
 			gfSoloHTTPmux,
@@ -383,10 +377,6 @@ func Run(pConfig *GFconfig,
 			keyServer,
 			pRuntimeSys)
 	}
-
-	
-
-
 
 	//-------------
 	// SERVER_INIT - blocking
