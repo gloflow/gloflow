@@ -19,6 +19,7 @@ import boto3
 
 #--------------------------------------------------
 def init_client(p_region_str):
+    
     aws_client = boto3.client("secretsmanager",
         region_name = p_region_str)
     return aws_client
@@ -26,6 +27,7 @@ def init_client(p_region_str):
 #--------------------------------------------------
 def get_secret(p_secret_name_str,
     p_client):
+
     secret_value = p_client.get_secret_value(SecretId=p_secret_name_str)
     secret_value_str = secret_value["SecretString"]
     return secret_value_str
