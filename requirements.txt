@@ -10,6 +10,7 @@ Pillow
 numpy
 matplotlib
 requests
+colored
 
 google-auth
 google-cloud-bigquery
