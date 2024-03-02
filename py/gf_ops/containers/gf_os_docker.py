@@ -322,7 +322,8 @@ def build_image(p_image_names_lst,
 	p_build_args_map    = None,
 	p_exit_on_fail_bool = False,
 	p_docker_sudo_bool  = False,
-	p_pull_base_bool    = False):
+	p_pull_base_bool    = False,
+	p_ctx_dir_str = None):
 	
 	# p_log_fun("FUN_ENTER", "gf_os_docker.build_image()")
 	
@@ -332,7 +333,12 @@ def build_image(p_image_names_lst,
 	assert "Dockerfile" in os.path.basename(p_dockerfile_path_str)
 
 	# full_image_name_str  = "%s/%s:%s"%(p_user_name_str, p_image_name_str, p_image_tag_str)
-	context_dir_path_str = os.path.dirname(p_dockerfile_path_str)
+
+	# CONTEXT_DIR
+	if p_ctx_dir_str == None:
+		context_dir_path_str = os.path.dirname(p_dockerfile_path_str)
+	else:
+		context_dir_path_str = p_ctx_dir_str
 
 	p_log_fun("INFO", "====================+++++++++++++++=====================")
 	p_log_fun("INFO", "                 BUILDING DOCKER IMAGE")
@@ -445,7 +451,7 @@ def login(p_docker_user_str,
 		stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	
 	# STDIN_WRITE
-	process.stdin.write(bytes(p_docker_pass_str.encode())) # write password on stdin of "docker login" command
+	process.stdin.write(bytes(p_docker_pass_str.encode())) # write password to stdin of "docker login" command
 	
 	stdout, stderr = process.communicate() # wait for command completion
 	stdout_str = stdout.decode()
