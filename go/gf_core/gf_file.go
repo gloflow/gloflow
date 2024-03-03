@@ -26,8 +26,8 @@ import (
 
 //---------------------------------------------------
 
-func FileRead(pLocalFilePathStr string,
-	pRuntimeSys *RuntimeSys) (string, *GFerror) {
+func FileReadBytes(pLocalFilePathStr string,
+	pRuntimeSys *RuntimeSys) ([]byte, *GFerror) {
 
 	file, err := os.Open(pLocalFilePathStr)
 	if err != nil {
@@ -35,18 +35,30 @@ func FileRead(pLocalFilePathStr string,
 			"file_open_error",
 			map[string]interface{}{"local_file_path_str": pLocalFilePathStr,},
 			err, "gf_core", pRuntimeSys)
-		return "", gfErr
+		return nil, gfErr
 	}
 
 	bytesLst, err := ioutil.ReadAll(file)
     if err != nil {
         gfErr := ErrorCreate("failed to read all data from a file, for JSON parsing",
-			"file_open_error",
+			"file_read_error",
 			map[string]interface{}{"local_file_path_str": pLocalFilePathStr,},
-			err, "gf_gif_lib", pRuntimeSys)
-		return "", gfErr
+			err, "gf_core", pRuntimeSys)
+		return nil, gfErr
     }
 
+	return bytesLst, nil
+}
+
+//---------------------------------------------------
+
+func FileRead(pLocalFilePathStr string,
+	pRuntimeSys *RuntimeSys) (string, *GFerror) {
+
+	bytesLst, gfErr := FileReadBytes(pLocalFilePathStr, pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
+	}
 	return string(bytesLst), nil
 }
 
