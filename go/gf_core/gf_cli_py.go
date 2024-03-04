@@ -41,11 +41,11 @@ func CLIpyRun(pPyPathStr string,
 	cmdLst = append(cmdLst, pArgsLst...)
 
 	cmdInfo := GFcliCmdInfo{
-		Cmd_lst:          cmdLst,
-		Stdin_data_str:   pInputStdinStr,
-		Env_vars_map:     map[string]string{},
-		Dir_str:          "",
-		View_output_bool: true,
+		CmdLst:         cmdLst,
+		StdinDataStr:   pInputStdinStr,
+		EnvVarsMap:     map[string]string{},
+		DirStr:         "",
+		ViewOutputBool: true,
 	}
 
 

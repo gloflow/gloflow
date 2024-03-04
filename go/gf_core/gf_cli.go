@@ -31,25 +31,25 @@ import (
 //-------------------------------------------------
 
 type GFcliCmdInfo struct {
-	Cmd_lst          []string
-	Stdin_data_str   *string // data to be passed via stdin
-	Env_vars_map     map[string]string
-	Dir_str          string
-	View_output_bool bool
+	CmdLst         []string
+	StdinDataStr   *string // data to be passed via stdin
+	EnvVarsMap     map[string]string
+	DirStr         string
+	ViewOutputBool bool
 }
 
 //-------------------------------------------------
 // RUN_STANDARD
 
 func CLIrunStandard(pCmdLst []string,
-	p_env_vars_map map[string]string,
-	pRuntimeSys    *RuntimeSys) ([]string, []string, *GFerror) {
+	pEnvVarsMap map[string]string,
+	pRuntimeSys *RuntimeSys) ([]string, []string, *GFerror) {
 
 	cliInfo := &GFcliCmdInfo{
-		Cmd_lst:          pCmdLst,
-		Env_vars_map:     p_env_vars_map,
-		Dir_str:          "",
-		View_output_bool: true,
+		CmdLst:         pCmdLst,
+		EnvVarsMap:     pEnvVarsMap,
+		DirStr:          "",
+		ViewOutputBool: true,
 	}
 	stdoutLst, stderrLst, gfErr := CLIrun(cliInfo, pRuntimeSys)
 	return stdoutLst, stderrLst, gfErr
@@ -79,21 +79,21 @@ func CLIrunCore(pCmdInfo *GFcliCmdInfo,
 	pWaitForCompletionBool bool,
 	pRuntimeSys            *RuntimeSys) (chan string, chan string, *GFerror) {
 
-	cmdStr := strings.Join(pCmdInfo.Cmd_lst, " ")
+	cmdStr := strings.Join(pCmdInfo.CmdLst, " ")
 	fmt.Printf("%s\n", cmdStr)
 
 
 
-	cmdNameStr := pCmdInfo.Cmd_lst[0]
-	cmdArgsLst := pCmdInfo.Cmd_lst[1:]
+	cmdNameStr := pCmdInfo.CmdLst[0]
+	cmdArgsLst := pCmdInfo.CmdLst[1:]
 	p := exec.Command(cmdNameStr, cmdArgsLst...)
 
 
 
 
 	// CMD_DIR
-	if pCmdInfo.Dir_str != "" {
-		p.Dir = pCmdInfo.Dir_str
+	if pCmdInfo.DirStr != "" {
+		p.Dir = pCmdInfo.DirStr
 	}
 
 	// STDIN
@@ -130,8 +130,8 @@ func CLIrunCore(pCmdInfo *GFcliCmdInfo,
 
 	//----------------------
 	// STDIN - input is written to stdin after the process is started
-	if pCmdInfo.Stdin_data_str != nil {
-		io.WriteString(stdin, fmt.Sprintf("%s\n", *pCmdInfo.Stdin_data_str))
+	if pCmdInfo.StdinDataStr != nil {
+		io.WriteString(stdin, fmt.Sprintf("%s\n", *pCmdInfo.StdinDataStr))
 	}
 
 	//----------------------
@@ -150,7 +150,7 @@ func CLIrunCore(pCmdInfo *GFcliCmdInfo,
 			if err != nil {
 				continue
 			}
-			if pCmdInfo.View_output_bool {
+			if pCmdInfo.ViewOutputBool {
 				fmt.Printf("%s", l)
 			}
 			lStr := strings.TrimSuffix(l, "\n")
@@ -173,7 +173,7 @@ func CLIrunCore(pCmdInfo *GFcliCmdInfo,
 			if err != nil {
 				continue
 			}
-			if pCmdInfo.View_output_bool {
+			if pCmdInfo.ViewOutputBool {
 				fmt.Printf("%s", l)
 			}
 			lStr := strings.TrimSuffix(l, "\n")
