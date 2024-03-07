@@ -1,0 +1,51 @@
+
+#flows_picker {
+	position: fixed;
+	top: 50px;
+	right: 0px;
+}
+
+#flows_picker #expand_btn {
+	position: fixed;
+    top: 106px;
+    background-color: rgb(122, 122, 122);
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    cursor: pointer;
+
+}
+
+#flows_picker #flows {
+	display: block;
+    right: 60px;
+    position: fixed;
+    top: 106px;
+}
+
+#flows_picker .flow_info {
+	display: flex;
+	background-color: rgb(247 247 247);
+	margin-bottom: 4px;
+    padding: 4px;
+
+	/*
+	border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+	*/
+}
+#flows_picker .flow_imgs_count {
+	color: gray;
+}
+#flows_picker .flow_name {
+	padding-left: 5px;
+}
+#flows_picker .flow_name a {
+	text-decoration: none;
+    color: gray;
+	font-weight: bold;
+}
+
+#flows_picker #flows_experimental_label {
+	right: -42px;
+}
