@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import * as gf_identity       from "./../../../gf_identity/ts/gf_identity";
 import * as gf_identity_http  from "./../../../gf_identity/ts/gf_identity_http";
+import * as gf_flows_picker   from "./../../gf_images/ts/gf_images_flows_browser/gf_flows_picker";
 import * as gf_images         from "./gf_images";
 import * as gf_procedural_art from "./procedural_art/gf_procedural_art";
 import * as gf_image_colors   from "./../../../gf_core/ts/gf_image_colors";
@@ -63,6 +64,13 @@ export async function init(p_log_fun) {
 	
 	// inspect if user is logged-in or not
 	const logged_in_bool = await auth_http_api_map["general"]["logged_in"]();
+
+	//---------------------
+	// FLOWS_PICKER - display it if the user is logged in
+	if (logged_in_bool) {
+
+		gf_flows_picker.init(p_log_fun)
+	}
 
 	//---------------------
 	// POSTS_INIT
