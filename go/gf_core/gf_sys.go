@@ -51,7 +51,7 @@ type RuntimeSys struct {
 	Errors_send_to_mongodb_bool bool // if errors should be persisted to Mongodb
 	ErrorsSendToSentryBool  bool // if errors should be sent to Sentry service
 
-	Names_prefix_str string
+	NamesPrefixStr string
 
 	Validator *validator.Validate
 

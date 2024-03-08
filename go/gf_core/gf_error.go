@@ -88,12 +88,12 @@ func PanicCheckAndHandle(pUserMsgStr string,
 
 			sentry.WithScope(func(scope *sentry.Scope) {
 
-				scope.SetTag(fmt.Sprintf("%s_panic.service_name",   pRuntimeSys.Names_prefix_str), pRuntimeSys.ServiceNameStr)
-				scope.SetTag(fmt.Sprintf("%s_panic.subsystem_name", pRuntimeSys.Names_prefix_str), pSubsystemNameStr)
-				scope.SetTag(fmt.Sprintf("%s_panic.type",           pRuntimeSys.Names_prefix_str), "panic_error")
+				scope.SetTag(fmt.Sprintf("%s_panic.service_name",   pRuntimeSys.NamesPrefixStr), pRuntimeSys.ServiceNameStr)
+				scope.SetTag(fmt.Sprintf("%s_panic.subsystem_name", pRuntimeSys.NamesPrefixStr), pSubsystemNameStr)
+				scope.SetTag(fmt.Sprintf("%s_panic.type",           pRuntimeSys.NamesPrefixStr), "panic_error")
 
 				for k, v := range pPanicDataMap {
-					scope.SetTag(fmt.Sprintf("%s_panic.%s", pRuntimeSys.Names_prefix_str, k),
+					scope.SetTag(fmt.Sprintf("%s_panic.%s", pRuntimeSys.NamesPrefixStr, k),
 						fmt.Sprint(v))
 				}
 
@@ -274,8 +274,8 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 	fmt.Printf("\n\n")
 
 	var namesPrefixStr string
-	if pRuntimeSys.Names_prefix_str != "" {
-		namesPrefixStr = pRuntimeSys.Names_prefix_str
+	if pRuntimeSys.NamesPrefixStr != "" {
+		namesPrefixStr = pRuntimeSys.NamesPrefixStr
 	} else {
 		namesPrefixStr = "gf"
 	}
