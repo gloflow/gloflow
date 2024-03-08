@@ -496,7 +496,7 @@ func DBsqlGetUserNameByID(pUserID gf_core.GF_ID,
 
 	err := row.Scan(&userNameStr)
 	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to get user name in the SQL DB",
+		gfErr := gf_core.ErrorCreate("failed to get user name from the SQL DB",
 			"sql_query_execute",
 			map[string]interface{}{
 				"user_id_str": pUserID,
@@ -506,6 +506,37 @@ func DBsqlGetUserNameByID(pUserID gf_core.GF_ID,
 	}
 
 	return userNameStr, nil
+}
+
+//---------------------------------------------------
+// GET_USER_EMAIL_BY_ID
+
+func DBsqlGetUserEmailByID(pUserID gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+
+	sqlStr := `
+		SELECT email
+		FROM gf_users
+		WHERE id = $1 AND deleted = false
+		LIMIT 1
+	`
+	row := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, string(pUserID))
+
+	var emailAddressStr string
+
+	err := row.Scan(&emailAddressStr)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to get user email address from the SQL DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"user_id_str": pUserID,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return "", gfErr
+	}
+
+	return emailAddressStr, nil
 }
 
 //---------------------------------------------------
