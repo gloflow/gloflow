@@ -127,7 +127,13 @@ def get():
                     ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__counts_by_day.py"%(modd_str),  "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
                     ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__null_breakdown.py"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
                     ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__per_crawler.py"%(modd_str),    "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
-                    ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_url_fetches__counts_by_day.py"%(modd_str),          "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str))
+                    ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_url_fetches__counts_by_day.py"%(modd_str),          "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
+
+                    #------------------------
+                    # ASSETS
+
+                    # icons png file used by gf_chrome_ext and gf_solo
+                    # (f"{modd_str}/../gf_chrome_ext/assets/icons.png", f"{modd_str}/../build/gf_apps/gf_solo/assets"),
 
                     #------------------------
                 ]

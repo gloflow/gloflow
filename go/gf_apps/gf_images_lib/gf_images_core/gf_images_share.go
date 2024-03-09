@@ -30,10 +30,10 @@ import (
 //---------------------------------------------------
 
 type GFshareInput struct {
-	ImageID         GFimageID `mapstructure:"url_str"         validate:"required,min=5,max=400"`
-	EmailAddressStr string    `json:"email_address"`
-	EmailSubjectStr string    `json:"email_subject"`
-	EmailBodyStr    string    `json:"email_body"`
+	ImageID         GFimageID
+	EmailAddressStr string
+	EmailSubjectStr string
+	EmailBodyStr    string
 }
 
 //---------------------------------------------------
