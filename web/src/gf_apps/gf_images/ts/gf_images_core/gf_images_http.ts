@@ -20,6 +20,56 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/jquery.d.ts" />
 
 //---------------------------------------------------
+// SHARE
+
+export async function share(p_image_id_str :string,
+	p_email_address_str :string,
+	p_email_subject_str :string,
+	p_email_body_str    :string,
+	p_gf_host_str 	    :string,
+    p_log_fun) {
+	
+	const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+
+		const url_str = `https://${p_gf_host_str}/v1/images/share`;
+		p_log_fun("INFO", `url_str - ${url_str}`);
+
+		const data_map = {
+			"image_id":      p_image_id_str,
+			"email_address": p_email_address_str,
+			"email_subject": p_email_subject_str,
+			"email_body":    p_email_body_str
+		};
+		
+		//-------------------------
+		// HTTP AJAX
+		$.post(url_str,
+			JSON.stringify(data_map),
+			function(p_data_map) {
+				console.log("response received");
+				// const data_map = JSON.parse(p_data);
+
+				console.log(`data_map["status"] - ${p_data_map["status"]}`);
+				
+				if (p_data_map["status"] == "OK") {
+
+					p_resolve_fun({
+
+					});
+				}
+				else {
+					p_reject_fun(p_data_map["data"]);
+				}
+			});
+
+		//-------------------------
+	});
+	return p;
+}
+
+//---------------------------------------------------
+// GET
+
 export async function get(p_image_id_str :string,
     p_log_fun) {
 
@@ -58,6 +108,8 @@ export async function get(p_image_id_str :string,
 }
 
 //---------------------------------------------------
+// GET_PAGE
+
 export function get_page(p_flow_name_str :string,
 	p_current_page_int :number,
 	p_log_fun) {

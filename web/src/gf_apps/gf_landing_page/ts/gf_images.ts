@@ -24,6 +24,7 @@ import * as gf_color        from "./../../../gf_core/ts/gf_color";
 import * as gf_image_colors from "./../../../gf_core/ts/gf_image_colors";
 import * as gf_time         from "./../../../gf_core/ts/gf_time";
 import * as gf_image_viewer from "./../../../gf_core/ts/gf_image_viewer";
+import * as gf_images_share from "./../../gf_images/ts/gf_images_core/gf_images_share";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
 declare var gf_tagger__init_ui;
@@ -136,6 +137,14 @@ export function init(p_logged_in_bool,
 		if (p_logged_in_bool) {
 			
 			init_tagging(p_image_info_element,
+				p_gf_host_str,
+				p_log_fun);
+
+
+
+			// SHARE
+			gf_images_share.init(image_id_str,
+				p_image_info_element,
 				p_gf_host_str,
 				p_log_fun);
 		}
