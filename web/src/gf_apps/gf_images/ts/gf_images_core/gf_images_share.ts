@@ -76,7 +76,7 @@ function init_ui(p_image_id_str,
 
 
     const control_element = $(`
-        <div class="gf_images_share">
+        <div class="gf_image_share">
             <div class="email_btn">
 				S
             </div>
@@ -111,15 +111,20 @@ function init_ui(p_image_id_str,
 
 	$(p_image_container_element).on('mouseleave', (p_event)=>{
 
-        // IMPORTANT!! - detaching in order to keep event handlers
-		$(control_element).detach();
+
+		// only remove the control if the share dialog is not opened
+		if (!opened_bool) {
+			
+			// IMPORTANT!! - detaching in order to keep event handlers
+			$(control_element).detach();
+		}
 	});
 
 	//---------------------------------------------------
 	function email_share_dialog() {
 
 		const dialog = $(`
-		<div class="gf_email_dialog">
+		<div class="gf_image_share_email_dialog">
 		
 			<div class="email_address">
 				<input type="text" placeholder="email address">
@@ -157,6 +162,10 @@ function init_ui(p_image_id_str,
 				}, 1000);
 		});
 
+		// stop propagation of click event to the share button itself
+		$(dialog).click((p_event)=>{
+			p_event.stopPropagation();
+		});
 
 		return dialog;
 	}

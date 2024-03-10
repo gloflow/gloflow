@@ -3,14 +3,17 @@
 
 
 
-.gf_images_share {
+.gf_image_share {
     position: absolute;
     left: 0px;
     top: 10px;
     z-index: 2;
 }
 
-.gf_images_share .email_btn {
+/*----------------------------------------------------------*/
+/* EMAIL_BTN */
+
+.gf_image_share .email_btn {
     width: 30px;
     height: 21px;
     
@@ -23,12 +26,14 @@
     padding-top: 8px;
 
 }
-.gf_images_share .email_btn:hover {
+.gf_image_share .email_btn:hover {
     background-color: gray;
 }
 
+/*----------------------------------------------------------*/
+/* EMAIL_DIALOG */
 
-.gf_images_share .gf_email_dialog {
+.gf_image_share_email_dialog {
     position: absolute;
     top: 0px;
     left: 30px;
@@ -39,7 +44,7 @@
     font-size: 10px;
 }
 
-.gf_images_share .gf_email_dialog input {
+.gf_image_share_email_dialog input {
     border: none;
     outline: none;
     box-shadow: none;
@@ -47,20 +52,24 @@
     padding: 4px;
     background-color: gray;
 }
-.gf_images_share .gf_email_dialog input::placeholder {
+.gf_image_share_email_dialog input::placeholder {
     color: black;
 }
 
-.gf_images_share .gf_email_dialog textarea {
+.gf_image_share_email_dialog textarea {
     border: none;
     outline: none;
     box-shadow: none;
     width: 180px;
+    height: 56px; 
     padding: 4px;
     background-color: gray;
 }
+.gf_image_share_email_dialog textarea::placeholder {
+    color: black;
+}
 
-.gf_images_share .gf_email_dialog .share_btn {
+.gf_image_share_email_dialog .share_btn {
     padding-top: 10px;
     height: 20px;
     width: 188px;
@@ -70,6 +79,6 @@
     position: absolute;
     font-size: 12px;
 }
-.gf_images_share .gf_email_dialog .share_btn:hover {
+.gf_image_share_email_dialog .share_btn:hover {
     background-color: white;
 }
