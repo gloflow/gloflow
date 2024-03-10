@@ -234,6 +234,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				// SHARE
 				gfErr = gf_images_core.SharePipeline(input,
 					userID,
+					pServiceInfo,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {

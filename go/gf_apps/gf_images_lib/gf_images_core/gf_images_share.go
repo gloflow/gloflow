@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
@@ -39,9 +40,10 @@ type GFshareInput struct {
 //---------------------------------------------------
 
 func SharePipeline(pInput *GFshareInput,
-	pUserID     gf_core.GF_ID,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pUserID      gf_core.GF_ID,
+	pServiceInfo *GFserviceInfo,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	
 
@@ -95,6 +97,19 @@ func SharePipeline(pInput *GFshareInput,
 	
 	if gfErr != nil {
 		return gfErr
+	}
+
+	//------------------------
+	// EVENT
+	if pServiceInfo.EnableEventsAppBool {
+		eventMeta := map[string]interface{}{
+			"image_id": pInput.ImageID,
+			"user_id":  pUserID,
+			"email":    pInput.EmailAddressStr,
+		}
+		gf_events.EmitApp(GF_ENVET_APP__IMAGE_SHARE,
+			eventMeta,
+			pRuntimeSys)
 	}
 
 	//------------------------
