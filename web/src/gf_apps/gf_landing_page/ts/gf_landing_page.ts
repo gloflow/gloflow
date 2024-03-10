@@ -42,5 +42,9 @@ $(document).ready(()=>{
 
 	//-------------------------------------------------
 
-	gf_landing_page_lib.init(log_fun);
+	// PLUGINS
+	const plugin_callbacks_map = {};
+
+	gf_landing_page_lib.init(plugin_callbacks_map,
+		log_fun);
 });

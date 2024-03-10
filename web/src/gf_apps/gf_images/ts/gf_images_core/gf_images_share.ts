@@ -24,6 +24,7 @@ import * as gf_images_http from "./gf_images_http";
 //---------------------------------------------------
 export function init(p_image_id_str,
 	p_image_container_element,
+	p_plugin_callbacks_map,
 	p_log_fun) {
 
 	const http_api_map = {
@@ -54,6 +55,7 @@ export function init(p_image_id_str,
     const control_element = init_ui(p_image_id_str,
 		p_image_container_element,
 		http_api_map,
+		p_plugin_callbacks_map,
         p_log_fun);
 }
 
@@ -62,6 +64,7 @@ export function init(p_image_id_str,
 function init_ui(p_image_id_str,
 	p_image_container_element,
 	p_http_api_map,
+	p_plugin_callbacks_map,
     p_log_fun) {
 
 
@@ -146,6 +149,15 @@ function init_ui(p_image_id_str,
 				email_subject_str,
 				email_body_str,
 				p_log_fun);
+			
+			//--------------------------
+			// PLUGIN_CALLBACK
+
+			if ("share_image" in p_plugin_callbacks_map) {
+				p_plugin_callbacks_map["share_image"]();
+			}
+
+			//--------------------------
 			
 			// mark the button as complete
 			$(dialog).find(".share_btn").css("background-color", "green");

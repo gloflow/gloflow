@@ -31,7 +31,8 @@ declare var gf_upload__init;
 
 //--------------------------------------------------------
 // INIT
-export async function init(p_log_fun) {
+export async function init(p_plugin_callbacks_map,
+	p_log_fun) {
 	
 	const domain_str   = window.location.hostname;
 	const protocol_str = window.location.protocol;
@@ -79,6 +80,7 @@ export async function init(p_log_fun) {
 	//---------------------
 	// GF_IMAGES_INIT
 	gf_images.init(logged_in_bool,
+		p_plugin_callbacks_map,
 		gf_host_str,
 		p_log_fun);
 

@@ -32,6 +32,7 @@ declare var gf_tagger__http_add_tags_to_obj;
 
 //-------------------------------------------------
 export function init(p_logged_in_bool,
+	p_plugin_callbacks_map,
 	p_gf_host_str,
 	p_log_fun) {
 
@@ -145,6 +146,7 @@ export function init(p_logged_in_bool,
 			// SHARE
 			gf_images_share.init(image_id_str,
 				p_image_info_element,
+				p_plugin_callbacks_map,
 				p_log_fun);
 		}
 	}
