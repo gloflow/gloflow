@@ -56,6 +56,7 @@ export function init(p_image_id_str,
 
     // UI
     const control_element = init_ui(p_image_id_str,
+		p_image_container_element,
 		http_api_map,
         p_log_fun);
 
@@ -66,6 +67,7 @@ export function init(p_image_id_str,
 //---------------------------------------------------
 
 function init_ui(p_image_id_str,
+	p_image_container_element,
 	p_http_api_map,
     p_log_fun) {
 
@@ -99,11 +101,25 @@ function init_ui(p_image_id_str,
 
 	});
 
+	//------------------------
+	// IMPORTANT!! - onMouseEnter/onMouseLeave fire when the target element is entered/left, 
+	//               but unline mouseon/mouseout it will not fire if its children are entered/left.
+	
+	$(p_image_container_element).on('mouseenter', (p_event)=>{
+		$(p_image_container_element).append(control_element);
+	});
+
+	$(p_image_container_element).on('mouseleave', (p_event)=>{
+
+        // IMPORTANT!! - detaching in order to keep event handlers
+		$(control_element).detach();
+	});
+
 	//---------------------------------------------------
 	function email_share_dialog() {
 
 		const dialog = $(`
-		<div class="gf_images_share_dialog">
+		<div class="gf_email_dialog">
 		
 			<div class="email_address">
 				<input type="text" placeholder="email address">
