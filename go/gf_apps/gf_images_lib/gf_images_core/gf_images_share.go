@@ -46,25 +46,34 @@ func SharePipeline(pInput *GFshareInput,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	
-
-	
-
+	//------------------------
+	// DB
 
 	// SENDER_EMAIL_ADDRESS
 	senderAddressStr, gfErr := gf_identity_core.DBsqlGetUserEmailByID(pUserID,
 		pCtx,
 		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
 	
+	// SENDER_USER_NAME
 	userNameStr, gfErr := gf_identity_core.DBsqlGetUserNameByID(pUserID,
 		pCtx,
 		pRuntimeSys)
-
+	if gfErr != nil {
+		return gfErr
+	}
+	
+	// IMAGE
 	image, gfErr := DBmongoGetImage(pInput.ImageID, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
 
 	imageURLstr := image.ThumbnailMediumURLstr
+
+	//------------------------
 
 	msgBodyHTMLstr := fmt.Sprintf(`
 		<div>
@@ -83,7 +92,19 @@ func SharePipeline(pInput *GFshareInput,
 		pInput.EmailBodyStr,
 		imageURLstr)
 
+	//------------------------
+	// AWS
+	gfErr = gf_aws.SESsendMessage(pInput.EmailAddressStr,
+		senderAddressStr,
+		pInput.EmailSubjectStr,
+		msgBodyHTMLstr,
+		"", // msgBodyTextStr,
+		pRuntimeSys)
 	
+	if gfErr != nil {
+		return gfErr
+	}
+
 	//------------------------
 	// PLUGIN
 	//------------------------
@@ -100,19 +121,6 @@ func SharePipeline(pInput *GFshareInput,
 		return gfErr
 	}
 	
-	//------------------------
-	// AWS
-	gfErr = gf_aws.SESsendMessage(pInput.EmailAddressStr,
-		senderAddressStr,
-		pInput.EmailSubjectStr,
-		msgBodyHTMLstr,
-		"", // msgBodyTextStr,
-		pRuntimeSys)
-	
-	if gfErr != nil {
-		return gfErr
-	}
-
 	//------------------------
 	// EVENT
 	if pServiceInfo.EnableEventsAppBool {
