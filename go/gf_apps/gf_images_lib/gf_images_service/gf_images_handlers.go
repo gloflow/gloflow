@@ -199,7 +199,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	//---------------------
 	// SHARE_IMAGE
 	
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/images/share",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/share",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
