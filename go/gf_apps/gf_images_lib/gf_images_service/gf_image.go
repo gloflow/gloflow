@@ -49,15 +49,15 @@ func ImageGet(pImageIDstr gf_images_core.GFimageID,
 		resolvedUserNameStr := gf_identity_core.ResolveUserName(image.UserID, pCtx, pRuntimeSys)
 
 		imageExport := &gf_images_core.GFimageExport{
-			Creation_unix_time_f:     image.Creation_unix_time_f,
-			UserNameStr:              resolvedUserNameStr,
-			Title_str:                image.TitleStr,
-			Flows_names_lst:          image.FlowsNamesLst,
-			Thumbnail_small_url_str:  image.Thumbnail_small_url_str,
-			Thumbnail_medium_url_str: image.Thumbnail_medium_url_str,
-			Thumbnail_large_url_str:  image.Thumbnail_large_url_str,
-			Format_str:               image.Format_str,
-			Tags_lst:                 image.TagsLst,
+			Creation_unix_time_f:  image.Creation_unix_time_f,
+			UserNameStr:           resolvedUserNameStr,
+			Title_str:             image.TitleStr,
+			Flows_names_lst:       image.FlowsNamesLst,
+			ThumbnailSmallURLstr:  image.ThumbnailSmallURLstr,
+			ThumbnailMediumURLstr: image.ThumbnailMediumURLstr,
+			ThumbnailLargeURLstr:  image.ThumbnailLargeURLstr,
+			Format_str:            image.Format_str,
+			Tags_lst:              image.TagsLst,
 		}
 		return imageExport, true, nil
 	} else {

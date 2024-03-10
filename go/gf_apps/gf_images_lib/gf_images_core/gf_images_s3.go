@@ -185,9 +185,9 @@ func S3getImageFilepath(pImageIDstr GFimageID,
 func S3getImageThumbsS3filepaths(p_image *GFimage,
 	pRuntimeSys *gf_core.RuntimeSys) (string, string, string) {
 	
-	thumb_small__s3_filepath_str  := strings.Replace(p_image.Thumbnail_small_url_str,  "/images/d", "", 1)
-	thumb_medium__s3_filepath_str := strings.Replace(p_image.Thumbnail_medium_url_str, "/images/d", "", 1)
-	thumb_large__s3_filepath_str  := strings.Replace(p_image.Thumbnail_large_url_str,  "/images/d", "", 1)
+	thumb_small__s3_filepath_str  := strings.Replace(p_image.ThumbnailSmallURLstr,  "/images/d", "", 1)
+	thumb_medium__s3_filepath_str := strings.Replace(p_image.ThumbnailMediumURLstr, "/images/d", "", 1)
+	thumb_large__s3_filepath_str  := strings.Replace(p_image.ThumbnailLargeURLstr,  "/images/d", "", 1)
 
 	return thumb_small__s3_filepath_str, thumb_medium__s3_filepath_str, thumb_large__s3_filepath_str
 }

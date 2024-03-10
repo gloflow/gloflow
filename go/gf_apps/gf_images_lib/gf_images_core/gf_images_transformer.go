@@ -158,7 +158,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	mediumThumbMaxSizePxInt := 400
 	largeThumbMaxSizePxInt  := 800
 
-	gfImageThumbs, gfErr := CreateThumbnails(img,
+	imageThumbs, gfErr := CreateThumbnails(img,
 		pImageIDstr,
 		pNormalizedExtStr,
 		pImagesStoreThumbnailsLocalDirPathStr,
@@ -199,9 +199,9 @@ func TransformProcessImage(pImageIDstr GFimageID,
 		Origin_url_str:                 pImageOriginURLstr,
 		Origin_page_url_str:            pImageOriginPageURLstr,
 		Original_file_internal_uri_str: pImageLocalFilePathStr,
-		Thumbnail_small_url_str:        gfImageThumbs.Small_relative_url_str,
-		Thumbnail_medium_url_str:       gfImageThumbs.Medium_relative_url_str,
-		Thumbnail_large_url_str:        gfImageThumbs.Large_relative_url_str,
+		ThumbnailSmallURLstr:           imageThumbs.Small_relative_url_str,
+		ThumbnailMediumURLstr:          imageThumbs.Medium_relative_url_str,
+		ThumbnailLargeURLstr:           imageThumbs.Large_relative_url_str,
 		Format_str:                     pNormalizedExtStr,
 		Width_int:                      imageWidthInt,
 		Height_int:                     imageHeightInt,
@@ -215,14 +215,14 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	// IMAGE_CREATE
 
 	// IMPORTANT!! - creates a GF_Image struct and stores it in the DB
-	gfImage, gfErr := ImageCreateNew(imageInfo, pCtx, pRuntimeSys)
+	image, gfErr := ImageCreateNew(imageInfo, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
 
 	//--------------------------
 
-	return gfImage, gfImageThumbs, nil
+	return image, imageThumbs, nil
 }
 
 //---------------------------------------------------

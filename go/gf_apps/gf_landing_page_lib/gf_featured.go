@@ -121,8 +121,8 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 		featured := &GFfeaturedImage{
 			IDstr:                      image.IDstr,
 			TitleStr:                   image.TitleStr,
-			ImageURLstr:                image.Thumbnail_medium_url_str,
-			ImageThumbnailMediumURLstr: image.Thumbnail_medium_url_str,
+			ImageURLstr:                image.ThumbnailMediumURLstr,
+			ImageThumbnailMediumURLstr: image.ThumbnailMediumURLstr,
 			ImageOriginPageURLstr:      image.Origin_page_url_str,
 			ImageOriginPageURLhostStr:  originPageURL.Host,
 			CreationUNIXtimeStr:        strconv.FormatFloat(image.Creation_unix_time_f, 'f', 6, 64),

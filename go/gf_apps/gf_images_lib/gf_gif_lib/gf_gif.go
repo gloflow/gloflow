@@ -262,17 +262,17 @@ func Process(pImageIDstr gf_images_core.Gf_image_id,
 		//-----------------------
 		verified_gf_image_id_str := gf_images_core.Gf_image_id(verified_image_info_map["id_str"].(string)) //type-casting, gf_images_core.Gf_image_id is a type (not function)
 		gf_image_info := &gf_images_core.GFimageNewInfo{
-			IDstr:                          verified_gf_image_id_str,                                           //image_id_str,
-			Title_str:                      verified_image_info_map["title_str"].(string),                      //image_title_str,
-			Flows_names_lst:                verified_image_info_map["flows_names_lst"].([]string),              //p_flows_names_lst,
-			Image_client_type_str:          verified_image_info_map["image_client_type_str"].(string),          //p_image_client_type_str,
-			Origin_url_str:                 verified_image_info_map["origin_url_str"].(string),                 //p_image_source_url_str,
-			Origin_page_url_str:            verified_image_info_map["origin_page_url_str"].(string),            //p_image_origin_page_url_str,
-			Original_file_internal_uri_str: verified_image_info_map["original_file_internal_uri_str"].(string), //image_local_file_path_str,
-			Thumbnail_small_url_str:        verified_image_info_map["thumbnail_small_url_str"].(string),        //gif_first_frame_str,
-			Thumbnail_medium_url_str:       verified_image_info_map["thumbnail_medium_url_str"].(string),       //gif_first_frame_str,
-			Thumbnail_large_url_str:        verified_image_info_map["thumbnail_large_url_str"].(string),        //gif_first_frame_str,
-			Format_str:                     verified_image_info_map["format_str"].(string),                     //"gif",
+			IDstr:                          verified_gf_image_id_str,                                           // image_id_str,
+			Title_str:                      verified_image_info_map["title_str"].(string),                      // image_title_str,
+			Flows_names_lst:                verified_image_info_map["flows_names_lst"].([]string),              // p_flows_names_lst,
+			Image_client_type_str:          verified_image_info_map["image_client_type_str"].(string),          // p_image_client_type_str,
+			Origin_url_str:                 verified_image_info_map["origin_url_str"].(string),                 // p_image_source_url_str,
+			Origin_page_url_str:            verified_image_info_map["origin_page_url_str"].(string),            // p_image_origin_page_url_str,
+			Original_file_internal_uri_str: verified_image_info_map["original_file_internal_uri_str"].(string), // image_local_file_path_str,
+			ThumbnailSmallURLstr:           verified_image_info_map["thumbnail_small_url_str"].(string),        // gif_first_frame_str,
+			ThumbnailMediumURLstr:          verified_image_info_map["thumbnail_medium_url_str"].(string),       // gif_first_frame_str,
+			ThumbnailLargeURLstr:           verified_image_info_map["thumbnail_large_url_str"].(string),        // gif_first_frame_str,
+			Format_str:                     verified_image_info_map["format_str"].(string),                     // "gif",
 		}
 
 		// IMPORTANT!! - creates a GF_Image struct and stores it in the DB.

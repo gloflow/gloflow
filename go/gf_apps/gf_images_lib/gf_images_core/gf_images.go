@@ -65,9 +65,10 @@ type GFimage struct {
 
 	//---------------
 	// relative url"s - "/images/image_name.*"
-	Thumbnail_small_url_str  string `json:"thumbnail_small_url_str"  bson:"thumbnail_small_url_str"`
-	Thumbnail_medium_url_str string `json:"thumbnail_medium_url_str" bson:"thumbnail_medium_url_str"`
-	Thumbnail_large_url_str  string `json:"thumbnail_large_url_str"  bson:"thumbnail_large_url_str"`
+
+	ThumbnailSmallURLstr  string `json:"thumbnail_small_url_str"  bson:"thumbnail_small_url_str"`
+	ThumbnailMediumURLstr string `json:"thumbnail_medium_url_str" bson:"thumbnail_medium_url_str"`
+	ThumbnailLargeURLstr  string `json:"thumbnail_large_url_str"  bson:"thumbnail_large_url_str"`
 	
 	//---------------
 	Format_str string `json:"format_str" bson:"format_str"` // "jpeg" | "png" | "gif"
@@ -88,16 +89,16 @@ type GFimage struct {
 }
 
 type GFimageExport struct {
-	Creation_unix_time_f     float64  `json:"creation_unix_time_f"`
-	UserNameStr              gf_identity_core.GFuserName `json:"user_name_str"`
-	Title_str                string   `json:"title_str"`
-	Flows_names_lst          []string `json:"flows_names_lst"`
-	Origin_page_url_str      string   `json:"origin_page_url_str"`
-	Thumbnail_small_url_str  string   `json:"thumbnail_small_url_str"`
-	Thumbnail_medium_url_str string   `json:"thumbnail_medium_url_str"`
-	Thumbnail_large_url_str  string   `json:"thumbnail_large_url_str"`
-	Format_str               string   `json:"format_str"`
-	Tags_lst                 []string `json:"tags_lst"`
+	Creation_unix_time_f  float64  `json:"creation_unix_time_f"`
+	UserNameStr           gf_identity_core.GFuserName `json:"user_name_str"`
+	Title_str             string   `json:"title_str"`
+	Flows_names_lst       []string `json:"flows_names_lst"`
+	Origin_page_url_str   string   `json:"origin_page_url_str"`
+	ThumbnailSmallURLstr  string   `json:"thumbnail_small_url_str"`
+	ThumbnailMediumURLstr string   `json:"thumbnail_medium_url_str"`
+	ThumbnailLargeURLstr  string   `json:"thumbnail_large_url_str"`
+	Format_str            string   `json:"format_str"`
+	Tags_lst              []string `json:"tags_lst"`
 }
 
 type GFimageThumbs struct {
@@ -118,9 +119,9 @@ type GFimageNewInfo struct {
 	Origin_url_str                 string
 	Origin_page_url_str            string
 	Original_file_internal_uri_str string
-	Thumbnail_small_url_str        string
-	Thumbnail_medium_url_str       string
-	Thumbnail_large_url_str        string
+	ThumbnailSmallURLstr           string
+	ThumbnailMediumURLstr          string
+	ThumbnailLargeURLstr           string
 	Format_str                     string
 	Width_int                      int
 	Height_int                     int
@@ -149,9 +150,9 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 		Origin_url_str:                 pImageInfo.Origin_url_str,
 		Origin_page_url_str:            pImageInfo.Origin_page_url_str,
 		Original_file_internal_uri_str: pImageInfo.Original_file_internal_uri_str,
-		Thumbnail_small_url_str:        pImageInfo.Thumbnail_small_url_str,
-		Thumbnail_medium_url_str:       pImageInfo.Thumbnail_medium_url_str,
-		Thumbnail_large_url_str:        pImageInfo.Thumbnail_large_url_str,
+		ThumbnailSmallURLstr:           pImageInfo.ThumbnailSmallURLstr,
+		ThumbnailMediumURLstr:          pImageInfo.ThumbnailMediumURLstr,
+		ThumbnailLargeURLstr:           pImageInfo.ThumbnailLargeURLstr,
 		Format_str:                     pImageInfo.Format_str,
 		Width_int:                      pImageInfo.Width_int,
 		Height_int:                     pImageInfo.Height_int,

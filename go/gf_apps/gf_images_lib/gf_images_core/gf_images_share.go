@@ -64,7 +64,7 @@ func SharePipeline(pInput *GFshareInput,
 		return gfErr
 	}
 
-	imageURLstr := image.Thumbnail_medium_url_str
+	imageURLstr := image.ThumbnailMediumURLstr
 
 	msgBodyHTMLstr := fmt.Sprintf(`
 		<div>
