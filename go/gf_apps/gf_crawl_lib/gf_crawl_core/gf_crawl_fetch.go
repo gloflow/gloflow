@@ -189,7 +189,7 @@ func FetchURL(pURLstr string,
 			"end_time_f":   end_time_f,
 		}
 
-		gf_events.EventsSendEvent(events_id_str,
+		gf_events.SendEvent(events_id_str,
 			event_type_str, // p_type_str
 			msg_str,        // p_msg_str
 			data_map,

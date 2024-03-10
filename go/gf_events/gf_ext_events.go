@@ -57,7 +57,7 @@ type EventsCtx struct {
 
 //-------------------------------------------------
 
-func EventsSendEvent(pEventsIDstr string,
+func SendEvent(pEventsIDstr string,
 	pTypeStr    string,
 	pMsgStr     string,
 	pDataMap    map[string]interface{},
@@ -75,10 +75,9 @@ func EventsSendEvent(pEventsIDstr string,
 
 //-------------------------------------------------
 
-func EventsRegisterProducer(pEventsIDstr string,
+func RegisterProducer(pEventsIDstr string,
 	pEventsCtx  *EventsCtx,
 	pRuntimeSys *gf_core.RuntimeSys) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_ext_events.EventsRegisterProducer()")
 
 	registerProducerMsg := EventsRegisterProducerMsg{
 		EventsIDstr: pEventsIDstr,
@@ -89,8 +88,7 @@ func EventsRegisterProducer(pEventsIDstr string,
 
 //-------------------------------------------------
 
-func EventsInit(pSSEurlStr string, pRuntimeSys *gf_core.RuntimeSys) *EventsCtx {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_ext_events.EventsInit()")
+func Init(pSSEurlStr string, pRuntimeSys *gf_core.RuntimeSys) *EventsCtx {
 
 	// yellow := color.New(color.FgYellow).SprintFunc()
 	// black  := color.New(color.FgBlack).Add(color.BgYellow).SprintFunc()
@@ -146,7 +144,7 @@ func EventsInit(pSSEurlStr string, pRuntimeSys *gf_core.RuntimeSys) *EventsCtx {
 		EventsBrokerCh:     events_broker_ch,
 	}
 
-	eventsInitHandlers(pSSEurlStr,
+	initHandlers(pSSEurlStr,
 		register_consumer_ch,
 		ctx,
 		pRuntimeSys)
@@ -155,11 +153,10 @@ func EventsInit(pSSEurlStr string, pRuntimeSys *gf_core.RuntimeSys) *EventsCtx {
 
 //-------------------------------------------------
 
-func eventsInitHandlers(pSSEurlStr string,
-	p_register_consumer_ch chan<- EventsRegisterConsumerMsg,
-	pEventsCtx             *EventsCtx,
-	pRuntimeSys            *gf_core.RuntimeSys) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_ext_events.eventsInitHandlers()")
+func initHandlers(pSSEurlStr string,
+	pRegisterConsumerCh chan<- EventsRegisterConsumerMsg,
+	pEventsCtx          *EventsCtx,
+	pRuntimeSys         *gf_core.RuntimeSys) {
 
 	// yellow := color.New(color.FgYellow).SprintFunc()
 	// black  := color.New(color.FgBlack).Add(color.BgYellow).SprintFunc()
@@ -178,7 +175,7 @@ func eventsInitHandlers(pSSEurlStr string,
 			ResponseCh:  register_consumer__response_ch,
 		}
 
-		p_register_consumer_ch <- register_consumer_msg
+		pRegisterConsumerCh <- register_consumer_msg
 		eventsConsumerCh := <- register_consumer__response_ch
 
 		flusher, gf_err := gf_core.HTTPinitSSE(p_resp, pRuntimeSys)
@@ -193,7 +190,7 @@ func eventsInitHandlers(pSSEurlStr string,
 		msgStr       := "client has successfully connected to a SSE stream"
 		dataMap      := map[string]interface{}{}
 
-		EventsSendEvent(eventsIDstr,
+		SendEvent(eventsIDstr,
 			eventTypeStr, // pTypeStr
 			msgStr,       // pMsgStr
 			dataMap,

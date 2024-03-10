@@ -58,7 +58,7 @@ func CreateErrorAndEvent(pErrorTypeStr string,
 		eventsIDstr  := "crawler_events"
 		eventTypeStr := "error"
 
-		gf_events.EventsSendEvent(eventsIDstr,
+		gf_events.SendEvent(eventsIDstr,
 			eventTypeStr,   // p_type_str
 			pErrorMsgStr,   // pMsgStr
 			pErrorDataMap,  // p_data_map

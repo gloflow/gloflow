@@ -81,7 +81,7 @@ func Init(pConfig *GFcrawlerConfig,
 	pRuntimeSys                 *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//--------------
-	eventsCtx := gf_events.EventsInit("/a/crawl/events", pRuntimeSys)
+	eventsCtx := gf_events.Init("/a/crawl/events", pRuntimeSys)
 
 	// crawled_images_s3_bucket_name_str := "gf--discovered--img"
 	// gf_images_s3_bucket_name_str      := "gf--img"
@@ -146,7 +146,7 @@ func startCrawlersCycles(pCrawlersMap map[string]gf_crawl_core.GFcrawlerDef,
 
 	eventsIDstr := "crawler_events"
 	
-	gf_events.EventsRegisterProducer(eventsIDstr, pRuntime.EventsCtx, pRuntimeSys)
+	gf_events.RegisterProducer(eventsIDstr, pRuntime.EventsCtx, pRuntimeSys)
 
 	for _, crawler := range pCrawlersMap {
 
