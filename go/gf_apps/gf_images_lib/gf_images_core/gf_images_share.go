@@ -59,6 +59,13 @@ func SharePipeline(pInput *GFshareInput,
 		pCtx,
 		pRuntimeSys)
 
+	image, gfErr := DBmongoGetImage(pInput.ImageID, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	imageURLstr := image.Thumbnail_medium_url_str
+
 	msgBodyHTMLstr := fmt.Sprintf(`
 		<div>
 			<div>
@@ -68,9 +75,13 @@ func SharePipeline(pInput *GFshareInput,
 			<div id='user_body'>
 				%s
 			</div>
+			<div id='image'>
+				<img src='%s' alt='image' style='width:100%%;'>
+			</div>
 		</div>`,
 		userNameStr,
-		pInput.EmailBodyStr)
+		pInput.EmailBodyStr,
+		imageURLstr)
 
 	
 	//------------------------

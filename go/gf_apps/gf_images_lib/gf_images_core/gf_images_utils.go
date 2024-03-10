@@ -114,7 +114,6 @@ func ImageLoadFile(pImageLocalFilePathStr string,
 
 func GetImageOriginalFilenameFromURL(pImageURLstr string,
 	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_utils.Get_image_original_filename_from_url()")
 
 	url, err := url.Parse(pImageURLstr)
 	if err != nil {
