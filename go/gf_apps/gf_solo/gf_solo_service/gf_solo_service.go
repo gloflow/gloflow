@@ -219,6 +219,7 @@ func Run(pConfig *GFconfig,
 	}
 	
 	gfImagesServiceInfo := &gf_images_core.GFserviceInfo{
+		DomainBaseStr: pConfig.DomainBaseStr,
 		Mongodb_host_str:                     pConfig.MongoHostStr,
 		Mongodb_db_name_str:                  pConfig.MongoDBnameStr,
 

@@ -71,7 +71,7 @@ func SharePipeline(pInput *GFshareInput,
 		return gfErr
 	}
 
-	imageURLstr := image.ThumbnailMediumURLstr
+	imageURLstr := fmt.Sprintf("https://%s%s", pServiceInfo.DomainBaseStr, image.ThumbnailMediumURLstr)
 
 	//------------------------
 
@@ -85,7 +85,7 @@ func SharePipeline(pInput *GFshareInput,
 				%s
 			</div>
 			<div id='image'>
-				<img src='%s' alt='image' style='width:100%%;'>
+				<img src='%s' alt='image' style='width:100%%;'></img>
 			</div>
 		</div>`,
 		userNameStr,

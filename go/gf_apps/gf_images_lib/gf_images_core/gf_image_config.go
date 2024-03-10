@@ -30,6 +30,7 @@ import (
 
 type GFserviceInfo struct {
 	Port_str                             string
+	DomainBaseStr                        string
 	Mongodb_host_str                     string
 	Mongodb_db_name_str                  string
 	
