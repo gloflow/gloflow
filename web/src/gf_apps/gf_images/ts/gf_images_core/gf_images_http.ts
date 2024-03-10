@@ -31,7 +31,7 @@ export async function share(p_image_id_str :string,
 	const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
 		const url_str = `/v1/images/share`;
-		p_log_fun("INFO", `url_str - ${url_str}`);
+		p_log_fun("INFO", `url_str ${url_str} - image_id ${p_image_id_str}`);
 
 		const data_map = {
 			"image_id":      p_image_id_str,
@@ -40,6 +40,10 @@ export async function share(p_image_id_str :string,
 			"email_body":    p_email_body_str
 		};
 		
+
+		console.log(data_map)
+
+
 		//-------------------------
 		// HTTP AJAX
 		$.post(url_str,
