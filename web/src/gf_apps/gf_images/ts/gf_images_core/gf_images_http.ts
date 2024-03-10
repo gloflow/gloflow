@@ -26,12 +26,11 @@ export async function share(p_image_id_str :string,
 	p_email_address_str :string,
 	p_email_subject_str :string,
 	p_email_body_str    :string,
-	p_gf_host_str 	    :string,
     p_log_fun) {
 	
 	const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
-		const url_str = `https://${p_gf_host_str}/v1/images/share`;
+		const url_str = `/v1/images/share`;
 		p_log_fun("INFO", `url_str - ${url_str}`);
 
 		const data_map = {

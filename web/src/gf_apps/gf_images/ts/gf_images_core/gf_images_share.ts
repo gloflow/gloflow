@@ -24,10 +24,7 @@ import * as gf_images_http from "./gf_images_http";
 //---------------------------------------------------
 export function init(p_image_id_str,
 	p_image_container_element,
-	p_gf_host_str,
 	p_log_fun) {
-
-
 
 	const http_api_map = {
 		"gf_images": {
@@ -42,7 +39,6 @@ export function init(p_image_id_str,
                         p_email_address_str,
                         p_email_subject_str,
                         p_email_body_str,
-						p_gf_host_str,
 						p_log_fun);
 
 					p_resolve_fun({
@@ -59,9 +55,6 @@ export function init(p_image_id_str,
 		p_image_container_element,
 		http_api_map,
         p_log_fun);
-
-
-    $(p_image_container_element).append(control_element);
 }
 
 //---------------------------------------------------

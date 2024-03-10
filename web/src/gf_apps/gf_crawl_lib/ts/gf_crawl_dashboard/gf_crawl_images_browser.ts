@@ -34,6 +34,7 @@ export function init__recent_images(p_log_fun) {
 		()=>{},
 		p_log_fun);
 }
+
 //---------------------------------------------------
 function view__recent_images(p_recent_images_lst, p_log_fun) {
 	p_log_fun("FUN_ENTER", "gf_crawl_images_browser.view__recent_images()");
