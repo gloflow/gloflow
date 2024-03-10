@@ -440,6 +440,7 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 
 	userNameStr   := GFuserName(auth0userInfoMap["name"].(string))
 	screenNameStr := auth0userInfoMap["nickname"].(string)
+	emailStr      := auth0userInfoMap["email"].(string)
 	profileImageURLstr := auth0userInfoMap["picture"].(string)
 
 	// user doesnt exist in the GF DB
@@ -454,6 +455,7 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 			UserTypeStr:        "standard",
 			UserNameStr:        userNameStr,
 			ScreenNameStr:      screenNameStr,
+			EmailStr:           emailStr,
 			ProfileImageURLstr: profileImageURLstr,
 		}
 	
