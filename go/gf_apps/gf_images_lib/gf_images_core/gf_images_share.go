@@ -85,7 +85,7 @@ func SharePipeline(pInput *GFshareInput,
 				%s
 			</div>
 			<div id='image'>
-				<img src='%s' alt='image' style='width:100%%;'></img>
+				<img src='%s' alt='image' style='width:50%%;'></img>
 			</div>
 		</div>`,
 		userNameStr,
