@@ -29,8 +29,10 @@ import (
 //-------------------------------------------------
 
 type GFserviceInfo struct {
-	Port_str                             string
-	DomainBaseStr                        string
+	Port_str      string
+	DomainBaseStr string
+
+	// DB
 	Mongodb_host_str                     string
 	Mongodb_db_name_str                  string
 	
@@ -38,10 +40,13 @@ type GFserviceInfo struct {
 	ImagesThumbnailsStoreLocalDirPathStr string
 	VideoStoreLocalDirPathStr            string
 
-	Media_domain_str                     string
-	Images_main_s3_bucket_name_str       string
+	MediaDomainStr                       string
+	ImagesMainS3bucketNameStr            string
 	TemplatesPathsMap                    map[string]string
-	Config_file_path_str                 string
+	ConfigFilePathStr                    string
+
+	// email address from which image sharing emails are sent 
+	EmailSharingSenderAddressStr string
 
 	//------------------------
 	// AUTH_SUBSYSTEM_TYPE
@@ -72,8 +77,9 @@ type GFconfig struct {
 	ImagesThumbnailsStoreLocalDirPathStr string `yaml:"thumbnails_store_local_dir_path"`
 	VideoStoreLocalDirPathStr            string `yaml:"videos_store_local_dir_path"`
 
-	Media_domain_str        string `yaml:"media_domain"`
-	Main_s3_bucket_name_str string `yaml:"main_s3_bucket_name"`
+	MediaDomainStr               string `yaml:"media_domain"`
+	MainS3bucketNameStr          string `yaml:"main_s3_bucket_name"`
+	EmailSharingSenderAddressStr string `yaml:"email_sharing_sender_address"`
 
 	//------------------------
 	// FUNCTIONS - buckets for particular functions in that system

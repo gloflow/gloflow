@@ -45,10 +45,10 @@ func SharePipeline(pInput *GFshareInput,
 	pCtx         context.Context,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	
 	//------------------------
 	// DB
-
+	
+	/*
 	// SENDER_EMAIL_ADDRESS
 	senderAddressStr, gfErr := gf_identity_core.DBsqlGetUserEmailByID(pUserID,
 		pCtx,
@@ -56,7 +56,8 @@ func SharePipeline(pInput *GFshareInput,
 	if gfErr != nil {
 		return gfErr
 	}
-	
+	*/
+
 	// SENDER_USER_NAME
 	userNameStr, gfErr := gf_identity_core.DBsqlGetUserNameByID(pUserID,
 		pCtx,
@@ -75,12 +76,13 @@ func SharePipeline(pInput *GFshareInput,
 
 	//------------------------
 
+	senderAddressStr := pServiceInfo.EmailSharingSenderAddressStr
+
 	msgBodyHTMLstr := fmt.Sprintf(`
 		<div>
 			<div>
 				GF user <b>%s</b> shared this image with you :) 
 			</div>
-
 			<div id='user_body'>
 				%s
 			</div>

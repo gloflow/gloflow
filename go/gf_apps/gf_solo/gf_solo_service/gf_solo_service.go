@@ -226,10 +226,12 @@ func Run(pConfig *GFconfig,
 		ImagesStoreLocalDirPathStr:           imagesConfig.ImagesStoreLocalDirPathStr,
 		ImagesThumbnailsStoreLocalDirPathStr: imagesConfig.ImagesThumbnailsStoreLocalDirPathStr,
 		VideoStoreLocalDirPathStr:            imagesConfig.VideoStoreLocalDirPathStr,
-		Media_domain_str:                     imagesConfig.Media_domain_str,
-		Images_main_s3_bucket_name_str:       imagesConfig.Main_s3_bucket_name_str,
+		MediaDomainStr:                       imagesConfig.MediaDomainStr,
+		ImagesMainS3bucketNameStr:            imagesConfig.MainS3bucketNameStr,
 
 		TemplatesPathsMap: pConfig.TemplatesPathsMap,
+
+		EmailSharingSenderAddressStr: imagesConfig.EmailSharingSenderAddressStr,
 
 		//-------------------------
 		// AUTH_SUBSYSTEM_TYPE
@@ -266,7 +268,7 @@ func Run(pConfig *GFconfig,
 		Crawl__cluster_node_type_str:     pConfig.CrawlClusterNodeTypeStr,
 		Crawl__images_local_dir_path_str: pConfig.CrawlImagesLocalDirPathStr,
 
-		Media_domain_str:       imagesConfig.Media_domain_str,
+		Media_domain_str:       imagesConfig.MediaDomainStr,
 		Py_stats_dirs_lst:      pConfig.AnalyticsPyStatsDirsLst,
 		Run_indexer_bool:       pConfig.AnalyticsRunIndexerBool,
 		Elasticsearch_host_str: pConfig.ElasticsearchHostStr,

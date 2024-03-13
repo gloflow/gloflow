@@ -110,9 +110,9 @@ func TstartService(pMongoHostStr string,
 		Mongodb_db_name_str:                  testMongoDBnameStr,
 		ImagesStoreLocalDirPathStr:           test__images_local_dir_path_str,
 		ImagesThumbnailsStoreLocalDirPathStr: test__images_thumbs_local_dir_path_str,
-		Images_main_s3_bucket_name_str:       config.Main_s3_bucket_name_str, // test__s3_bucket_name_str,
+		ImagesMainS3bucketNameStr:            config.MainS3bucketNameStr, // test__s3_bucket_name_str,
 		TemplatesPathsMap:                    testServiceTemplatesDirPathsMap,
-		Config_file_path_str:                 testConfigFilePathStr,
+		ConfigFilePathStr:                    testConfigFilePathStr,
 	}
 
 	doneCh := make(chan bool)
