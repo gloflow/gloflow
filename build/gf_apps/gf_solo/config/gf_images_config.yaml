@@ -8,7 +8,7 @@ videos_store_local_dir_path:     "/home/gf/videos"
 
 media_domain:        "media.gloflow.com"
 main_s3_bucket_name: "media.gloflow.com" # "gf-apps--img"
-email_sharing_sender_address: image-share@gloflow.com
+email_sharing_sender_address: gloflow-share@gloflow.com
 
 #----------------------------
 # UPLOADS/BOOKMARKS

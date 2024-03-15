@@ -80,16 +80,23 @@ func SharePipeline(pInput *GFshareInput,
 
 	msgBodyHTMLstr := fmt.Sprintf(`
 		<div>
-			<div>
-				GF user <b>%s</b> shared this image with you :) 
+			<div style="margin-top: 20px;">
+
+				<a href="https://%s" style="color:gray;">gloflow</a> user <span style="
+				background-color: #e1e1e1;
+				padding: 6px;
+				padding-left: 9px;
+				padding-right: 8px;
+				font-weight: bold;">%s</span> shared this image with you :) 
 			</div>
 			<div id='user_body'>
 				%s
 			</div>
-			<div id='image'>
+			<div id='image' style="margin-top: 40px;">
 				<img src='%s' alt='image' style='width:50%%;'></img>
 			</div>
 		</div>`,
+		pServiceInfo.DomainBaseStr,
 		userNameStr,
 		pInput.EmailBodyStr,
 		imageURLstr)
