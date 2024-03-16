@@ -347,15 +347,6 @@ def parse_args():
 - '''+fg('yellow')+'gf_solo'+attr(0)+'''
 - '''+fg('yellow')+'gf_images'+attr(0)+'''
 - '''+fg('yellow')+'gf_images_lib'+attr(0)+'''
-- '''+fg('yellow')+'gf_publisher'+attr(0)+'''
-- '''+fg('yellow')+'gf_tagger'+attr(0)+'''
-- '''+fg('yellow')+'gf_landing_page'+attr(0)+'''
-- '''+fg('yellow')+'gf_analytics'+attr(0)+'''
-- '''+fg('yellow')+'gf_crawl_lib'+attr(0)+'''
-- '''+fg('yellow')+'gf_crawl_core'+attr(0)+'''
-- '''+fg('yellow')+'gf_p2p_tester'+attr(0)+'''
-
-
 - '''+fg('yellow')+'gf_images_jobs'+attr(0)+'''
 - '''+fg('yellow')+'gf_ml_worker'+attr(0)+'''
 
@@ -363,6 +354,7 @@ def parse_args():
 - '''+fg('yellow')+'gf_builder_go_ubuntu'+attr(0)+'''
 - '''+fg('yellow')+'gf_builder_rust_ubuntu'+attr(0)+'''
 
+- '''+fg('yellow')+'gf_p2p_tester'+attr(0)+'''
 		''')
 
 	#-------------

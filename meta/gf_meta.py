@@ -37,26 +37,26 @@ def get():
                 "gf_images_lib",
             ],
 
-            "gf_analytics": [
-                "gf_analytics",
-                "gf_crawl_lib",
-                "gf_domains_lib"
-            ],
-            "gf_publisher": [
-                "gf_publisher",
-                "gf_publisher_lib",
-                "gf_images_lib"
-            ],
-            "gf_landing_page": [
-                "gf_landing_page",
-                "gf_images_lib",
-                "gf_publisher_lib"
-            ],
-            "gf_tagger": [
-                "gf_images_lib",
-                "gf_publisher_lib",
-                "gf_tagger"
-            ],
+            # "gf_analytics": [
+            #     "gf_analytics",
+            #     "gf_crawl_lib",
+            #     "gf_domains_lib"
+            # ],
+            # "gf_publisher": [
+            #     "gf_publisher",
+            #     "gf_publisher_lib",
+            #     "gf_images_lib"
+            # ],
+            # "gf_landing_page": [
+            #     "gf_landing_page",
+            #     "gf_images_lib",
+            #     "gf_publisher_lib"
+            # ],
+            # "gf_tagger": [
+            #     "gf_images_lib",
+            #     "gf_publisher_lib",
+            #     "gf_tagger"
+            # ],
         },
 
         "system_packages_lst": [
@@ -103,8 +103,8 @@ def get():
                     (f"{modd_str}/../rust/build/libgf_images_jobs.so", f"{modd_str}/../build/gf_apps/gf_solo/libs"),
 
                     # PY            
-                    (f"{modd_str}/../py/gf_apps/gf_images/plugins/gf_images_plugins_main.py", f"{modd_str}/../build/py/gf_apps/gf_solo/gf_images/plugins"),
-                    (f"{modd_str}/../py/gf_apps/gf_images/gf_images_classify",                f"{modd_str}/../build/py/gf_apps/gf_solo/gf_images/gf_images_classify"),
+                    (f"{modd_str}/../py/gf_apps/gf_images/plugins/gf_images_plugins_main.py", f"{modd_str}/../build/gf_apps/gf_solo/py/gf_apps/gf_images/plugins"),
+                    (f"{modd_str}/../py/gf_apps/gf_images/gf_images_classify",                f"{modd_str}/../build/gf_apps/gf_solo/py/gf_apps/gf_images/gf_images_classify"),
                     # (f"{modd_str}/../py/gf_apps/gf_images/gf_images_palette/gf_color_palette.py", f"{modd_str}/../build/gf_apps/gf_solo/gf_images/plugins"),
 
                     #------------------------
@@ -146,13 +146,6 @@ def get():
                     #------------------------
                 ]
             },
-            
-            #------------------------
-            # GF_P2P_TESTER
-            "gf_p2p_tester": {
-                "type_str":    "main_go",
-                "version_str": "latest",
-            },
 
             #------------------------
             # GF_ML_WORKER
@@ -176,7 +169,7 @@ def get():
                 ]
             },
 
-            #-------------
+            #------------------------
             # GF_IMAGES_JOBS
             "gf_images_jobs": {
                 "type_str":    "lib_rust",
@@ -187,7 +180,7 @@ def get():
                 ]
             },
 
-            #-------------
+            #------------------------
             # MAIN
             # GF_IMAGES
             "gf_images": {
@@ -207,9 +200,9 @@ def get():
                 "test_data_to_serve_dir_str": "%s/../go/gf_apps/gf_images_lib/tests_data"%(modd_str), #for tests serve data over http from this dir
             },
             
-            #-------------
+            #------------------------
             # SYS
-            #-------------
+            #------------------------
             # GF_BUILDER_WEB
             "gf_builder_web": {
                 "type_str":            "custom",
@@ -219,7 +212,7 @@ def get():
                 "dockerfile_path_str": "%s/../Dockerfile__gf_builder_web"%(modd_str)
             },
 
-            #-------------
+            #------------------------
             # GF_BUILDER_GO_UBUNTU
             "gf_builder_go_ubuntu": {
                 "type_str":            "custom",
@@ -229,7 +222,7 @@ def get():
                 "dockerfile_path_str": "%s/../Dockerfile__gf_builder_go__ubuntu"%(modd_str)
             },
 
-            #-------------
+            #------------------------
             # GF_BUILDER_RUST_UBUNTU
             "gf_builder_rust_ubuntu": {
                 "type_str":            "custom",
@@ -239,9 +232,16 @@ def get():
                 "dockerfile_path_str": "%s/../Dockerfile__gf_builder_rust__ubuntu"%(modd_str)
             },
 
-            #-------------
+            #------------------------
+            # GF_P2P_TESTER
+            "gf_p2p_tester": {
+                "type_str":    "main_go",
+                "version_str": "latest",
+            },
 
-            #-------------
+            #------------------------
+
+            #------------------------
             # # MAIN
             # # GF_ANALYTICS
             # "gf_analytics": {
@@ -262,7 +262,7 @@ def get():
             #     ]
             # },
 
-            #-------------
+            #------------------------
             # # LIB
             # # GF_CRAWL_LIB
             # "gf_crawl_lib": {
@@ -274,7 +274,7 @@ def get():
             #     "go_path_str": "%s/../go/gf_apps/gf_crawl_lib/gf_crawl_core"%(modd_str),
             # },
 
-            #-------------
+            #------------------------
             # # MAIN
             # # GF_PUBLISHER
             # "gf_publisher": {
@@ -298,7 +298,7 @@ def get():
             #     "test_data_to_serve_dir_str":"%s/../go/gf_apps/gf_images_lib/tests_data"%(modd_str),
             # },
 
-            #-------------
+            #------------------------
             # # MAIN
             # # GF_LANDING_PAGE
             # "gf_landing_page": {
@@ -310,7 +310,7 @@ def get():
             #     "service_base_dir_str": "%s/../build/gf_apps/gf_landing_page"%(modd_str),
             # },
 
-            #-------------
+            #------------------------
             # # MAIN
             # # GF_TAGGER
             # "gf_tagger": {
@@ -321,6 +321,8 @@ def get():
             #     "service_name_str":     "gf_tagger_service",
             #     "service_base_dir_str": "%s/../build/gf_apps/gf_tagger"%(modd_str),
             # },
+
+            #------------------------
         }
     }
 
