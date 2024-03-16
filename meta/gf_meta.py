@@ -102,32 +102,40 @@ def get():
                     
                     (f"{modd_str}/../rust/build/libgf_images_jobs.so", f"{modd_str}/../build/gf_apps/gf_solo/libs"),
 
-                    # PY_PLUGINS                
-                    (f"{modd_str}/../py/gf_apps/gf_images/plugins/gf_images_plugins_main.py", f"{modd_str}/../build/gf_apps/gf_solo/gf_images/plugins"),
+                    # PY            
+                    (f"{modd_str}/../py/gf_apps/gf_images/plugins/gf_images_plugins_main.py", f"{modd_str}/../build/py/gf_apps/gf_solo/gf_images/plugins"),
+                    (f"{modd_str}/../py/gf_apps/gf_images/gf_images_classify",                f"{modd_str}/../build/py/gf_apps/gf_solo/gf_images/gf_images_classify"),
                     # (f"{modd_str}/../py/gf_apps/gf_images/gf_images_palette/gf_color_palette.py", f"{modd_str}/../build/gf_apps/gf_solo/gf_images/plugins"),
 
                     #------------------------
-                    # GF_ML_WORKER
-                    ("%s/../py/gf_apps/gf_ml_worker/gf_ml_data.py"%(modd_str),      "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
-                    ("%s/../py/gf_apps/gf_ml_worker/gf_plot.py"%(modd_str),         "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
-                    ("%s/../py/gf_apps/gf_ml_worker/gf_simple_model.py"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
-                    ("%s/../py/gf_apps/gf_ml_worker/requirements.txt"%(modd_str),   "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
 
+                    # GF_ML_ADAPTERS
+                    (f"{modd_str}/../py/gf_ml/gf_ml_adapters", "%s/../build/gf_apps/gf_solo/py/gf_ml/gf_ml_adapters"%(modd_str)),
+
+                    # # GF_ML_WORKER
+                    # ("%s/../py/gf_ml/gf_ml_worker/gf_ml_data.py"%(modd_str),      "%s/../build/gf_apps/gf_solo/py/py/gf_ml/gf_ml_worker"%(modd_str)),
+                    # ("%s/../py/gf_ml/gf_ml_worker/gf_plot.py"%(modd_str),         "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
+                    # ("%s/../py/gf_ml/gf_ml_worker/gf_simple_model.py"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
+                    # ("%s/../py/gf_ml/gf_ml_worker/requirements.txt"%(modd_str),   "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
+
+                    #------------------------
                     # C_LIBS
                     # gf_images_jobs_py.so - gf_images_jobs Rust Python extension
                     # libtensorflow.so     - TensorFlow C lib
                     ("%s/../rust/build/gf_images_jobs_py.so"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
                     
                     #------------------------
-                    # GF_ANALYTICS
-                    
-                    ("%s/../go/gf_stats/py/cli_stats.py"%(modd_str),                                                     "%s/../build/gf_apps/gf_solo/gf_analytics/py"%(modd_str)),
-                    ("%s/../py/gf_stats/gf_errors__counts_by_day.py"%(modd_str),                                         "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
-                    ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_imgs__counts_by_day.py"%(modd_str),            "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
-                    ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__counts_by_day.py"%(modd_str),  "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
-                    ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__null_breakdown.py"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
-                    ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__per_crawler.py"%(modd_str),    "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
-                    ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_url_fetches__counts_by_day.py"%(modd_str),          "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
+                    # GF_ANALYTICS - PY
+                    # ("%s/../go/gf_stats/py/cli_stats.py"%(modd_str),             "%s/../build/gf_apps/gf_solo/gf_analytics/py"%(modd_str)),
+                    # ("%s/../py/gf_stats/gf_errors__counts_by_day.py"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
+
+
+                    # # GF_CRAWL
+                    # ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_imgs__counts_by_day.py"%(modd_str),            "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
+                    # ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__counts_by_day.py"%(modd_str),  "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
+                    # ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__null_breakdown.py"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
+                    # ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__per_crawler.py"%(modd_str),    "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
+                    # ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_url_fetches__counts_by_day.py"%(modd_str),          "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
 
                     #------------------------
                     # ASSETS
@@ -225,7 +233,7 @@ def get():
             # GF_CRAWL_LIB
             "gf_crawl_lib": {
                 "type_str":    "lib_go",
-                "go_path_str": "%s/../go/gf_apps/gf_crawl_lib"%(modd_str),
+                "go_path_str": f"{modd_str}/../go/gf_apps/gf_crawl_lib",
             },
             "gf_crawl_core": {
                 "type_str":    "lib_go",
@@ -279,7 +287,9 @@ def get():
                 "service_name_str":     "gf_tagger_service",
                 "service_base_dir_str": "%s/../build/gf_apps/gf_tagger"%(modd_str),
             },
-
+            
+            #-------------
+            # SYS
             #-------------
             # GF_BUILDER_WEB
             "gf_builder_web": {

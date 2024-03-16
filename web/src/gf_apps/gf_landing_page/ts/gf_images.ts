@@ -201,6 +201,7 @@ function init_tagging(p_image_container_element,
 		// TAGS
 		//---------------------------------------------------
 		// tags_create_pre_fun
+		
 		async (p_tags_lst)=>{
 			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
@@ -214,7 +215,7 @@ function init_tagging(p_image_container_element,
 			});
 			return p;
 		},
-
+		
 		//---------------------------------------------------
 		// on_tags_created_fun
 		(p_tags_lst)=>{
@@ -224,7 +225,7 @@ function init_tagging(p_image_container_element,
 			p_tags_lst.forEach(p_tag_str=>{
 
 				tag_display(p_tag_str);
-			})
+			});
 		},
 
 		//---------------------------------------------------
