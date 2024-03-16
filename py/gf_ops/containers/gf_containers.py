@@ -70,6 +70,7 @@ def pull(p_image__full_name_str,
 
 #-------------------------------------------------------------
 # BUILD
+
 def build(p_app_name_str,
 	p_app_build_meta_map,
 	p_log_fun,
@@ -99,7 +100,9 @@ def build(p_app_name_str,
 	#------------------
 	# COPY_FILES_TO_DIR
 	if "copy_to_dir_lst" in p_app_build_meta_map.keys():
+
 		copy_to_dir_lst = p_app_build_meta_map["copy_to_dir_lst"]
+		
 		copy_files(copy_to_dir_lst)
 
 	#------------------
@@ -230,10 +233,19 @@ def copy_files(p_copy_to_dir_lst):
 
 	print("")
 	print("             COPY FILES")
-	for src_f_str, target_dir_str in p_copy_to_dir_lst:
+	for src, target_dir_str in p_copy_to_dir_lst:
 		if not os.path.isdir(target_dir_str):
 			gf_core_cli.run("mkdir -p %s"%(target_dir_str))
-		gf_core_cli.run("cp %s %s"%(src_f_str, target_dir_str))
+
+		# COPY_DIR
+		if os.path.isdir(src):
+			src_dir_str = src
+			gf_core_cli.run("cp -r %s %s"%(src_dir_str, target_dir_str))
+
+		# COPY_FILE
+		else:
+			src_file_str = src
+			gf_core_cli.run("cp %s %s"%(src_file_str, target_dir_str))
 
 #-------------------------------------------------------------
 # PREPARE_WEB_FILES

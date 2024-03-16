@@ -26,6 +26,9 @@ sys.path.append("%s/../../meta"%(modd_str))
 import gf_meta
 
 #---------------------------------------------------
+
+# DEPRECATED!! - not being used anymore
+'''
 def cont__publish(p_app_name_str,
 	p_app_build_meta_map,
 	p_gf_dockerhub_user_str,
@@ -44,9 +47,11 @@ def cont__publish(p_app_name_str,
 		p_git_commit_hash_str = p_git_commit_hash_str, 
 		p_exit_on_fail_bool   = True,
 		p_docker_sudo_bool    = p_docker_sudo_bool)
+'''
 
 #---------------------------------------------------
 # DEPRECATED?? - is this still being used?
+
 def cont__build(p_app_name_str,
 	p_dockerhub_user_name_str,
 	p_log_fun,

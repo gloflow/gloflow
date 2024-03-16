@@ -43,8 +43,8 @@ import gf_web__build
 sys.path.append("%s/../py/gf_ops/containers"%(modd_str))
 import gf_containers
 
-sys.path.append("%s/../py/gf_ops/gf_builder"%(modd_str))
-import gf_builder_ops
+# sys.path.append("%s/../py/gf_ops/gf_builder"%(modd_str))
+# import gf_builder_ops
 
 sys.path.append("%s/../py/gf_extern_services/gf_aws"%(modd_str))
 import gf_aws_s3
@@ -215,33 +215,33 @@ def main():
 		dockerhub_user_str = args_map["dockerhub_user"]
 		docker_sudo_bool   = args_map["docker_sudo"]
 
-		# GF_BUILDER
-		if app_name_str.startswith("gf_builder"):
-
-			gf_builder_ops.cont__build(app_name_str,
-				dockerhub_user_str,
-				gf_log.log_fun,
-				p_docker_sudo_bool = docker_sudo_bool)
-
-		else:
+		# # GF_BUILDER
+		# if app_name_str.startswith("gf_builder"):
+		#
+		# 	gf_builder_ops.cont__build(app_name_str,
+		# 		dockerhub_user_str,
+		# 		gf_log.log_fun,
+		# 		p_docker_sudo_bool = docker_sudo_bool)
+		#
+		# else:
 			
-			# GIT_COMMIT_HASH
-			git_commit_hash_str = None
-			if "DRONE_COMMIT" in os.environ.keys():
-				git_commit_hash_str = os.environ["DRONE_COMMIT"]
-				
-			app_web_meta_map = None
-			web_meta_map     = gf_web_meta.get()
-			if app_name_str in web_meta_map.keys():
-				app_web_meta_map = web_meta_map[app_name_str]
+		# GIT_COMMIT_HASH
+		git_commit_hash_str = None
+		# if "DRONE_COMMIT" in os.environ.keys():
+		# 	git_commit_hash_str = os.environ["DRONE_COMMIT"]
+			
+		app_web_meta_map = None
+		web_meta_map     = gf_web_meta.get()
+		if app_name_str in web_meta_map.keys():
+			app_web_meta_map = web_meta_map[app_name_str]
 
-			gf_containers.build(app_name_str, 
-				app_build_meta_map,
-				gf_log.log_fun,
-				p_app_web_meta_map    = app_web_meta_map,
-				p_user_name_str       = dockerhub_user_str,
-				p_git_commit_hash_str = git_commit_hash_str,
-				p_docker_sudo_bool    = docker_sudo_bool)
+		gf_containers.build(app_name_str, 
+			app_build_meta_map,
+			gf_log.log_fun,
+			p_app_web_meta_map    = app_web_meta_map,
+			p_user_name_str       = dockerhub_user_str,
+			p_git_commit_hash_str = git_commit_hash_str,
+			p_docker_sudo_bool    = docker_sudo_bool)
 
 	#-------------
 	# PUBLISH_CONTAINERS
@@ -262,16 +262,28 @@ def main():
 
 		# GIT_COMMIT_HASH
 		git_commit_hash_str = None
-		if "DRONE_COMMIT" in os.environ.keys():
-			git_commit_hash_str = os.environ["DRONE_COMMIT"]
-			
-		gf_builder_ops.cont__publish(app_name_str,
+		# if "DRONE_COMMIT" in os.environ.keys():
+		# 	git_commit_hash_str = os.environ["DRONE_COMMIT"]
+		
+
+		# PUBLISH
+		gf_containers.publish(app_name_str,
 			app_build_meta_map,
 			dockerhub_user_str,
 			dockerhub_pass_str,
 			gf_log.log_fun,
-			p_git_commit_hash_str = git_commit_hash_str,
+			p_git_commit_hash_str = git_commit_hash_str, 
+			p_exit_on_fail_bool   = True,
 			p_docker_sudo_bool    = docker_sudo_bool)
+	
+
+		# gf_builder_ops.cont__publish(app_name_str,
+		# 	app_build_meta_map,
+		# 	dockerhub_user_str,
+		# 	dockerhub_pass_str,
+		# 	gf_log.log_fun,
+		# 	p_git_commit_hash_str = git_commit_hash_str,
+		# 	p_docker_sudo_bool    = docker_sudo_bool)
 		
 	#-------------
 	# TEST
