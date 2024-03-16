@@ -1,0 +1,7 @@
+tensorflow
+numpy
+matplotlib
+skimage
+sklearn
+delegator-py
+requests
