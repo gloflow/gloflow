@@ -86,6 +86,10 @@ type GFimageLocalToProcess struct {
 	LocalFilePathStr string
 }
 
+type GFimageClassificationToProcess struct {
+	GFimageIDstr gf_images_core.GFimageID
+}
+
 //------------------------
 // JOB_MSGS
 
@@ -102,6 +106,7 @@ type JobMsg struct {
 	Images_extern_to_process_lst   []GFimageExternToProcess
 	Images_uploaded_to_process_lst []GFimageUploadedToProcess
 	Images_local_to_process_lst    []GFimageLocalToProcess
+	ImagesToClassifyLst            []GFimageClassificationToProcess
 
 	Flows_names_lst                []string
 }
@@ -146,9 +151,16 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 	pConfig                               *gf_images_core.GFconfig,
 	pImageStorage                         *gf_images_storage.GFimageStorage,
 	pS3info                               *gf_aws.GFs3Info,
+	pMetricsCore                          *gf_images_core.GFmetrics,
 	pRuntimeSys                           *gf_core.RuntimeSys) JobsMngr {
 
 	jobsMngrCh := make(chan JobMsg, 100)
+
+
+
+	
+
+
 
 	// IMPORTANT!! - start jobs_mngr as an independent goroutine of the HTTP handlers at
 	//               service initialization time
@@ -156,11 +168,47 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 		
 		//---------------------
 		// METRICS 
-		metrics := MetricsCreate("gf_images_jobs")
+		metricsJobs := MetricsCreate("gf_images_jobs")
 
 		//---------------------
 		
 		runningJobsMap := map[string]chan JobUpdateMsg{}
+
+
+		//-------------------------------------------------
+		regularJobInitFun := func(pJobMsg JobMsg) (*GFjobRuntime, *GFjobRunning, *gf_core.GFerror) {
+
+			// RUNNING_JOB
+			runningJob, gfErr := JobsMngrCreateRunningJob(pJobMsg.Client_type_str,
+				pJobMsg.Job_updates_ch,
+				pJobMsg.UserID,
+				pRuntimeSys)
+			if gfErr != nil {
+				return nil, nil, gfErr
+			}
+
+			// IMPORTANT!! - send sending running_job back to client, to avoid race conditions
+			runningJobsMap[runningJob.Id_str] = pJobMsg.Job_updates_ch
+
+			// SEND_MSG
+			pJobMsg.Job_init_ch <- runningJob
+
+
+			jobRuntime := &GFjobRuntime{
+				job_id_str:          runningJob.Id_str,
+				job_client_type_str: pJobMsg.Client_type_str,
+				job_updates_ch:      pJobMsg.Job_updates_ch,
+				useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
+				userID:                  pJobMsg.UserID,
+			}
+
+
+
+			return jobRuntime, runningJob, nil
+		}
+		
+
+		//-------------------------------------------------
 
 		// listen to messages
 		for {
@@ -174,12 +222,54 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 
 
 				//------------------------
+				// START_JOB_CLASSIFY_IMAGES
+
+				case "start_job_classify_imgs":
+
+
+					//------------------------
+					// METRICS
+					metricsJobs.CmdStartJobClassifyImagesCount.Inc()
+
+					jobRuntime, runningJob, gfErr := regularJobInitFun(jobMsg)
+					if gfErr != nil {
+						continue
+					}
+
+					//------------------------
+
+					imagesLst := jobMsg.ImagesToClassifyLst
+
+					gfErr = runJobClassifyImages(imagesLst,
+						pConfig.ImagesClassifyPyDirPathStr,
+						pImageStorage,
+						jobRuntime,
+						pMetricsCore,
+						ctx,
+						pRuntimeSys)
+			
+
+					//------------------------
+					// JOB_STATUS
+					var jobStatusStr job_status_val
+					if gfErr != nil {
+						jobStatusStr = JOB_STATUS__FAILED
+					} else {
+						jobStatusStr = JOB_STATUS__COMPLETED
+					}
+					_ = dbJobsMngrUpdateJobStatus(jobStatusStr, runningJob.Id_str, pRuntimeSys)
+
+					//------------------------
+
+
+
+				//------------------------
 				// START_JOB_LOCAL_IMAGES
 				case "start_job_local_imgs":
 
 					
 					// METRICS
-					metrics.Cmd__start_job_local_imgs__count.Inc()
+					metricsJobs.Cmd__start_job_local_imgs__count.Inc()
 
 					// RUNNING_JOB
 					runningJob, gfErr := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
@@ -203,7 +293,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 						job_client_type_str:     jobMsg.Client_type_str,
 						job_updates_ch:          jobMsg.Job_updates_ch,
 						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
-						metricsPlugins:          metrics.ImagesPluginsMetrics,
+						metricsPlugins:          metricsJobs.ImagesPluginsMetrics,
 						userID:                  jobMsg.UserID,
 					}
 
@@ -220,7 +310,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					//------------------------
 					// JOB_STATUS
 					var jobStatusStr job_status_val
-					if len(runJobErrsLst) == len(jobMsg.Images_uploaded_to_process_lst) {
+					if len(runJobErrsLst) == len(jobMsg.Images_local_to_process_lst) {
 						jobStatusStr = JOB_STATUS__FAILED
 					} else if len(runJobErrsLst) > 0 {
 						jobStatusStr = JOB_STATUS__FAILED_PARTIAL
@@ -233,10 +323,11 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 
 				//------------------------
 				// START_JOB_TRANSFORM_IMAGES
+
 				case "start_job_transform_imgs":
 
 					// METRICS
-					metrics.Cmd__start_job_transform_imgs__count.Inc()
+					metricsJobs.Cmd__start_job_transform_imgs__count.Inc()
 
 					/*
 					// RUST
@@ -258,10 +349,11 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 
 				//------------------------
 				// START_JOB_UPLOADED_IMAGES
+
 				case "start_job_uploaded_imgs":
 					
 					// METRICS
-					metrics.Cmd__start_job_uploaded_imgs__count.Inc()
+					metricsJobs.Cmd__start_job_uploaded_imgs__count.Inc()
 
 					// RUNNING_JOB
 					runningJob, gfErr := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
@@ -283,7 +375,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 						job_client_type_str: jobMsg.Client_type_str,
 						job_updates_ch:      jobMsg.Job_updates_ch,
 						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
-						metricsPlugins:          metrics.ImagesPluginsMetrics,
+						metricsPlugins:          metricsJobs.ImagesPluginsMetrics,
 						userID:                  jobMsg.UserID,
 					}
 
@@ -321,10 +413,11 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 				//------------------------
 				// START_JOB_EXTERN_IMAGES
 				// FIX!! - "start_job" needs to be "start_job_extern_imgs", update in all clients.
+
 				case "start_job":
 
 					// METRICS
-					metrics.Cmd__start_job_extern_imgs__count.Inc()
+					metricsJobs.Cmd__start_job_extern_imgs__count.Inc()
 
 					// RUNNING_JOB
 					runningJob, gfErr := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
@@ -355,7 +448,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 						job_client_type_str: jobMsg.Client_type_str,
 						job_updates_ch:      jobMsg.Job_updates_ch,
 						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
-						metricsPlugins:          metrics.ImagesPluginsMetrics,
+						metricsPlugins:          metricsJobs.ImagesPluginsMetrics,
 						userID:                  jobMsg.UserID,
 					}
 
@@ -389,6 +482,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 
 				//------------------------
 				// GET_JOB_UPDATE_CH
+
 				case "get_job_update_ch":
 
 					jobIDstr := jobMsg.Job_id_str
@@ -404,6 +498,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 
 				//------------------------
 				// CLEANUP_JOB
+
 				case "cleanup_job":
 					jobIDstr := jobMsg.Job_id_str
 					delete(runningJobsMap, jobIDstr) // remove running job from lookup, since its complete

@@ -33,6 +33,7 @@ type GFmetrics struct {
 	Cmd__start_job_transform_imgs__count prometheus.Counter
 	Cmd__start_job_uploaded_imgs__count  prometheus.Counter
 	Cmd__start_job_extern_imgs__count    prometheus.Counter
+	CmdStartJobClassifyImagesCount       prometheus.Counter
 	ImagesPluginsMetrics                 *gf_images_plugins.GFmetrics
 }
 
@@ -67,10 +68,18 @@ func MetricsCreate(pNamespaceStr string) *GFmetrics {
 	// CMD__START_JOB_EXTERN_IMGS__COUNT
 	cmd__start_job_extern_imgs__count := prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace: pNamespaceStr,
-		Name: fmt.Sprintf("cmd__start_job_extern_imgs__count__count"),
+		Name: fmt.Sprintf("cmd__start_job_extern_imgs__count"),
 		Help: "job command start_job_extern_imgs #",
 	})
 	prometheus.MustRegister(cmd__start_job_extern_imgs__count)
+
+	// CMD__START_JOB_CLASSIFY_IMGS__COUNT
+	cmdStartJobClassifyImagesCount := prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: pNamespaceStr,
+		Name: fmt.Sprintf("cmd__start_job_classify_imgs__count"),
+		Help: "job command start_job_classify_imgs #",
+	})
+	prometheus.MustRegister(cmdStartJobClassifyImagesCount)
 
 	// IMAGES_PLUGINS
 	imagesPluginsMetrics := gf_images_plugins.MetricsCreate(pNamespaceStr)
@@ -80,6 +89,7 @@ func MetricsCreate(pNamespaceStr string) *GFmetrics {
 		Cmd__start_job_transform_imgs__count: cmd__start_job_transform_imgs__count,
 		Cmd__start_job_uploaded_imgs__count:  cmd__start_job_uploaded_imgs__count,
 		Cmd__start_job_extern_imgs__count:    cmd__start_job_extern_imgs__count,
+		CmdStartJobClassifyImagesCount:       cmdStartJobClassifyImagesCount,
 		ImagesPluginsMetrics:                 imagesPluginsMetrics,
 	}
 	return metrics

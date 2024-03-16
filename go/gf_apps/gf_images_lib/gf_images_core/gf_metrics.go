@@ -26,8 +26,13 @@ import (
 //-------------------------------------------------
 
 type GFmetrics struct {
+
+	// IMAGE_UPLOAD
 	ImageUploadClientDurationGauge         prometheus.Gauge
 	ImageUploadClientTransferDurationGauge prometheus.Gauge
+
+	// IMAGE_CLASSIFY
+	ImageClassifyPyExecDurationGauge prometheus.Gauge
 }
 
 //-------------------------------------------------
@@ -39,7 +44,7 @@ func MetricsCreate(pNamespaceStr string) *GFmetrics {
 		prometheus.GaugeOpts{
 			Namespace: pNamespaceStr,
 			Name: "client_upload__duration",
-			Help: "duration in seconds (client reported) for how long it takes for the whole image upload process (in seconds)",
+			Help: "duration in seconds (client reported) of how long it takes for the whole image upload process (in seconds)",
 		})
 	prometheus.MustRegister(imageUploadClientDurationGauge)
 
@@ -48,15 +53,27 @@ func MetricsCreate(pNamespaceStr string) *GFmetrics {
 		prometheus.GaugeOpts{
 			Namespace: pNamespaceStr,
 			Name: "client_upload__transfer_duration",
-			Help: "duration in seconds (client reported) for how long it takes for the image upload data transfer (in seconds)",
+			Help: "duration in seconds (client reported) of how long it takes for the image upload data transfer (in seconds)",
 		})
 	prometheus.MustRegister(imageUploadClientTransferDurationGauge)
+
+
+	// IMAGE_CLASSIFY_EXECUTION_DURATION
+	imageClassifyPyExecDurationGauge := prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: pNamespaceStr,
+			Name: "image_classify__py_exec_duration",
+			Help: "duration in seconds of how long it takes for the image classification Py pipeline to execute (in seconds)",
+		})
+	prometheus.MustRegister(imageClassifyPyExecDurationGauge)
 
 	
 
 	metrics := &GFmetrics{
 		ImageUploadClientDurationGauge:         imageUploadClientDurationGauge,
 		ImageUploadClientTransferDurationGauge: imageUploadClientTransferDurationGauge,
+
+		ImageClassifyPyExecDurationGauge: imageClassifyPyExecDurationGauge,
 	}
 	return metrics
 }

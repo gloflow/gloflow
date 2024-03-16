@@ -192,19 +192,24 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	}
 
 	imageInfo := &GFimageNewInfo{
-		IDstr:                          pImageIDstr,
-		Title_str:                      imageTitleStr,
-		Flows_names_lst:                pImagesFlowsNamesLst,
-		Image_client_type_str:          pImageClientTypeStr,
+		IDstr:                 pImageIDstr,
+		Title_str:             imageTitleStr,
+		Flows_names_lst:       pImagesFlowsNamesLst,
+		Image_client_type_str: pImageClientTypeStr,
+
+		// ORIGIN
 		Origin_url_str:                 pImageOriginURLstr,
 		Origin_page_url_str:            pImageOriginPageURLstr,
 		Original_file_internal_uri_str: pImageLocalFilePathStr,
-		ThumbnailSmallURLstr:           imageThumbs.Small_relative_url_str,
-		ThumbnailMediumURLstr:          imageThumbs.Medium_relative_url_str,
-		ThumbnailLargeURLstr:           imageThumbs.Large_relative_url_str,
-		Format_str:                     pNormalizedExtStr,
-		Width_int:                      imageWidthInt,
-		Height_int:                     imageHeightInt,
+
+		// THUMBS
+		ThumbnailSmallURLstr:  imageThumbs.Small_relative_url_str,
+		ThumbnailMediumURLstr: imageThumbs.Medium_relative_url_str,
+		ThumbnailLargeURLstr:  imageThumbs.Large_relative_url_str,
+		
+		Format_str: pNormalizedExtStr,
+		Width_int:  imageWidthInt,
+		Height_int: imageHeightInt,
 
 		Meta_map: pMetaMap,
 

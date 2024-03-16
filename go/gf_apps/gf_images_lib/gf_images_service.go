@@ -92,6 +92,7 @@ func InitService(pHTTPmux *http.ServeMux,
 		pConfig,
 		imageStorage,
 		s3Info,
+		metrics,
 		pRuntimeSys)
 
 	//-------------

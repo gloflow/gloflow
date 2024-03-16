@@ -26,5 +26,7 @@ images_flow_to_s3_bucket:
   bookmarks:  "gf-apps--bookmarks--img"
 
 #----------------------------
-# PLUGINS_PY
+# PY
+
 plugins_py_dir_path: ./gf_images/plugins
+images_classify_py_dir_path: ./gf_images/gf_images_classify

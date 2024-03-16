@@ -61,6 +61,7 @@ func TgetJobsMngr(pImagesStoreLocalDirPathStr string,
 		imagesConfig,
 		imageStorage,
 		nil, // pS3info
+		nil, // pMetricsCore
 		pRuntimeSys)
 
 	//---------------------

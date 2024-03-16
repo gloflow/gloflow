@@ -36,6 +36,7 @@ func Init(pImagesStoreLocalDirPathStr string,
 	pConfig                               *gf_images_core.GFconfig,
 	pImageStorage                         *gf_images_storage.GFimageStorage,
 	pS3info                               *gf_aws.GFs3Info,
+	pMetricsCore                          *gf_images_core.GFmetrics,
 	pRuntimeSys                           *gf_core.RuntimeSys) gf_images_jobs_core.JobsMngr {
 
 	lifecycleCallbacks := &gf_images_jobs_core.GF_jobs_lifecycle_callbacks{
@@ -66,6 +67,7 @@ func Init(pImagesStoreLocalDirPathStr string,
 		pConfig,
 		pImageStorage,
 		pS3info,
+		pMetricsCore,
 		pRuntimeSys)
 
 	return jobsMngrCh

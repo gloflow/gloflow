@@ -30,6 +30,42 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
 )
 
+
+//-------------------------------------------------
+
+func runJobClassifyImages(pImagesToProcessLst []GFimageClassificationToProcess,
+	pPyDirPathStr string,
+	pStorage      *gf_images_storage.GFimageStorage,
+	pJobRuntime   *GFjobRuntime,
+	pMetricsCore  *gf_images_core.GFmetrics,
+	pCtx          context.Context,
+	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	
+	// prepare python classify input
+	imagesIDsLst := []gf_images_core.GFimageID{}
+	for _, imageToProcess := range pImagesToProcessLst {
+		imageIDstr := imageToProcess.GFimageIDstr
+		imagesIDsLst = append(imagesIDsLst, gf_images_core.GFimageID(imageIDstr))
+	}
+		
+
+
+	gfErr := gf_images_core.RunPyClassify(imagesIDsLst,
+		pPyDirPathStr,
+		pMetricsCore,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+
+
+	return nil
+
+}
+
 //-------------------------------------------------
 
 func runJobLocalImages(pImagesToProcessLst []GFimageLocalToProcess,

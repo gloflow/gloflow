@@ -77,15 +77,17 @@ func RunPyImagePlugins(pImageLocalFilePathStr string,
 		}
 
 		fmt.Println(outputsLst)
-
+		
 	}()
 }
 
 //-------------------------------------------------
-/*func py__run_plugin__color_palette(p_input_images_local_file_paths_lst []string,
+
+/*
+func py__run_plugin__color_palette(p_input_images_local_file_paths_lst []string,
 	p_output_dir_path_str string,
 	p_plugins_info        *GF_py_plugins,
-	pRuntimeSys         *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
 
 
 
@@ -115,4 +117,5 @@ func RunPyImagePlugins(pImageLocalFilePathStr string,
 	fmt.Println(outputs_lst)
 
 	return nil
-}*/
+}
+*/
