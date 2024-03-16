@@ -63,6 +63,7 @@ def verify_image_info(p_image_info_map,
 									p_app_name_str = 'gf_image')
 		
 		raise Exception(msg_str)
+	
 	#-------------------
 	#FORMAT
 	
@@ -85,6 +86,7 @@ def verify_image_info(p_image_info_map,
 									p_app_name_str = 'gf_image')
 		
 		raise Exception(msg_str)
+	
 	#-------------------
 	#WIDTH/HEIGHT
 	
@@ -112,6 +114,7 @@ def verify_image_info(p_image_info_map,
 									p_log_fun,
 									p_app_name_str = 'gf_image')
 		raise Exception(msg_str)
+	
 	#-------------------
 	#ORIGIN URL
 	
@@ -132,11 +135,13 @@ def verify_image_info(p_image_info_map,
 									p_app_name_str = 'gf_image')
 		
 		raise Exception(msg_str)
+	
 	#-------------------
 	original_file_internal_uri_str = p_image_info_map.get('original_file_internal_uri_str',None)
 	thumbnail_small_url_str        = p_image_info_map.get('thumbnail_small_url_str' ,None)
 	thumbnail_medium_url_str       = p_image_info_map.get('thumbnail_medium_url_str',None)
 	thumbnail_large_url_str        = p_image_info_map.get('thumbnail_large_url_str' ,None)
+
 	#-------------------
 	
 	new_image_info_map = {
@@ -158,6 +163,7 @@ def verify_image_info(p_image_info_map,
 	}
 	
 	return new_image_info_map
+
 #---------------------------------------------------	
 #->:String(normalized_format_str)
 def check_image_format_str(p_format_str, p_log_fun):
