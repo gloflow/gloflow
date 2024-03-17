@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"time"
 	"context"
+	"strings"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -36,16 +37,16 @@ func RunPyClassify(pImagesIDsLst []GFimageID,
 
 	
 
-	imagesIDsStr := ""
+	imagesIDsLst := []string{}
 	for _, imageID := range pImagesIDsLst {
-		imagesIDsStr += fmt.Sprintf("%d,", imageID)
+		imagesIDsLst = append(imagesIDsLst, string(imageID))
 	}
 
 
 
 	pyPathStr := fmt.Sprintf("%s/gf_images_classify.py", pPyDirPathStr)
 	argsLst := []string{
-		fmt.Sprintf("-images_ids=%s", imagesIDsStr),
+		fmt.Sprintf("-images_ids=%s", strings.Join(imagesIDsLst, ",")),
 	}
 	stdoutPrefixStr := "GF_OUT:"
 	inputStdinStr   := ""
@@ -54,7 +55,7 @@ func RunPyClassify(pImagesIDsLst []GFimageID,
 
 	runStartUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
-
+	
 	// PY_RUN
 	outputsLst, gfErr := gf_core.CLIpyRun(pyPathStr,
 		argsLst,
