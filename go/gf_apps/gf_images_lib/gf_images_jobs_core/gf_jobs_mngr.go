@@ -271,13 +271,14 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					if gfErr != nil {
 						continue
 					}
-			
 					
+					//------------------------
+					// OUTPUT
 					// synchronously send the response back to the client (unlike most other job types
 					// that dont send any sync output back to clients).
+
 					jobMsg.ResponseCh <- classesLst
 
-					
 					//------------------------
 					// JOB_STATUS
 					var jobStatusStr job_status_val
@@ -289,8 +290,6 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					_ = dbJobsMngrUpdateJobStatus(jobStatusStr, runningJob.IDstr, pRuntimeSys)
 
 					//------------------------
-
-
 
 				//------------------------
 				// START_JOB_LOCAL_IMAGES

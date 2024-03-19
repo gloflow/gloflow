@@ -46,7 +46,7 @@ func RunClassifyImages(pClientTypeStr string,
 	pImagesToProcessLst []gf_images_jobs_core.GFimageClassificationToProcess,
 	pUserID             gf_core.GF_ID,
 	pJobsMngrCh         gf_images_jobs_core.JobsMngr,
-	pRuntimeSys         *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
+	pRuntimeSys         *gf_core.RuntimeSys) ([]string, *gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
 
 	jobCmdStr    := "start_job_classify_imgs"
 	jobInitCh    := make(chan *gf_images_jobs_core.GFjobRunning)
@@ -69,7 +69,13 @@ func RunClassifyImages(pClientTypeStr string,
 	// RECEIVE_MSG - get running_job info back from jobs_mngr
 	runningJob := <- jobInitCh
 
-	return runningJob, nil
+
+
+
+	classes := <- responseCh
+	classesStrLst, _ := classes.([]string)
+
+	return classesStrLst, runningJob, nil
 }
 
 //-------------------------------------------------

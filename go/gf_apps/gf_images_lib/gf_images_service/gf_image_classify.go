@@ -43,7 +43,7 @@ func ImageClassify(pInput *GFimageClassifyInput,
 	pJobsMngrCh  chan gf_images_jobs_core.JobMsg,
 	pServiceInfo *gf_images_core.GFserviceInfo,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys  *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 
 
 
@@ -60,13 +60,13 @@ func ImageClassify(pInput *GFimageClassifyInput,
 
 	}
 
-	runningJob, gfErr := gf_images_jobs_client.RunClassifyImages(pInput.ClientTypeStr,
+	classesLst, runningJob, gfErr := gf_images_jobs_client.RunClassifyImages(pInput.ClientTypeStr,
 		imagesToProcessLst,
 		pUserID,
 		pJobsMngrCh,
 		pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return nil, gfErr
 	}
 			
 
@@ -94,28 +94,5 @@ func ImageClassify(pInput *GFimageClassifyInput,
 
 	//------------------
 
-
-	
-
-
-
-
-
-
-
-
-
-
-	return nil
-
-
-
-
-
-
-
-
-
-
-
+	return classesLst, nil
 }

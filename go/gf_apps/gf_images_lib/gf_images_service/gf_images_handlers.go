@@ -238,8 +238,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 				//-----------------
 				
-				// SHARE
-				gfErr = ImageClassify(input,
+				// CLASSIFY
+				classesLst, gfErr := ImageClassify(input,
 					userID,
 					pJobsMngrCh,
 					pServiceInfo,
@@ -252,7 +252,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				//------------------
 				// OUTPUT
 				dataMap := map[string]interface{}{
-					
+					"classes_lst": classesLst,
 				}
 				return dataMap, nil
 
