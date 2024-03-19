@@ -27,13 +27,43 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
+
+//---------------------------------------------------
+
+func RunClassify(pImagesIDsLst []GFimageID,
+	pPyDirPathStr string,
+	pMetrics      *GFmetrics,
+	pCtx          context.Context,
+	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
+
+
+	// PY
+	classesLst, gfErr := RunPyClassify(pImagesIDsLst,
+		pPyDirPathStr,
+		pMetrics,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+
+
+	fmt.Println(classesLst)
+
+
+
+
+	return nil
+}
+
 //---------------------------------------------------
 
 func RunPyClassify(pImagesIDsLst []GFimageID,
 	pPyDirPathStr string,
 	pMetrics      *GFmetrics,
 	pCtx          context.Context,
-	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys   *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 
 	
 
@@ -63,7 +93,7 @@ func RunPyClassify(pImagesIDsLst []GFimageID,
 		stdoutPrefixStr,
 		pRuntimeSys)
 	if gfErr != nil {
-		return nil
+		return nil, gfErr
 	}
 
 	runEndUNIXtimeF   := float64(time.Now().UnixNano())/1000000000.0
@@ -75,7 +105,12 @@ func RunPyClassify(pImagesIDsLst []GFimageID,
 
 	fmt.Println(outputsLst)
 
-	return nil
+
+
+	// OUTPUTS
+	classesLst := outputsLst[0]["classes_lst"].([]string)
+
+	return classesLst, nil
 }
 
 //-------------------------------------------------

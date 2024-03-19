@@ -51,7 +51,7 @@ func runJobClassifyImages(pImagesToProcessLst []GFimageClassificationToProcess,
 		
 
 
-	gfErr := gf_images_core.RunPyClassify(imagesIDsLst,
+	gfErr := gf_images_core.RunClassify(imagesIDsLst,
 		pPyDirPathStr,
 		pMetricsCore,
 		pCtx,

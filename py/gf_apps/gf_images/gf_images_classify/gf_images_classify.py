@@ -15,12 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
-
-
-
-
-
+import json
+import argparse
 
 #----------------------------------------------
 
@@ -28,4 +24,27 @@ def run():
 
 
 
-    print("image classify...")
+    #--------------------
+    # INPUT
+    
+    parser = argparse.ArgumentParser(description='image GF IDs to classify')
+    parser.add_argument('images_ids', type=str, help='list of image GF IDs to classify, comma-separated')
+    args = parser.parse_args()
+
+
+
+    #--------------------
+
+
+    images_ids_lst = args.images_ids.split(',')
+
+
+    print("images classify...")
+    print(f"image id's: {images_ids_lst}")
+
+
+
+    classes_lst = ['cat', 'dog', 'bird', 'fish']
+
+    output_str = f"GF_OUT:{json.dumps({'classes_lst': classes_lst})}" 
+    print(output_str)
