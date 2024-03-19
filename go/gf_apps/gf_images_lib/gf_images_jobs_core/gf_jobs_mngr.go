@@ -28,6 +28,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_plugins"
@@ -41,7 +42,7 @@ type JobsMngr chan JobMsg
 
 type GFjobRunning struct {
 	Id              primitive.ObjectID `bson:"_id,omitempty"`
-	Id_str          string        `bson:"id_str"`
+	IDstr           string        `bson:"id_str"`
 	T_str           string        `bson:"t"`
 	Client_type_str string        `bson:"client_type_str"`
 	Status_str      string        `bson:"status_str"` // "running"|"complete"
@@ -157,7 +158,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 	jobsMngrCh := make(chan JobMsg, 100)
 
 
-
+	
 	
 
 
@@ -165,6 +166,18 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 	// IMPORTANT!! - start jobs_mngr as an independent goroutine of the HTTP handlers at
 	//               service initialization time
 	go func() {
+		
+		//---------------------
+		// JOBS_STATUS
+		// IMPORTANT!! - version of streaming jobs status endpoint to move all clients to.
+		//			version in gf_jobs_handlers.go is deprecated.
+
+		SSEurlStr := "/v1/images/jobs/status"
+		eventsCtx := gf_events.Init(SSEurlStr, pRuntimeSys)
+		
+		fmt.Println(eventsCtx)
+
+		//---------------------
 		
 		//---------------------
 		// METRICS 
@@ -188,14 +201,14 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 			}
 
 			// IMPORTANT!! - send sending running_job back to client, to avoid race conditions
-			runningJobsMap[runningJob.Id_str] = pJobMsg.Job_updates_ch
+			runningJobsMap[runningJob.IDstr] = pJobMsg.Job_updates_ch
 
 			// SEND_MSG
 			pJobMsg.Job_init_ch <- runningJob
 
 
 			jobRuntime := &GFjobRuntime{
-				job_id_str:          runningJob.Id_str,
+				job_id_str:          runningJob.IDstr,
 				job_client_type_str: pJobMsg.Client_type_str,
 				job_updates_ch:      pJobMsg.Job_updates_ch,
 				useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
@@ -257,7 +270,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					} else {
 						jobStatusStr = JOB_STATUS__COMPLETED
 					}
-					_ = dbJobsMngrUpdateJobStatus(jobStatusStr, runningJob.Id_str, pRuntimeSys)
+					_ = dbJobsMngrUpdateJobStatus(jobStatusStr, runningJob.IDstr, pRuntimeSys)
 
 					//------------------------
 
@@ -281,7 +294,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					}
 
 					// IMPORTANT!! - send sending running_job back to client, to avoid race conditions
-					runningJobsMap[runningJob.Id_str] = jobMsg.Job_updates_ch
+					runningJobsMap[runningJob.IDstr] = jobMsg.Job_updates_ch
 
 					// SEND_MSG
 					jobMsg.Job_init_ch <- runningJob
@@ -289,7 +302,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					//------------------------
 
 					jobRuntime := &GFjobRuntime{
-						job_id_str:              runningJob.Id_str,
+						job_id_str:              runningJob.IDstr,
 						job_client_type_str:     jobMsg.Client_type_str,
 						job_updates_ch:          jobMsg.Job_updates_ch,
 						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
@@ -317,7 +330,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					} else {
 						jobStatusStr = JOB_STATUS__COMPLETED
 					}
-					_ = dbJobsMngrUpdateJobStatus(jobStatusStr, runningJob.Id_str, pRuntimeSys)
+					_ = dbJobsMngrUpdateJobStatus(jobStatusStr, runningJob.IDstr, pRuntimeSys)
 
 					//------------------------
 
@@ -365,13 +378,13 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					}
 
 					// IMPORTANT!! - send sending running_job back to client, to avoid race conditions
-					runningJobsMap[runningJob.Id_str] = jobMsg.Job_updates_ch
+					runningJobsMap[runningJob.IDstr] = jobMsg.Job_updates_ch
 
 					// SEND_MSG
 					jobMsg.Job_init_ch <- runningJob
 
 					jobRuntime := &GFjobRuntime{
-						job_id_str:          runningJob.Id_str,
+						job_id_str:          runningJob.IDstr,
 						job_client_type_str: jobMsg.Client_type_str,
 						job_updates_ch:      jobMsg.Job_updates_ch,
 						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
@@ -399,7 +412,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					} else {
 						jobStatusStr = JOB_STATUS__COMPLETED
 					}
-					_ = dbJobsMngrUpdateJobStatus(jobStatusStr, runningJob.Id_str, pRuntimeSys)
+					_ = dbJobsMngrUpdateJobStatus(jobStatusStr, runningJob.IDstr, pRuntimeSys)
 
 					//------------------------
 					// LIFECYCLE_CALLBACK
@@ -429,7 +442,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					}
 
 					// IMPORTANT!! - send sending running_job back to client, to avoid race conditions
-					runningJobsMap[runningJob.Id_str] = jobMsg.Job_updates_ch
+					runningJobsMap[runningJob.IDstr] = jobMsg.Job_updates_ch
 
 					// SEND_MSG
 					jobMsg.Job_init_ch <- runningJob
@@ -444,7 +457,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					//------------------------
 
 					jobRuntime := &GFjobRuntime{
-						job_id_str:          runningJob.Id_str,
+						job_id_str:          runningJob.IDstr,
 						job_client_type_str: jobMsg.Client_type_str,
 						job_updates_ch:      jobMsg.Job_updates_ch,
 						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
@@ -476,7 +489,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					} else {
 						jobStatusStr = JOB_STATUS__COMPLETED
 					}
-					_ = dbJobsMngrUpdateJobStatus(jobStatusStr, runningJob.Id_str, pRuntimeSys)
+					_ = dbJobsMngrUpdateJobStatus(jobStatusStr, runningJob.IDstr, pRuntimeSys)
 
 					//------------------------
 
@@ -529,10 +542,10 @@ func JobsMngrCreateRunningJob(pClientTypeStr string,
 	}
 	
 	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
-	job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
+	jobIDstr         := fmt.Sprintf("job:%f", job_start_time_f)
 
 	runningJob := &GFjobRunning{
-		Id_str:          job_id_str,
+		IDstr:           jobIDstr,
 		T_str:           "img_running_job",
 		Client_type_str: pClientTypeStr,
 		Status_str:      "running",
@@ -562,7 +575,7 @@ func dbJobsMngrCreateRunningJob(pRunningJob *GFjobRunning,
 	gfErr        := gf_core.MongoInsert(pRunningJob,
 		collNameStr,
 		map[string]interface{}{
-			"running_job_id_str": pRunningJob.Id_str,
+			"running_job_id_str": pRunningJob.IDstr,
 			"client_type_str":    pRunningJob.Client_type_str,
 			"caller_err_msg_str": "failed to create a Running_job record into the DB",
 		},
