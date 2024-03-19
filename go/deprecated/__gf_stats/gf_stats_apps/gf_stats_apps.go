@@ -30,10 +30,13 @@ import (
 
 func Init(p_stats_url_base_str string,
 	p_py_stats_dir_path_str string,
-	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys             *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_stats_apps.Init()")
 
+	// IMAGES_STATS
 	images_stats__query_funs_map := gf_images_stats.Get_query_funs(pRuntimeSys)
+
+	// CRAWL_STATS
 	crawl_stats__query_funs_map  := gf_crawl_stats.Get_query_funs(pRuntimeSys)
 
 	stats_query_funs_groups_lst := []map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror){

@@ -34,7 +34,6 @@ import (
 func batch__init_handlers(p_stats_url_base_str string,
 	p_py_stats_dir_path_str string,
 	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_stats_batch.batch__init_handlers()")
 
 	stats_list_lst, gfErr := batch__get_stats_list(p_py_stats_dir_path_str, pRuntimeSys)
 	if gfErr != nil {
@@ -70,29 +69,28 @@ func batch__init_handlers(p_stats_url_base_str string,
 
 //-------------------------------------------------
 
-func batch__get_stats_list(p_py_stats_dir_path_str string,
+func batch__get_stats_list(pPyStatsDirPathStr string,
 	pRuntimeSys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_stats_batch.batch__get_stats_list()")
 
-	files_lst, err := ioutil.ReadDir(p_py_stats_dir_path_str)
+	filesLst, err := ioutil.ReadDir(pPyStatsDirPathStr)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to list py_stats dir in order to get a list of batch py_stats",
 			"dir_list_error",
-			map[string]interface{}{"py_stats_dir_path_str": p_py_stats_dir_path_str,},
+			map[string]interface{}{"py_stats_dir_path_str": pPyStatsDirPathStr,},
 			err, "gf_stats_lib", pRuntimeSys)
 		return nil, gfErr
 	}
 
-	py_stats__names_lst := []string{}
-	for _, file := range files_lst {
+	pyStatsNamesLst := []string{}
+	for _, file := range filesLst {
 		
-		file_basename_str := file.Name()
+		fileBasenameStr := file.Name()
 
-		if strings.HasSuffix(file_basename_str, ".py") {
-			py_stat__name_str  := strings.TrimSuffix(file_basename_str, ".py")
-			py_stats__names_lst = append(py_stats__names_lst, py_stat__name_str)
+		if strings.HasSuffix(fileBasenameStr, ".py") {
+			pyStatNameStr  := strings.TrimSuffix(fileBasenameStr, ".py")
+			pyStatsNamesLst = append(pyStatsNamesLst, pyStatNameStr)
 		}
 	}
 
-	return py_stats__names_lst, nil
+	return pyStatsNamesLst, nil
 }

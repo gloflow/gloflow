@@ -83,7 +83,7 @@ func Init(p_stats_url_base_str string,
 			}
 		} 
 	}
-	query__init_handlers(p_stats_url_base_str, query_funs_map, pRuntimeSys)
+	initHandlers(p_stats_url_base_str, query_funs_map, pRuntimeSys)
 	//----------------
 
 	return nil
@@ -91,10 +91,9 @@ func Init(p_stats_url_base_str string,
 
 //-------------------------------------------------
 
-func query__init_handlers(p_stats_url_base_str string,
+func initHandlers(p_stats_url_base_str string,
 	p_stats_query_funs_map map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror),
 	pRuntimeSys          *gf_core.RuntimeSys) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_stats.query__init_handlers()")
 
 	url_str := p_stats_url_base_str+"/query"
 	http.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {

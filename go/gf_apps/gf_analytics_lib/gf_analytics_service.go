@@ -25,7 +25,7 @@ import (
 	"net/http"
 	"github.com/olivere/elastic"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_stats/gf_stats_apps"
+	// "github.com/gloflow/gloflow/go/gf_stats/gf_stats_apps"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_domains_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib"
 	// "github.com/davecgh/go-spew/spew"
@@ -48,12 +48,6 @@ type GFserviceInfo struct {
 
 	// IMAGES_STORAGE
 	ImagesUseNewStorageEngineBool bool
-
-	/*
-	AWS_access_key_id_str     string
-	AWS_secret_access_key_str string
-	AWS_token_str             string
-	*/
 }
 
 //-------------------------------------------------
@@ -110,6 +104,7 @@ func InitService(pServiceInfo *GFserviceInfo,
 		pRuntimeSys)
 
 	//------------------------
+	/*
 	// GF_STATS
 
 	stats_url_base_str    := "/a/stats"
@@ -119,6 +114,7 @@ func InitService(pServiceInfo *GFserviceInfo,
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
+	*/
 
 	//------------------------
 	// STATIC FILES SERVING
