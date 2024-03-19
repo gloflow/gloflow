@@ -40,7 +40,7 @@ import (
 
 //---------------------------------------------------
 
-// GF_image_upload_info struct represents a single image upload sequence.
+// GFimageUploadInfo struct represents a single image upload sequence.
 // It is both stored in the DB and returned to the initiating client in JSON form.
 // It contains the ID of the future gf_image that will be created in the system to represent
 // the image that the client is wanting to upload.
@@ -87,7 +87,7 @@ func UploadInit(pImageNameStr string,
 	//------------------
 	// POLICY_VERIFY - verify user is allowed to upload an image into the specified flows.
 	//                 raises error if policy rejects the op.
-	//
+	
 	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
 	gfErr := gf_images_flows.VerifyPolicy(opStr,
 		pFlowsNamesLst,
@@ -97,9 +97,8 @@ func UploadInit(pImageNameStr string,
 	}
 
 	//------------------
-
-	//------------------
 	// CHECK_IMAGE_FORMAT
+
 	ok := gf_images_core.CheckImageFormat(pImageFormatStr, pRuntimeSys)
 	if !ok {
 		gfErr := gf_core.ErrorCreate("image format is invalid that specified for image thats being prepared for uploading via upload__init",
@@ -143,6 +142,7 @@ func UploadInit(pImageNameStr string,
 		}
 
 	} else {
+
 		// LEGACY
 
 		S3filePathStr := gf_images_core.S3getImageFilepath(uploadImageIDstr,

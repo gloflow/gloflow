@@ -41,9 +41,36 @@ type GFjobExpectedOutput struct {
 }
 
 //-------------------------------------------------
-// CLIENT
-//-------------------------------------------------
 
+func RunClassifyImages(pClientTypeStr string,
+	pImagesToProcessLst []gf_images_jobs_core.GFimageClassificationToProcess,
+	pUserID             gf_core.GF_ID,
+	pJobsMngrCh         gf_images_jobs_core.JobsMngr,
+	pRuntimeSys         *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
+
+	jobCmdStr    := "start_job_classify_imgs"
+	jobInitCh    := make(chan *gf_images_jobs_core.GFjobRunning)
+	jobUpdatesCh := make(chan gf_images_jobs_core.JobUpdateMsg, 10)
+
+	jobMsg := gf_images_jobs_core.JobMsg{
+		UserID:              pUserID,
+		Client_type_str:     pClientTypeStr,
+		Cmd_str:             jobCmdStr,
+		Job_init_ch:         jobInitCh,
+		Job_updates_ch:      jobUpdatesCh,
+		ImagesToClassifyLst: pImagesToProcessLst,
+	}
+
+	// SEND_MSG
+	pJobsMngrCh <- jobMsg
+
+	// RECEIVE_MSG - get running_job info back from jobs_mngr
+	runningJob := <- jobInitCh
+
+	return runningJob, nil
+}
+
+//-------------------------------------------------
 func RunLocalImgs(pClientTypeStr string,
 	pImagesToProcessLst []gf_images_jobs_core.GFimageLocalToProcess,
 	pFlowsNamesLst      []string,

@@ -72,6 +72,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 		//-------------
 
+		"/v1/images/classify",
 		"/v1/images/share",
 		"/v1/images/get",
 		"/v1/images/upload_init",
@@ -196,6 +197,72 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		nil,
 		pRuntimeSys)
 
+
+	//---------------------
+	// CLASSIFY_IMAGE
+	
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/classify",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+			if pReq.Method == "POST" {
+
+				//-----------------
+				// INPUT
+
+				iMap, gfErr :=  gf_core.HTTPgetInput(pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				// USER_ID
+				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
+				clientTypeStr := iMap["client_type_str"].(string)
+				
+				// IMAGES_IDS
+				imagesIDsLst := iMap["images_ids_lst"].([]string)
+
+				imagesIDsCastedLst := []gf_images_core.GFimageID{}
+				for _, imageIDstr := range imagesIDsLst {
+					imageID := gf_images_core.GFimageID(imageIDstr)
+					imagesIDsCastedLst = append(imagesIDsCastedLst, imageID)
+				}
+
+				
+
+				input := &GFimageClassifyInput{
+					ClientTypeStr: clientTypeStr,
+					ImagesIDsLst:  imagesIDsCastedLst,
+
+				}
+
+				//-----------------
+				
+				// SHARE
+				gfErr = ImageClassify(input,
+					userID,
+					pJobsMngrCh,
+					pServiceInfo,
+					pCtx,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				//------------------
+				// OUTPUT
+				dataMap := map[string]interface{}{
+					
+				}
+				return dataMap, nil
+
+				//------------------
+			}
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
+
 	//---------------------
 	// SHARE_IMAGE
 	
@@ -227,8 +294,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					EmailAddressStr: emailAddressStr,
 					EmailSubjectStr: emailSubjectStr,
 					EmailBodyStr:    emailBodyStr,
-
 				}
+
 				//-----------------
 				
 				// SHARE
