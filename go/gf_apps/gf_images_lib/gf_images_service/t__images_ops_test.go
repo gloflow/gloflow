@@ -52,7 +52,7 @@ func TestMain(m *testing.M) {
 
 //-------------------------------------------------
 
-func TestBasicImageOps(p_test *testing.T) {
+func TestBasicImageOps(pTest *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{
 		ServiceNameStr: "gf_images_ops_tests",
@@ -69,7 +69,7 @@ func TestBasicImageOps(p_test *testing.T) {
 	mongodbDB, _, gfErr := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtimeSys)
 	if gfErr != nil {
 		fmt.Println(gfErr.Error)
-		p_test.Fail()
+		pTest.Fail()
 	}
 	mongodbColl := mongodbDB.Collection("data_symphony")
 	runtimeSys.Mongo_db   = mongodbDB
@@ -89,7 +89,7 @@ func TestBasicImageOps(p_test *testing.T) {
 	iMap, gfErr :=  gf_core.HTTPgetInput(req, runtimeSys)
 	if gfErr != nil {
 		fmt.Println(gfErr.Error)
-		p_test.Fail()
+		pTest.Fail()
 	}
 
 	spew.Dump(iMap)
@@ -104,7 +104,7 @@ func TestBasicImageOps(p_test *testing.T) {
 	}
 	gfErr = gf_images_core.DBmongoPutImage(test_img_0, ctx, runtimeSys)
 	if gfErr != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
 
 	//------------------

@@ -19,16 +19,15 @@ import json
 import argparse
 
 #----------------------------------------------
-
 def run():
 
-
+    print("\nGF_IMAGES_CLASSIFY >>>>> PY \n")
 
     #--------------------
     # INPUT
     
     parser = argparse.ArgumentParser(description='image GF IDs to classify')
-    parser.add_argument('images_ids', type=str, help='list of image GF IDs to classify, comma-separated')
+    parser.add_argument('-images_ids', type=str, help='list of image GF IDs to classify, comma-separated')
     args = parser.parse_args()
 
 
@@ -48,3 +47,9 @@ def run():
 
     output_str = f"GF_OUT:{json.dumps({'classes_lst': classes_lst})}" 
     print(output_str)
+
+#----------------------------------------------
+
+
+if __name__ == "__main__":
+    run()

@@ -108,9 +108,13 @@ func RunPyClassify(pImagesIDsLst []GFimageID,
 
 
 	// OUTPUTS
-	classesLst := outputsLst[0]["classes_lst"].([]string)
+	classesLst := outputsLst[0]["classes_lst"].([]interface{})
+	classesCastLst := []string{}
+	for _, class := range classesLst {
+		classesCastLst = append(classesCastLst, class.(string))
+	}
 
-	return classesLst, nil
+	return classesCastLst, nil
 }
 
 //-------------------------------------------------

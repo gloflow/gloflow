@@ -24,6 +24,7 @@ import (
 	"testing"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_identity"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -58,8 +59,8 @@ func TestImageClassify(pTest *testing.T) {
 	testImagesThumbnailsStoreLocalDirPathStr := "./../tests_data/thumbnails"
 	testVideosStoreLocalDirPathStr           := "./../tests_data/videos"
 	testMediaDomainStr                       := ""
-	pluginsPyDirPathStr        := "./../../../py/gf_apps/gf_images/plugins"
-	imagesClassifyPyDirPathStr := "./../../../py/gf_apps/gf_images/gf_images_classify"
+	pluginsPyDirPathStr        := "./../../../../py/gf_apps/gf_images/plugins"
+	imagesClassifyPyDirPathStr := "./../../../../py/gf_apps/gf_images/gf_images_classify"
 
 
 	//------------------------
@@ -77,8 +78,28 @@ func TestImageClassify(pTest *testing.T) {
 		
 
 
+	input := &GFimageClassifyInput{
+		ClientTypeStr: "testing",
+		ImagesIDsLst: []gf_images_core.GFimageID{"image_id_1", "image_id_2"},
+	}
+
+	serviceInfo := &gf_images_core.GFserviceInfo{
+		EnableEventsAppBool: false,
+	}
+
+	imageClassesLst, gfErr := ImageClassify(input,
+		userID,
+		jobsMngr,
+		serviceInfo,
+		ctx,
+		runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+		panic(gfErr.Error)
+	}
 
 
-	fmt.Println(jobsMngr)
+
+	fmt.Println(imageClassesLst)
 
 }
