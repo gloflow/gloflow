@@ -46,7 +46,7 @@ func TestImageClassify(pTest *testing.T) {
 
 
 
-
+	fmt.Println(userID)
 
 
 
