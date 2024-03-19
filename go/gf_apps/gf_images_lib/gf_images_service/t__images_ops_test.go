@@ -96,6 +96,7 @@ func TestBasicImageOps(p_test *testing.T) {
 	
 	//------------------
 	// CREATE_TEST_IMAGES
+	
 	test_img_0 := &gf_images_core.GFimage{
 		IDstr: "test_img_0",
 		T_str:  "img",

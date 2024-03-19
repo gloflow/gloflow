@@ -32,12 +32,14 @@ func TgetJobsMngr(pImagesStoreLocalDirPathStr string,
 	pVideoStoreLocalDirPathStr            string,
 	pMediaDomainStr                       string,
 	pPluginsPyDirPathStr                  string,
+	pImagesClassifyPyDirPathStr           string,
 	pRuntimeSys                           *gf_core.RuntimeSys) JobsMngr {
 
 
 	imagesConfig := &gf_images_core.GFconfig{
-		UseNewStorageEngineBool: true,
-		PluginsPyDirPathStr:     pPluginsPyDirPathStr,
+		UseNewStorageEngineBool:    true,
+		PluginsPyDirPathStr:        pPluginsPyDirPathStr,
+		ImagesClassifyPyDirPathStr: pImagesClassifyPyDirPathStr,
 	}
 
 	//---------------------
