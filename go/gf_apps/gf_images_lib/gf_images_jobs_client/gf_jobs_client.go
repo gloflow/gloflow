@@ -51,13 +51,15 @@ func RunClassifyImages(pClientTypeStr string,
 	jobCmdStr    := "start_job_classify_imgs"
 	jobInitCh    := make(chan *gf_images_jobs_core.GFjobRunning)
 	jobUpdatesCh := make(chan gf_images_jobs_core.JobUpdateMsg, 10)
+	responseCh := make(chan interface{})
 
 	jobMsg := gf_images_jobs_core.JobMsg{
 		UserID:              pUserID,
 		Client_type_str:     pClientTypeStr,
-		Cmd_str:             jobCmdStr,
+		CmdStr:             jobCmdStr,
 		Job_init_ch:         jobInitCh,
 		Job_updates_ch:      jobUpdatesCh,
+		ResponseCh:          responseCh,
 		ImagesToClassifyLst: pImagesToProcessLst,
 	}
 
@@ -85,7 +87,7 @@ func RunLocalImgs(pClientTypeStr string,
 	jobMsg := gf_images_jobs_core.JobMsg{
 		UserID:                      pUserID,
 		Client_type_str:             pClientTypeStr,
-		Cmd_str:                     jobCmdStr,
+		CmdStr:                     jobCmdStr,
 		Job_init_ch:                 jobInitCh,
 		Job_updates_ch:              jobUpdatesCh,
 		Images_local_to_process_lst: pImagesToProcessLst,
@@ -135,7 +137,7 @@ func RunUploadedImages(pClientTypeStr string,
 	job_msg := gf_images_jobs_core.JobMsg{
 		UserID:                         pUserID,
 		Client_type_str:                pClientTypeStr,
-		Cmd_str:                        job_cmd_str,
+		CmdStr:                        job_cmd_str,
 		Job_init_ch:                    job_init_ch,
 		Job_updates_ch:                 job_updates_ch,
 		Images_uploaded_to_process_lst: pImagesToProcessLst,
@@ -170,7 +172,7 @@ func RunExternImages(pClientTypeStr string,
 	jobMsg := gf_images_jobs_core.JobMsg{
 		UserID:                       pUserID,
 		Client_type_str:              pClientTypeStr,
-		Cmd_str:                      jobCmdStr,
+		CmdStr:                       jobCmdStr,
 		Job_init_ch:                  jobInitCh,
 		Job_updates_ch:               jobUpdatesCh,
 		Images_extern_to_process_lst: pImagesExternToProcessLst,
@@ -210,19 +212,19 @@ func GetJobUpdateCh(pJobIDstr string,
 	pJobsMngrCh gf_images_jobs_core.JobsMngr,
 	pRuntimeSys *gf_core.RuntimeSys) chan gf_images_jobs_core.JobUpdateMsg {
 
-	msgResponseCh := make(chan interface{})
-	defer close(msgResponseCh)
+	responseCh := make(chan interface{})
+	defer close(responseCh)
 
 	jobCmdStr := "get_job_update_ch"
-	jobMsg     := gf_images_jobs_core.JobMsg{
-		Job_id_str:      pJobIDstr,
-		Cmd_str:         jobCmdStr,
-		Msg_response_ch: msgResponseCh,
+	jobMsg    := gf_images_jobs_core.JobMsg{
+		JobIDstr:   pJobIDstr,
+		CmdStr:     jobCmdStr,
+		ResponseCh: responseCh,
 	}
 
 	pJobsMngrCh <- jobMsg
 
-	response        := <-msgResponseCh
+	response        := <- responseCh
 	jobUpdatesCh, _ := response.(chan gf_images_jobs_core.JobUpdateMsg)
 
 	return jobUpdatesCh
@@ -236,8 +238,8 @@ func CleanupJob(pJobIDstr string,
 
 	jobCmdStr := "cleanup_job"
 	jobMsg    := gf_images_jobs_core.JobMsg{
-		Job_id_str: pJobIDstr,
-		Cmd_str:    jobCmdStr,
+		JobIDstr: pJobIDstr,
+		CmdStr:    jobCmdStr,
 	}
 
 	pJobsMngrCh <- jobMsg

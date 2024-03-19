@@ -39,7 +39,7 @@ func runJobClassifyImages(pImagesToProcessLst []GFimageClassificationToProcess,
 	pJobRuntime   *GFjobRuntime,
 	pMetricsCore  *gf_images_core.GFmetrics,
 	pCtx          context.Context,
-	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys   *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 
 	
 	// prepare python classify input
@@ -51,18 +51,18 @@ func runJobClassifyImages(pImagesToProcessLst []GFimageClassificationToProcess,
 		
 
 
-	gfErr := gf_images_core.RunClassify(imagesIDsLst,
+	classesLst, gfErr := gf_images_core.RunClassify(imagesIDsLst,
 		pPyDirPathStr,
 		pMetricsCore,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return nil, gfErr
 	}
 
 
 
-	return nil
+	return classesLst, nil
 
 }
 

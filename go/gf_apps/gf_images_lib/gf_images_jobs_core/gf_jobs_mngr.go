@@ -95,21 +95,29 @@ type GFimageClassificationToProcess struct {
 // JOB_MSGS
 
 type JobMsg struct {
-	Job_id_str                     string // if its an existing job. for new jobs the mngr creates a new job ID
-	UserID                         gf_core.GF_ID
-	Client_type_str                string 
-	Cmd_str                        string // "start_job" | "get_running_job_ids"
+	JobIDstr        string // if its an existing job. for new jobs the mngr creates a new job ID
+	UserID          gf_core.GF_ID
+	Client_type_str string // type of client that is sending this message to the Job manager
+	CmdStr          string // "start_job" | "get_running_job_ids"
 	
-	Job_init_ch                    chan *GFjobRunning   // used by clients for receiving outputs of job initialization by jobs_mngr
-	Job_updates_ch                 chan JobUpdateMsg  // used by jobs_mngr to send job_updates to
-	Msg_response_ch                chan interface{}     // DEPRECATED!! use a specific struct as a message format, interface{} too general.
+	Job_init_ch    chan *GFjobRunning // used by clients for receiving outputs of job initialization by jobs_mngr
+	Job_updates_ch chan JobUpdateMsg  // used by jobs_mngr to send job_updates to
+
+	//------------------------
+	// RESPONSE_CH - channel passed by the client, which is to be used for the response.
+	//		used as a general mechanism for clients to receive responses from the jobs_mngr
+	//		after the job has been processed.
+	ResponseCh chan interface{}
+
+	//------------------------
 
 	Images_extern_to_process_lst   []GFimageExternToProcess
 	Images_uploaded_to_process_lst []GFimageUploadedToProcess
 	Images_local_to_process_lst    []GFimageLocalToProcess
 	ImagesToClassifyLst            []GFimageClassificationToProcess
 
-	Flows_names_lst                []string
+	// FLOW_NAMES
+	Flows_names_lst []string
 }
 
 type JobUpdateMsg struct {
@@ -231,7 +239,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 
 			// IMPORTANT!! - only one job is processed per jobs_mngr.
 			//              Scaling is done with multiple jobs_mngr's (exp. per-core)           
-			switch jobMsg.Cmd_str {
+			switch jobMsg.CmdStr {
 
 
 				//------------------------
@@ -253,15 +261,23 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 
 					imagesLst := jobMsg.ImagesToClassifyLst
 
-					gfErr = runJobClassifyImages(imagesLst,
+					classesLst, gfErr := runJobClassifyImages(imagesLst,
 						pConfig.ImagesClassifyPyDirPathStr,
 						pImageStorage,
 						jobRuntime,
 						pMetricsCore,
 						ctx,
 						pRuntimeSys)
+					if gfErr != nil {
+						continue
+					}
 			
+					
+					// synchronously send the response back to the client (unlike most other job types
+					// that dont send any sync output back to clients).
+					jobMsg.ResponseCh <- classesLst
 
+					
 					//------------------------
 					// JOB_STATUS
 					var jobStatusStr job_status_val
@@ -498,22 +514,22 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 
 				case "get_job_update_ch":
 
-					jobIDstr := jobMsg.Job_id_str
+					jobIDstr := jobMsg.JobIDstr
 
 					if _, ok := runningJobsMap[jobIDstr]; ok {
 
 						jobUpdatesCh := runningJobsMap[jobIDstr]
-						jobMsg.Msg_response_ch <- jobUpdatesCh
+						jobMsg.ResponseCh <- jobUpdatesCh
 
 					} else {
-						jobMsg.Msg_response_ch <- nil
+						jobMsg.ResponseCh <- nil
 					}
 
 				//------------------------
 				// CLEANUP_JOB
 
 				case "cleanup_job":
-					jobIDstr := jobMsg.Job_id_str
+					jobIDstr := jobMsg.JobIDstr
 					delete(runningJobsMap, jobIDstr) // remove running job from lookup, since its complete
 
 				//------------------------

@@ -34,7 +34,7 @@ func RunClassify(pImagesIDsLst []GFimageID,
 	pPyDirPathStr string,
 	pMetrics      *GFmetrics,
 	pCtx          context.Context,
-	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys   *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 
 
 	// PY
@@ -44,7 +44,7 @@ func RunClassify(pImagesIDsLst []GFimageID,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return nil, gfErr
 	}
 
 
@@ -54,7 +54,7 @@ func RunClassify(pImagesIDsLst []GFimageID,
 
 
 
-	return nil
+	return classesLst, nil
 }
 
 //---------------------------------------------------
