@@ -105,8 +105,8 @@ func Init(pSSEurlStr string, pRuntimeSys *gf_core.RuntimeSys) *EventsCtx {
 
 				//-----------------
 				// REGISTER EVENTS_PRODUCER
-				case register_producer_msg := <- registerProducerCh:
-					eventsIDstr                    := register_producer_msg.EventsIDstr
+				case registerProducerMsg := <- registerProducerCh:
+					eventsIDstr                    := registerProducerMsg.EventsIDstr
 					eventsConsumersMap[eventsIDstr] = make([]chan EventMsg, 0)
 
 				//-----------------
