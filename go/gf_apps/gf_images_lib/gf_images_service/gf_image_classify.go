@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_service
 
 import (
+	"fmt"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
@@ -59,19 +60,25 @@ func ImageClassify(pInput *GFimageClassifyInput,
 
 	}
 
-	_, gfErr := gf_images_jobs_client.RunClassifyImages(pInput.ClientTypeStr,
+	runningJob, gfErr := gf_images_jobs_client.RunClassifyImages(pInput.ClientTypeStr,
 		imagesToProcessLst,
 		pUserID,
 		pJobsMngrCh,
 		pRuntimeSys)
 	if gfErr != nil {
-		
+		return gfErr
 	}
 			
 
 
 
+	jobIDstr := runningJob.IDstr
 
+	fmt.Printf("job_id - %s\n", jobIDstr)
+
+
+
+	
 
 
 	//------------------

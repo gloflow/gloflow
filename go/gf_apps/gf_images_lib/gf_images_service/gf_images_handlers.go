@@ -517,7 +517,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				dataMap := map[string]interface{}{}
 
 				if runningJob != nil {
-					dataMap["images_job_id_str"] = runningJob.Id_str
+					dataMap["images_job_id_str"] = runningJob.IDstr
 				}
 				return dataMap, nil
 				

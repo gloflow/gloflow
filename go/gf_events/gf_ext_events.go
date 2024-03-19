@@ -93,11 +93,11 @@ func Init(pSSEurlStr string, pRuntimeSys *gf_core.RuntimeSys) *EventsCtx {
 	// yellow := color.New(color.FgYellow).SprintFunc()
 	// black  := color.New(color.FgBlack).Add(color.BgYellow).SprintFunc()
 
-	register_producer_ch := make(chan EventsRegisterProducerMsg, 50)
-	register_consumer_ch := make(chan EventsRegisterConsumerMsg, 50)
-	events_broker_ch     := make(chan EventMsg,                  500)
+	registerProducerCh := make(chan EventsRegisterProducerMsg, 50)
+	registerConsumerCh := make(chan EventsRegisterConsumerMsg, 50)
+	eventsBrokerCh     := make(chan EventMsg,                  500)
 
-	events_consumers_map := map[string][]chan EventMsg{}
+	eventsConsumersMap := map[string][]chan EventMsg{}
 	go func() {
 		for ;; {
 
@@ -105,31 +105,31 @@ func Init(pSSEurlStr string, pRuntimeSys *gf_core.RuntimeSys) *EventsCtx {
 
 				//-----------------
 				// REGISTER EVENTS_PRODUCER
-				case register_producer_msg := <- register_producer_ch:
-					events_id_str                      := register_producer_msg.EventsIDstr
-					events_consumers_map[events_id_str] = make([]chan EventMsg, 0)
+				case register_producer_msg := <- registerProducerCh:
+					eventsIDstr                    := register_producer_msg.EventsIDstr
+					eventsConsumersMap[eventsIDstr] = make([]chan EventMsg, 0)
 
 				//-----------------
 				// REGISTER EVENTS_CONSUMER
-				case register_consumer_msg := <- register_consumer_ch:
-					events_id_str                      := register_consumer_msg.EventsIDstr
-					consumer_ch                        := make(chan EventMsg, 50)
-					events_consumers_map[events_id_str] = append(events_consumers_map[events_id_str], consumer_ch)
+				case registerConsumerMsg := <- registerConsumerCh:
+					eventsIDstr                    := registerConsumerMsg.EventsIDstr
+					consumerCh                     := make(chan EventMsg, 50)
+					eventsConsumersMap[eventsIDstr] = append(eventsConsumersMap[eventsIDstr], consumerCh)
 				
-					register_consumer_msg.ResponseCh <- consumer_ch
+					registerConsumerMsg.ResponseCh <- consumerCh
 
 				//-----------------
 				// EVENT_MSG RELAY
-				case event_msg := <- events_broker_ch:
-					events_id_str := event_msg.EventsIDstr
+				case eventMsg := <- eventsBrokerCh:
+					eventsIDstr := eventMsg.EventsIDstr
 
-					// IMPORTANT!! - check that this events_id_str has consumers registered for it.
-					//               if yes, then get a list of all consumers for this events_id_str,
-					//               and go through that list sending the same event_msg to all of them
+					// IMPORTANT!! - check that this eventsIDstr has consumers registered for it.
+					//               if yes, then get a list of all consumers for this eventsIDstr,
+					//               and go through that list sending the same event message to all of them
 					//               (multicast style)
-					if consumers_lst, ok := events_consumers_map[events_id_str]; ok {
-						for _, consumer_ch := range consumers_lst {
-							consumer_ch <- event_msg
+					if consumersLst, ok := eventsConsumersMap[eventsIDstr]; ok {
+						for _, consumerCh := range consumersLst {
+							consumerCh <- eventMsg
 						}
 					}
 					
@@ -139,13 +139,13 @@ func Init(pSSEurlStr string, pRuntimeSys *gf_core.RuntimeSys) *EventsCtx {
 	}()
 
 	ctx := &EventsCtx{
-		RegisterProducerCh: register_producer_ch,
-		RegisterConsumerCh: register_consumer_ch,
-		EventsBrokerCh:     events_broker_ch,
+		RegisterProducerCh: registerProducerCh,
+		RegisterConsumerCh: registerConsumerCh,
+		EventsBrokerCh:     eventsBrokerCh,
 	}
 
 	initHandlers(pSSEurlStr,
-		register_consumer_ch,
+		registerConsumerCh,
 		ctx,
 		pRuntimeSys)
 	return ctx
@@ -166,9 +166,15 @@ func initHandlers(pSSEurlStr string,
 	http.HandleFunc(pSSEurlStr, func(p_resp http.ResponseWriter, p_req *http.Request) {
 		pRuntimeSys.LogFun("INFO", "INCOMING HTTP REQUEST -- "+pSSEurlStr+" ----------")
 
+
+		//-------------
+		// INPUT
 		eventsIDstr := p_req.URL.Query()["events_id"][0]
 		pRuntimeSys.LogFun("INFO", "events_id_str - "+eventsIDstr)
 
+		//-------------
+
+		
 		register_consumer__response_ch := make(chan chan EventMsg)
 		register_consumer_msg          := EventsRegisterConsumerMsg{
 			EventsIDstr: eventsIDstr,
@@ -178,6 +184,8 @@ func initHandlers(pSSEurlStr string,
 		pRegisterConsumerCh <- register_consumer_msg
 		eventsConsumerCh := <- register_consumer__response_ch
 
+		//-------------
+		// HTTP_SSE
 		flusher, gf_err := gf_core.HTTPinitSSE(p_resp, pRuntimeSys)
 		if gf_err != nil {
 			return
@@ -205,9 +213,14 @@ func initHandlers(pSSEurlStr string,
 
 			// channel is not closed, and there are more messages to be received/processed
 			if moreBool {
+
+				// STREAM_MSG
 				streamMsg(eventMsg, p_resp, pRuntimeSys)
+				
 				flusher.Flush()
 			} else {
+
+				// STREAM_MSG
 				// send this last received message
 				streamMsg(eventMsg, p_resp, pRuntimeSys)
 				flusher.Flush()

@@ -95,6 +95,8 @@ func InitService(pHTTPmux *http.ServeMux,
 		metrics,
 		pRuntimeSys)
 
+	gf_images_jobs.InitHandlers(pHTTPmux, jobsMngrCh, pRuntimeSys)
+
 	//-------------
 	// IMAGE_FLOWS
 
@@ -135,10 +137,6 @@ func InitService(pHTTPmux *http.ServeMux,
 	// IMAGE_EDITOR
 	gf_image_editor.InitHandlers(pHTTPmux, pRuntimeSys)
 	
-	//-------------
-	// JOBS_MANAGER
-	gf_images_jobs.InitHandlers(pHTTPmux, jobsMngrCh, pRuntimeSys)
-
 	//-------------
 	// HANDLERS
 	gfErr = gf_images_service.InitHandlers(pServiceInfo.AuthSubsystemTypeStr,

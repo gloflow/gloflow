@@ -300,7 +300,7 @@ func process_external_images__in_process(pPostElementsMap map[string]*gf_publish
 
 	result := &GFimagesClientResult{
 		image_ids_lst:      imageIDsLst,
-		running_job_id_str: runningJob.Id_str,
+		running_job_id_str: runningJob.IDstr,
 		post_thumbnail_str: postThumbnailStr,
 	}
 

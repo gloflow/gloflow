@@ -41,6 +41,10 @@ func InitHandlers(pMux *http.ServeMux,
 	pJobsMngrCh gf_images_jobs_core.JobsMngr,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
+	
+
+
+
 	//---------------------
 	// START_JOB
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/jobs/start",
@@ -113,7 +117,7 @@ func InitHandlers(pMux *http.ServeMux,
 				//------------------
 				// OUTPUT
 				outputMap := map[string]interface{}{
-					"running_job_id_str":       runningJob.Id_str,
+					"running_job_id_str":       runningJob.IDstr,
 					"job_expected_outputs_lst": jobExpectedOutputsLst,
 				}
 				return outputMap, nil

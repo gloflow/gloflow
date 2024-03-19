@@ -204,6 +204,7 @@ func RunExternImages(pClientTypeStr string,
 }
 
 //-------------------------------------------------
+// GET_JOB_UPDATE_CH
 
 func GetJobUpdateCh(pJobIDstr string,
 	pJobsMngrCh gf_images_jobs_core.JobsMngr,
@@ -221,10 +222,10 @@ func GetJobUpdateCh(pJobIDstr string,
 
 	pJobsMngrCh <- jobMsg
 
-	response          := <-msgResponseCh
-	job_updates_ch, _ := response.(chan gf_images_jobs_core.JobUpdateMsg)
+	response        := <-msgResponseCh
+	jobUpdatesCh, _ := response.(chan gf_images_jobs_core.JobUpdateMsg)
 
-	return job_updates_ch
+	return jobUpdatesCh
 }
 
 //-------------------------------------------------

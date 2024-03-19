@@ -429,7 +429,7 @@ func AddExternImages(pImagesExternURLsLst []string,
 		imagesThumbSmallRelativeURLlst = append(imagesThumbSmallRelativeURLlst, &thumbSmallRelativeURLstr)
 	}
 
-	return &runningJob.Id_str, imagesThumbSmallRelativeURLlst, imagesIDsLst, nil
+	return &runningJob.IDstr, imagesThumbSmallRelativeURLlst, imagesIDsLst, nil
 }
 
 //-------------------------------------------------
@@ -495,7 +495,7 @@ func AddExternImage(pImageExternURLstr string,
 	imageIDstr                       := gf_images_core.GFimageID(jobExpectedOutputsLst[0].Image_id_str)
 	thumbnail_small_relative_url_str := jobExpectedOutputsLst[0].Thumbnail_small_relative_url_str
 
-	return &runningJob.Id_str, &thumbnail_small_relative_url_str, imageIDstr, nil
+	return &runningJob.IDstr, &thumbnail_small_relative_url_str, imageIDstr, nil
 }
 
 //-------------------------------------------------
