@@ -25,7 +25,7 @@ import (
 	"testing"
 	"context"
 	"github.com/stretchr/testify/assert"
-	"github.com/gloflow/gloflow/go/gf_stats/gf_stats_lib"
+	// "github.com/gloflow/gloflow/go/gf_stats/gf_stats_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_contract"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_tx"
@@ -101,12 +101,13 @@ func Test__blocks(pTest *testing.T) {
 
 
 	//---------------------
+	/*
 	fmt.Println("+++++++++++++++++++++++++++++++")
 	db_coll_stats, gf_err := gf_stats_lib.Db_stats__coll("gf_eth_txs_traces", ctx, runtime.Runtime_sys)
 	if gf_err != nil {
 		pTest.FailNow()
 	}
 	spew.Dump(db_coll_stats)
-
+	*/
 
 }

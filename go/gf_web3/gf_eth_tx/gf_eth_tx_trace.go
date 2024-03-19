@@ -27,7 +27,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow/go/gf_stats/gf_stats_lib"
+	// "github.com/gloflow/gloflow/go/gf_stats/gf_stats_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	// "go.mongodb.org/mongo-driver/bson/primitive"
 	// "go.mongodb.org/mongo-driver/bson"
@@ -374,6 +374,7 @@ func Trace__init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 	
 	//---------------------
 
+	/*
 	go func() {
 		
 		for {	
@@ -395,6 +396,7 @@ func Trace__init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 			time.Sleep(60 * time.Second) // SLEEP
 		}
 	}()
+	*/
 
 	return nil
 }
