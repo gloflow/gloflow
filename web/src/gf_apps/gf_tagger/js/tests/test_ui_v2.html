@@ -1,0 +1,277 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="./../../css/gf_tagger_ui_v2.css">
+    <link rel="stylesheet" type="text/css" href="./../../css/gf_tagger_notes_ui.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
+    <script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+    <script src="./../gf_tagger_ui_v2.js"></script>
+
+    <script>
+    
+    $(document).ready(function() {
+        main();
+    });
+
+    //-------------------------------------------------
+    function main() {
+        console.log("test");
+
+        function log_fun(p_g, p_m) {console.log(`${p_g}:${p_m}`);}
+
+        const obj_id_str    = "test_element_for_tagging";
+        const obj_id_2_str  = "test_element_for_tagging2";
+        const obj_type_str  = "image";
+        const obj_element   = $(`#${obj_id_str}`)[0];
+        const obj_element_2 = $(`#${obj_id_2_str}`)[0];
+        const input_element_parent_selector_str = "body";
+
+        //------------------------------------------------------------------------------------------------------------
+        // HTTP
+
+        const http_api_map = {
+            "gf_tagger": {
+                "add_tags_to_obj": (p_new_tags_lst,
+                    p_obj_system_id_str,
+                    p_obj_type_str,
+                    p_tags_meta_map,
+                    p_log_fun)=>{
+                    const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+                        p_resolve_fun({
+                            "added_tags_lst": p_new_tags_lst,
+                        });
+                    });
+                    return p;
+                }
+            }
+        };
+        
+        //------------------------------------------------------------------------------------------------------------
+        // CALLBACKS
+
+        const callbacks_map = {
+            "tags_pre_create_fun": (p_tags_lst)=>{
+                const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+                    const image_system_id_str = null;
+                    p_resolve_fun(image_system_id_str);
+                });
+                return p;
+            },
+
+            "tags_created_fun": (p_tags_lst)=>{
+
+                console.log("added tags >>>>>>>>>>>", p_tags_lst, obj_id_str)
+
+                p_tags_lst.forEach(t_str=>{
+
+                    const tag_link_url_str = `https://gloflow.com/v1/tags/objects?tag=${t_str}&otype=image`
+
+                    const element = $(`
+                        <div class='bubble-in auto-width tag'>
+                            <a href="${tag_link_url_str}" target="_blank" style="text-decoration: none;color: inherit;">
+                                ${t_str}
+                            </a>
+                        </div>`);
+                    console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
+                    $(`#container .tags`).append(element);
+                    
+                    // start the css animation
+                    element.addClass('animate');
+                })
+            },
+
+            "notes_pre_create_fun": (p_note_str)=>{
+                const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+                    const image_system_id_str = null;
+                    p_resolve_fun(image_system_id_str);
+                });
+                return p;
+            },
+
+            "notes_created_fun": (p_note_str)=>{
+
+                console.log("added notes >>>>>>>>>>>", p_note_str, obj_id_str)
+
+
+                const element = $(`
+                    <div class='bubble-in auto-width note'>
+                        <div class="body">${p_note_str}</div>
+                    </div>`);
+                $("#container .notes").append(element);
+            }
+        };
+
+        
+        gf_tagger__init_ui_v2(obj_type_str,
+            obj_element,
+            $("body"),
+
+            callbacks_map,
+            http_api_map,
+            log_fun);
+
+        //------------------------------------------------------------------------------------------------------------
+        const callbacks_2_map = {
+            "tags_pre_create_fun": (p_tags_lst)=>{
+                const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+                    const image_system_id_str = null;
+                    p_resolve_fun(image_system_id_str);
+                });
+                return p;
+            },
+
+            "tags_created_fun": (p_tags_lst)=>{
+
+                console.log("added tags >>>>>>>>>>>", p_tags_lst, obj_id_2_str)
+                p_tags_lst.forEach(t_str=>{
+
+                    const tag_link_url_str = `https://gloflow.com/v1/tags/objects?tag=${t_str}&otype=image`
+
+                    const element = $(`
+                        <div class='bubble-in auto-width tag'>
+                            <a href="${tag_link_url_str}" target="_blank" style="text-decoration: none;color: inherit;">
+                                ${t_str}
+                            </a>
+                        </div>`);
+                    
+                    $(`#container2 .tags`).append(element);
+                    
+                    // start the css animation
+                    element.addClass('animate');
+                })
+            },
+
+            "notes_pre_create_fun": (p_note_str)=>{
+                const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+                    const image_system_id_str = null;
+                    p_resolve_fun(image_system_id_str);
+                });
+                return p;
+            },
+
+            "notes_created_fun": (p_note_str)=>{
+
+                console.log("added notes >>>>>>>>>>>", p_note_str, obj_id_str)
+
+
+                const element = $(`
+                    <div class='bubble-in auto-width note'>
+                        <div class="body">${p_note_str}</div>
+                    </div>`);
+                $("#container .notes").append(element);
+            }
+        };
+
+        gf_tagger__init_ui_v2(obj_type_str,
+            obj_element_2,
+            $("body"),
+
+            callbacks_2_map,
+            http_api_map,
+            log_fun);
+    }
+    
+    //-------------------------------------------------
+
+    </script>
+    <style>
+
+        body {
+            margin:      0px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+            /*turn off horizontal scroll*/
+            max-width:  100%;
+            overflow-x: hidden;
+            background-color: gray;
+        }
+        #container {
+            position: absolute;
+            top: 20%;
+            left: 40%;
+        }
+        #test_element_for_tagging {
+            background-color: green;
+            width: 200px;
+            height: 300px;
+            
+            
+        }
+
+        #container2 {
+            position: absolute;
+            top: 50%;
+            left: 20%;
+        }
+        #test_element_for_tagging2 {
+            background-color: rgb(85, 215, 85);
+            width: 200px;
+            height: 300px;
+
+            
+            
+        }
+
+        .tags {
+            position: relative;
+	        z-index: 1;
+            width: 200px;
+        }
+
+        .notes {
+            position: relative;
+            z-index: 1;
+            width: 200px;
+            margin-top: 4px;
+        }
+        .notes .note {
+            width: 100%;
+        }
+        .notes .note .body {
+            width: 100%;
+            overflow: hidden;
+            word-wrap: break-word;
+            word-break: break-all;
+            white-space: normal;
+            hyphens: auto;
+            background-color: #b5b5b5;
+            font-size: 14px;
+        }
+        
+
+    </style>
+</head>
+
+<body>
+
+<div id="container">
+    <div id="test_element_for_tagging">
+
+    </div>
+    <div class="tags">
+
+    </div>
+    <div class="notes">
+
+    </div>
+</div>
+
+<div id="container2">
+    <div id="test_element_for_tagging2">
+
+    </div>
+    <div class="tags">
+
+    </div>
+    <div class="notes">
+        
+    </div>
+</div>
+
+</body>
