@@ -220,7 +220,12 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				clientTypeStr := iMap["client_type_str"].(string)
 				
 				// IMAGES_IDS
-				imagesIDsLst := iMap["images_ids_lst"].([]string)
+				imagesIDsUntypedLst := iMap["images_ids_lst"].([]interface{})
+				imagesIDsLst := []string{}
+				for _, imageIDUntyped := range imagesIDsUntypedLst {
+					imageIDStr := imageIDUntyped.(string)
+					imagesIDsLst = append(imagesIDsLst, imageIDStr)
+				}
 
 				imagesIDsCastedLst := []gf_images_core.GFimageID{}
 				for _, imageIDstr := range imagesIDsLst {
