@@ -44,6 +44,17 @@
                         });
                     });
                     return p;
+                },
+                "generate_tags": ()=>{
+                    const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+                        p_resolve_fun({
+                            "generated_tags_lst": [
+                                "technology", "airplane", "tree"
+                            ],
+                        });
+                    });
+                    return p;
                 }
             }
         };

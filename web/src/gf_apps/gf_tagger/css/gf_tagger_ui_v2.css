@@ -121,6 +121,13 @@
 	background-color: rgb(221, 221, 221);
 }
 
+#generated_tags {
+    position: absolute;
+    top: 81px;
+    right: 206px;
+
+}
+
 /*-------------------------------------------------------*/
 /* ACCESS_CONTROL */
 

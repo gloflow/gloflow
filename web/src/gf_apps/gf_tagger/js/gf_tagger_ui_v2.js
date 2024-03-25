@@ -17,16 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
-
-
-
-
-
 //-------------------------------------------------
-
-
-
 function gf_tagger__init_ui_v2(p_obj_type_str,
 	p_obj_elem,
 	p_obj_parent_elem,
@@ -34,9 +25,6 @@ function gf_tagger__init_ui_v2(p_obj_type_str,
     p_callbacks_map,
     p_http_api_map,
 	p_log_fun) {
-
-
-	console.log("CCCCCCCCCCCCCCCCCCCCC")
 
 	const tagging_input_ui_element = gf_tagger__init_input_ui_v2(p_obj_type_str,
 		p_callbacks_map,
@@ -136,6 +124,38 @@ function gf_tagger__init_input_ui_v2(p_obj_type_str,
 	
 	const tags_input_element = $(input_ui_element).find('#tags_input');
 
+	//---------------------------
+	// GENERATE_BTN
+	$(input_ui_element).find("#generate_btn").on('click', async ()=>{
+
+
+		console.log("DDDDDDDDDDD")
+		const generated_tags_lst = await generate_tags(p_callbacks_map,
+			p_http_api_map,
+			p_log_fun);
+
+
+		const gen_tags_element = $(input_ui_element).find("#generated_tags");
+		for (var tag_str of generated_tags_lst) {
+
+			const tag_element = $(`
+			<div class="tag tag_gen">
+				${tag_str}
+			</div>`);
+			$(gen_tags_element).append(tag_element);
+
+		}
+
+
+
+
+		
+
+
+	});
+
+	//---------------------------
+
 	// 'ESCAPE' key
 	$(document).on('keyup', (p_event)=>{
 		if (p_event.which == 27) {
@@ -209,8 +229,6 @@ function gf_tagger__init_input_ui_v2(p_obj_type_str,
 	//-----------------------------------------------------
 	function close() {
 
-		console.log("ZZZZ", input_ui_element)
-
         // clear input field before closing, so its empty next time its oepend by the user
         $(input_ui_element).find("input").val("");
 
@@ -223,6 +241,35 @@ function gf_tagger__init_input_ui_v2(p_obj_type_str,
 	
 	//-----------------------------------------------------
 	return input_ui_element;
+}
+
+//-----------------------------------------------------
+async function generate_tags(p_callbacks_map,
+	p_http_api_map,
+	p_log_fun) {
+	
+	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+
+
+
+
+
+		// HTTP
+		const data_map = await p_http_api_map["gf_tagger"]["generate_tags"](p_log_fun);
+
+		const generated_tags_lst = data_map['generated_tags_lst'];
+		p_log_fun('INFO', `generated_tags_lst: ${generated_tags_lst}`);
+
+
+
+
+
+
+		p_resolve_fun(generated_tags_lst);
+
+	});
+	return p;
 }
 
 //-----------------------------------------------------
