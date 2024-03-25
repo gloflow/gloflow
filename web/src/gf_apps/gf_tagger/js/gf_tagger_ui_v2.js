@@ -18,7 +18,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 //-------------------------------------------------
-function gf_tagger__init_ui_v2(p_obj_type_str,
+function gf_tagger__init_ui_v2(p_obj_id_str,
+	p_obj_type_str,
 	p_obj_elem,
 	p_obj_parent_elem,
     
@@ -26,7 +27,8 @@ function gf_tagger__init_ui_v2(p_obj_type_str,
     p_http_api_map,
 	p_log_fun) {
 
-	const tagging_input_ui_element = gf_tagger__init_input_ui_v2(p_obj_type_str,
+	const tagging_input_ui_element = gf_tagger__init_input_ui_v2(p_obj_id_str,
+		p_obj_type_str,
 		p_callbacks_map,
 		p_http_api_map,
 		p_log_fun);
@@ -89,15 +91,13 @@ function gf_tagger__init_ui_v2(p_obj_type_str,
 		//	tagging_ui_element.remove();
 		// }
 	});
-
-
-
 }
 
 //-------------------------------------------------
 // TAGS
 //-------------------------------------------------
-function gf_tagger__init_input_ui_v2(p_obj_type_str,
+function gf_tagger__init_input_ui_v2(p_obj_id_str,
+	p_obj_type_str,
 	p_callbacks_map,
 	p_http_api_map,
 	p_log_fun) {
@@ -126,32 +126,50 @@ function gf_tagger__init_input_ui_v2(p_obj_type_str,
 
 	//---------------------------
 	// GENERATE_BTN
+
+	const user_selected_gen_tags_lst = [];
+
 	$(input_ui_element).find("#generate_btn").on('click', async ()=>{
 
-
-		console.log("DDDDDDDDDDD")
-		const generated_tags_lst = await generate_tags(p_callbacks_map,
+		const generated_tags_lst = await generate_tags(p_obj_id_str,
+			p_callbacks_map,
 			p_http_api_map,
 			p_log_fun);
 
-
-		const gen_tags_element = $(input_ui_element).find("#generated_tags");
+		const gen_tags_container_element = $(input_ui_element).find("#generated_tags");
+		
 		for (var tag_str of generated_tags_lst) {
 
-			const tag_element = $(`
-			<div class="tag tag_gen">
-				${tag_str}
-			</div>`);
-			$(gen_tags_element).append(tag_element);
+			((p_tag_str)=>{
+				const tag_element = $(`
+					<div class="gf_tag tag_gen">
+						${p_tag_str}
+					</div>`);
 
+
+				$(gen_tags_container_element).append(tag_element);
+				
+				var selected_bool = false;
+				$(tag_element).on("click", (p_event)=>{
+
+					if (!selected_bool) {
+
+						// user has selected this tag to associate with obj
+						user_selected_gen_tags_lst.push(p_tag_str);
+
+						// mark element as selected
+						$(tag_element).css('background-color', 'green');
+
+						selected_bool = true;
+					}
+					else {
+						
+						selected_bool = false;
+						$(tag_element).css('background-color', 'lightgray');
+					}
+				});
+			})(tag_str);
 		}
-
-
-
-
-		
-
-
 	});
 
 	//---------------------------
@@ -176,7 +194,9 @@ function gf_tagger__init_input_ui_v2(p_obj_type_str,
 			if (p_event.which == 13) {
 				p_event.preventDefault();
 				
-				const tags_lst = await add_tags_to_obj_v2(p_obj_type_str,
+				const tags_lst = await add_tags_to_obj_v2(p_obj_id_str,
+					p_obj_type_str,
+					user_selected_gen_tags_lst,
 					input_ui_element,
 
 					p_callbacks_map,
@@ -195,7 +215,9 @@ function gf_tagger__init_input_ui_v2(p_obj_type_str,
 
 			p_event.stopImmediatePropagation();
 
-			const tags_lst = await add_tags_to_obj_v2(p_obj_type_str,
+			const tags_lst = await add_tags_to_obj_v2(p_obj_id_str,
+				p_obj_type_str,
+				user_selected_gen_tags_lst,
 				input_ui_element,
 				p_callbacks_map,
 				p_http_api_map,
@@ -212,10 +234,7 @@ function gf_tagger__init_input_ui_v2(p_obj_type_str,
 
 	$('body').on('click', (p_event)=>{
 
-
-		console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-		p_event.stopImmediatePropagation();
-		
+		p_event.stopImmediatePropagation();		
 		close();
 	});
 
@@ -244,7 +263,8 @@ function gf_tagger__init_input_ui_v2(p_obj_type_str,
 }
 
 //-----------------------------------------------------
-async function generate_tags(p_callbacks_map,
+async function generate_tags(p_obj_id_str,
+	p_callbacks_map,
 	p_http_api_map,
 	p_log_fun) {
 	
@@ -256,7 +276,8 @@ async function generate_tags(p_callbacks_map,
 
 
 		// HTTP
-		const data_map = await p_http_api_map["gf_tagger"]["generate_tags"](p_log_fun);
+		const data_map = await p_http_api_map["gf_tagger"]["generate_tags"](p_obj_id_str,
+			p_log_fun);
 
 		const generated_tags_lst = data_map['generated_tags_lst'];
 		p_log_fun('INFO', `generated_tags_lst: ${generated_tags_lst}`);
@@ -273,29 +294,46 @@ async function generate_tags(p_callbacks_map,
 }
 
 //-----------------------------------------------------
-async function add_tags_to_obj_v2(p_obj_type_str,
+async function add_tags_to_obj_v2(p_obj_id_str,
+	p_obj_type_str,
+	p_gen_tags_lst,
 	p_tagging_ui_element,
 	p_callbacks_map,
 	p_http_api_map,
 	p_log_fun) {
 	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-		const tags_str = $(p_tagging_ui_element).find('#tags_input').val();
-		const tags_lst = tags_str.split(' ');
-		p_log_fun('INFO', `tags_lst - ${tags_lst.toString()}`);
-		
-		const existing_tags_lst = [];
+		//------------------------
+		// INPUT_FIELD_TAGS
 
+		const input_field_tags_str = $(p_tagging_ui_element).find('#tags_input').val();
+		var input_field_tags_lst = [];
+
+		// split tags from input field only if there are any
+		if (input_field_tags_str != undefined && input_field_tags_str != "") {
+			input_field_tags_lst = input_field_tags_str.split(' ');
+			
+			p_log_fun('INFO', `input_field_tags_lst - ${input_field_tags_lst.toString()}`);
+		}
+
+		//------------------------
+		// EXISTING_TAGS
+		const existing_tags_lst = [];
 		$(p_tagging_ui_element).parent().find('.tags_container').find('a').each((p_i, p_tag)=>{
 			const tag_str = $(p_tag).text().trim();
 			existing_tags_lst.push(tag_str);
 		});
 
-		
-		const new_tags_lst = [];
-		for (var tag_str of tags_lst) {
+		//------------------------
+		// FILTER_EXISTING_TAGS - only tags that are currently not existing/attached to this object
 
-			// filter out only tags that are currently not existing/attached to this object
+		const new_tags_lst = [];
+		for (var tag_str of input_field_tags_lst) {
+			if (!(tag_str in existing_tags_lst)) {
+				new_tags_lst.push(tag_str);
+			}
+		}
+		for (var tag_str of p_gen_tags_lst) {
 			if (!(tag_str in existing_tags_lst)) {
 				new_tags_lst.push(tag_str);
 			}

@@ -81,7 +81,7 @@
                     const tag_link_url_str = `https://gloflow.com/v1/tags/objects?tag=${t_str}&otype=image`
 
                     const element = $(`
-                        <div class='bubble-in auto-width tag'>
+                        <div class='bubble-in auto-width gf_tag'>
                             <a href="${tag_link_url_str}" target="_blank" style="text-decoration: none;color: inherit;">
                                 ${t_str}
                             </a>
@@ -117,7 +117,8 @@
         };
 
         
-        gf_tagger__init_ui_v2(obj_type_str,
+        gf_tagger__init_ui_v2(obj_id_str,
+            obj_type_str,
             obj_element,
             $("body"),
 
@@ -144,7 +145,7 @@
                     const tag_link_url_str = `https://gloflow.com/v1/tags/objects?tag=${t_str}&otype=image`
 
                     const element = $(`
-                        <div class='bubble-in auto-width tag'>
+                        <div class='bubble-in auto-width gf_tag'>
                             <a href="${tag_link_url_str}" target="_blank" style="text-decoration: none;color: inherit;">
                                 ${t_str}
                             </a>
@@ -179,7 +180,8 @@
             }
         };
 
-        gf_tagger__init_ui_v2(obj_type_str,
+        gf_tagger__init_ui_v2(obj_id_2_str,
+            obj_type_str,
             obj_element_2,
             $("body"),
 

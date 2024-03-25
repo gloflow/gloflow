@@ -126,6 +126,24 @@
     top: 81px;
     right: 206px;
 
+    width: 256px;
+    height: 61px;
+
+    /* FLEX_BOX*/
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end; /* Aligns items to the right side of the container */
+    /* justify-content: space-between; */
+}
+
+#generated_tags .tag_gen {
+    height: 18px;
+    margin-right: 8px;
+
+    cursor: pointer;
+}
+#generated_tags .tag_gen:hover {
+    background-color: rgb(221, 221, 221);
 }
 
 /*-------------------------------------------------------*/
@@ -167,7 +185,7 @@
 }
 
 /*-------------------------------------------------------*/
-.tag {
+.gf_tag {
     background-color: lightgray;
     padding-left: 4px;
     padding-right: 4px;
