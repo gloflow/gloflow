@@ -31,6 +31,8 @@
         // HTTP
 
         const http_api_map = {
+
+            // GF_TAGGER
             "gf_tagger": {
                 "add_tags_to_obj": (p_new_tags_lst,
                     p_obj_system_id_str,
@@ -44,8 +46,12 @@
                         });
                     });
                     return p;
-                },
-                "generate_tags": ()=>{
+                }
+            },
+
+            // GF_IMAGES
+            "gf_images": {
+                "classify_image": ()=>{
                     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
                         p_resolve_fun({

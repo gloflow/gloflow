@@ -128,8 +128,14 @@ function gf_tagger__init_input_ui_v2(p_obj_id_str,
 	// GENERATE_BTN
 
 	const user_selected_gen_tags_lst = [];
+	const generated_bool = false;
 
 	$(input_ui_element).find("#generate_btn").on('click', async ()=>{
+
+		// if tags have already been generated for the image, dont do it again
+		if (generated_bool) {
+			return;
+		}
 
 		const generated_tags_lst = await generate_tags(p_obj_id_str,
 			p_callbacks_map,
@@ -170,6 +176,8 @@ function gf_tagger__init_input_ui_v2(p_obj_id_str,
 				});
 			})(tag_str);
 		}
+
+		generated_bool = true;
 	});
 
 	//---------------------------
@@ -271,20 +279,12 @@ async function generate_tags(p_obj_id_str,
 	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 
-
-
-
-
 		// HTTP
-		const data_map = await p_http_api_map["gf_tagger"]["generate_tags"](p_obj_id_str,
+		const data_map = await p_http_api_map["gf_images"]["classify_image"](p_obj_id_str,
 			p_log_fun);
 
 		const generated_tags_lst = data_map['generated_tags_lst'];
 		p_log_fun('INFO', `generated_tags_lst: ${generated_tags_lst}`);
-
-
-
-
 
 
 		p_resolve_fun(generated_tags_lst);

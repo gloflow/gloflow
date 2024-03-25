@@ -25,9 +25,10 @@ import * as gf_image_colors from "./../../../gf_core/ts/gf_image_colors";
 import * as gf_time         from "./../../../gf_core/ts/gf_time";
 import * as gf_image_viewer from "./../../../gf_core/ts/gf_image_viewer";
 import * as gf_images_share from "./../../gf_images/ts/gf_images_core/gf_images_share";
+import * as gf_images_http  from "./../../gf_images/ts/gf_images_core/gf_images_http";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
-declare var gf_tagger__init_ui;
+declare var gf_tagger__init_ui_v2;
 declare var gf_tagger__http_add_tags_to_obj;
 
 //-------------------------------------------------
@@ -138,7 +139,8 @@ export function init(p_logged_in_bool,
 		if (p_logged_in_bool) {
 			
 			// TAGGING
-			init_tagging(p_image_info_element,
+			init_tagging(image_id_str,
+				p_image_info_element,
 				p_gf_host_str,
 				p_log_fun);
 
@@ -158,11 +160,14 @@ export function init(p_logged_in_bool,
 //---------------------------------------------------
 // TAGGING_UI
 
-function init_tagging(p_image_container_element,
+function init_tagging(p_image_id_str,
+	p_image_container_element,
 	p_gf_host_str,
 	p_log_fun) {
 
 	const http_api_map = {
+
+		// GF_TAGGER
 		"gf_tagger": {
 			"add_tags_to_obj": async (p_new_tags_lst,
 				p_obj_id_str,
@@ -184,22 +189,32 @@ function init_tagging(p_image_container_element,
 				});
 				return p;
 			}
+		},
+
+		// GF_IMAGES
+		"gf_images": {
+			"classify_image": async (p_image_id_str)=>{
+				const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+					const client_type_str = "web";
+
+					await gf_images_http.classify(p_image_id_str,
+						client_type_str,
+						p_log_fun);
+				});
+				return p;
+			}
 		}
 	};
 
 	const obj_type_str = "img";
-	const input_element_parent_selector_str = "body";
 
-	gf_tagger__init_ui(obj_type_str,
-		p_image_container_element,
-		input_element_parent_selector_str,
+	const callbacks_map = {
 
 		//---------------------------------------------------
 		// TAGS
 		//---------------------------------------------------
-		// tags_create_pre_fun
-		
-		async (p_tags_lst)=>{
+		"tags_pre_create_fun": async (p_tags_lst)=>{
 			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 				// p_tags_create_pre_fun resolves the system_id of the item being tagged
@@ -214,8 +229,7 @@ function init_tagging(p_image_container_element,
 		},
 		
 		//---------------------------------------------------
-		// on_tags_created_fun
-		(p_tags_lst)=>{
+		"tags_created_fun": (p_tags_lst)=>{
 
 			console.log("added tags >>>>>>>>>>>", p_tags_lst);
 
@@ -228,10 +242,9 @@ function init_tagging(p_image_container_element,
 		//---------------------------------------------------
 		// NOTES
 		//---------------------------------------------------
-		// p_notes_create_pre_fun
-		(p_notes_lst)=>{
+		"notes_pre_create_fun": (p_notes_lst)=>{
 			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
-
+ 
 				var image_system_id_str = $(p_image_container_element).attr("data-img_system_id_str");
 				p_resolve_fun(image_system_id_str);
 			});
@@ -239,15 +252,19 @@ function init_tagging(p_image_container_element,
 		},
 
 		//---------------------------------------------------
-		// on_notes_created_fun
-		(p_notes_lst)=>{
+		"notes_created_fun": (p_notes_lst)=>{
 
 			console.log("added notes >>>>>>>>>>>", p_notes_lst)
-		},
+		}
 
-		//---------------------------------------------------		
-		()=>{}, // on_tagging_ui_add_fun
-		()=>{}, // on_tagging_ui_remove_fun
+		//---------------------------------------------------
+	}
+
+	gf_tagger__init_ui_v2(p_image_id_str,
+		obj_type_str,
+		p_image_container_element,
+		$("body"),
+		callbacks_map,
 		http_api_map,
 		p_log_fun);
 

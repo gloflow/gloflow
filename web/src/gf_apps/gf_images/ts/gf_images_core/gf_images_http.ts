@@ -20,6 +20,51 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/jquery.d.ts" />
 
 //---------------------------------------------------
+// CLASSIFY
+
+export async function classify(p_image_id_str :string,
+	p_client_type_str :string,
+    p_log_fun) {
+	
+	const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+
+		const url_str = `/v1/images/classify`;
+		p_log_fun("INFO", `url_str ${url_str} - image_id ${p_image_id_str}`);
+
+		const data_map = {
+			"client_type_str": p_client_type_str,
+			"images_ids_lst":  [p_image_id_str]
+		};
+		
+		console.log(data_map)
+
+		//-------------------------
+		// HTTP AJAX
+		$.post(url_str,
+			JSON.stringify(data_map),
+			function(p_data_map) {
+				console.log("response received");
+				// const data_map = JSON.parse(p_data);
+
+				console.log(`data_map["status"] - ${p_data_map["status"]}`);
+				
+				if (p_data_map["status"] == "OK") {
+
+					p_resolve_fun({
+
+					});
+				}
+				else {
+					p_reject_fun(p_data_map["data"]);
+				}
+			});
+
+		//-------------------------
+	});
+	return p;
+}
+
+//---------------------------------------------------
 // SHARE
 
 export async function share(p_image_id_str :string,
