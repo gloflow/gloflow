@@ -134,9 +134,10 @@ export function init(p_logged_in_bool,
 
 		//----------------------
 
-		// only initialize tagging UI for logged-in users
+		// LOGGED_IN - only initialize this part if the user is authenticated
 		if (p_logged_in_bool) {
 			
+			// TAGGING
 			init_tagging(p_image_info_element,
 				p_gf_host_str,
 				p_log_fun);
@@ -160,8 +161,6 @@ export function init(p_logged_in_bool,
 function init_tagging(p_image_container_element,
 	p_gf_host_str,
 	p_log_fun) {
-	
-	var image_system_id_str;
 
 	const http_api_map = {
 		"gf_tagger": {
@@ -171,12 +170,10 @@ function init_tagging(p_image_container_element,
 				p_tags_meta_map,
 				p_log_fun)=>{
 				const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
-					
-					const object_type_str = "img";
 
 					await gf_tagger__http_add_tags_to_obj(p_new_tags_lst,
-						image_system_id_str,
-						object_type_str,
+						p_obj_id_str,
+						p_obj_type_str,
 						{}, // meta_map
 						p_gf_host_str,
 						p_log_fun);
@@ -190,7 +187,7 @@ function init_tagging(p_image_container_element,
 		}
 	};
 
-	const obj_type_str = "image";
+	const obj_type_str = "img";
 	const input_element_parent_selector_str = "body";
 
 	gf_tagger__init_ui(obj_type_str,
