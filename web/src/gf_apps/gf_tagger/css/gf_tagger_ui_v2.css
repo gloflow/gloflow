@@ -108,9 +108,9 @@
     color: #565656;
     background-color: orange;
     width: 40px;
-    height: 40px;
+    height: 28px;
     text-align: center;
-    padding-top: 10px;
+    padding-top: 12px;
     position: absolute;
     top: 75px;
     left: 297px;
@@ -162,9 +162,9 @@
 
 #tagging_access_control #public_btn {
     width: 70px;
-    height: 25px;
+    height: 20px;
     background-color: #07d0ff;
-    padding-top: 2px;
+    padding-top: 4px;
     cursor: pointer;
 }
 #tagging_access_control #public_btn:hover {
@@ -173,11 +173,11 @@
 
 #tagging_access_control #private_btn {
     width: 70px;
-    height: 25px;
+    height: 21px;
     background-color: 88ecff;
     position: absolute;
     top: 30px;
-    padding-top: 2px;
+    padding-top: 4px;
     cursor: pointer;
 }
 #tagging_access_control #private_btn:hover {
