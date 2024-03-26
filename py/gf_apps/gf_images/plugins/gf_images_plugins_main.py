@@ -15,6 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+# IMPORTANT!! - this module is run by GloFlow platform, not directly by user.
+#       its run by the GF golang code, and its output thats prefixed 
+#       with "GF_OUT:" is parsed by the GF golang code.
+
 import time
 
 #----------------------------------------------
