@@ -65,7 +65,10 @@ export function init(p_logged_in_bool,
 		//----------------------
 		// IMAGE_VIEWER
 
+		// GF_ID
 		const image_id_str = $(p_image_info_element).data("img_system_id");
+
+		
 		const img_thumb_medium_url = $(p_image_info_element).find("img").data("img_thumb_medium_url");
 		const img_thumb_large_url  = $(p_image_info_element).find("img").data("img_thumb_medium_url");
 		const flows_names_lst = $(p_image_info_element).data("img_flows_names").split(",")
@@ -217,13 +220,10 @@ function init_tagging(p_image_id_str,
 		"tags_pre_create_fun": async (p_tags_lst)=>{
 			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-				// p_tags_create_pre_fun resolves the system_id of the item being tagged
-				/*
-				IMPORTANT!! - img_system_id is attached as a data property to the image container element
-					in the server template rendering.
-				*/
-				var image_system_id_str = $(p_image_container_element).attr("data-img_system_id_str");
-				p_resolve_fun(image_system_id_str);
+				// passing the image_id to the gf_tagger control via this callback allows for
+				// customization of the image_id fetching mechanism (whether its in the template,
+				// or fetched via rest api, etc., or pulled from some internal browser/web DB).
+				p_resolve_fun(p_image_id_str);
 			});
 			return p;
 		},
@@ -244,9 +244,11 @@ function init_tagging(p_image_id_str,
 		//---------------------------------------------------
 		"notes_pre_create_fun": (p_notes_lst)=>{
 			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
- 
-				var image_system_id_str = $(p_image_container_element).attr("data-img_system_id_str");
-				p_resolve_fun(image_system_id_str);
+
+				// passing the image_id to the gf_tagger control via this callback allows for
+				// customization of the image_id fetching mechanism (whether its in the template,
+				// or fetched via rest api, etc., or pulled from some internal browser/web DB).
+				p_resolve_fun(p_image_id_str);
 			});
 			return p;
 		},
