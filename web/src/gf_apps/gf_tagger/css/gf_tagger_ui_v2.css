@@ -61,7 +61,15 @@
     left: 0px;
 }
 #tagging_input_container input {
-	
+
+    /*
+    this box-sizing model respects the explicitly set width of the box,
+    and fits padding and other properties inside this width; not adding it to the width.
+    This behavior simplifies layout calculations, as you can more intuitively control 
+    the overall dimensions of elements without having to account separately for padding and border.
+    */
+	box-sizing: border-box;
+
 	font-size: 14px;
     position: absolute;
     top: 35px;
