@@ -210,7 +210,7 @@ function init_tagging(p_image_id_str,
 		}
 	};
 
-	const obj_type_str = "img";
+	const obj_type_str = "image";
 
 	const callbacks_map = {
 
