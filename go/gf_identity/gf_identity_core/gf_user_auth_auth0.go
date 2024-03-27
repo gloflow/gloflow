@@ -440,13 +440,31 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 
 	userNameStr   := GFuserName(auth0userInfoMap["name"].(string))
 	screenNameStr := auth0userInfoMap["nickname"].(string)
-	emailStr      := auth0userInfoMap["email"].(string)
+	
 	profileImageURLstr := auth0userInfoMap["picture"].(string)
 
 	// user doesnt exist in the GF DB
 	if !existsBool {
 
 		creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+
+		//---------------------		
+		// only read the email param if a new user is created in the GF DB
+		email := auth0userInfoMap["email"]
+
+		// check if the email field is present in the user_info map. sometimes
+		// its not returned, and the user would be created without an email.
+		if email == nil {
+			gfErr := gf_core.ErrorCreate("Auth0 user_info does not contain the expected/required 'email' field",
+				"library_error",
+				map[string]interface{}{},
+				nil, "gf_identity_core", pRuntimeSys)
+			return gfErr
+		}
+		emailStr := email.(string)
+
+		//---------------------
+
 
 		user := &GFuser{
 			Vstr:               "0",
