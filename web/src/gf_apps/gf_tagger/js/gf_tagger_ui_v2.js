@@ -400,8 +400,9 @@ function gf_tagger__place_tags_input_ui_v2(p_input_ui_element,
 		with masonry which sets the css("top") property offset().top doesnt return the correct value.
 		css("top") also works correctly in the test cases, so using that for now.
 	*/
-	if ($(p_position_relative_to_element).css("top") == "auto" || p_position_relative_to_element.style.top == "") {
-		relative_to_element_y_int = $(p_position_relative_to_element).offset().top;	
+	if ($(p_position_relative_to_element).css("top") == "auto" || $(p_position_relative_to_element).css("top") == "") {
+		relative_to_element_y_int = $(p_position_relative_to_element).offset().top;
+		
 	} else {
 
 		/*
@@ -461,4 +462,9 @@ function gf_tagger__place_tags_input_ui_v2(p_input_ui_element,
 	$(p_input_ui_element).css('position', 'absolute');
 	$(p_input_ui_element).css('left',     `${tagging_input_x}px`);
 	$(p_input_ui_element).css('top',      `${tagging_input_y}px`);
+
+
+	// INPUT_FOCUS - give browser focus to the input element, so that the user can
+	//				 start entering tags right away.
+	$(p_input_ui_element).find("input").focus();
 }
