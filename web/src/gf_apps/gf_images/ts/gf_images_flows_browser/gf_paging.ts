@@ -21,14 +21,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // import * as gf_image_viewer from "./../../../../gf_core/ts/gf_image_viewer";
 // import * as gf_gifs_viewer  from "./../../../../gf_core/ts/gf_gifs_viewer";
-import * as gf_images_http from "./../gf_images_core/gf_images_http";
-import * as gf_utils       from "./gf_utils";
+import * as gf_core_utils   from "./../../../../gf_core/ts/gf_utils";
+import * as gf_images_http  from "./../gf_images_core/gf_images_http";
+import * as gf_utils        from "./gf_utils";
+import * as gf_images_share from "./../gf_images_core/gf_images_share";
 
 
 //---------------------------------------------------
 export async function load_new_page(p_flow_name_str :string,
 	p_current_page_int            :number,
 	p_current_image_view_type_str :string,
+	p_logged_in_bool              :boolean,
+	p_plugin_callbacks_map,
 	p_on_complete_fun,
 	p_log_fun) {
 
@@ -41,6 +45,9 @@ export async function load_new_page(p_flow_name_str :string,
 	
 	view_page(pages_lst, pages_user_names_lst);
 
+
+	const gf_host_str = gf_core_utils.get_gf_host();
+	
 	//---------------------------------------------------
 	function view_page(p_pages_lst, p_pages_user_names_lst) {
 
@@ -83,6 +90,27 @@ export async function load_new_page(p_flow_name_str :string,
 						gf_utils.masonry_layout_after_img_load(p_image_container);
 
 						img_i_int++;
+
+						//----------------
+						// LOGGED_IN - only initialize this part if the user is authenticated
+						
+						if (p_logged_in_bool) {
+								
+							// TAGGING
+							gf_utils.init_tagging(img__id_str,
+								p_image_container,
+								gf_host_str,
+								p_log_fun);
+
+							// SHARE
+							gf_images_share.init(img__id_str,
+								p_image_container,
+								p_plugin_callbacks_map,
+								p_log_fun);
+						}
+
+						//----------------
+
 
 						// IMPORTANT!! - only declare load_new_page() as complete after all its
 						//               images complete loading

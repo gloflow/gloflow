@@ -131,9 +131,9 @@ export function get_http_api(p_urls_map) {
                 const output_map = await user_get_me();
                 return output_map;
             },
-            "logged_in": async ()=>{
-                const output_map = await logged_in();
-                return output_map;
+            "logged_in": async () :Promise<boolean> =>{
+                const logged_in_bool = await logged_in();
+                return logged_in_bool;
             },
         }
     };
@@ -173,8 +173,8 @@ export function user_get_me() {
     return p;
 }
 
-export function logged_in() {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+export function logged_in() :Promise<boolean> {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
 
         // auth_r=0 - toggle off redirecting to login url in case the validation fails.
         //            redirecting not needed since /me is called by subcomponents of pages
@@ -199,7 +199,6 @@ export function logged_in() {
             }
         });
     });
-    return p;
 }
 
 //-------------------------------------------------
@@ -208,7 +207,7 @@ export function logged_in() {
 // USER_PREFLIGHT__HTTP
 export function user_preflight(p_user_name_str,
     p_user_address_eth_str) {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "user_name_str":        p_user_name_str,
             "user_address_eth_str": p_user_address_eth_str,
@@ -236,7 +235,6 @@ export function user_preflight(p_user_name_str,
             }
         });
     });
-    return p;
 }
 
 //-------------------------------------------------
@@ -244,7 +242,7 @@ export function user_preflight(p_user_name_str,
 export function user_eth_login(p_user_address_eth_str :string,
     p_auth_signature_str :string) {
     
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "user_address_eth_str": p_user_address_eth_str,
             "auth_signature_str":   p_auth_signature_str,
@@ -272,7 +270,6 @@ export function user_eth_login(p_user_address_eth_str :string,
             }
         });
     });
-    return p;
 }
 
 //-------------------------------------------------
@@ -282,7 +279,7 @@ export function user_userpass_login(p_user_name_str :string,
     p_email_str :string,
     p_url_str   :string) {
     
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "user_name_str": p_user_name_str,
             "pass_str":      p_pass_str,
@@ -310,14 +307,13 @@ export function user_userpass_login(p_user_name_str :string,
             }
         });
     });
-    return p;
 }
 
 //-------------------------------------------------
 // USER_MFA_CONFIRM
 export function user_mfa_confirm(p_user_name_str :string,
     p_mfa_val_str :string) {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "user_name_str": p_user_name_str,
             "mfa_val_str":   p_mfa_val_str,
@@ -344,9 +340,7 @@ export function user_mfa_confirm(p_user_name_str :string,
                 p_reject_fun(p_text_status_str);
             }
         });
-
     });
-    return p;
 }
 
 //-------------------------------------------------
@@ -356,7 +350,7 @@ export function user_mfa_confirm(p_user_name_str :string,
 export function user_eth_create(p_user_address_eth_str :string,
     p_auth_signature_str :string) {
 
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "user_address_eth_str": p_user_address_eth_str,
             "auth_signature_str":   p_auth_signature_str,
@@ -384,7 +378,6 @@ export function user_eth_create(p_user_address_eth_str :string,
             }
         });
     });
-    return p;
 }
 
 //-------------------------------------------------
@@ -393,7 +386,7 @@ export function user_userpass_create(p_user_name_str :string,
     p_pass_str  :string,
     p_email_str :string) {
 
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "user_name_str": p_user_name_str,
             "pass_str":      p_pass_str,
@@ -422,7 +415,6 @@ export function user_userpass_create(p_user_name_str :string,
             }
         });
     });
-    return p;
 }
 
 //-------------------------------------------------
@@ -431,7 +423,7 @@ export function user_userpass_create(p_user_name_str :string,
 // USER_UPDATE__HTTP
 export function user_update(p_user_data_map) {
 
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "user_username_str":    p_user_data_map["username_str"],
             "user_email_str":       p_user_data_map["email_str"],
@@ -460,5 +452,4 @@ export function user_update(p_user_data_map) {
             }
         });
     });
-    return p;
 }

@@ -103,11 +103,14 @@ function gf_tagger__init_input_ui_v2(p_obj_id_str,
 	p_log_fun) {
 	
 
+	// IMPORTANT!! - "autofocus" added to input field, so that it receives keyboard focus as soon
+	// 				 as its displayed.
+
 	const input_ui_element = $(`
 		<div id="tagging_input_container" class="bubble-in">
 			<div id="background"></div>
 
-			<input type="text" id="tags_input" placeholder="(space) separated tags">
+			<input type="text" id="tags_input" placeholder="(space) separated tags" autofocus>
 			<div id="submit_btn">+</div>
 
 

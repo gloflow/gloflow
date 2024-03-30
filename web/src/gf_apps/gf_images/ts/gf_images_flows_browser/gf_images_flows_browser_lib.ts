@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_time             from "./../../../../gf_core/ts/gf_time";
 import * as gf_gifs_viewer      from "./../../../../gf_core/ts/gf_gifs_viewer";
 import * as gf_image_viewer     from "./../../../../gf_core/ts/gf_image_viewer";
+import * as gf_core_utils       from "./../../../../gf_core/ts/gf_utils";
 import * as gf_sys_panel        from "./../../../../gf_sys_panel/ts/gf_sys_panel";
 import * as gf_identity         from "./../../../../gf_identity/ts/gf_identity";
 import * as gf_identity_http    from "./../../../../gf_identity/ts/gf_identity_http";
@@ -39,17 +40,12 @@ declare var URLSearchParams;
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
 declare var gf_upload__init;
-declare var gf_tagger__init_ui_v2;
-declare var gf_tagger__http_add_tags_to_obj;
 
 //-------------------------------------------------
 export async function init(p_plugin_callbacks_map,
 	p_log_fun) {
 
-	const domain_str   = window.location.hostname;
-	const protocol_str = window.location.protocol;
-	const gf_host_str = `${protocol_str}//${domain_str}`;
-	console.log("gf_host", gf_host_str);
+	const gf_host_str = gf_core_utils.get_gf_host();
 	
 	//---------------------
 	// META
@@ -177,21 +173,19 @@ export async function init(p_plugin_callbacks_map,
 		if (logged_in_bool) {
 				
 			// TAGGING
-			init_tagging(image_id_str,
+			gf_utils.init_tagging(image_id_str,
 				image_element,
 				gf_host_str,
 				p_log_fun);
-
-
 
 			// SHARE
 			gf_images_share.init(image_id_str,
 				image_element,
 				p_plugin_callbacks_map,
 				p_log_fun);
-
-			//----------------
 		}
+
+		//----------------
 	});
 
 	const current_pages_display = gf_paging.init__current_pages_display(p_log_fun);
@@ -224,6 +218,8 @@ export async function init(p_plugin_callbacks_map,
 				gf_paging.load_new_page(flow_name_str,
 					current_page_int,
 					current_image_view_type_str,
+					logged_in_bool,
+					p_plugin_callbacks_map,
 					()=>{
 
 						current_page_int += 1;
@@ -344,125 +340,4 @@ function init_upload(p_flow_name_str :string,
 		});
 
 		//-------------------------------------------------
-}
-
-//---------------------------------------------------
-// TAGGING_UI
-
-function init_tagging(p_image_id_str,
-	p_image_container_element,
-	p_gf_host_str,
-	p_log_fun) {
-
-	const http_api_map = {
-
-		// GF_TAGGER
-		"gf_tagger": {
-			"add_tags_to_obj": async (p_new_tags_lst,
-				p_obj_id_str,
-				p_obj_type_str,
-				p_tags_meta_map,
-				p_log_fun)=>{
-				const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
-
-					await gf_tagger__http_add_tags_to_obj(p_new_tags_lst,
-						p_obj_id_str,
-						p_obj_type_str,
-						{}, // meta_map
-						p_gf_host_str,
-						p_log_fun);
-
-					p_resolve_fun({
-						"added_tags_lst": p_new_tags_lst,
-					});
-				});
-				return p;
-			}
-		},
-
-		// GF_IMAGES
-		"gf_images": {
-			"classify_image": async (p_image_id_str)=>{
-				const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
-
-					const client_type_str = "web";
-
-					await gf_images_http.classify(p_image_id_str,
-						client_type_str,
-						p_log_fun);
-				});
-				return p;
-			}
-		}
-	};
-
-	const obj_type_str = "image";
-
-	const callbacks_map = {
-
-		//---------------------------------------------------
-		// TAGS
-		//---------------------------------------------------
-		"tags_pre_create_fun": async (p_tags_lst)=>{
-			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
-
-				// passing the image_id to the gf_tagger control via this callback allows for
-				// customization of the image_id fetching mechanism (whether its in the template,
-				// or fetched via rest api, etc., or pulled from some internal browser/web DB).
-				p_resolve_fun(p_image_id_str);
-			});
-			return p;
-		},
-		
-		//---------------------------------------------------
-		"tags_created_fun": (p_tags_lst)=>{
-
-			console.log("added tags >>>>>>>>>>>", p_tags_lst);
-
-			p_tags_lst.forEach(p_tag_str=>{
-
-				tag_display(p_tag_str);
-			});
-		},
-
-		//---------------------------------------------------
-		// NOTES
-		//---------------------------------------------------
-		"notes_pre_create_fun": (p_notes_lst)=>{
-			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
-
-				// passing the image_id to the gf_tagger control via this callback allows for
-				// customization of the image_id fetching mechanism (whether its in the template,
-				// or fetched via rest api, etc., or pulled from some internal browser/web DB).
-				p_resolve_fun(p_image_id_str);
-			});
-			return p;
-		},
-
-		//---------------------------------------------------
-		"notes_created_fun": (p_notes_lst)=>{
-
-			console.log("added notes >>>>>>>>>>>", p_notes_lst)
-		}
-
-		//---------------------------------------------------
-	}
-
-	gf_tagger__init_ui_v2(p_image_id_str,
-		obj_type_str,
-		p_image_container_element,
-		$("body"),
-		callbacks_map,
-		http_api_map,
-		p_log_fun);
-
-	//-------------------------------------------------
-	function tag_display(p_tag_str) {
-
-		$(p_image_container_element)
-			.find(".tags_container")
-			.append(`<a class='gf_image_tag' href='/v1/tags/objects?tag=${p_tag_str}&otype=image'>#${p_tag_str}</a>`)
-	}
-
-	//-------------------------------------------------
 }
