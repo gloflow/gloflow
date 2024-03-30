@@ -253,7 +253,7 @@ function init_seeking(p_seeker_bar_button_element,
             //               and we need that frequency to be high for smooth animation of the button.
             const movement_delta = p_move_event.pageY - p_initial_click_coord_int;
 
-            // const old_button_y     = $(button).offset().top; 
+            // const old_button_y = $(button).offset().top; 
             const button_new_y_int = movement_delta; // old_button_y + movement_delta;
 
             seek_percentage_int = handle_user_seek_event(p_seek_start_page_int,
@@ -305,7 +305,9 @@ function init_seeking(p_seeker_bar_button_element,
 			//--------------
         });
         $(button).on("mouseleave", (p_event)=>{
-            $(button).off("mousemove");
+
+            // cancel movement of the button if mouse leaves it
+            // $(button).off("mousemove");
         });
     }
 

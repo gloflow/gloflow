@@ -149,6 +149,7 @@ export function init(p_id_str: string,
 
                 load_new_pages(current_page_int,
                     pages_container,
+                    packery_instance,
                     p_element_create_fun,
                     p_elements_page_get_fun);
 
@@ -178,20 +179,25 @@ async function reset_with_new_start_pages(p_container,
     // starting from the page where to user seeked to.
     p_pages_to_get_num_int :number=6) {
 
-    
 
     console.log("RESET", p_packery_instance)
 
-    p_packery_instance.layout();
 
-    // remove all items currently displayed by viz_group, 
-    // since new ones have to be shown
+    //------------------------
+    // REMOVE_ALL - items currently displayed by viz_group, 
+    //              since new ones have to be shown.
     $(p_container).find("#items .item").remove();
+
+    //------------------------
+
+    // IMPORTANT!! - do a layout after removing all items
+    p_packery_instance.packery("layout");
 
     const pages_container = $(p_container).find("#items");
 
     load_new_pages(p_start_page_int,
         pages_container,
+        p_packery_instance,
         p_element_create_fun,
         p_elements_page_get_fun,
         p_pages_to_get_num_int);    
@@ -200,6 +206,7 @@ async function reset_with_new_start_pages(p_container,
 //-------------------------------------------------
 async function load_new_pages(p_page_index_int :number,
     p_pages_container,
+    p_packery_instance,
     p_element_create_fun,
     p_elements_page_get_fun,
     p_pages_to_get_num_int :number=1) {
@@ -221,22 +228,26 @@ async function load_new_pages(p_page_index_int :number,
         $(element).addClass("item");
         $(element).css("visibility", "hidden"); // initially elements are not visible until they load
 
-        $(p_pages_container).append(element)
+        $(p_pages_container).append(element);
 
 
         $(element).find('img').on('load', ()=>{
 
             $(element).css('visibility', 'visible');
+
+            // p_packery_instance.packery("layout");
             $(p_pages_container).packery("appended", element);
 
-            /*// MASONRY
+            /*
+            // MASONRY
             $(p_pages_container).masonry();
             $(p_pages_container).masonry(<any>"reloadItems");
             
             const masonry = $(p_pages_container).data('masonry');
             masonry.once('layoutComplete', (p_event, p_laid_out_items)=>{
                 $(element).css('visibility', 'visible');
-            });*/
+            });
+            */
         });
     }
 
