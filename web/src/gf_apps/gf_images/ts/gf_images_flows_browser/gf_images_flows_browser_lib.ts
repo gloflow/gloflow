@@ -25,7 +25,10 @@ import * as gf_time             from "./../../../../gf_core/ts/gf_time";
 import * as gf_gifs_viewer      from "./../../../../gf_core/ts/gf_gifs_viewer";
 import * as gf_image_viewer     from "./../../../../gf_core/ts/gf_image_viewer";
 import * as gf_sys_panel        from "./../../../../gf_sys_panel/ts/gf_sys_panel";
-import * as gf_image_http       from "./../gf_images_core/gf_images_http";
+import * as gf_identity         from "./../../../../gf_identity/ts/gf_identity";
+import * as gf_identity_http    from "./../../../../gf_identity/ts/gf_identity_http";
+import * as gf_images_http      from "./../gf_images_core/gf_images_http";
+import * as gf_images_share     from "./../gf_images_core/gf_images_share";
 import * as gf_paging           from "./gf_paging";
 import * as gf_view_type_picker from "./gf_view_type_picker";
 import * as gf_utils            from "./gf_utils";
@@ -36,9 +39,23 @@ declare var URLSearchParams;
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
 declare var gf_upload__init;
+declare var gf_tagger__init_ui_v2;
+declare var gf_tagger__http_add_tags_to_obj;
 
 //-------------------------------------------------
-export function init(p_log_fun) {
+export async function init(p_plugin_callbacks_map,
+	p_log_fun) {
+
+	const domain_str   = window.location.hostname;
+	const protocol_str = window.location.protocol;
+	const gf_host_str = `${protocol_str}//${domain_str}`;
+	console.log("gf_host", gf_host_str);
+	
+	//---------------------
+	// META
+	const notifications_meta_map = {
+		"login_first_stage_success": "login success"
+	};
 
 	//-------------------------------------------------
 	function get_current_flow() {
@@ -60,6 +77,25 @@ export function init(p_log_fun) {
 	gf_sys_panel.init_with_auth(p_log_fun);
 	gf_flows_picker.init(p_log_fun);
 	
+	//---------------------
+	// IDENTITY
+	// first complete main initialization and only then initialize gf_identity
+	const urls_map          = gf_identity_http.get_standard_http_urls();
+	const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
+	gf_identity.init_with_http(notifications_meta_map, urls_map);
+	
+
+	
+	const parent_node = $("#right_section");
+	const home_url_str = urls_map["home"];
+
+	gf_identity.init_me_control(parent_node,
+		auth_http_api_map,
+		home_url_str);
+	
+	// inspect if user is logged-in or not
+	const logged_in_bool = await auth_http_api_map["general"]["logged_in"]();
+
 	//---------------------
 	// UPLOAD__INIT
 
@@ -91,11 +127,11 @@ export function init(p_log_fun) {
 		const image_element = p_e;
 		gf_utils.init_image_date(image_element, p_log_fun);
 
-		const img_id_str = $(image_element).attr('data-img_id');
+		const image_id_str = $(image_element).data('img_id');
 		const img_thumb_medium_url_str = $(image_element).find('img').data('img_thumb_medium_url');
 		const img_thumb_large_url_str  = $(image_element).find('img').data('img_thumb_large_url');
-		const img_format_str           = $(image_element).attr('data-img_format');
-		const flows_names_lst          = $(image_element).attr('data-img_flows_names').split(",");
+		const img_format_str           = $(image_element).data('img_format');
+		const flows_names_lst          = $(image_element).data('img_flows_names').split(",");
 
 		const origin_page_url_link = $(image_element).find(".origin_page_url a")[0];
 
@@ -122,13 +158,13 @@ export function init(p_log_fun) {
 		//----------------
 		// GIFS
 		if (img_format_str == 'gif') {			
-			gf_gifs_viewer.init(image_element, img_id_str, flow_name_str, p_log_fun);
+			gf_gifs_viewer.init(image_element, image_id_str, flow_name_str, p_log_fun);
 		}
 
 		//----------------
 		else {
 			gf_image_viewer.init(image_element,
-				img_id_str,
+				image_id_str,
 				img_thumb_medium_url_str,
 				img_thumb_large_url_str,
 				flows_names_lst,
@@ -136,6 +172,26 @@ export function init(p_log_fun) {
 		}
 
 		//----------------
+		// LOGGED_IN - only initialize this part if the user is authenticated
+		
+		if (logged_in_bool) {
+				
+			// TAGGING
+			init_tagging(image_id_str,
+				image_element,
+				gf_host_str,
+				p_log_fun);
+
+
+
+			// SHARE
+			gf_images_share.init(image_id_str,
+				image_element,
+				p_plugin_callbacks_map,
+				p_log_fun);
+
+			//----------------
+		}
 	});
 
 	const current_pages_display = gf_paging.init__current_pages_display(p_log_fun);
@@ -208,7 +264,7 @@ function init_upload(p_flow_name_str :string,
 				
 				//------------------
 				// SLEEP - it takes time for the image to get uploaded.
-				//         so dont run gf_image_http.get() until the system had time to add the image,
+				//         so dont run gf_images_http.get() until the system had time to add the image,
 				//         otherwise it will return a response that the image doesnt exist yet.
 				// ADD!! - some way to immediatelly display a placeholder for the image that is being uploaded.
 				const wait_time_miliseconds_int = 1500; // 1s
@@ -216,7 +272,7 @@ function init_upload(p_flow_name_str :string,
 
 				//------------------
 				// HTTP_GET_IMAGE
-				image_result_map  = await gf_image_http.get(p_upload_gf_image_id_str, p_log_fun);
+				image_result_map  = await gf_images_http.get(p_upload_gf_image_id_str, p_log_fun);
 				image_exists_bool = image_result_map["image_exists_bool"];
 
 				//------------------
@@ -288,4 +344,125 @@ function init_upload(p_flow_name_str :string,
 		});
 
 		//-------------------------------------------------
+}
+
+//---------------------------------------------------
+// TAGGING_UI
+
+function init_tagging(p_image_id_str,
+	p_image_container_element,
+	p_gf_host_str,
+	p_log_fun) {
+
+	const http_api_map = {
+
+		// GF_TAGGER
+		"gf_tagger": {
+			"add_tags_to_obj": async (p_new_tags_lst,
+				p_obj_id_str,
+				p_obj_type_str,
+				p_tags_meta_map,
+				p_log_fun)=>{
+				const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+					await gf_tagger__http_add_tags_to_obj(p_new_tags_lst,
+						p_obj_id_str,
+						p_obj_type_str,
+						{}, // meta_map
+						p_gf_host_str,
+						p_log_fun);
+
+					p_resolve_fun({
+						"added_tags_lst": p_new_tags_lst,
+					});
+				});
+				return p;
+			}
+		},
+
+		// GF_IMAGES
+		"gf_images": {
+			"classify_image": async (p_image_id_str)=>{
+				const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+					const client_type_str = "web";
+
+					await gf_images_http.classify(p_image_id_str,
+						client_type_str,
+						p_log_fun);
+				});
+				return p;
+			}
+		}
+	};
+
+	const obj_type_str = "image";
+
+	const callbacks_map = {
+
+		//---------------------------------------------------
+		// TAGS
+		//---------------------------------------------------
+		"tags_pre_create_fun": async (p_tags_lst)=>{
+			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+				// passing the image_id to the gf_tagger control via this callback allows for
+				// customization of the image_id fetching mechanism (whether its in the template,
+				// or fetched via rest api, etc., or pulled from some internal browser/web DB).
+				p_resolve_fun(p_image_id_str);
+			});
+			return p;
+		},
+		
+		//---------------------------------------------------
+		"tags_created_fun": (p_tags_lst)=>{
+
+			console.log("added tags >>>>>>>>>>>", p_tags_lst);
+
+			p_tags_lst.forEach(p_tag_str=>{
+
+				tag_display(p_tag_str);
+			});
+		},
+
+		//---------------------------------------------------
+		// NOTES
+		//---------------------------------------------------
+		"notes_pre_create_fun": (p_notes_lst)=>{
+			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+				// passing the image_id to the gf_tagger control via this callback allows for
+				// customization of the image_id fetching mechanism (whether its in the template,
+				// or fetched via rest api, etc., or pulled from some internal browser/web DB).
+				p_resolve_fun(p_image_id_str);
+			});
+			return p;
+		},
+
+		//---------------------------------------------------
+		"notes_created_fun": (p_notes_lst)=>{
+
+			console.log("added notes >>>>>>>>>>>", p_notes_lst)
+		}
+
+		//---------------------------------------------------
+	}
+
+	gf_tagger__init_ui_v2(p_image_id_str,
+		obj_type_str,
+		p_image_container_element,
+		$("body"),
+		callbacks_map,
+		http_api_map,
+		p_log_fun);
+
+	//-------------------------------------------------
+	function tag_display(p_tag_str) {
+
+		$(p_image_container_element)
+			.find(".tags_container")
+			.append(`<a class='gf_image_tag' href='/v1/tags/objects?tag=${p_tag_str}&otype=image'>#${p_tag_str}</a>`)
+	}
+
+	//-------------------------------------------------
 }

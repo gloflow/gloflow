@@ -41,5 +41,10 @@ $(document).ready(()=>{
 	}
 
 	//-------------------------------------------------
-	gf_images_flows_browser_lib.init(log_fun);
+
+	// PLUGINS
+	const plugin_callbacks_map = {};
+
+	gf_images_flows_browser_lib.init(plugin_callbacks_map,
+		log_fun);
 });

@@ -30,6 +30,10 @@
 	<link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_image_viewer.css"/>
 	<link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_image_upload.css"/>
 	<link rel="stylesheet" type="text/css" href="./../../../../gf_sys_panel/css/gf_sys_panel.css"/>
+	<link rel="stylesheet" type="text/css" href="./../../../../gf_apps/gf_images/css/gf_images_core/gf_images_share.css"/>
+	<link rel="stylesheet" type="text/css" href="./../../../../gf_apps/gf_tagger/css/gf_tagger_ui_v2.css"/>
+	<link rel="stylesheet" type="text/css" href="./../../../../gf_apps/gf_tagger/css/gf_tagger_notes_ui.css"/>
+</head>
 </head>
 <body>
 	{{- /*------------------------------------------------------*/}}
@@ -107,6 +111,9 @@
 	<script type="text/javascript" src="./../../../../../libs/js/masonry.pkgd.min.js"></script>
 	
 	<script type="text/javascript" src="./../../../../gf_core/ts/gf_image_upload.js"></script>
+	<script type="text/javascript" src="./../../../../gf_core/ts/gf_image_upload.js"></script>
+	<script type="text/javascript" src="./../../../../gf_apps/gf_tagger/js/gf_tagger_ui_v2.js"></script>
+	<script type="text/javascript" src="./../../../../gf_apps/gf_tagger/js/gf_tagger_http.js"></script>
 	<script type="text/javascript" src="./../../ts/gf_images_flows_browser/gf_images_flows_browser.ts"></script>
 
 	<script>
@@ -114,7 +121,7 @@
 	</script>
 	{{- /*------------------------------------------------------*/}}
 	{{- /*SUBTEMPLATE*/}}
-	{{ if (call .Is_subtmpl_def "gf_footer")}}
+	{{ if (call .Is_subtmpl_def "gf_footer")}} 
 		{{ template "gf_footer" }}
 	{{ end }}
 	{{- /*------------------------------------------------------*/}}
