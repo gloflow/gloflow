@@ -98,7 +98,7 @@ export function init(p_flow_name_str :string,
 		$('#gf_images_flow_container #items').masonry(<any>"reloadItems");
 	});
 
-	// MASONRY_MEDIUM_IMAGES
+	// VIZ_GROUP
 	$(container).find('#viz_group_medium_images').on('click', function() {
 
 		// FIX!! - global var. handle this differently;
@@ -123,6 +123,7 @@ export function init(p_flow_name_str :string,
 		// VIZ_GROUP
 		const flow_pages_num_int = $("#gf_images_flow_container").data("flow_pages_num");
 		const current_page_int   = $("#gf_images_flow_container").data("current_page");
+		
 		init__viz_group_view(p_flow_name_str,
 			flow_pages_num_int,
 			current_page_int,
