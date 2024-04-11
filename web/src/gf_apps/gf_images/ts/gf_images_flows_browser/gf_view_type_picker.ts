@@ -145,7 +145,7 @@ function init__viz_group_view(p_flow_name_str :string,
 	// ELEMENT_CREATE
     function element_create_fun(p_element_map) {
 
-		const image_id_str                   = p_element_map['id_str'];
+		const image_id_str                  = p_element_map['id_str'];
 		const img__format_str               = p_element_map['format_str'];
 		const img__creation_unix_time_f     = p_element_map['creation_unix_time_f'];
 		const img__flows_names_lst          = p_element_map["flows_names_lst"];
@@ -189,18 +189,19 @@ function init__viz_group_view(p_flow_name_str :string,
     //-------------------------------------------------
 	// ELEMENTS_PAGE_GET
     function elements_page_get_fun(p_new_page_number_int: number) {
-        const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+        return new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-            const page_elements_lst = [];
-            p_resolve_fun(page_elements_lst);
+            
 
 			// HTTP_LOAD_NEW_PAGE
 
-			const pages_lst = await gf_images_http.get_page(p_flow_name_str,
+			const resp_map = await gf_images_http.get_page(p_flow_name_str,
 				p_new_page_number_int,
 				p_log_fun);
+			const page_elements_lst = resp_map["pages_lst"][0];
+
+			p_resolve_fun(page_elements_lst);
         });
-        return p;
     }
 
 	//-------------------------------------------------

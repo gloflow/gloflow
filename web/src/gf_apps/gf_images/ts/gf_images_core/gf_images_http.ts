@@ -73,7 +73,7 @@ export async function share(p_image_id_str :string,
 	p_email_body_str    :string,
     p_log_fun) {
 	
-	const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+	return new Promise(function(p_resolve_fun, p_reject_fun) {
 
 		const url_str = `/v1/images/share`;
 		p_log_fun("INFO", `url_str ${url_str} - image_id ${p_image_id_str}`);
@@ -112,7 +112,6 @@ export async function share(p_image_id_str :string,
 
 		//-------------------------
 	});
-	return p;
 }
 
 //---------------------------------------------------
@@ -121,7 +120,7 @@ export async function share(p_image_id_str :string,
 export async function get(p_image_id_str :string,
     p_log_fun) {
 
-	const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+	return new Promise(function(p_resolve_fun, p_reject_fun) {
 
 		const page_size_int = 10;
 		const url_str       = `/v1/images/get?img_id=${p_image_id_str}`;
@@ -152,17 +151,21 @@ export async function get(p_image_id_str :string,
 
 		//-------------------------
 	});
-	return p;
 }
 
 //---------------------------------------------------
 // GET_PAGE
 
-export function get_page(p_flow_name_str :string,
-	p_current_page_int :number,
-	p_log_fun) {
+interface PageData {
+    pages_lst: any[]; // Replace 'any' with more specific type if known
+    pages_user_names_lst: string[];
+}
 
-	const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+export async function get_page(p_flow_name_str :string,
+	p_current_page_int :number,
+	p_log_fun) :Promise<PageData> {
+
+	return new Promise(function(p_resolve_fun, p_reject_fun) {
 
 		const page_size_int = 10;
 		const url_str       = `/images/flows/browser_page?fname=${p_flow_name_str}&pg_index=${p_current_page_int}&pg_size=${page_size_int}`;
@@ -181,6 +184,7 @@ export function get_page(p_flow_name_str :string,
 
 					const pages_lst = p_data_map["data"]["pages_lst"];
 					const pages_user_names_lst = p_data_map["data"]["pages_user_names_lst"];
+
 					p_resolve_fun({
 						"pages_lst":            pages_lst,
 						"pages_user_names_lst": pages_user_names_lst,
@@ -193,5 +197,4 @@ export function get_page(p_flow_name_str :string,
 
 		//-------------------------
 	});
-	return p;
 }

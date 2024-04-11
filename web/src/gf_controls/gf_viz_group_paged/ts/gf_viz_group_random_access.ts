@@ -253,8 +253,16 @@ function init_seeking(p_seeker_bar_button_element,
             //               and we need that frequency to be high for smooth animation of the button.
             const movement_delta = p_move_event.pageY - p_initial_click_coord_int;
 
+
+            
+
             // const old_button_y = $(button).offset().top; 
             const button_new_y_int = movement_delta; // old_button_y + movement_delta;
+
+
+
+            console.log("-----", button_new_y_int, "init click coord", p_initial_click_coord_int)
+
 
             seek_percentage_int = handle_user_seek_event(p_seek_start_page_int,
                 p_seek_end_page_int,
@@ -289,6 +297,7 @@ function init_seeking(p_seeker_bar_button_element,
         // MOUSEUP
         $(button).on("mouseup", async (p_event)=>{
 
+            // stop handling button movement
             $(button).off("mousemove");
 
             //--------------
@@ -453,17 +462,21 @@ function init_range_bar_background_canvas(p_first_page_int :number,
 	canvas.height = bar_height_int;
     const ctx = canvas.getContext('2d');
 
-    ctx.fillStyle   = "yellow";
-    ctx.strokeStyle = "black";
-    for (var i=0;i<pages_num_int;i++) {
+    // first check if the canvas 2d context was returned by the browser
+    if (ctx) {
 
-        ctx.rect(0,
-            i*page_single_height_px_int,
-            bar_width_int,
-            page_single_height_px_int);
+        ctx.fillStyle   = "yellow";
+        ctx.strokeStyle = "black";
+        for (var i=0;i<pages_num_int;i++) {
 
-        ctx.fill();
-        ctx.stroke();
+            ctx.rect(0,
+                i*page_single_height_px_int,
+                bar_width_int,
+                page_single_height_px_int);
+
+            ctx.fill();
+            ctx.stroke();
+        }
     }
 }
 

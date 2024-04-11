@@ -43,6 +43,8 @@ export function init(p_id_str: string,
     p_create_initial_elements_bool: boolean=true) {
 
     //------------------------
+    // CONTROL_CONTAINER
+    
     var container;
 
     // check if a container with this name already exists, and if it does use that.
@@ -149,7 +151,6 @@ export function init(p_id_str: string,
 
                 load_new_pages(current_page_int,
                     pages_container,
-                    packery_instance,
                     p_element_create_fun,
                     p_elements_page_get_fun);
 
@@ -197,7 +198,6 @@ async function reset_with_new_start_pages(p_container,
 
     load_new_pages(p_start_page_int,
         pages_container,
-        p_packery_instance,
         p_element_create_fun,
         p_elements_page_get_fun,
         p_pages_to_get_num_int);    
@@ -206,7 +206,6 @@ async function reset_with_new_start_pages(p_container,
 //-------------------------------------------------
 async function load_new_pages(p_page_index_int :number,
     p_pages_container,
-    p_packery_instance,
     p_element_create_fun,
     p_elements_page_get_fun,
     p_pages_to_get_num_int :number=1) {
@@ -217,7 +216,7 @@ async function load_new_pages(p_page_index_int :number,
     
 
 
-    console.log("AAPPPPENDING NEW.............")
+    console.log("AAPPPPENDING NEW...", `elements #${elements_lst.length}`)
 
 
     // create elements
@@ -233,6 +232,7 @@ async function load_new_pages(p_page_index_int :number,
 
         $(element).find('img').on('load', ()=>{
 
+            // make element visible after its image loads
             $(element).css('visibility', 'visible');
 
             // p_packery_instance.packery("layout");
