@@ -85,11 +85,13 @@ function init_seeker_bar(p_first_page_int :number,
 					</div>
 
 					<div id='button_seek_info'
+                        draggable="false
                         style='
                             position:   absolute;
+                            background-color: orange;
+                            pointer-events: none;
                             text-align: center;
-                            font-size:  32px;
-                            background-color: orange;'>
+                            font-size:  32px;'>
 
 						<div id='seek_page_index'
                             style='
@@ -429,16 +431,12 @@ async function seek_to_new_value(p_seek_percentage_int :number,
         const page_index_to_seek_to_int = get_seek_page_index(p_seek_percentage_int,
             p_seek_start_page_int,
             p_seek_end_page_int);
-        
-
-        console.log("DDDDDDDDDDDDDDDDDDDDDD", page_index_to_seek_to_int)
 
         // RESET
         p_viz_group_reset_fun(page_index_to_seek_to_int,
             // p_on_complete_fun
             ()=>{
-
-                console.log("DDDDDDD2222")
+                console.log("viz_group reset done...")
                 p_resolve_fun({});
             });
     });

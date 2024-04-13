@@ -102,7 +102,7 @@ export function init(p_id_str: string,
     init_draggability(container, packery_instance);
 
     //------------------------
-    // INIT_RANDOM_ACCESS
+    // RANDOM_ACCESS_INIT
     
     const seeker__container_element = gf_viz_group_random_access.init(p_props.start_page_int,
         p_props.end_page_int,

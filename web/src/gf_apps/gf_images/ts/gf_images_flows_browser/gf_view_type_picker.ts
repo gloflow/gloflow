@@ -158,7 +158,13 @@ function init__viz_group_view(p_flow_name_str :string,
 		// IMPORTANT!! - '.gf_image' is initially invisible, and is faded into view when its image is fully loaded
 		//               and its positioned appropriatelly in the Masonry grid
 		const image_container = $(`
-			<div class="gf_image item ${current_image_view_type_str}" data-img_id="${image_id_str}" data-img_format="${img__format_str}" style='visibility:hidden;'>
+			<div class="gf_image item ${current_image_view_type_str}"
+
+				data-img_id="${image_id_str}"
+				data-img_format="${img__format_str}"
+				data-img_flows_names="${img__flows_names_lst.join(' ')}"
+				
+				style='visibility:hidden;'>
 				<img src="${img_url_str}" data-img_thumb_medium_url="${img__thumbnail_medium_url_str}"></img>
 				<div class="tags_container"></div>
 				<div class="origin_page_url">
@@ -172,7 +178,9 @@ function init__viz_group_view(p_flow_name_str :string,
 
 		if (img__format_str == 'gif') {
 			gf_gifs_viewer.init(image_container, image_id_str, img__flows_names_lst, p_log_fun);
+
 		} else {
+
 			gf_image_viewer.init(image_container,
 				image_id_str,
 				img__thumbnail_medium_url_str,

@@ -99,7 +99,7 @@ body {
     width:            380px;
     padding-left:     9px;
     padding-right:    11px;
-	margin-top:       -4px;
+	margin-top:       4px;
 
 	padding-bottom: 10px;
 }
@@ -111,10 +111,11 @@ body {
     word-wrap: break-word;
 }
 #gf_images_flow_container .gf_image .creation_time {
-	font-size:        14px;
+	font-size:        10px;
 	background-color: rgb(59, 124, 156);
     color:            white;
     padding-top:      5px;
+	cursor: pointer;
 }
 
 #gf_images_flow_container .gf_image .creation_time .full_creation_date {
@@ -124,6 +125,15 @@ body {
     padding-bottom:   3px;
     margin-top:       4px;
 }
+
+/*----------------------------------------------------------*/
+
+.tags_container {
+	font-size: 10px;
+    color: white;
+    text-decoration: none;
+}
+
 
 /*----------------------------------------------------------*/
 /*VIEW_TYPE_PICKER*/
