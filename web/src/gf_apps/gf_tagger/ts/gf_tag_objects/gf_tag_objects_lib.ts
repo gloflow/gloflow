@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import * as gf_image_viewer from "./../../../../gf_core/ts/gf_image_viewer";
 import * as gf_sys_panel    from "./../../../../gf_sys_panel/ts/gf_sys_panel";
-import * as gf_utils        from "./../../../gf_images/ts/gf_images_flows_browser/gf_utils";
+import * as gf_utils        from "./../../../gf_images/ts/gf_images_core/gf_utils";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
 declare var gf_upload__init;
