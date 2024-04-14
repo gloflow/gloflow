@@ -28,6 +28,7 @@ body {
     width: 100%;
     grid-column: 2 / 3;
     text-align: center;
+    margin-top: 30px;
 }
 
 #gf_image img {
@@ -41,6 +42,7 @@ body {
 #gf_image .creation_time {
     text-align: center;
     font-size: 10px;
+    margin-top: 3px;
 }
 #gf_image .owner_user_name {
     font-size: 10px;

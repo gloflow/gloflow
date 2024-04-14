@@ -21,10 +21,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // import * as gf_image_viewer from "./../../../../gf_core/ts/gf_image_viewer";
 // import * as gf_gifs_viewer  from "./../../../../gf_core/ts/gf_gifs_viewer";
-import * as gf_core_utils   from "./../../../../gf_core/ts/gf_utils";
-import * as gf_images_http  from "./../gf_images_core/gf_images_http";
-import * as gf_utils        from "./gf_utils";
-import * as gf_images_share from "./../gf_images_core/gf_images_share";
+import * as gf_core_utils    from "../../../../gf_core/ts/gf_utils";
+import * as gf_images_http   from "./gf_images_http";
+import * as gf_utils         from "./gf_utils";
+import * as gf_image_control from "./gf_image_control";
+import * as gf_images_share  from "./gf_images_share";
 
 
 //---------------------------------------------------
@@ -67,7 +68,8 @@ export async function load_new_page(p_flow_name_str :string,
 				const img__origin_page_url_str      = p_e['origin_page_url_str'];
 				const img__owner_user_name_str      = p_pages_user_names_lst[p_i][p_j];
 
-				gf_utils.init_image_element(img__id_str,
+				// IMAGE_CONTROL
+				gf_image_control.create(img__id_str,
 					img__format_str,
 					img__creation_unix_time_f,
 					img__origin_url_str,

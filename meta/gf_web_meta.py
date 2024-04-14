@@ -64,6 +64,17 @@ def get():
 				(f"{modd_str}/../web/assets/gf_add_btn.svg",               f"{modd_str}/../web/build/gf_apps/gf_images/assets"),
 				(f"{modd_str}/../web/assets/gf_confirm_btn.svg",           f"{modd_str}/../web/build/gf_apps/gf_images/assets")
 			]
+		},
+
+		#-------------
+		# CODE_EDITOR
+		
+
+		"gf_code_editor": {
+			"build_dir_str": f"{modd_str}/../web/build/gf_apps/gf_images",
+			"files_to_copy_lst": [
+				(f"{modd_str}/../web/src/gf_apps/gf_code_editor/templates/code_editor.html", f"{modd_str}/../web/build/gf_apps/gf_images"),
+			]
 		}
 
 		#-------------

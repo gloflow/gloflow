@@ -22,17 +22,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/jquery.timeago.d.ts" />
 
 import * as gf_time             from "./../../../../gf_core/ts/gf_time";
-import * as gf_gifs_viewer      from "./../../../../gf_core/ts/gf_gifs_viewer";
-import * as gf_image_viewer     from "./../../../../gf_core/ts/gf_image_viewer";
+
 import * as gf_core_utils       from "./../../../../gf_core/ts/gf_utils";
 import * as gf_sys_panel        from "./../../../../gf_sys_panel/ts/gf_sys_panel";
 import * as gf_identity         from "./../../../../gf_identity/ts/gf_identity";
 import * as gf_identity_http    from "./../../../../gf_identity/ts/gf_identity_http";
 import * as gf_images_http      from "./../gf_images_core/gf_images_http";
-import * as gf_images_share     from "./../gf_images_core/gf_images_share";
-import * as gf_paging           from "./gf_paging";
+import * as gf_image_control     from "./../gf_images_core/gf_image_control";
+import * as gf_paging           from "../gf_images_core/gf_images_paging";
 import * as gf_view_type_picker from "./gf_view_type_picker";
-import * as gf_utils            from "./gf_utils";
+import * as gf_utils            from "../gf_images_core/gf_utils";
 import * as gf_flows_picker     from "./gf_flows_picker";
 
 //-------------------------------------------------
@@ -92,10 +91,10 @@ export async function init(p_plugin_callbacks_map,
 	// inspect if user is logged-in or not
 	const logged_in_bool = await auth_http_api_map["general"]["logged_in"]();
 
-	//---------------------
-	// UPLOAD__INIT
-
 	const flow_name_str = get_current_flow();
+
+	//---------------------
+	// UPLOAD
 
 	init_upload(flow_name_str, p_log_fun);
 
@@ -118,79 +117,30 @@ export async function init(p_plugin_callbacks_map,
 	});
 
 	//---------------------
+	// IMAGE_CONTROLS
+
 	$('.gf_image').each((p_i, p_e)=>{
 
 		const image_element = p_e;
-		gf_utils.init_image_date(image_element, p_log_fun);
 
-		const image_id_str = $(image_element).data('img_id');
-		const img_thumb_medium_url_str = $(image_element).find('img').data('img_thumb_medium_url');
-		const img_thumb_large_url_str  = $(image_element).find('img').data('img_thumb_large_url');
-		const img_format_str           = $(image_element).data('img_format');
-		const flows_names_lst          = $(image_element).data('img_flows_names').split(",");
+		// IMAGE_CONTROL
+		gf_image_control.init_existing_dom(image_element,
+			flow_name_str,
 
-		const origin_page_url_link = $(image_element).find(".origin_page_url a")[0];
-
-		//----------------
-		// CLEANUP - for images that dont come from some origin page (direct uploads, or generated images)
-		//           this origin_page_url is set to empty string. check for that and remove it.
-		// FIX!! - potentially on the server/template-generation side this div node shouldnt get included
-		//         at all for images that dont have an origin_page_url.
-		if ($(origin_page_url_link).text().trim() == "") {
-			$(image_element).find(".origin_page_url").remove();
-		}
-
-		//----------------
-		// LINK_TEXT_SHORTEN - if the link text (not its href) is too long, dont display it completely in the UI
-		//                     because it clutters the UI too much.
-		//                     instead shorten it at its cutoff length and append "..."
-		const link_text_cutoff_threshold_int = 50;
-		if ($(origin_page_url_link).text().length > link_text_cutoff_threshold_int) {
-			const old_link_text_str = $(origin_page_url_link).text();
-			const new_link_text_str = `${old_link_text_str.slice(0, link_text_cutoff_threshold_int)}...`;
-			$(origin_page_url_link).text(new_link_text_str);
-		}
-
-		//----------------
-		// GIFS
-		if (img_format_str == 'gif') {			
-			gf_gifs_viewer.init(image_element, image_id_str, flow_name_str, p_log_fun);
-		}
-
-		//----------------
-		else {
-			gf_image_viewer.init(image_element,
-				image_id_str,
-				img_thumb_medium_url_str,
-				img_thumb_large_url_str,
-				flows_names_lst,
-				p_log_fun);
-		}
-
-		//----------------
-		// LOGGED_IN - only initialize this part if the user is authenticated
-		
-		if (logged_in_bool) {
-				
-			// TAGGING
-			gf_utils.init_tagging(image_id_str,
-				image_element,
-				gf_host_str,
-				p_log_fun);
-
-			// SHARE
-			gf_images_share.init(image_id_str,
-				image_element,
-				p_plugin_callbacks_map,
-				p_log_fun);
-		}
-
-		//----------------
+			gf_host_str,
+			logged_in_bool,
+			p_plugin_callbacks_map,
+			p_log_fun);
 	});
+
+	//---------------------
+	// CURRENT_PAGE_DISPLAY
 
 	const current_pages_display = gf_paging.init__current_pages_display(p_log_fun);
 	$('body').append(current_pages_display);
 
+	//---------------------
+	// VIEW_TYPE_PICKER
 
 	gf_view_type_picker.init(flow_name_str, p_log_fun);
 
@@ -307,7 +257,10 @@ function init_upload(p_flow_name_str :string,
 
 				const current_image_view_type_str = gf_view_type_picker.get_current_view_type();
 
-				gf_utils.init_image_element(p_upload_gf_image_id_str,
+				//------------------
+				// IMAGE_CONTROL
+
+				gf_image_control.create(p_upload_gf_image_id_str,
 					img__format_str,
 					img__creation_unix_time_f,
 					img__origin_page_url_str,
@@ -336,6 +289,8 @@ function init_upload(p_flow_name_str :string,
 
 					//---------------------------------------------------
 					p_log_fun);
+
+				//------------------
 			}
 		});
 

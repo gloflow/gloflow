@@ -30,110 +30,14 @@ body {
 	z-index: 10;
 }
 
-/*small_view*/
-#gf_images_flow_container .gf_image.small_view {
-	position:         relative;
-	float:            left;
-	text-align:       center;
-	background-color: rgb(59, 124, 156);
-	margin:           6px;
-	width:            200px;
-	box-shadow:       1px 1px 10px grey;
-	
-	padding-bottom: 10px;
-
-	/*elements are not initially visible, but instead become visible
-	after masonry finishes their layout*/
-	visibility: false; 
-}
-
-/*medium_view*/
-#gf_images_flow_container .gf_image.medium_view {
-	position:         relative;
-	float:            left;
-	text-align:       center;
-	background-color: rgb(59, 124, 156);
-	margin:           6px;
-	width:            400px;
-	box-shadow:       1px 1px 10px grey;
-	
-	/*elements are not initially visible, but instead become visible
-	after masonry finishes their layout*/
-	visibility: false; 
-}
-
-#gf_images_flow_container .gf_image img {
-	width : 100%;
-    cursor: pointer;
-}
-
-#gf_images_flow_container .gf_image .owner_user_name {
-	font-size: 10px;
-    color: white;
-	text-align: center;
-	padding-top: 3px;
-}
-#gf_images_flow_container .gf_image .owner_user_name span {
-	font-weight: bold;
-    font-size: 12px;
-}
-
-/*small_view*/
-#gf_images_flow_container .gf_image.small_view .origin_page_url {
-	padding-top:      6px;
-    padding-bottom:   6px;
-    text-align:       center;
-    background-color: #669ab3;
-    width:            180px;
-    padding-left:     9px;
-    padding-right:    11px;
-	margin-top:       -4px;
-}
-
-/*medium_view*/
-#gf_images_flow_container .gf_image.medium_view .origin_page_url {
-	padding-top:      6px;
-    padding-bottom:   6px;
-    text-align:       center;
-    background-color: #669ab3;
-    width:            380px;
-    padding-left:     9px;
-    padding-right:    11px;
-	margin-top:       4px;
-
-	padding-bottom: 10px;
-}
-
-#gf_images_flow_container .gf_image .origin_page_url a {
-	font-size: 12px;
-    color: white;
-    text-decoration: none;
-    word-wrap: break-word;
-}
-#gf_images_flow_container .gf_image .creation_time {
-	font-size:        10px;
-	background-color: rgb(59, 124, 156);
-    color:            white;
-    padding-top:      5px;
-	cursor: pointer;
-}
-
-#gf_images_flow_container .gf_image .creation_time .full_creation_date {
-	background-color: #3992bd;
-    color:            #1d3d4c;
-    padding-top:      3px;
-    padding-bottom:   3px;
-    margin-top:       4px;
-}
-
 /*----------------------------------------------------------*/
+/*TAGS*/
 
 .tags_container {
 	font-size: 10px;
     color: white;
     text-decoration: none;
 }
-
 
 /*----------------------------------------------------------*/
 /*VIEW_TYPE_PICKER*/
