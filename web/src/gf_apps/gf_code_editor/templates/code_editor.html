@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.css">
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/javascript/javascript.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+
+		<script src="https://gloflow.com/landing/static/js/lib/gf_image_upload.js"></script>
+		
+		<style>
+				#execute-button {
+						width: 416px;
+						height: 40px;
+						position: relative;
+						left: 157px;
+				}
+				#screenshot-button {
+						width: 721px;
+						height: 65px;
+				}
+
+				.CodeMirror {
+						height: 448px;
+				}
+		</style>
+	</head>
+	<body>
+		<div style="display: flex;">
+			<div style="flex-grow: 1;">
+				
+				<input type="text" id="sketch_name" value="test_sketch">
+				<textarea id="editor">
+
+// Boilerplate p5.js code
+
+// Where is the circle
+let x, y;
+
+function setup() {
+	createCanvas(720, 400);
+	// Starts in the middle
+	x = width / 2;
+	y = height;
+}
+
+function draw() {
+	background(200);
+	
+	// Draw a circle
+	stroke(50);
+	fill(100);
+	ellipse(x, y, 24, 24);
+	
+	// Jiggling randomly on the horizontal axis
+	x = x + random(-1, 1);
+	// Moving up at a constant speed
+	y = y - 1;
+	
+	// Reset to the bottom
+	if (y < 0) {
+		y = height;
+	}
+}
+
+				</textarea>
+				<button id="execute-button">play</button>
+			</div>
+			<div style="flex-grow: 1;">
+				<div id="canvas"></div>
+				<button id="screenshot-button">snap!</button>
+				<input type="text" id="flow_name" value="gen_art">
+			</div>
+		</div>
+
+		<script>
+
+				var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+						mode: "javascript",
+						lineNumbers: true,
+						theme: "default"
+				});
+
+				// RUN
+				document.getElementById("execute-button").addEventListener("click", function() {
+
+						var code_str   = editor.getValue();
+						var canvas_div = document.getElementById("canvas");
+
+						// cleanup, remove previous canvasses
+						$(canvas_div).find("canvas").remove();
+
+						init_editor(code_str, canvas_div);
+				});
+
+				// SCREENSHOT
+				var screenshot_i_int = 0;
+				document.getElementById("screenshot-button").addEventListener("click", function() {
+
+
+						console.log(gf_upload__run)
+
+						const canvas = $("#canvas canvas")[0];
+						const img_data_str = canvas.toDataURL();
+						
+						const sketch_name_str = $("input#sketch_name")[0].value;
+						const flows_names_lst = $("input#flow_name")[0].value.split(",");
+
+						const unix_time_f = Date.now() / 1000;
+
+						console.log(sketch_name_str)
+						console.log(flows_names_lst)
+						console.log(img_data_str)
+						console.log(unix_time_f)
+
+						const image_name_str = sketch_name_str+":"+unix_time_f;
+						const target_full_host_str = "https://gloflow.com"
+						
+
+						console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+						console.log("UPLOAD START!!")
+
+
+						gf_upload__run(image_name_str,
+								img_data_str,
+								"png",         // p_image_format_str,
+								flows_names_lst.join(","), // p_flows_names_str,
+								target_full_host_str,
+								()=>{
+
+
+										console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
+										console.log("UPLOAD END!!")
+								});
+				});
+				
+				//---------------------------------------------------------------------------
+				function init_editor(p_code_str,
+						p_canvas_div) {
+						var sketch = function(p5) {
+
+								try {
+
+										//-------------------------
+										// IMPORTANT!! - evaluate code in the context of a p5 object, meaning that
+										//               like in the p5 web editor, all p5 functions are in scope and available.
+										with (p5) {
+												eval(p_code_str);
+										}
+										
+										//-------------------------
+										
+								} catch (e) {
+										console.log(e);
+								}
+
+								console.log("JS LOADED CODE >>>>>>>>>>>>>>>>>>>")
+								console.log(setup)
+								console.log(draw)
+
+								//-------------------------
+								// IMPORTANT!! - some scripts expect the property p5 to be defined in these functions.
+								setup.prototype.p5 = p5;
+								draw.prototype.p5  = p5;
+								
+								//-------------------------
+								
+								// Copy over p5 functions and variables to p5canvas
+								for (var key in p5) {
+
+										//-------------------------
+										// ATTENTION!! - potentially risky. its copying over the 
+										//               entire p5 scope to the prototype of setup()/draw() p5 functions.
+										//               needed for p5 JS functions to be in scope to the code in the
+										//               users text/code editor.
+										// console.log("--", key)
+										setup.prototype[key] = p5[key];
+										draw.prototype[key]  = p5[key];
+										
+										//-------------------------
+										
+										/*
+										// cant use this test to limit what gets copied to setup()/draw(), because it seems
+										// most of the important p5 functions are defined up to the prototype chain
+										// to p5's objects parents.
+										if (p5.hasOwnProperty(key)) {}
+										*/
+								}
+
+								//-------------------------
+								// IMPORTANT!! - bind the p5 setup() and draw() functions to the p5 context.
+								//               these are are the functions loaded/eval-ed with eval() into the
+								//               global scope.
+								p5.setup = setup;
+								p5.draw  = draw;
+
+								//-------------------------
+						};
+
+						//-------------------------
+						// P5_INIT
+						console.log("p5 initializing...")
+						var p5_canvas = new p5(sketch, p_canvas_div);
+
+						//-------------------------
+				}
+
+				//---------------------------------------------------------------------------
+		</script>
+	</body>
+</html>
