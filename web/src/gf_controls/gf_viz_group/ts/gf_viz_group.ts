@@ -20,23 +20,40 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../d/jquery.d.ts" />
 
 import * as gf_viz_group_random_access from "./gf_viz_group_random_access";
-import {GF_random_access_viz_props} from "./gf_viz_group_random_access";
 
 declare var Draggabilly;
 
 //-------------------------------------------------
 export interface GF_props {
+    
+    // IDs
+    readonly container_id_str        :string
+    readonly parent_container_id_str :string
+
     readonly start_page_int   :number
     readonly end_page_int     :number
     readonly initial_page_int :number
     readonly assets_uris_map
-    readonly random_access_viz_props :GF_random_access_viz_props
+    readonly viz_props :GF_viz_props
+}
+
+export interface GF_viz_props {
+    readonly seeker_container_height_px :number;
+    readonly seeker_container_width_px  :number;
+    readonly seeker_bar_width_px        :number;
+    readonly seeker_range_bar_width     :number;
+    // readonly seeker_range_bar_height    :number;
+    
+    readonly seeker_range_bar_color_str :string;
+    readonly assets_uris_map;
+}
+
+interface GF_viz_state {
+
 }
 
 //-------------------------------------------------
-export function init(p_id_str: string,
-    p_parent_id_str: string,
-    p_elements_lst,
+export function init(p_elements_lst,
     p_props :GF_props,
     p_element_create_fun,
     p_elements_page_get_fun,
@@ -45,27 +62,29 @@ export function init(p_id_str: string,
     //------------------------
     // CONTROL_CONTAINER
     
+    const container_id_str = p_props.container_id_str;
     var container;
 
     // check if a container with this name already exists, and if it does use that.
     // this is for cases where the DOM structure already exists (maybe from template rendering)
     // and there are some items already in that container.
-    if ($(`#${p_id_str}`).length > 0) {
-        container = $(`#${p_id_str}`)[0];
+    if ($(`#${container_id_str}`).length > 0) {
+        container = $(`#${container_id_str}`)[0];
     }
 
     // otherwise create the div from scratch
     else {
-        container = $(`<div id=${p_id_str}>
+        container = $(`<div id=${container_id_str}>
             <div id="items"></div>
         </div>`);
-        $(`#${p_parent_id_str}`).append(container);
+        $(`#${p_props.parent_container_id_str}`).append(container);
     }
     
     const items_container = $(container).find("#items");
 
     //------------------------
-    // add elements
+    // CREATE_ELEMENTS - initial elements displayed in the control, before paging is done
+
     if (p_create_initial_elements_bool) {
         for (let element_map of p_elements_lst) {
 
@@ -76,7 +95,8 @@ export function init(p_id_str: string,
         }
     }
 
-    /*//------------------------
+    //------------------------
+    /*
     // MASONRY
 
     // IMPORTANT!! - as each image loads call masonry to reconfigure the view.
@@ -93,9 +113,9 @@ export function init(p_id_str: string,
 		itemSelector: '.item',
 		columnWidth:  6
 	});
-
-    //------------------------*/
-
+    */
+    //------------------------
+    // PACKERY
     const packery_instance = init_packery(items_container);
 
     // enable draggability
@@ -106,7 +126,7 @@ export function init(p_id_str: string,
     
     const seeker__container_element = gf_viz_group_random_access.init(p_props.start_page_int,
         p_props.end_page_int,
-        p_props.random_access_viz_props,
+        p_props.viz_props,
 
         //-------------------------------------------------
         // RESET
@@ -125,7 +145,9 @@ export function init(p_id_str: string,
         });
         
         //-------------------------------------------------
-
+    
+    //------------------------
+    // CSS
     // position seeker on the far right
     $(seeker__container_element).css("position", "absolute");
     $(seeker__container_element).css("right",    "0px");

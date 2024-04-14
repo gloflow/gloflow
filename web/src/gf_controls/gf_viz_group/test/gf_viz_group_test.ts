@@ -1,8 +1,8 @@
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-import * as gf_viz_group_paged         from "./../ts/gf_viz_group_paged";
-import * as gf_viz_group_random_access from "./../ts/gf_viz_group_random_access";
+import * as gf_viz_group         from "../ts/gf_viz_group";
+import * as gf_viz_group_random_access from "../ts/gf_viz_group_random_access";
 
 //-------------------------------------------------
 $(document).ready(()=>{
@@ -144,31 +144,32 @@ $(document).ready(()=>{
     };
 
 
-
-
-    const random_access_viz_props :gf_viz_group_random_access.GF_random_access_viz_props = {
+    
+    const viz_props :gf_viz_group.GF_viz_props = {
         seeker_container_height_px: $(window).height(), // 500,
         seeker_container_width_px:  100,
         seeker_bar_width_px:        50, 
         seeker_range_bar_width:     30,
-        seeker_range_bar_height:    500,
         seeker_range_bar_color_str: "red",
         assets_uris_map:            assets_uris_map,
+        // seeker_range_bar_height: 500,
     }
 
 
-    const props :gf_viz_group_paged.GF_props = {
+    const props :gf_viz_group.GF_props = {
+
+        container_id_str:        id_str,
+        parent_container_id_str: parent_id_str,
+
         start_page_int:   0,
         end_page_int:     20,
         initial_page_int: 0,
         assets_uris_map:  assets_uris_map,
-        random_access_viz_props: random_access_viz_props,
+        viz_props: viz_props,
     };
 
 
-    const seeker__container_element = gf_viz_group_paged.init(id_str,
-        parent_id_str,
-        test_elements_lst,
+    const seeker__container_element = gf_viz_group.init(test_elements_lst,
         props,
         element_create_fun,
         elements_page_get_fun);

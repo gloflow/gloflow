@@ -10,7 +10,7 @@ print('RUNNING TS COMPILE...')
 output_file_str = './build/gf_viz_group.js'
 ts_files_lst = [
 	'./gf_viz_group_test.ts',
-    './../ts/gf_viz_group_paged.ts'
+    './../ts/gf_viz_group.ts'
 ]
 
 for f in ts_files_lst:

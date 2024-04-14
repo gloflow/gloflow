@@ -19,22 +19,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-//-------------------------------------------------
-export interface GF_random_access_viz_props {
-    readonly seeker_container_height_px :number;
-    readonly seeker_container_width_px  :number;
-    readonly seeker_bar_width_px        :number;
-    readonly seeker_range_bar_width     :number;
-    readonly seeker_range_bar_height    :number;
-    
-    readonly seeker_range_bar_color_str :string;
-    readonly assets_uris_map;
-}
+import * as gf_viz_group from "./gf_viz_group";
 
 //-------------------------------------------------
 export function init(p_first_page_int :number,
     p_last_page_int :number,
-    p_viz_props     :GF_random_access_viz_props,
+    p_viz_props     :gf_viz_group.GF_viz_props,
     p_viz_group_reset_fun) {
 
 
@@ -51,7 +41,7 @@ export function init(p_first_page_int :number,
 //-------------------------------------------------
 function init_seeker_bar(p_first_page_int :number,
     p_last_page_int :number,
-    p_viz_props     :GF_random_access_viz_props,
+    p_viz_props     :gf_viz_group.GF_viz_props,
     p_viz_group_reset_fun) {
 
     const asset_uri__gf_bar_handle_btn_str = p_viz_props.assets_uris_map["gf_bar_handle_btn"];
@@ -85,7 +75,7 @@ function init_seeker_bar(p_first_page_int :number,
 					</div>
 
 					<div id='button_seek_info'
-                        draggable="false
+                        draggable='false'
                         style='
                             position:   absolute;
                             background-color: orange;
@@ -97,9 +87,16 @@ function init_seeker_bar(p_first_page_int :number,
                             style='
                                 position: relative;
                                 top:      12px;'>
+
                             ${p_first_page_int}
+                        
                         </div>
 					</div>
+
+                    <div id='page_preview'
+                        draggable='false'>
+
+                    </div>
 				</div>
 			</div>
             <div id='conn'></div>
@@ -109,6 +106,7 @@ function init_seeker_bar(p_first_page_int :number,
     const seeker_range_bar_element        = $(container_element).find('#seek_range_bar');
     const seeker_range_bar_button_element = $(container_element).find('#seek_range_bar_button');
     const seek_page_index                 = $(container_element).find('#seek_page_index');
+    const page_preview_element = $(container_element).find('#page_preview');
 
 
     $(seeker_bar_element).on('mouseenter', (p_event)=>{
@@ -121,7 +119,8 @@ function init_seeker_bar(p_first_page_int :number,
 
     //------------
     // CSS
-    
+    //------------
+
     // SEEKER CONTAINER
     $(container_element).css('height',   `${p_viz_props.seeker_container_height_px}px`);
     $(container_element).css('width',    `${p_viz_props.seeker_container_width_px}px`);
@@ -133,13 +132,20 @@ function init_seeker_bar(p_first_page_int :number,
     $(seeker_bar_element).css("width",    `${p_viz_props.seeker_bar_width_px}px`);
     $(seeker_bar_element).css("height",   `${p_viz_props.seeker_container_height_px}px`);
     
+    //------------
     // SEEKER RANGER BAR
-    $(seeker_range_bar_element).css("width",    `${p_viz_props.seeker_range_bar_width}px`);
-    $(seeker_range_bar_element).css("height",   `${p_viz_props.seeker_range_bar_height}px`);
+
+    // DIMENSIONS
+    $(seeker_range_bar_element).css("width", `${p_viz_props.seeker_range_bar_width}px`);
+    $(seeker_range_bar_element).css("height",   "100%"); // `${p_viz_props.seeker_range_bar_height}px`);
+    
+    // POSITION
     $(seeker_range_bar_element).css("position", 'absolute');
     $(seeker_range_bar_element).css("right",    '0px');
+    
     $(seeker_range_bar_element).css("background-color", "green"); // p_viz_props.seeker_range_bar_color_str);
     
+    //------------
     // seek_page_index
     $(seek_page_index).css("left", `${($(seek_page_index).width() - $(seek_page_index).width())/2}px`);
 
@@ -169,7 +175,10 @@ function init_seeking(p_seeker_bar_button_element,
     p_seek_start_page_int :number,
     p_seek_end_page_int   :number,
     p_viz_group_reset_fun,
-    p_viz_props           :GF_random_access_viz_props) {
+    p_viz_props           :gf_viz_group.GF_viz_props) {
+
+    //------------
+    // DIMENSIONS
 
     const button_width_px_int      = 60;
     const button_height_px_int     = 149;
@@ -179,6 +188,8 @@ function init_seeking(p_seeker_bar_button_element,
     const button_conn_right_px_int = 0;
     // const button_seek_info_y_offset_int = 15;
 
+    //------------
+    
     const button           = $(p_seeker_bar_button_element).find("#button");
     const button_symbol    = $(button).find('#button_symbol'); 
     const button_seek_info = $(p_seeker_bar_button_element).find('#button_seek_info');
@@ -203,7 +214,7 @@ function init_seeking(p_seeker_bar_button_element,
 		$(button).css("cursor",           'pointer');
 		$(button).css("opacity",          '0.7');
         
-
+        
         $(button_symbol).css("position", 'absolute');
 		$(button_symbol).css("width",    '37px');
 		$(button_symbol).css("height",   '18');
@@ -226,7 +237,6 @@ function init_seeking(p_seeker_bar_button_element,
 	  	// the 'button' is on the left side of the 'conn'
 	  	const button_seek_info_right_px = button_width_px_int + button_right_px;
 	  	$(button_seek_info).css("right", `${button_seek_info_right_px}px`);
-        
 
 
         $(button).on("mouseover", (p_event)=>{
@@ -352,12 +362,13 @@ function handle_user_seek_event(p_seek_start_page_int :number,
     p_button_new_y_int    :number,
 
     p_seek_range_bar_button,
+
     p_button_element,
     p_button_seek_info_element,
     p_conn_element,
     p_seek_page_index_element,
 
-    p_viz_props :GF_random_access_viz_props,
+    p_viz_props :gf_viz_group.GF_viz_props,
     p_move_event) {
     
     const button_height_int = $(p_button_element).height();
