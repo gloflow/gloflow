@@ -91,6 +91,8 @@ $(document).ready(()=>{
     function elements_page_get_fun(p_page_index_int :number,
         p_pages_to_get_num_int :number) {
             
+
+        console.log(`PAGE_GET - ${p_page_index_int}`)
         const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
             const page_elements_lst = [
@@ -152,7 +154,7 @@ $(document).ready(()=>{
         seeker_range_bar_width:     30,
         seeker_range_bar_color_str: "red",
         assets_uris_map:            assets_uris_map,
-        // seeker_range_bar_height: 500,
+        seeker_range_bar_height: 500,
     }
 
 

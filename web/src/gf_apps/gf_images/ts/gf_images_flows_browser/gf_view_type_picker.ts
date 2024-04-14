@@ -230,7 +230,7 @@ function init__viz_group_view(p_flow_name_str :string,
         seeker_container_width_px:  100,
         seeker_bar_width_px:        50, 
         seeker_range_bar_width:     30,
-        // seeker_range_bar_height:    500,
+        seeker_range_bar_height:    500,
         seeker_range_bar_color_str: "red",
         assets_uris_map:            assets_uris_map,
     }

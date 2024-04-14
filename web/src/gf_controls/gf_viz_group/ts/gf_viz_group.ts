@@ -42,14 +42,10 @@ export interface GF_viz_props {
     readonly seeker_container_width_px  :number;
     readonly seeker_bar_width_px        :number;
     readonly seeker_range_bar_width     :number;
-    // readonly seeker_range_bar_height    :number;
+    readonly seeker_range_bar_height    :number;
     
     readonly seeker_range_bar_color_str :string;
     readonly assets_uris_map;
-}
-
-interface GF_viz_state {
-
 }
 
 //-------------------------------------------------
@@ -57,7 +53,8 @@ export function init(p_elements_lst,
     p_props :GF_props,
     p_element_create_fun,
     p_elements_page_get_fun,
-    p_create_initial_elements_bool: boolean=true) {
+    p_create_initial_elements_bool :boolean=true,
+    p_initial_pages_num_int        :number=6) {
 
     //------------------------
     // CONTROL_CONTAINER
@@ -122,6 +119,18 @@ export function init(p_elements_lst,
     init_draggability(container, packery_instance);
 
     //------------------------
+    // CURRENT_PAGE
+    /*
+    indicates what the current page is. needed to share that state between random access
+    and regular page loading logic based on scroll.
+    this is needed for regular page loading on scroll to know where to load from since random_access
+    can change what the start page is.
+    the initial value with p_props is to account for the few initial pages are already
+    statically embedded in the document.
+    */
+    var current_page_int = p_props.initial_page_int;
+
+    //------------------------
     // RANDOM_ACCESS_INIT
     
     const seeker__container_element = gf_viz_group_random_access.init(p_props.start_page_int,
@@ -133,13 +142,18 @@ export function init(p_elements_lst,
         (p_page_index_to_seek_to_int :number,
         p_on_complete_fun)=>{
             
-            const start_page_int = p_page_index_to_seek_to_int;
+            const new_start_page_int = p_page_index_to_seek_to_int;
 
             reset_with_new_start_pages(container,
-                start_page_int,
+                new_start_page_int,
+                p_initial_pages_num_int,
                 packery_instance,
                 p_element_create_fun,
                 p_elements_page_get_fun);
+
+            // user seeked to a new random page, so that should be set
+            // as the current page plus the initial pages that are loaded on reset.
+            current_page_int = new_start_page_int + p_initial_pages_num_int;
 
             p_on_complete_fun();
         });
@@ -157,7 +171,6 @@ export function init(p_elements_lst,
     //------------------------
 	// LOAD_PAGES_ON_SCROLL
 
-	var current_page_int     = p_props.initial_page_int; // the few initial pages are already statically embedded in the document
 	var page_is_loading_bool = false;
     const pages_container = $(container).find("#items");
 
@@ -194,13 +207,10 @@ export function init(p_elements_lst,
 
 async function reset_with_new_start_pages(p_container,
     p_start_page_int :number, // this is where it was seeked to, and is different from first_page/last_page
+    p_initial_pages_num_int,
     p_packery_instance,
     p_element_create_fun,
-    p_elements_page_get_fun,
-
-    // this is an initial load of viz_group, so load some >1 number of pages
-    // starting from the page where to user seeked to.
-    p_pages_to_get_num_int :number=6) {
+    p_elements_page_get_fun) {
 
 
     console.log("RESET", p_packery_instance)
@@ -222,7 +232,7 @@ async function reset_with_new_start_pages(p_container,
         pages_container,
         p_element_create_fun,
         p_elements_page_get_fun,
-        p_pages_to_get_num_int);    
+        p_initial_pages_num_int);    
 }
 
 //-------------------------------------------------
@@ -230,11 +240,11 @@ async function load_new_pages(p_page_index_int :number,
     p_pages_container,
     p_element_create_fun,
     p_elements_page_get_fun,
-    p_pages_to_get_num_int :number=1) {
+    p_pages_to_load_int :number=1) {
 
 
     // fetch page
-    const elements_lst = await p_elements_page_get_fun(p_page_index_int, p_pages_to_get_num_int);
+    const elements_lst = await p_elements_page_get_fun(p_page_index_int, p_pages_to_load_int);
     
 
 

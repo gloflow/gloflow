@@ -137,7 +137,7 @@ function init_seeker_bar(p_first_page_int :number,
 
     // DIMENSIONS
     $(seeker_range_bar_element).css("width", `${p_viz_props.seeker_range_bar_width}px`);
-    $(seeker_range_bar_element).css("height",   "100%"); // `${p_viz_props.seeker_range_bar_height}px`);
+    $(seeker_range_bar_element).css("height", `${p_viz_props.seeker_range_bar_height}px`);
     
     // POSITION
     $(seeker_range_bar_element).css("position", 'absolute');
