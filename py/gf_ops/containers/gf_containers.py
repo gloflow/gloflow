@@ -79,20 +79,23 @@ def build(p_app_name_str,
 	p_git_commit_hash_str = None,
 	p_exit_on_fail_bool   = False,
 	p_docker_sudo_bool    = False):
-	p_log_fun("FUN_ENTER", "gf_containers.build()")
-	p_log_fun("INFO",      f"p_app_name_str - {p_app_name_str}")
+	p_log_fun("INFO", f"p_app_name_str - {p_app_name_str}")
 	assert isinstance(p_app_name_str,       str)
 	assert isinstance(p_app_build_meta_map, dict)
 
 	#------------------
 	# META
 
-	assert "service_name_str" in p_app_build_meta_map
-	assert "service_base_dir_str" in p_app_build_meta_map
+	is_service_bool = False
+	if "service_name_str" in p_app_build_meta_map:
+		assert "service_base_dir_str" in p_app_build_meta_map.keys()
+		is_service_bool = True
 
-	service_name_str     = p_app_build_meta_map["service_name_str"]
-	service_base_dir_str = p_app_build_meta_map["service_base_dir_str"]
-	assert os.path.isdir(service_base_dir_str)
+		
+	if is_service_bool:
+		service_name_str     = p_app_build_meta_map["service_name_str"]
+		service_base_dir_str = p_app_build_meta_map["service_base_dir_str"]
+		assert os.path.isdir(service_base_dir_str)
 
 	# service_dockerfile_path_str = "%s/Dockerfile"%(service_base_dir_str)
 	service_dockerfile_path_str = get_service_dockerfile(p_app_build_meta_map)
@@ -119,7 +122,13 @@ def build(p_app_name_str,
 
 	#------------------
 	# IMAGE_FULL_NAMES
-	image_name_str       = service_name_str
+		
+	if is_service_bool:
+		image_name_str = service_name_str
+	else:
+		assert "cont_image_name_str" in p_app_build_meta_map.keys()
+		image_name_str = p_app_build_meta_map["cont_image_name_str"]
+		
 	image_full_names_lst = get_image_full_names(image_name_str,
 		p_app_build_meta_map,
 		p_user_name_str,
@@ -209,6 +218,7 @@ def get_image_full_names(p_image_name_str,
 		image_tag_str = p_git_commit_hash_str
 	else:
 		service_version_str = p_app_build_meta_map["version_str"]
+
 		# assert len(service_version_str.split(".")) == 4 # format x.x.x.x
 		image_tag_str = service_version_str
 
@@ -292,12 +302,14 @@ def prepare_web_files(p_pages_map,
 
 #-------------------------------------------------------------
 def get_service_dockerfile(p_app_build_meta_map):
-	service_base_dir_str = p_app_build_meta_map["service_base_dir_str"]
-	assert os.path.isdir(service_base_dir_str)
 
-	if "service_dockerfile_path_str" in p_app_build_meta_map.keys():
-		service_dockerfile_path_str = p_app_build_meta_map["service_dockerfile_path_str"]
+	if "dockerfile_path_str" in p_app_build_meta_map.keys():
+		service_dockerfile_path_str = p_app_build_meta_map["dockerfile_path_str"]
 	else:
+
+		service_base_dir_str = p_app_build_meta_map["service_base_dir_str"]
+		assert os.path.isdir(service_base_dir_str)
+
 		service_dockerfile_path_str = "%s/Dockerfile"%(service_base_dir_str)
 
 	return service_dockerfile_path_str

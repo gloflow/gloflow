@@ -199,8 +199,6 @@ def main():
 	# BUILD_CONTAINERS
 	elif run_str == "build_containers":
 
-
-
 		assert app_name_str in build_meta_map.keys()
 		app_build_meta_map = build_meta_map[app_name_str]
 
@@ -214,21 +212,9 @@ def main():
 		
 		dockerhub_user_str = args_map["dockerhub_user"]
 		docker_sudo_bool   = args_map["docker_sudo"]
-
-		# # GF_BUILDER
-		# if app_name_str.startswith("gf_builder"):
-		#
-		# 	gf_builder_ops.cont__build(app_name_str,
-		# 		dockerhub_user_str,
-		# 		gf_log.log_fun,
-		# 		p_docker_sudo_bool = docker_sudo_bool)
-		#
-		# else:
 			
 		# GIT_COMMIT_HASH
 		git_commit_hash_str = None
-		# if "DRONE_COMMIT" in os.environ.keys():
-		# 	git_commit_hash_str = os.environ["DRONE_COMMIT"]
 			
 		app_web_meta_map = None
 		web_meta_map     = gf_web_meta.get()

@@ -34,7 +34,8 @@ RUN pip3 install \
     colored==1.4.4 \
     beautifulsoup4 \
     requests \
-    boto3
+    boto3 \
+    sentry-sdk
 
 # RUST_DEPENDENCIES
 RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y \

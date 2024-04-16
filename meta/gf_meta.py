@@ -89,8 +89,8 @@ def get():
                 "go_output_path_str":   f"{modd_str}/../build/gf_apps/gf_solo/gf_solo",
                 "service_name_str":     "gf_solo",
                 "service_base_dir_str": f"{modd_str}/../build/gf_apps/gf_solo",
-                "service_dockerfile_path_str": f"{modd_str}/../build/gf_apps/gf_solo/Dockerfile_ubuntu",
-                "copy_to_dir_lst":    [
+                "dockerfile_path_str":  f"{modd_str}/../build/gf_apps/gf_solo/Dockerfile_ubuntu",
+                "copy_to_dir_lst": [
                     
                     #------------------------
                     # TENSORFLOW C_LIBS
