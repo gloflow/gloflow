@@ -41,10 +41,13 @@ func Py__run_plugin__get_contract_info(pNewContractAddrStr string,
 	}
 	stdoutPrefixStr := "GF_OUT:"
 
+	envMap := map[string]string{}
+
 	// PY_RUN
 	outputsLst, gfErr := gf_core.CLIpyRun(pyPathStr,
 		argsLst,
 		nil,
+		envMap,
 		stdoutPrefixStr,
 		pRuntimeSys)
 	if gfErr != nil {

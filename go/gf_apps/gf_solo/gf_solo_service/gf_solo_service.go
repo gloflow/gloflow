@@ -439,6 +439,9 @@ func RuntimeGet(pConfigPathStr string,
 
 		// EXTERNAL_PLUGINS
 		ExternalPlugins: pExternalPlugins,
+
+		// SENTRY_DSN
+		SentryDSNstr: config.SentryEndpointStr,
 	}
 	
 	//--------------------

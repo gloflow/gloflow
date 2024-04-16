@@ -19,8 +19,11 @@
 #       its run by the GF golang code, and its output thats prefixed 
 #       with "GF_OUT:" is parsed by the GF golang code.
 
+import os
 import json
 import argparse
+
+import sentry_sdk
 
 #----------------------------------------------
 def run():
@@ -34,11 +37,19 @@ def run():
     parser.add_argument('-images_ids', type=str, help='list of image GF IDs to classify, comma-separated')
     args = parser.parse_args()
 
-
+    sentry_dsn_str = os.getenv('SENTRY_DSN')
 
     #--------------------
+    # SENTRY
 
+    if not sentry_dsn_str == None:
+        print("sentry enabled...")
+        sentry_sdk.init(
+            sentry_dsn_str,
+            traces_sample_rate=1.0
+        )
 
+    #--------------------
     images_ids_lst = args.images_ids.split(',')
 
 

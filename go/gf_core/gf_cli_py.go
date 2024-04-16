@@ -31,6 +31,7 @@ import (
 func CLIpyRun(pPyPathStr string,
 	pArgsLst         []string,
 	pInputStdinStr   *string,
+	pEnvMap          map[string]string,
 	pStdoutPrefixStr string,
 	pRuntimeSys      *RuntimeSys) ([]map[string]interface{}, *GFerror) {
 	
@@ -43,7 +44,7 @@ func CLIpyRun(pPyPathStr string,
 	cmdInfo := GFcliCmdInfo{
 		CmdLst:         cmdLst,
 		StdinDataStr:   pInputStdinStr,
-		EnvVarsMap:     map[string]string{},
+		EnvVarsMap:     pEnvMap,
 		DirStr:         "",
 		ViewOutputBool: true,
 	}

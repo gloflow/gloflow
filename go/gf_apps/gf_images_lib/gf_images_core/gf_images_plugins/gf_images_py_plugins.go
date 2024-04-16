@@ -55,11 +55,13 @@ func RunPyImagePlugins(pImageLocalFilePathStr string,
 
 		runStartUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
+		envMap := map[string]string{}
 
 		// PY_RUN
 		outputsLst, gfErr := gf_core.CLIpyRun(pyPathStr,
 			argsLst,
 			&inputStdinStr,
+			envMap,
 			stdoutPrefixStr,
 			pRuntimeSys)
 

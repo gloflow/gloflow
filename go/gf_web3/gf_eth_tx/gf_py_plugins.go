@@ -51,10 +51,13 @@ func py__run_plugin__plot_tx_trace(pTxIDstr string,
 	txTraceByteLst, _ := json.Marshal(pTxTrace)
 	txTraceByteStr    := string(txTraceByteLst)
 
+	envMap := map[string]string{}
+
 	// PY_RUN
 	outputsLst, gfErr := gf_core.CLIpyRun(pyPathStr,
 		argsLst,
 		&txTraceByteStr,
+		envMap,
 		stdoutPrefixStr,
 		pRuntimeSys)
 	if gfErr != nil {

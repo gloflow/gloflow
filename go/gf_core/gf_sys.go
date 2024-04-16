@@ -46,7 +46,6 @@ type RuntimeSys struct {
 	Mongo_db   *mongo.Database
 	Mongo_coll *mongo.Collection // main mongodb collection to use when none is specified
 	
-
 	// ERRORS
 	Errors_send_to_mongodb_bool bool // if errors should be persisted to Mongodb
 	ErrorsSendToSentryBool  bool // if errors should be sent to Sentry service
@@ -64,6 +63,9 @@ type RuntimeSys struct {
 	// if a http proxy should be use this value is set
 	// "http://proxy:8888"
 	HTTPproxyServerURIstr string
+
+	// SENTRY - used to pass the DNS to py sentry clients.
+	SentryDSNstr string
 }
 
 //-------------------------------------------------

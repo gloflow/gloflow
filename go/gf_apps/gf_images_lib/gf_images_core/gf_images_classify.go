@@ -81,6 +81,9 @@ func RunPyClassify(pImagesIDsLst []GFimageID,
 	stdoutPrefixStr := "GF_OUT:"
 	inputStdinStr   := ""
 
+	envMap := map[string]string{
+		"SENTRY_DSN": pRuntimeSys.SentryDSNstr,
+	}
 
 
 	runStartUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
@@ -90,6 +93,7 @@ func RunPyClassify(pImagesIDsLst []GFimageID,
 	outputsLst, gfErr := gf_core.CLIpyRun(pyPathStr,
 		argsLst,
 		&inputStdinStr,
+		envMap,
 		stdoutPrefixStr,
 		pRuntimeSys)
 	if gfErr != nil {

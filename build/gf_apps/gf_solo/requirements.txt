@@ -1,3 +1,4 @@
 colored==1.4.4
 matplotlib
 pymongo
+sentry-sdk
