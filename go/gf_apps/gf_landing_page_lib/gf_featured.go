@@ -45,6 +45,7 @@ type GFfeaturedImage struct {
 	TitleStr                   string
 	ImageURLstr                string
 	ImageThumbnailMediumURLstr string
+	ImageThumbnailLargeURLstr  string
 	ImageOriginPageURLstr      string // for each featured image this is the URL used in links
 	ImageOriginPageURLhostStr  string // this is displayed in the user UI for each featured image
 	CreationUNIXtimeStr        string
@@ -123,6 +124,7 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 			TitleStr:                   image.TitleStr,
 			ImageURLstr:                image.ThumbnailMediumURLstr,
 			ImageThumbnailMediumURLstr: image.ThumbnailMediumURLstr,
+			ImageThumbnailLargeURLstr:  image.ThumbnailLargeURLstr,
 			ImageOriginPageURLstr:      image.Origin_page_url_str,
 			ImageOriginPageURLhostStr:  originPageURL.Host,
 			CreationUNIXtimeStr:        strconv.FormatFloat(image.Creation_unix_time_f, 'f', 6, 64),
