@@ -20,12 +20,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../d/jquery.d.ts" />
 ///<reference path="../../../d/jquery.timeago.d.ts" />
 
+import * as gf_image_control from "./../../gf_images/ts/gf_images_core/gf_image_control";
+import * as gf_images_http  from "./../../gf_images/ts/gf_images_core/gf_images_http";
+
+/*
 import * as gf_color        from "./../../../gf_core/ts/gf_color";
 import * as gf_image_colors from "./../../../gf_core/ts/gf_image_colors";
 import * as gf_time         from "./../../../gf_core/ts/gf_time";
 import * as gf_image_viewer from "./../../../gf_core/ts/gf_image_viewer";
 import * as gf_images_share from "./../../gf_images/ts/gf_images_core/gf_images_share";
-import * as gf_images_http  from "./../../gf_images/ts/gf_images_core/gf_images_http";
+*/
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
 declare var gf_tagger__init_ui_v2;
@@ -48,7 +52,19 @@ export function init(p_logged_in_bool,
 
 	//-------------------------------------------------
 	function init_img(p_image_info_element) {
-		
+
+		const flows_names_lst = $(p_image_info_element).data("img_flows_names").split(",")
+
+		// IMAGE_CONTROL
+		gf_image_control.init_existing_dom(p_image_info_element,
+			flows_names_lst,
+
+			p_gf_host_str,
+			p_logged_in_bool,
+			p_plugin_callbacks_map,
+			p_log_fun);
+
+		/*
 		// CLEANUP - for images that dont come from some origin page (direct uploads, or generated images)
 		//           this origin_page_url is set to empty string. check for that and remove it.
 		// FIX!! - potentially on the server/template-generation side this div node shouldnt get included
@@ -111,12 +127,10 @@ export function init(p_logged_in_bool,
 				switch (color_class_str) {
 
 					// LIGHT
-					case "light":
-
-						/*
-						if background is light, then the text should be dark, so setting it here explicitly
-						on dominant color classification.
-						*/
+					case "light":						
+						// if background is light, then the text should be dark, so setting it here explicitly
+						// on dominant color classification.
+						
 						$(p_image_info_element).find(".image_title").css("color", "black");
 						$(p_image_info_element).find(".origin_page_url a").css("color", "black");
 						$(p_image_info_element).find(".creation_time").css("color", "black");
@@ -126,12 +140,9 @@ export function init(p_logged_in_bool,
 
 					// DARK
 					case "dark":
-
-						/*
-						css rules external to this function set the default color of
-						text to white, so dark background dominant-color works fine.
-						no need to set anything here yet.
-						*/
+						// css rules external to this function set the default color of
+						// text to white, so dark background dominant-color works fine.
+						// no need to set anything here yet.
 						break;
 				};
 			});
@@ -155,6 +166,7 @@ export function init(p_logged_in_bool,
 				p_plugin_callbacks_map,
 				p_log_fun);
 		}
+		*/
 	}
 
 	//-------------------------------------------------
