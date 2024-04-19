@@ -83,6 +83,7 @@ func RunPyClassify(pImagesIDsLst []GFimageID,
 
 	envMap := map[string]string{
 		"SENTRY_DSN": pRuntimeSys.SentryDSNstr,
+		"SENTRY_ENV": pRuntimeSys.EnvStr,
 	}
 
 

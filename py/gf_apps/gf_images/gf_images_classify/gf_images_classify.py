@@ -38,6 +38,7 @@ def run():
     args = parser.parse_args()
 
     sentry_dsn_str = os.getenv('SENTRY_DSN')
+    sentry_env_str = os.getenv('SENTRY_ENV')
 
     #--------------------
     # SENTRY
@@ -45,7 +46,8 @@ def run():
     if not sentry_dsn_str == None:
         print("sentry enabled...")
         sentry_sdk.init(
-            sentry_dsn_str,
+            dns=sentry_dsn_str,
+            environment=sentry_env_str,
             traces_sample_rate=1.0
         )
 
