@@ -19,8 +19,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-import * as gf_gifs_viewer      from "./../../../../gf_core/ts/gf_gifs_viewer";
-import * as gf_image_viewer     from "./../../../../gf_core/ts/gf_image_viewer";
+import * as gf_gifs_viewer  from "./../../../../gf_core/ts/gf_gifs_viewer";
+import * as gf_image_viewer from "./../../../../gf_core/ts/gf_image_viewer";
+import * as gf_image_colors from "./../../../../gf_core/ts/gf_image_colors";
+import * as gf_color        from "./../../../../gf_core/ts/gf_color";
 import * as gf_images_share from "./gf_images_share";
 import * as gf_utils from "./gf_utils";
 
@@ -128,7 +130,12 @@ export function create(p_image_id_str :string,
 		}
 
 		//------------------
+		// IMAGE_PALLETE
 
+		init_pallete(image_container);
+
+		//------------------
+		
 		p_on_img_load_fun(image_container);
 	});
 
@@ -157,6 +164,56 @@ export function create(p_image_id_str :string,
 
 	//------------------
 
+	//---------------------------------------------------
+	function init_pallete(p_image_info_element) {
+
+		const img = $(p_image_info_element).find("img")[0];
+
+		const assets_paths_map = {
+			"copy_to_clipboard_btn": "/images/static/assets/gf_copy_to_clipboard_btn.svg",
+		}
+		gf_image_colors.init_pallete(img,
+			assets_paths_map,
+			(p_color_dominant_hex_str,
+			p_colors_hexes_lst)=>{
+
+				// set a few of the other needed elements to the same dominant color
+				$(p_image_info_element).css("background-color", `#${p_color_dominant_hex_str}`);
+				$(p_image_info_element).find(".image_title").css("background-color", `#${p_color_dominant_hex_str}`);
+				$(p_image_info_element).find(".origin_page_url").css("background-color", `#${p_color_dominant_hex_str}`);
+
+
+				//----------------------
+				// COLOR_CLASSIFY
+				const color_class_str = gf_color.classify(p_color_dominant_hex_str);
+
+				//----------------------
+
+				switch (color_class_str) {
+
+					// LIGHT
+					case "light":						
+						// if background is light, then the text should be dark, so setting it here explicitly
+						// on dominant color classification.
+						
+						$(p_image_info_element).find(".image_title").css("color", "black");
+						$(p_image_info_element).find(".origin_page_url a").css("color", "black");
+						$(p_image_info_element).find(".creation_time").css("color", "black");
+						$(p_image_info_element).find(".owner_user_name").css("color", "black");
+
+						break;
+
+					// DARK
+					case "dark":
+						// css rules external to this function set the default color of
+						// text to white, so dark background dominant-color works fine.
+						// no need to set anything here yet.
+						break;
+				};
+			});
+	}
+
+	//---------------------------------------------------
 	return image_container;
 }
 
