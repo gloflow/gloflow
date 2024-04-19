@@ -111,16 +111,19 @@
 			{{- /* IMAGES */}}
 			<div id='featured_images_0'>
 				{{- range .FeaturedImages0lst }}
-					<div class='image_info'
+					<div class='gf_image image_info'
 						data-img_id="{{ .IDstr }}"
 						data-img_flows_names="{{ .FlowsNamesStr }}">
 						
 						<div class="image_title">{{ .TitleStr }}</div>
-						
-						<div class="image">
-							<img class="image_resource" src="{{ .ImageURLstr }}" data-img_thumb_medium_url="{{ .ImageThumbnailMediumURLstr }}" crossOrigin="anonymous"></img>
-						</div>
 
+						<img class="image_resource"
+							src="{{ .ImageURLstr }}"
+							data-img_thumb_medium_url="{{ .ImageThumbnailMediumURLstr }}"
+							data-img_thumb_large_url="{{ .ImageThumbnailLargeURLstr }}"
+							crossOrigin="anonymous"></img>
+						
+						{{- /*------------------------------------------------------*/}}
 						{{- /* TAGS */}}
 						<div class='tags_container'>
 						
@@ -129,12 +132,15 @@
 							{{- end }}
 						
 						</div>
-
+						
+						{{- /*------------------------------------------------------*/}}
 						<div class="origin_page_url">
 							<a href='{{ .ImageOriginPageURLstr }}' target="_blank">
 								{{- .ImageOriginPageURLhostStr}}
 							</a>
 						</div>
+
+						{{- /*------------------------------------------------------*/}}
 						<div class="creation_time">{{ .CreationUNIXtimeStr }}</div>
 						<div class="owner_user_name">by <span>{{ .OwnerUserNameStr }}</span></div>
 					</div>
