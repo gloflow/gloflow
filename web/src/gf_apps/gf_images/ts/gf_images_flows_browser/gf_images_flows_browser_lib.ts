@@ -252,6 +252,7 @@ function init_upload(p_flow_name_str :string,
 				const img__thumbnail_small_url_str  = image_export_map["thumbnail_small_url_str"];
 				const img__thumbnail_medium_url_str = image_export_map["thumbnail_medium_url_str"];
 				const img__thumbnail_large_url_str  = image_export_map["thumbnail_large_url_str"];
+				const img__title_str                = image_export_map['title_str'];
 				const img__tags_lst                 = image_export_map["tags_lst"];
 				
 
@@ -267,6 +268,7 @@ function init_upload(p_flow_name_str :string,
 					img__thumbnail_small_url_str,
 					img__thumbnail_medium_url_str,
 					img__thumbnail_large_url_str,
+					img__title_str,
 					img__tags_lst,
 					img__owner_user_name_str,
 					img__flows_names_lst,

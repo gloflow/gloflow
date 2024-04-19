@@ -39,6 +39,7 @@ export function create(p_image_id_str :string,
 	p_img__thumbnail_small_url_str  :string,
 	p_img__thumbnail_medium_url_str :string,
 	p_img__thumbnail_large_url_str  :string,
+	p_img__title_str                :string,
 	p_img__tags_lst                 :string[],
 	p_img__owner_user_name_str      :string,
 	p_flows_names_lst               :string[],
@@ -67,8 +68,12 @@ export function create(p_image_id_str :string,
 			data-img_flows_names="${p_flows_names_lst.join(',')}"
 			style='visibility:hidden;'>
 
+			<div class="image_title">${p_img__title_str}</div>
+
 			<img src="${img_url_str}" data-img_thumb_medium_url="${p_img__thumbnail_medium_url_str}"></img>
+			
 			<div class="tags_container"></div>
+			
 			<div class="origin_page_url">
 				<a href="${p_img__origin_page_url_str}" target="_blank">${p_img__origin_page_url_str}</a>
 			</div>

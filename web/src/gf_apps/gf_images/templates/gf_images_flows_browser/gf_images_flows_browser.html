@@ -59,8 +59,10 @@
 					data-img_id='{{- .id_str }}'
 					data-img_format='{{- .format_str }}'
 					data-img_meta_json='{{- .meta_json_str }}'
-					data-img_flows_names="{{ .flows_names_str }}">
+					data-img_flows_names="{{- .flows_names_str }}">
 					
+					<div class="image_title">{{- .title_str }}</div>
+
 					{{- /*------------------------------------------------------*/}}
 					{{- /*IMAGE THUMBNAIL DATA*/}}
 					{{- /*REMOVE!! - IS THIS USED????*/}}
@@ -71,6 +73,7 @@
 							{{- .thumbnail_small_url_str }}
 						</div>
 					</div>
+
 					<img src="{{.thumbnail_medium_url_str}}"
 						data-img_thumb_medium_url="{{ .thumbnail_medium_url_str }}"
 						data-img_thumb_large_url="{{ .thumbnail_large_url_str }}"></img>
