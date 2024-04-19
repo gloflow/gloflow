@@ -31,7 +31,7 @@
 		<div style="display: flex;">
 			<div style="flex-grow: 1;">
 				
-				<input type="text" id="sketch_name" value="test_sketch">
+				<input type="text" id="sketch_name" value="test_sketch"/>
 				<textarea id="editor">
 
 // Boilerplate p5.js code
@@ -67,6 +67,7 @@ function draw() {
 
 				</textarea>
 				<button id="execute-button">play</button>
+				<button id="save-button">save</button>
 			</div>
 			<div style="flex-grow: 1;">
 				<div id="canvas"></div>
@@ -93,6 +94,22 @@ function draw() {
 						$(canvas_div).find("canvas").remove();
 
 						init_editor(code_str, canvas_div);
+				});
+
+				// SAVE
+				document.getElementById("save-button").addEventListener("click", function() {
+
+					console.log("save sketch...")
+
+
+					const sketch_name_str = $("#sketch_name").val();
+					var code_str = editor.getValue();
+
+
+					
+					console.log(`sketch_name - ${sketch_name_str}`);
+					console.log(`code - ${code_str}`);
+					
 				});
 
 				// SCREENSHOT
