@@ -31,6 +31,20 @@
 	visibility: false; 
 }
 
+.gf_image .image_title {
+	background-color: rgb(59, 124, 156);
+
+	padding-left:   5px;
+	padding-top:    6px;
+	padding-bottom: 6px;
+	padding-right:  4px;
+
+	font-size:  10px;
+	text-align: center;
+	word-wrap:  break-word; /*make all text display even if really long string*/
+	color:      rgb(255,255,255);
+}
+
 .gf_image img {
 	width : 100%;
     cursor: pointer;
