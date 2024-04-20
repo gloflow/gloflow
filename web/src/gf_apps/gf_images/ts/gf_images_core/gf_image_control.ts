@@ -167,6 +167,8 @@ export function create(p_image_id_str :string,
 	//---------------------------------------------------
 	function init_pallete(p_image_info_element) {
 
+		console.log("init_pallete...");
+
 		const img = $(p_image_info_element).find("img")[0];
 
 		const assets_paths_map = {
@@ -177,6 +179,9 @@ export function create(p_image_id_str :string,
 			(p_color_dominant_hex_str,
 			p_colors_hexes_lst)=>{
 
+				console.log("init_pallete post callback...");
+
+				console.log("p_color_dominant_hex_str: ", p_color_dominant_hex_str);
 				// set a few of the other needed elements to the same dominant color
 				$(p_image_info_element).css("background-color", `#${p_color_dominant_hex_str}`);
 				$(p_image_info_element).find(".image_title").css("background-color", `#${p_color_dominant_hex_str}`);

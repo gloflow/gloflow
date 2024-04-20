@@ -44,8 +44,8 @@ body {
 
 #view_type_picker {
 	position: fixed;
-	right:    -16px;
-	top:      529px;
+	right:    -21px;
+	top:      176px;
 	width:    50px;
 	height:   50px;
 }
@@ -83,7 +83,7 @@ body {
 	position: fixed;
     background-color: #f7f7f7;
     right: 0px;
-    top: 400px;
+    bottom: 90px;
     font-size: 12px;
     padding-top: 7px;
     padding-left: 10px;
