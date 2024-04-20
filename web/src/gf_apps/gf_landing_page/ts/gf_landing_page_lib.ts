@@ -23,8 +23,8 @@ import * as gf_identity       from "./../../../gf_identity/ts/gf_identity";
 import * as gf_identity_http  from "./../../../gf_identity/ts/gf_identity_http";
 import * as gf_flows_picker   from "./../../gf_images/ts/gf_images_flows_browser/gf_flows_picker";
 import * as gf_images         from "./gf_images";
+import * as gf_posts          from "./gf_posts";
 import * as gf_procedural_art from "./procedural_art/gf_procedural_art";
-import * as gf_post_control   from "./../../gf_publisher/ts/gf_posts_core/gf_post_control";
 // import * as gf_image_colors   from "./../../../gf_core/ts/gf_image_colors";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
@@ -76,7 +76,7 @@ export async function init(p_plugin_callbacks_map,
 
 	//---------------------
 	// POSTS_INIT
-	posts_init(p_log_fun);
+	gf_posts.init(gf_host_str, p_log_fun);
 
 	//---------------------
 	// GF_IMAGES_INIT
@@ -145,62 +145,4 @@ export async function init(p_plugin_callbacks_map,
 	});
 
 	//---------------------
-}
-
-//--------------------------------------------------------
-// POSTS_INIT
-
-function posts_init(p_log_fun) {
-
-	// init_posts_img_num();
-
-	$('#featured_posts').find('.post_info').each((p_i, p_post_info_element)=>{
-		
-		gf_post_control.init_existing_dom(p_post_info_element, p_log_fun)
-
-		/*
-		//----------------------
-		// IMAGE_PALLETE
-		const img = $(p_post_info_element).find("img")[0];
-
-		const assets_paths_map = {
-			"copy_to_clipboard_btn": "/images/static/assets/gf_copy_to_clipboard_btn.svg",
-		}
-		gf_image_colors.init_pallete(img,
-			assets_paths_map,
-			(p_color_dominant_hex_str,
-			p_colors_hexes_lst)=>{
-
-				// set the background color of the post to its dominant color
-				$(p_post_info_element).css("background-color", `#${p_color_dominant_hex_str}`);
-
-			});
-
-		//----------------------
-		*/
-	});
-
-	//--------------------------------------------------------
-	/*
-	function init_posts_img_num() {
-
-		$("#featured_posts .post_info").each((p_i, p_post)=>{
-
-			const post_images_number = $(p_post).find(".post_images_number")[0];
-			const label_element      = $(post_images_number).find(".label");
-
-			// HACK!! - "-1" was visually inferred
-			$(post_images_number).css("right", `-${$(post_images_number).outerWidth()-1}px`);
-			$(label_element).css("left", `${$(post_images_number).outerWidth()}px`);
-
-			$(p_post).mouseover((p_e)=>{
-				$(post_images_number).css("visibility", "visible");
-			});
-			$(p_post).mouseout((p_e)=>{
-				$(post_images_number).css("visibility", "hidden");
-			});
-		});
-	}
-	*/
-	//--------------------------------------------------------
 }

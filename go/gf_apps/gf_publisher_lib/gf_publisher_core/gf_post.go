@@ -50,11 +50,18 @@ type GFpost struct {
 	PostElementsLst []*GFpostElement `bson:"post_elements_lst"`
 	
 	//------------
-	TagsLst  []string                   `bson:"tags_lst"`
-	NotesLst []*GFpostNote              `bson:"notes_lst"`      // SYMPHONY 0.3 - notes are chunks of text (for now) that can be attached to a post
- 
+	// TAGGING
+
+	TagsLst  []string      `bson:"tags_lst"`
+	NotesLst []*GFpostNote `bson:"notes_lst"` // SYMPHONY 0.3 - notes are chunks of text (for now) that can be attached to a post
+	
+	//------------
+	// COLORS
+
 	// every event can have multiple colors assigned to it
-	ColorsLst []string                  `bson:"colors_lst"`
+	ColorsLst []string `bson:"colors_lst"`
+
+	//------------
 }
 
 type GFpostNote struct {
@@ -183,6 +190,13 @@ func CreateNewPost(pPostInfoMap map[string]interface{}, pRuntimeSys *gf_core.Run
 
 func publish(p_post_title_str string, pRuntimeSys *gf_core.RuntimeSys) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_post.publish()")
+
+
+
+
+	
+
+
 }
 
 //------------------------------------------------
@@ -198,4 +212,14 @@ func createPostNotes(p_raw_notes_lst []map[string]interface{}, pRuntimeSys *gf_c
 		notes_lst = append(notes_lst, snippet)
 	}
 	return notes_lst
+}
+
+//------------------------------------------------
+func GetPostURL(pPostTitleStr string) string {
+
+
+
+	return ""
+
+
 }

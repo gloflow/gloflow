@@ -48,7 +48,9 @@
 	{{- range .Posts_pages_lst}}
 		{{- range .}}
 			{{- /*"item" class is used by Masonry*/}}
-			<div class ='gf_post item gf_post_image_view'>
+			<div class ='gf_post item gf_post_image_view'
+				data-sys_id='{{- .post_id_str }}'>
+				
 				{{- /*------------------------------------------------------*/}}
 				{{- /*TITLE*/}}
 				<div class='post_title'>

@@ -28,20 +28,22 @@ import (
 
 //---------------------------------------------------
 
-func postsBrowserRenderTemplate(p_posts_pages_lst [][]*gf_publisher_core.GFpost, // list-of-lists
+func postsBrowserRenderTemplate(pPostsPagesLst [][]*gf_publisher_core.GFpost,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_posts_page_size_int    int, // 5
 	p_resp                   io.Writer,
 	pRuntimeSys              *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	pages_lst := [][]map[string]interface{}{}
-	for _, posts_page_lst := range p_posts_pages_lst {
+	pagesLst := [][]map[string]interface{}{}
+	for _, postsPageLst := range pPostsPagesLst {
 
-		page_posts_lst := []map[string]interface{}{}
-		for _, post := range posts_page_lst {
+		pagePostsLst := []map[string]interface{}{}
+		for _, post := range postsPageLst {
 
-			post_info_map := map[string]interface{}{
+			// POST_INFO
+			postInfoMap := map[string]interface{}{
+				"post_id_str":                post.IDstr,
 				"post_title_str":             post.TitleStr,
 				"post_creation_datetime_str": post.CreationDatetimeStr,
 				"post_thumbnail_url_str":     post.ThumbnailURLstr,
@@ -60,17 +62,17 @@ func postsBrowserRenderTemplate(p_posts_pages_lst [][]*gf_publisher_core.GFpost,
 					}
 				}
 
-				post_info_map["post_has_tags_bool"] = true
-				post_info_map["post_tags_lst"]      = post_tags_lst
+				postInfoMap["post_has_tags_bool"] = true
+				postInfoMap["post_tags_lst"]      = post_tags_lst
 			} else {
-				post_info_map["post_has_tags_bool"] = false
+				postInfoMap["post_has_tags_bool"] = false
 			}
 
 			//---------------
 
-			page_posts_lst = append(page_posts_lst, post_info_map)
+			pagePostsLst = append(pagePostsLst, postInfoMap)
 		}
-		pages_lst = append(pages_lst, page_posts_lst)
+		pagesLst = append(pagesLst, pagePostsLst)
 	}
 
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
@@ -82,7 +84,7 @@ func postsBrowserRenderTemplate(p_posts_pages_lst [][]*gf_publisher_core.GFpost,
 	}
 
 	err := p_tmpl.Execute(p_resp, tmpl_data{
-		Posts_pages_lst:  pages_lst,
+		Posts_pages_lst:  pagesLst,
 		Sys_release_info: sysReleaseInfo,
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED

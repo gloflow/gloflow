@@ -21,15 +21,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/masonry.layout.d.ts" />
 ///<reference path="../../../../d/jquery.timeago.d.ts" />
 
-import * as gf_posts_browser_client from "./gf_posts_browser_client";
-import * as gf_tagger_input_ui      from "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_input_ui";
-import * as gf_tagger_notes_ui      from "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_notes_ui";
+import * as gf_posts_browser_http from "./gf_posts_browser_http";
+import * as gf_post_control       from "./../gf_posts_core/gf_post_control";
+import * as gf_tagger_input_ui    from "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_input_ui";
+import * as gf_tagger_notes_ui    from "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_notes_ui";
 
 //-----------------------------------------------------
 export function init(p_initial_posts_infos_lst :Object[],
     p_http_api_map,
     p_log_fun) {
-    p_log_fun('FUN_ENTER', 'gf_posts_browser_view.init()');
   
     const image_view_container_element = $('<div id="image_view_posts_container"></div>');
 
@@ -42,6 +42,12 @@ export function init(p_initial_posts_infos_lst :Object[],
         });
 
     //----------------
+
+    init_posts(p_initial_posts_infos_lst,
+        p_http_api_map,
+        p_log_fun);
+    
+    /*
     init_posts_images(p_initial_posts_infos_lst,
         ()=>{
 
@@ -56,13 +62,14 @@ export function init(p_initial_posts_infos_lst :Object[],
         },
         p_http_api_map,
         p_log_fun);
-
+    */
+    
     //-----------------------------------------------------
     function init_page_loading() {
 
         var loading_page_bool = false;
         var current_page_int  = 6; // the few initial pages are already statically embedded in the document
-        $(window).on('scroll', (e)=>{
+        $(window).on('scroll', async (e)=>{
 
             //print('SCROLL >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
             //print(document.documentElement.clientHeight);
@@ -90,63 +97,96 @@ export function init(p_initial_posts_infos_lst :Object[],
                     //              page index (current_page_int)
                     current_page_int += 1;
 
-                    load_new_page(current_page_int,
-                        5, //p_page_elements_num_int
-                        ()=>{
-
-                        },
+                    await load_new_page(current_page_int,
+                        5, // p_page_elements_num_int
                         p_http_api_map,
                         p_log_fun);
                 }
             //}
         });
     }
+
     //-----------------------------------------------------
     init_page_loading();
 
     return image_view_container_element;
 }
+
 //--------------------------------------------------------
 function load_new_page(p_page_index_int :number,
     p_page_elements_num_int :number,
-    p_on_complete_fun,
     p_http_api_map,
     p_log_fun) {
 
-    gf_posts_browser_client.get_page(p_page_index_int,
-        p_page_elements_num_int,
-        (p_page_lst :Object[])=>{
-            const posts_infos_lst :Object[] = create_posts_from_page(p_page_lst, p_page_index_int, p_log_fun);
-            init_posts_images(posts_infos_lst,
-                ()=>{
+    return new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-                    //---------------------
-                    // IMPORTANT!! - masonry() is a layout call. without calling this every time a new
-                    //               item is added to the layout, all the items will initially overlap 
-                    //               (one over the other)
+        const page_lst = await gf_posts_browser_http.get_page(p_page_index_int,
+            p_page_elements_num_int,
+            p_log_fun);
 
-                    $('#gf_posts_container').masonry(<any>'reloadItems');
+        const posts_infos_lst :Object[] = create_posts_from_page(page_lst, p_page_index_int, p_log_fun);
+            
 
-                    //---------------------
+        init_posts(posts_infos_lst,
+            p_http_api_map,
+            p_log_fun);
 
-                    p_on_complete_fun();
-                },
-                p_http_api_map,
-                p_log_fun); //load_new_page() only runs with server_comm
-        },
-        ()=>{},
-        p_log_fun);
-    return;   
+        //---------------------
+        // IMPORTANT!! - masonry() is a layout call. without calling this every time a new
+        //               item is added to the layout, all the items will initially overlap 
+        //               (one over the other)
+
+        $('#gf_posts_container').masonry(<any>'reloadItems');
+
+        //---------------------
+        
+        p_resolve_fun(null);
+
+        /*
+        // POST_IMAGE
+        init_posts_images(posts_infos_lst,
+            ()=>{
+
+                //---------------------
+                // IMPORTANT!! - masonry() is a layout call. without calling this every time a new
+                //               item is added to the layout, all the items will initially overlap 
+                //               (one over the other)
+
+                $('#gf_posts_container').masonry(<any>'reloadItems');
+
+                //---------------------
+
+                p_on_complete_fun();
+            },
+            p_http_api_map,
+            p_log_fun); //load_new_page() only runs with server_comm
+        */
+    });
 }
+
 //--------------------------------------------------------
-function create_posts_from_page(p_page_lst :Object[],
+// INIT_POSTS
+function init_posts(p_posts_infos_lst :Object[],
+    p_http_api_map,
+    p_log_fun) {
+
+    for (var p_post_map of p_posts_infos_lst) {
+
+        gf_post_control.create(p_post_map,
+            p_http_api_map,
+            p_log_fun);
+    }
+
+
+}
+
+//--------------------------------------------------------
+function create_posts_from_page(p_page_lst,
     p_page_index_int :number,
     p_log_fun) {
-    //p_log_fun('FUN_ENTER','gf_posts_browser_view.create_posts_from_page()');
 
     //--------------------------------------------------------
     function create_post(p_post_map :Object) {
-        //p_log_fun('FUN_ENTER','gf_posts_browser_view.create_posts_from_page().create_post()');
 
         const title_str               :string   = p_post_map['title_str'];
         const image_thumbnail_url_str :string   = p_post_map['thumbnail_url_str'];
@@ -189,13 +229,17 @@ function create_posts_from_page(p_page_lst :Object[],
 
     for (var p_post_map of p_page_lst) {
 
+        // POST_INFO
+        const post_title_str    :string = p_post_map['title_str'];
+        const post_url_str      :string = `/posts/${post_title_str}`;
+        const thumbnail_url_str :string = p_post_map['thumbnail_url_str'];
+        const images_number_str :string = p_post_map['images_number_str'];
+
+
         const post :HTMLDivElement = create_post(p_post_map);
         $('#gf_posts_container').append(post);
 
-        const post_title_str    :string = p_post_map['title_str'];
-        const post_url_str      :string = '/posts/'+post_title_str;
-        const thumbnail_url_str :string = p_post_map['thumbnail_url_str'];
-        const images_number_str :string = p_post_map['images_number_str'];
+        
 
         const post_info_map = {
             'post':              post,
@@ -214,7 +258,6 @@ function init_posts_images(p_posts_infos_lst :Object[],
     p_on_complete_fun,
     p_http_api_map,
     p_log_fun) {
-    p_log_fun('FUN_ENTER','gf_posts_browser_view.init_posts_images()');
         
     const error_img_url_str       = 'http://gloflow.com/images/d/gf_landing_page_logo.png';
     const video_thumb_img_url_str = 'http://gloflow.com/images/d/gf_video_thumb.png';
@@ -222,7 +265,7 @@ function init_posts_images(p_posts_infos_lst :Object[],
     //--------------------------------------------------------
     var processed_images_int = 0;
 
-    $(p_posts_infos_lst).each((p_i,p_post_info_map)=>{
+    $(p_posts_infos_lst).each((p_i, p_post_info_map)=>{
 
         const post                :HTMLDivElement = p_post_info_map['post'];
         const thumbnail_image_src :string         = p_post_info_map['thumbnail_url_str'];
