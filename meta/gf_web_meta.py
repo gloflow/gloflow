@@ -75,6 +75,16 @@ def get():
 			"files_to_copy_lst": [
 				(f"{modd_str}/../web/src/gf_apps/gf_code_editor/templates/code_editor.html", f"{modd_str}/../web/build/gf_apps/gf_images"),
 			]
+		},
+
+		#-------------
+		# MAPS
+	
+		"gf_maps": {
+			"build_dir_str": f"{modd_str}/../web/build/gf_apps/gf_images",
+			"files_to_copy_lst": [
+				(f"{modd_str}/../web/src/gf_apps/gf_maps/templates/maps.html", f"{modd_str}/../web/build/gf_apps/gf_images"),
+			]
 		}
 
 		#-------------
