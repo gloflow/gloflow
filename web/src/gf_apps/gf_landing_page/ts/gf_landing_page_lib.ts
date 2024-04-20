@@ -24,7 +24,8 @@ import * as gf_identity_http  from "./../../../gf_identity/ts/gf_identity_http";
 import * as gf_flows_picker   from "./../../gf_images/ts/gf_images_flows_browser/gf_flows_picker";
 import * as gf_images         from "./gf_images";
 import * as gf_procedural_art from "./procedural_art/gf_procedural_art";
-import * as gf_image_colors   from "./../../../gf_core/ts/gf_image_colors";
+import * as gf_post_control   from "./../../gf_publisher/ts/gf_posts_core/gf_post_control";
+// import * as gf_image_colors   from "./../../../gf_core/ts/gf_image_colors";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
 declare var gf_upload__init;
@@ -75,7 +76,7 @@ export async function init(p_plugin_callbacks_map,
 
 	//---------------------
 	// POSTS_INIT
-	posts_init();
+	posts_init(p_log_fun);
 
 	//---------------------
 	// GF_IMAGES_INIT
@@ -147,12 +148,17 @@ export async function init(p_plugin_callbacks_map,
 }
 
 //--------------------------------------------------------
-function posts_init() {
+// POSTS_INIT
 
-	init_posts_img_num();
+function posts_init(p_log_fun) {
+
+	// init_posts_img_num();
 
 	$('#featured_posts').find('.post_info').each((p_i, p_post_info_element)=>{
 		
+		gf_post_control.init_existing_dom(p_post_info_element, p_log_fun)
+
+		/*
 		//----------------------
 		// IMAGE_PALLETE
 		const img = $(p_post_info_element).find("img")[0];
@@ -171,9 +177,11 @@ function posts_init() {
 			});
 
 		//----------------------
+		*/
 	});
 
 	//--------------------------------------------------------
+	/*
 	function init_posts_img_num() {
 
 		$("#featured_posts .post_info").each((p_i, p_post)=>{
@@ -193,6 +201,6 @@ function posts_init() {
 			});
 		});
 	}
-
+	*/
 	//--------------------------------------------------------
 }

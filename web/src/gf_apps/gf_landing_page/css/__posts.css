@@ -1,0 +1,148 @@
+
+
+
+#posts {
+	position: absolute;
+    left: 418px;
+    top: 0px;
+    width: 216px;
+    height: 3361px;
+    background-color: #f3774224;
+}
+
+/*------------------------------------------------------------*/
+/*POSTS BUTTON*/
+
+#posts #posts_browser_button {
+	position        : fixed;
+	top             : 0px;
+	width           : 216px;
+	height          : 38px;
+	padding-top     : 17px;
+	text-align      : center;
+	font-size       : 18px;
+	color           : white;
+	background-color: rgb(233, 122, 60);
+
+	z-index         : 2;
+	display         : block;
+	text-decoration : none;
+	transition      : background-color 0.2s ease;
+	cursor          : pointer;
+}
+#posts #posts_browser_button:hover {
+	cursor          : pointer;
+	background-color: gray;
+	color           : black;
+}
+#posts #posts_browser_button:active {
+	background-color: white;
+	color:            black;
+}
+
+/*------------------------------------------------------------*/
+/*POSTS*/
+
+#posts #featured_posts {
+	position: absolute;
+	top     : 65px;
+}
+
+#posts .post_info {
+	background-color: rgb(223, 105, 48);
+	margin-bottom: 10px;
+
+	box-shadow: 1px 1px 10px grey;
+}
+
+#posts .post_info:hover {
+	/*ANIMATE COLOR*/
+	/*darken the object to simulate some lighting*/
+	/*background-color  : rgb(117, 175, 190);
+	-webkit-transition: background-color 1000ms linear;*/
+
+	z-index: 5;
+}
+
+/*---------------------------*/
+#posts .post_info .post_image {
+	width: 100%;
+	position: relative;
+	background-color: inherit;
+}
+
+#posts .post_info .post_image a {
+	background-color: inherit;
+}
+
+#posts .post_info .post_image .image_resource {
+	width: 100%;
+}
+
+/*---------------------------*/
+/*IMAGE DOMINANT COLOR*/
+/*#posts .post_info .post_image .img_dominant_color {
+	background-color: rgb(219, 112, 28);
+    position        : absolute;
+    bottom          : 0px;
+    right           : -55px;
+}
+#posts .post_info .post_image .img_dominant_color .color {
+	margin: 5px;
+	width : 30px;
+    height: 30px;
+}*/
+
+/*---------------------------*/
+#posts .post_info .post_title {
+	background-color: inherit;
+
+	padding-left:   9px;
+	padding-top:    6px;
+	padding-bottom: 6px;
+	padding-right:  9px;
+
+	width:      198px;
+	text-align: center;
+	font-size:  14px;
+	color:     rgb(255,255,255);
+}
+
+/*------------------------------------------------------------*/
+/*POST IMAGES NUMBER*/
+#posts .post_info .post_images_number {
+	position        : absolute;
+	right           : -20px;
+	background-color: inherit;
+	padding-bottom  : 2px;
+	padding-right   : 2px;
+	padding-left    : 5px;
+	padding-top     : 2px;
+
+	/*since post_images_number is an info item it 
+	  should be above all other elements*/
+	z-index: 3;
+
+	/*hidden by default, uncovered on onMouseOver*/
+	visibility: hidden;
+}
+
+#posts .post_info .post_images_number .num {
+	font-size:     21px;
+	padding-right: 6px;
+	padding-top:   1px;
+	height:        24px;
+}
+#posts .post_info .post_images_number .label {
+	font-size       : 13px;
+	position        : absolute;
+	top             : 0px;
+	width           : 54px;
+	height:           16px;
+	background-color: inherit;
+	padding-left    : 7px;
+	padding-right   : 8px;
+	padding-top     : 6px;
+	padding-bottom  : 7px;
+	opacity         : 0.8;
+}
