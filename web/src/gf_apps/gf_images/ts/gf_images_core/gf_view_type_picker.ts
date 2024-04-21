@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-import * as gf_viz_group    from "./../../../../gf_controls/gf_viz_group/ts/gf_viz_group";
-import * as gf_gifs_viewer  from "./../../../../gf_core/ts/gf_gifs_viewer";
-import * as gf_image_viewer from "./../../../../gf_core/ts/gf_image_viewer";
-import * as gf_images_http  from "./../gf_images_core/gf_images_http";
-import * as gf_paging       from "../gf_images_core/gf_images_paging";
+import * as gf_viz_group    from "../../../../gf_controls/gf_viz_group/ts/gf_viz_group";
+import * as gf_gifs_viewer  from "../../../../gf_core/ts/gf_gifs_viewer";
+import * as gf_image_viewer from "../../../../gf_core/ts/gf_image_viewer";
+import * as gf_images_http  from "./gf_images_http";
+import * as gf_paging       from "./gf_images_paging";
 
 // FIX!! - remove this from global scope!!
 export var image_view_type_str = "small_view";

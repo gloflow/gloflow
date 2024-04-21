@@ -106,7 +106,7 @@ export async function init(p_log_fun) {
 
 //---------------------------------------------------
 async function http__get_all_flows(p_log_fun) {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
 
         const url_str = `/v1/images/flows/all`;
         p_log_fun('INFO', `url_str - ${url_str}`);
@@ -126,5 +126,4 @@ async function http__get_all_flows(p_log_fun) {
 
         //-------------------------	
     });
-    return p;
 }

@@ -26,7 +26,7 @@ export async function classify(p_image_id_str :string,
 	p_client_type_str :string,
     p_log_fun) {
 	
-	const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+	return new Promise(function(p_resolve_fun, p_reject_fun) {
 
 		const url_str = `/v1/images/classify`;
 		p_log_fun("INFO", `url_str ${url_str} - image_id ${p_image_id_str}`);
@@ -61,7 +61,6 @@ export async function classify(p_image_id_str :string,
 
 		//-------------------------
 	});
-	return p;
 }
 
 //---------------------------------------------------

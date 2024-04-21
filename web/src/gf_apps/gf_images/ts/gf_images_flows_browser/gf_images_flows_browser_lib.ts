@@ -28,9 +28,9 @@ import * as gf_sys_panel        from "./../../../../gf_sys_panel/ts/gf_sys_panel
 import * as gf_identity         from "./../../../../gf_identity/ts/gf_identity";
 import * as gf_identity_http    from "./../../../../gf_identity/ts/gf_identity_http";
 import * as gf_images_http      from "./../gf_images_core/gf_images_http";
-import * as gf_image_control     from "./../gf_images_core/gf_image_control";
-import * as gf_paging           from "../gf_images_core/gf_images_paging";
-import * as gf_view_type_picker from "./gf_view_type_picker";
+import * as gf_image_control    from "./../gf_images_core/gf_image_control";
+import * as gf_images_paging    from "../gf_images_core/gf_images_paging";
+import * as gf_view_type_picker from "./../gf_images_core/gf_view_type_picker";
 import * as gf_utils            from "../gf_images_core/gf_utils";
 import * as gf_flows_picker     from "./gf_flows_picker";
 
@@ -125,7 +125,7 @@ export async function init(p_plugin_callbacks_map,
 
 		// IMAGE_CONTROL
 		gf_image_control.init_existing_dom(image_element,
-			flow_name_str,
+			[flow_name_str],
 
 			gf_host_str,
 			logged_in_bool,
@@ -136,7 +136,7 @@ export async function init(p_plugin_callbacks_map,
 	//---------------------
 	// CURRENT_PAGE_DISPLAY
 
-	const current_pages_display = gf_paging.init__current_pages_display(p_log_fun);
+	const current_pages_display = gf_images_paging.init__current_pages_display(p_log_fun);
 	$('body').append(current_pages_display);
 
 	//---------------------
@@ -152,7 +152,7 @@ export async function init(p_plugin_callbacks_map,
 
 	var page_is_loading_bool = false;
 
-	window.onscroll = ()=>{
+	window.onscroll = async ()=>{
 
 		// $(document).height() - height of the HTML document
 		// window.innerHeight   - Height (in pixels) of the browser window viewport including, if rendered, the horizontal scrollbar
@@ -165,21 +165,25 @@ export async function init(p_plugin_callbacks_map,
 				p_log_fun("INFO", `current_page_int - ${current_page_int}`);
 
 				var current_image_view_type_str = gf_view_type_picker.image_view_type_str;
-				gf_paging.load_new_page(flow_name_str,
+
+				const page_source_ref_str  = flow_name_str;
+				const page_source_type_str = "flow"
+
+				await gf_images_paging.load_new_page(page_source_ref_str,
+					page_source_type_str,
 					current_page_int,
 					current_image_view_type_str,
 					logged_in_bool,
 					p_plugin_callbacks_map,
-					()=>{
-
-						current_page_int += 1;
-						$("#gf_images_flow_container").data("current_page", current_page_int);
-
-						page_is_loading_bool = false;
-
-						$(current_pages_display).find('#end_page').text(current_page_int);
-					},
 					p_log_fun);
+
+				current_page_int += 1;
+				$("#gf_images_flow_container").data("current_page", current_page_int);
+
+				page_is_loading_bool = false;
+
+				$(current_pages_display).find('#end_page').text(current_page_int);
+				
 			}
 		}
 	};
