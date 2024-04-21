@@ -68,7 +68,6 @@ def get():
 
 		#-------------
 		# CODE_EDITOR
-		
 
 		"gf_code_editor": {
 			"build_dir_str": f"{modd_str}/../web/build/gf_apps/gf_images",
@@ -82,9 +81,10 @@ def get():
 	
 		"gf_maps": {
 			"build_dir_str": f"{modd_str}/../web/build/gf_apps/gf_images",
-			"files_to_copy_lst": [
-				(f"{modd_str}/../web/src/gf_apps/gf_maps/templates/maps.html", f"{modd_str}/../web/build/gf_apps/gf_images"),
-			]
+			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_maps/templates/gf_maps.html",
+			# "files_to_copy_lst": [
+			# 	(f"{modd_str}/../web/src/gf_apps/gf_maps/templates/maps.html", f"{modd_str}/../web/build/gf_apps/gf_images"),
+			# ]
 		}
 
 		#-------------
