@@ -23,6 +23,7 @@ fn main() {
     
     println!("cargo running build.rs >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
+    /*
     // TENSORFLOW_PROTOBUFF_DEFS
     let protobuff_input_lst = [
         "src/gf_protobuff/tf_feature.proto",
@@ -42,4 +43,5 @@ fn main() {
         },
 
     }).expect("ERROR!! - failed to build Rust protobuffers in gf_core")
+    */
 }
