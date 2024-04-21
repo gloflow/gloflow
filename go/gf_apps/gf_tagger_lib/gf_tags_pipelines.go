@@ -31,6 +31,23 @@ import (
 )
 
 //---------------------------------------------------
+
+func pipelineGetAllTags(pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
+
+
+
+
+	tagsLst, gfErr := dbMongoGetAllTags(pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	return tagsLst, nil
+
+}
+
+//---------------------------------------------------
 // AUTHORIZED
 
 func pipelineAdd(pInputDataMap map[string]interface{},

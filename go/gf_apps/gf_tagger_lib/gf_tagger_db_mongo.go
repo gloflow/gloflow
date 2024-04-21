@@ -35,6 +35,71 @@ import (
 //---------------------------------------------------
 // VAR
 //---------------------------------------------------
+
+
+
+func dbMongoGetAllTags(pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
+
+
+	pipeline := []bson.M{
+		{
+		"$match": bson.M{
+			"t": bson.M{"$in": []string{"img", "post"}},
+			"tags_lst": bson.M{
+				"$exists": true,
+				"$ne": []interface{}{},
+			},
+		},
+		},
+		{
+			"$project": bson.M{
+				"t":        true,
+				"id_str":   true,
+				"user_id_str": bson.M{"$ifNull": []interface{}{"$user_id_str", "anon"}},
+				"tags_lst": true,
+			},
+		},
+		{
+			"$unwind": "$tags_lst",
+		},
+		{
+			"$group": bson.M{
+				"_id": "$tags_lst",
+				"count": bson.M{"$sum": 1},
+			},
+		},
+		{
+			"$sort": bson.M{"count": -1},
+		},
+	}
+
+	cursor, err := pRuntimeSys.Mongo_coll.Aggregate(pCtx, pipeline)
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to run DB aggregation to get all tags",
+			"mongodb_aggregation_error",
+			map[string]interface{}{},
+			err, "gf_tagger_lib", pRuntimeSys)
+		return nil, gfErr
+	}
+	defer cursor.Close(pCtx)
+
+
+
+	allTagsLst := []string{}
+	err = cursor.All(pCtx, &allTagsLst)
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to get mongodb results of query to get all tags",
+			"mongodb_cursor_all",
+			map[string]interface{}{},
+			err, "gf_tagger_lib", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	return allTagsLst, nil
+}
+
+//---------------------------------------------------
 // GET_ALL_OBJECTS_TAGS
 
 /*
@@ -100,7 +165,7 @@ func dbMongoGetAllObjectsTags(pCtx context.Context,
 		gfErr := gf_core.MongoHandleError("failed to get mongodb results of query to get all image tags",
 			"mongodb_cursor_all",
 			map[string]interface{}{},
-			err, "gf_images_flows", pRuntimeSys)
+			err, "gf_tagger_lib", pRuntimeSys)
 		return nil, gfErr
 	}
 	

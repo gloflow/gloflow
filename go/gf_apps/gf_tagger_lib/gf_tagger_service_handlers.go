@@ -56,6 +56,7 @@ func initHandlers(pAuthSubsystemTypeStr string,
 		"/v1/tags/notes/get",
 		"/v1/tags/create",
 		"/v1/tags/objects",
+		"/v1/tags/all",
 	}
 	metricsGroupNameStr := "main"
 	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_tagger", handlers_endpoints_lst)
@@ -304,6 +305,38 @@ func initHandlers(pAuthSubsystemTypeStr string,
 				} else {
 					return nil, nil
 				}
+			}
+
+			return nil, nil
+		},
+		pHTTPmux,
+		metrics,
+		true, // pStoreRunBool
+		nil,
+		pRuntimeSys)
+
+	//---------------------
+	// GET_ALL_TAGS
+
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/all",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+			if pReq.Method == "GET" {
+
+
+
+				tagsLst, gfErr := pipelineGetAllTags(pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+
+
+
+				dataMap := map[string]interface{}{
+					"tags_lst": tagsLst,
+				}
+				return dataMap, nil
 			}
 
 			return nil, nil
