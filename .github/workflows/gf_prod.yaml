@@ -9,7 +9,7 @@ on:
 
   # workflow_run:
   #   # trigger this workflow if the Rust workflow completes succesfuly
-  #   workflows: ["gf_rust_dev"]
+  #   workflows: ["gf_prod_rust"]
   #   types:
   #     - completed
 
@@ -23,6 +23,23 @@ env:
   IMAGE_TAG: latest
 
 jobs:
+
+  #--------------------------------------------------------------------
+  # DOWNLOAD_PREBUILT_ARTIFACTS - test fetchability or dependency assets
+
+  download-prebuilt-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+    
+      #-------------------------------
+      # DOWNLOAD_RUST_ARTIFACTS
+      - name: download Rust build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: rust_build_artifacts
+          path: /home/gf/rust/build
+
+      #-------------------------------
 
   # #--------------------------------------------------------------------
   # # BUILD_RUST
