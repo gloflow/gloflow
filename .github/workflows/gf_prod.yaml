@@ -27,7 +27,7 @@ jobs:
   #--------------------------------------------------------------------
   # DOWNLOAD_PREBUILT_ARTIFACTS - test fetchability or dependency assets
 
-  download-prebuilt-artifacts:
+  check-download-prebuilt-artifacts:
     runs-on: ubuntu-latest
     steps:
     
@@ -84,6 +84,7 @@ jobs:
   #--------------------------------------------------------------------
   # TEST_GO
   test-go:
+    needs: [check-download-prebuilt-artifacts]
     runs-on: ubuntu-latest
     container:
       image: glofloworg/gf_builder_go_ubuntu:latest
@@ -257,6 +258,7 @@ jobs:
   #--------------------------------------------------------------------
   # BUILD_WEB
   build-web:
+    needs: [check-download-prebuilt-artifacts]
     runs-on: ubuntu-latest
     container:
       image: glofloworg/gf_builder_web:latest
