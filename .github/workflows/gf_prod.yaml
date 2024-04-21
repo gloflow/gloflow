@@ -176,7 +176,7 @@ jobs:
   #--------------------------------------------------------------------
   # BUILD_GO
   build-go:
-    needs: [test-go, build-rust]
+    needs: [test-go]
     runs-on: ubuntu-latest
     container:
       image: glofloworg/gf_builder_go_ubuntu:latest
