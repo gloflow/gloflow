@@ -93,9 +93,9 @@ def get():
                 "copy_to_dir_lst": [
                     
                     #------------------------
-                    # TENSORFLOW C_LIBS
-                    (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow.so",           f"{modd_str}/../build/gf_apps/gf_solo/libs"),
-                    (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow_framework.so", f"{modd_str}/../build/gf_apps/gf_solo/libs"),
+                    # # TENSORFLOW C_LIBS
+                    # (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow.so",           f"{modd_str}/../build/gf_apps/gf_solo/libs"),
+                    # (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow_framework.so", f"{modd_str}/../build/gf_apps/gf_solo/libs"),
 
                     #------------------------
                     # GF_IMAGES
@@ -160,12 +160,17 @@ def get():
                     ("%s/../py/gf_apps/gf_ml_worker/gf_simple_model.py"%(modd_str), "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str)),
                     ("%s/../py/gf_apps/gf_ml_worker/requirements.txt"%(modd_str),   "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str)),
 
+                    #------------------------
                     # C_LIBS
+                    #------------------------
                     # gf_images_jobs_py.so - gf_images_jobs Rust Python extension
-                    # libtensorflow.so     - TensorFlow C lib
-                    ("%s/../rust/build/gf_images_jobs_py.so"%(modd_str),       "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str)),
-                    ("%s/../rust/build/libtensorflow.so"%(modd_str),           "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str)),
-                    ("%s/../rust/build/libtensorflow_framework.so"%(modd_str), "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str))
+                    ("%s/../rust/build/gf_images_jobs_py.so"%(modd_str), "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str)),
+
+                    # libtensorflow.so - TensorFlow C lib
+                    # ("%s/../rust/build/libtensorflow.so"%(modd_str),           "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str)),
+                    # ("%s/../rust/build/libtensorflow_framework.so"%(modd_str), "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str))
+
+                    #------------------------
                 ]
             },
 

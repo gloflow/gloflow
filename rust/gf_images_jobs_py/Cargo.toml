@@ -20,11 +20,12 @@ crate-type =["dylib"]
 #-------------------------------
 [dependencies]
 gf_core        = {path="../gf_core",        version="0.1.0"}
-gf_ml          = {path="../gf_ml",          version="0.1.0"}
 gf_images_jobs = {path="../gf_images_jobs", version="0.1.0"}
 numpy   = "0.15.1" # "0.16" latest version
 ndarray = "0.15.4" # "0.15.4" latest version
 image   = "0.21.1"
+
+# gf_ml = {path="../gf_ml", version="0.1.0"}
 
 #-------------------------------
 [dependencies.pyo3]

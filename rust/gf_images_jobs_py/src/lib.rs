@@ -29,7 +29,7 @@ use numpy::{PyArray2, PyArray3, PyArray4};
 // use ndarray::{ArrayD, ArrayViewD, ArrayViewMutD};
 // use gf_core;
 
-use gf_ml;
+// use gf_ml;
 use gf_images_jobs;
 
 mod gf_numpy_view;
@@ -45,7 +45,7 @@ fn gf_images_jobs_py(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(view_numpy_arr_3D))?;
     m.add_wrapped(wrap_pyfunction!(view_numpy_arr_4D))?;
     m.add_wrapped(wrap_pyfunction!(generate_ml_dataset))?;
-    m.add_wrapped(wrap_pyfunction!(view_ml_dataset))?;
+    // m.add_wrapped(wrap_pyfunction!(view_ml_dataset))?;
 
     Ok(())
 }
@@ -156,6 +156,7 @@ fn generate_ml_dataset(p_dataset_name_str: String,
 // }
 
 //-------------------------------------------------
+/*
 // VIEW_ML_DATASET_FROM_TFRECORDS
 #[pyfunction]
 fn view_ml_dataset(p_tfrecords_file_path_str: String,
@@ -178,3 +179,4 @@ fn view_ml_dataset(p_tfrecords_file_path_str: String,
 
     Ok(())
 }
+*/

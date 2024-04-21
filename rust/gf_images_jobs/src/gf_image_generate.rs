@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #![allow(non_snake_case)]
 
-use gf_ml;
+// use gf_ml;
 // use gf_core;
 
 //-------------------------------------------------
@@ -37,13 +37,14 @@ pub fn ml_dataset_to_tfrecords(p_dataset_name_str: String,
         p_img_height_int,
         p_target_dir_path_str);
 
+    /*
     gf_ml::gf_datasets::generate(p_dataset_name_str,
         p_classes_lst,
         p_elements_num_int,
         p_img_width_int,
         p_img_height_int,
         p_target_dir_path_str);
-
+    */
 
     // let output_file_path_str = format!("{}/gf_rust_test.tfrecords", p_target_dir_path_str);
     // gf_core::gf_tf::get_tf_records__writer(output_file_path_str);

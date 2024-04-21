@@ -2,6 +2,11 @@ name: prod
 on:
   push:
     branches: [ master ]
+    paths:
+
+      # dont build on Rust changes, it has its own workflow
+      - "!rust/**"
+
   # workflow_run:
   #   # trigger this workflow if the Rust workflow completes succesfuly
   #   workflows: ["gf_rust_dev"]

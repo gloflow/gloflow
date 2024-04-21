@@ -160,6 +160,7 @@ def prepare_libs(p_name_str,
         #         one of the Crate types is "staticlib".
         if p_name_str == "gf_images_jobs":
 
+            '''
             #-------------
             # EXTERN_LIB
             target_lib_dir_str = f"{modd_str}/../../../rust/build" # f"{modd_str}/../../build/gf_apps/gf_images/tf_lib"
@@ -169,7 +170,7 @@ def prepare_libs(p_name_str,
                 p_exit_on_fail_bool=p_exit_on_fail_bool)
 
             #-------------
-            
+            '''
             
             # RUST_PY - CPYTHON_EXTENSION - this lib is Python extension written in Rust.
             #                               at the moment in GF the convention is for these Rust libs to have a postfix "_py".
@@ -220,6 +221,7 @@ def prepare_libs(p_name_str,
     
 
 #--------------------------------------------------
+'''
 def prepare_libs__extern(p_target_lib_dir_str,
     p_tf_libs_bool      = False,
     p_exit_on_fail_bool = True):
@@ -250,3 +252,4 @@ def prepare_libs__extern(p_target_lib_dir_str,
         gf_core_cli.run(f"tar -xvzf {p_target_lib_dir_str}/{lib_file_name_str} -C {p_target_lib_dir_str}/tf_lib")
 
     #-------------
+'''
