@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_identity       from "./../../../gf_identity/ts/gf_identity";
 import * as gf_identity_http  from "./../../../gf_identity/ts/gf_identity_http";
 import * as gf_flows_picker   from "./../../gf_images/ts/gf_images_flows_browser/gf_flows_picker";
+import * as gf_tags_picker    from "./../../gf_tagger/ts/gf_tags_picker/gf_tags_picker";
 import * as gf_images         from "./gf_images";
 import * as gf_posts          from "./gf_posts";
 import * as gf_procedural_art from "./procedural_art/gf_procedural_art";
@@ -72,6 +73,12 @@ export async function init(p_plugin_callbacks_map,
 	if (logged_in_bool) {
 
 		gf_flows_picker.init(p_log_fun)
+	}
+
+	// TAGS_PICKER - display it if the user is logged in
+	if (logged_in_bool) {
+
+		gf_tags_picker.init(p_log_fun)
 	}
 
 	//---------------------

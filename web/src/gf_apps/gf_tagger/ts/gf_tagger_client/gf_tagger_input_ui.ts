@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-import * as gf_tagger_client from "./gf_tagger_client";
+import * as gf_tagger_http from "./gf_tagger_http";
 
 //-----------------------------------------------------
 // in gf_post view
@@ -293,7 +293,7 @@ async function add_tags_to_obj(p_obj_id_str :string,
 		var data_map;
 		if (p_http_api_map == null) {
 
-			data_map = await gf_tagger_client.add_tags_to_obj(new_tags_lst,
+			data_map = await gf_tagger_http.add_tags_to_obj(new_tags_lst,
 				p_obj_id_str,
 				p_obj_type_str,
 				tags_meta_map,

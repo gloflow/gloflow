@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-import * as gf_tagger_client from "./gf_tagger_client";
+import * as gf_tagger_http from "./gf_tagger_http";
 
 //-----------------------------------------------------
 export function init(p_obj_id_str :string,
@@ -77,10 +77,9 @@ export function init(p_obj_id_str :string,
 				get_notes(p_obj_id_str,
 					p_obj_type_str,
 					notes_panel,
-					()=>{
-						notes_init_bool = true;
-					},
-					p_log_fun);				
+					p_log_fun);
+				
+				notes_init_bool = true;
 			}
 
 			//------------------------
@@ -93,20 +92,18 @@ export function init(p_obj_id_str :string,
 		run__remote_add_note(p_obj_id_str,
 			p_obj_type_str,
 			notes_panel,
-
-			// p_onComplete_fun,
-			()=>{
-				//----------------------
-				// GROW BACKGROUND
-				const background_padding_size_int :number = 30;
-				const notes_height_int            :number = $(notes_panel).find('#notes').height();
-				const notes_y_int                 :number = $(notes_panel).find('#notes').offset().top;
-				const new_height_int              :number = notes_y_int + notes_height_int + 2*background_padding_size_int;
-				$(background).css('height', new_height_int+'px');
-				
-				//----------------------
-			},
 			p_log_fun);
+
+		//----------------------
+		// GROW BACKGROUND
+		const background_padding_size_int :number = 30;
+		const notes_height_int            :number = $(notes_panel).find('#notes').height();
+		const notes_y_int                 :number = $(notes_panel).find('#notes').offset().top;
+		const new_height_int              :number = notes_y_int + notes_height_int + 2*background_padding_size_int;
+		$(background).css('height', new_height_int+'px');
+		
+		//----------------------
+		
 	});
 
 	//------------------------
@@ -133,45 +130,38 @@ export function init(p_obj_id_str :string,
 }
 
 //-----------------------------------------------------
-function get_notes(p_obj_id_str :string,
+async function get_notes(p_obj_id_str :string,
 	p_obj_type_str :string,
 	p_notes_panel,
-	p_on_complete_fun,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_tagger_notes_ui.get_notes()');
 
 	//------------------------
 	// IMPORTANT!! - get notes via HTTP from backend gf_tagger_service
-	gf_tagger_client.get_notes(p_obj_id_str,
+	const notes_lst = await gf_tagger_http.get_notes(p_obj_id_str,
 		p_obj_type_str,
-		// p_on_complete_fun
-		(p_notes_lst :Object[])=>{
-
-			for (var note_map of p_notes_lst) {
-
-				const user_id_str :string = note_map['user_id_str'];
-				const body_str    :string = note_map['body_str'];
-
-				add_note_view(body_str,
-					user_id_str,
-					p_notes_panel,
-					p_log_fun);
-			}
-			p_on_complete_fun();
-		},
-		()=>{}, // p_onError_fun
 		p_log_fun);
 
-	//------------------------	
+	//------------------------
+
+	for (var note_map of <Object[]> notes_lst) {
+
+		const user_id_str :string = note_map['user_id_str'];
+		const body_str    :string = note_map['body_str'];
+
+		add_note_view(body_str,
+			user_id_str,
+			p_notes_panel,
+			p_log_fun);
+	}
+
+
 }
 
 //-----------------------------------------------------
-function run__remote_add_note(p_obj_id_str :string,
+async function run__remote_add_note(p_obj_id_str :string,
 	p_obj_type_str :string,
 	p_notes_panel,
-	p_on_complete_fun,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_tagger_notes_ui.run__remote_add_note()');
 
 	const text_element          = $(p_notes_panel).find('.note_input_panel textarea');
 	const note_body_str :string = $(text_element).val();
@@ -181,19 +171,18 @@ function run__remote_add_note(p_obj_id_str :string,
 	if (note_body_str.length > 0) {
 
 		// ADD!! - some visual success/failure indicator
-		gf_tagger_client.add_note_to_obj(note_body_str,
+
+		await gf_tagger_http.add_note_to_obj(note_body_str,
 			p_obj_id_str,
 			p_obj_type_str,
-			()=>{
-				add_note_view(note_body_str,
-					'anonymouse', // p_anonymous_user_str,
-					p_notes_panel,
-					p_log_fun);
-				
-				$(text_element).val(''); //reset text
-			},
-			()=>{}, // p_onError_fun
 			p_log_fun);
+
+		add_note_view(note_body_str,
+			'anonymouse', // p_anonymous_user_str,
+			p_notes_panel,
+			p_log_fun);
+		
+		$(text_element).val(''); //reset text
 	}
 }
 
