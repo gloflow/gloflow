@@ -18,14 +18,14 @@ crate-type = ["dylib", "rlib"]
 [dependencies]
 image    = "0.21.3"
 png      = "0.14.0"
-cairo-rs = {features=["png"]} # 2D drawing
+cairo-rs = {version="0.9", features=["png"]} # 2D drawing
 
 # TensorFlow .tfrecord file writing uses protobuffers to serialize 
 # binary data
-protobuf = "2.8.0" # "" # "2"
+# protobuf = "2.8.0" # "" # "2"
 
 # TENSORFLOW
-tensorflow = "0.15.0"
+# tensorflow = "0.15.0"
 # tensorflow = {git = "https://github.com/tensorflow/rust"}
 
 #-------------------------------
@@ -33,4 +33,4 @@ tensorflow = "0.15.0"
 [build-dependencies]
 
 # TensorFlow .tfrecord file writing uses protobuffers to serialize binary data
-protoc-rust = "2.8.0"
+# protoc-rust = "2.8.0"
