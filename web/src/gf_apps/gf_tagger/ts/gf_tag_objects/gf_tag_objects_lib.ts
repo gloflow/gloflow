@@ -21,33 +21,119 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/masonry.layout.d.ts" />
 ///<reference path="../../../../d/jquery.timeago.d.ts" />
 
-import * as gf_image_viewer from "./../../../../gf_core/ts/gf_image_viewer";
-import * as gf_sys_panel    from "./../../../../gf_sys_panel/ts/gf_sys_panel";
-import * as gf_utils        from "./../../../gf_images/ts/gf_images_core/gf_utils";
+import * as gf_identity_http from "./../../../../gf_identity/ts/gf_identity_http";
+import * as gf_image_control from "./../../../gf_images/ts/gf_images_core/gf_image_control";
+import * as gf_images_paging from "./../../../gf_images/ts/gf_images_core/gf_images_paging";
+import * as gf_sys_panel     from "./../../../../gf_sys_panel/ts/gf_sys_panel";
+import * as gf_flows_picker  from "./../../../gf_images/ts/gf_images_flows_browser/gf_flows_picker";
+import * as gf_tags_picker   from "./../../../gf_tagger/ts/gf_tags_picker/gf_tags_picker";
+// import * as gf_image_viewer  from "./../../../../gf_core/ts/gf_image_viewer";
+// import * as gf_utils         from "./../../../gf_images/ts/gf_images_core/gf_utils";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
 declare var gf_upload__init;
 
 //-------------------------------------------------
-export function init(p_log_fun) {
+export async function init(p_tag_str :string,
+	p_plugin_callbacks_map,
+	p_log_fun) {
 
+	const domain_str   = window.location.hostname;
+	const protocol_str = window.location.protocol;
+	const gf_host_str = `${protocol_str}//${domain_str}`;
+	console.log("gf_host", gf_host_str);
+	
+	// inspect if user is logged-in or not
+	const urls_map          = gf_identity_http.get_standard_http_urls();
+	const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
+	const logged_in_bool = await auth_http_api_map["general"]["logged_in"]();
+
+	
+	//---------------------
 	// SYS_PANEL
     gf_sys_panel.init_with_auth(p_log_fun);
 
+	//---------------------
+	// FLOWS_PICKER - display it if the user is logged in
+	if (logged_in_bool) {
+
+		gf_flows_picker.init(p_log_fun)
+	}
+
+	// TAGS_PICKER - display it if the user is logged in
+	if (logged_in_bool) {
+
+		gf_tags_picker.init(p_log_fun)
+	}
+
     //---------------------
-	// MASONRY
-    $('#images_container').masonry({
+	// IMAGES
+    init_images(logged_in_bool,
+		gf_host_str,
+		p_plugin_callbacks_map,
+		p_log_fun);
+
+	// POSTS
+	init_posts(p_plugin_callbacks_map, p_log_fun);
+
+	//------------------
+	// LOAD_PAGES_ON_SCROLL
+
+	var current_page_int = 6; // the few initial pages are already statically embedded in the document
+	$("#gf_images_flow_container").data("current_page", current_page_int); // used in other functions to inspect current page
+
+	var page_is_loading_bool = false;
+
+	window.onscroll = async ()=>{
+
+		// $(document).height() - height of the HTML document
+		// window.innerHeight   - Height (in pixels) of the browser window viewport including, if rendered, the horizontal scrollbar
+		if (window.scrollY >= $(document).height() - (window.innerHeight+50)) {
+			
+			// IMPORTANT!! - only load 1 page at a time
+			if (!page_is_loading_bool) {
+				
+				page_is_loading_bool = true;
+				p_log_fun("INFO", `current_page_int - ${current_page_int}`);
+
+				var image_view_type_str = "masonry_small_images";
+				
+
+				const page_source_ref_str  = p_tag_str;
+				const page_source_type_str = "tag"
+
+				await gf_images_paging.load_new_page(page_source_ref_str,
+					page_source_type_str,
+					current_page_int,
+					image_view_type_str,
+					logged_in_bool,
+					p_plugin_callbacks_map,
+					p_log_fun);
+				
+
+				current_page_int += 1;
+				$("#gf_images_flow_container").data("current_page", current_page_int);
+
+				page_is_loading_bool = false;
+			}
+		}
+	};
+
+	//------------------
+}
+
+//-------------------------------------------------
+function init_images(p_logged_in_bool :boolean,
+	p_gf_host_str :string,
+	p_plugin_callbacks_map,
+	p_log_fun) {
+
+	$('#images_container').masonry({
 		itemSelector: '.gf_image',
 		columnWidth:  6
 	});
-
-    $('#posts_container').masonry({
-		itemSelector: '.gf_post',
-		columnWidth:  6
-	});
-
-
-    /*
+	
+	/*
 	IMPORTANT!! - as each image loads call masonry to reconfigure the view.
 		this is necessary so that initial images in the page, before
 		load_new_page() starts getting called, are properly laid out
@@ -56,28 +142,34 @@ export function init(p_log_fun) {
 	$('.gf_image img').on('load', ()=>{
 		$('#images_container').masonry();
 	});
-	$('.gf_post img').on('load', ()=>{
-		$('#posts_container').masonry();
-	});
-    //---------------------
-
-    init_images(p_log_fun);
-}
-
-//-------------------------------------------------
-function init_images(p_log_fun) {
 
     $('#images_container .gf_image').each((p_i, p_e)=>{
 
 		const image_element = p_e;
-		gf_utils.init_image_date(image_element, p_log_fun);
-
+		
+		/*
 		const image_id_str = $(image_element).data('img_id');
 		const image_flows_names_lst = $(image_element).data('img_flows_names').split(",");
 		const img_thumb_medium_url_str = $(image_element).find('img').data('img_thumb_medium_url');
 		const img_thumb_large_url_str  = $(image_element).find('img').data('img_thumb_large_url');
 		const img_format_str           = $(image_element).data('img_format');
 		const origin_page_url_link = $(image_element).find(".origin_page_url a")[0];
+		*/
+		
+		const image_flows_names_lst = $(image_element).data('img_flows_names').split(",");
+
+		// IMAGE_CONTROL
+		gf_image_control.init_existing_dom(image_element,
+			image_flows_names_lst,
+
+			p_gf_host_str,
+			p_logged_in_bool,
+			p_plugin_callbacks_map,
+			p_log_fun);
+
+		/*	
+		gf_utils.init_image_date(image_element, p_log_fun);
+
 
 		//----------------
 		// CLEANUP - for images that dont come from some origin page (direct uploads, or generated images)
@@ -111,5 +203,26 @@ function init_images(p_log_fun) {
 		}
 
 		//----------------
+		*/
 	});
+}
+
+//-------------------------------------------------
+function init_posts(p_plugin_callbacks_map,
+	p_log_fun) {
+
+	$('#posts_container').masonry({
+		itemSelector: '.gf_post',
+		columnWidth:  6
+	});
+	
+	$('.gf_post img').on('load', ()=>{
+		$('#posts_container').masonry();
+	});
+
+	$('#images_container .gf_image').each((p_i, p_e)=>{
+
+		const image_element = p_e;
+	});
+
 }

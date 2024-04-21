@@ -40,5 +40,12 @@ $(document).ready(()=>{
 	}
 
 	//-------------------------------------------------
-	gf_tag_objects_lib.init(log_fun);
+
+
+	// PLUGINS
+	const plugin_callbacks_map = {};
+	
+	const tag_str = $("#tag_info #tag_name").text();
+
+	gf_tag_objects_lib.init(tag_str, plugin_callbacks_map, log_fun);
 });
