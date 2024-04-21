@@ -3,6 +3,9 @@ on:
   push:
     branches: [ dev ]
 
+  # workflow is also triggered via github REST API/manually
+  workflow_dispatch:
+
 env:
   ENV: dev
   AWS_REGION: us-east-1

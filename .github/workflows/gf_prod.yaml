@@ -1,4 +1,4 @@
-name: gf_prod
+name: prod
 on:
   push:
     branches: [ master ]
@@ -8,6 +8,9 @@ on:
   #   types:
   #     - completed
 
+  # workflow is also triggered via github REST API/manually
+  workflow_dispatch:
+
 env:
   ENV: prod
   AWS_REGION: us-east-1
@@ -16,45 +19,45 @@ env:
 
 jobs:
 
-  #--------------------------------------------------------------------
-  # BUILD_RUST
-  build-rust:
-    runs-on: ubuntu-latest
-    container:
-      image: glofloworg/gf_builder_rust_ubuntu:latest
-      volumes:
- 
-        # mount the dir where the gloflow repo is cloned
-        - ${{ github.workspace }}:/home/gf
-  
-    steps:
-  
-      #-------------------------------
-      # GIT_CHECKOUT
-      - uses: actions/checkout@v3
-  
-      #-------------------------------
-      # BUILD_RUST
-      - name: build Rust code
-  
-        # "-u" - run unbuffered to see all stdout/stderr as it happens
-        # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_rust
-        # "-build_outof_cont" - cli__build.py is run in a container, so command itself should spawn a new container
-        run: |
-          rustup default nightly
-          python3 -u /home/gf/ops/cli__build.py -run=build_rust -app=gf_images_jobs -build_outof_cont
-  
-      #-------------------------------
-      # UPLOAD_ARTIFACTS
-      - name: upload Rust build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: rust_build_artifacts
-          path: |
-            /home/gf/rust/build
-          retention-days: 1
-  
-      #-------------------------------
+  # #--------------------------------------------------------------------
+  # # BUILD_RUST
+  # build-rust:
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: glofloworg/gf_builder_rust_ubuntu:latest
+  #     volumes:
+  #
+  #       # mount the dir where the gloflow repo is cloned
+  #       - ${{ github.workspace }}:/home/gf
+  #
+  #   steps:
+  #
+  #     #-------------------------------
+  #     # GIT_CHECKOUT
+  #     - uses: actions/checkout@v3
+  #
+  #     #-------------------------------
+  #     # BUILD_RUST
+  #     - name: build Rust code
+  #
+  #       # "-u" - run unbuffered to see all stdout/stderr as it happens
+  #       # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_rust
+  #       # "-build_outof_cont" - cli__build.py is run in a container, so command itself should spawn a new container
+  #       run: |
+  #         rustup default nightly
+  #         python3 -u /home/gf/ops/cli__build.py -run=build_rust -app=gf_images_jobs -build_outof_cont
+  #
+  #     #-------------------------------
+  #     # UPLOAD_ARTIFACTS
+  #     - name: upload Rust build artifacts
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: rust_build_artifacts
+  #         path: |
+  #           /home/gf/rust/build
+  #         retention-days: 1
+  #
+  #     #-------------------------------
 
   #--------------------------------------------------------------------
   # TEST_GO

@@ -9,6 +9,9 @@ on:
       - 'go/gf_rpc_lib/**'
       - 'go/gf_p2p/**'
 
+  # workflow is also triggered via github REST API/manually
+  workflow_dispatch:
+
 env:
   ENV: dev
   AWS_REGION: us-east-1
