@@ -19,11 +19,11 @@ crate-type = ["dylib", "rlib"]
 rand     = "0.8.3" # random number generator
 image    = "0.21.3"
 png      = "0.14.0"           # PNG image support
-cairo-rs = {features=["png"]} # 2D drawing
+cairo-rs = {version="0.9", features=["png"]} # 2D drawing
 gf_core  = {path="../gf_core", version="0.1.0"}
 
 # TENSORFLOW
-tensorflow = "0.15.0"
+# tensorflow = "0.15.0"
 # tensorflow = {git = "https://github.com/tensorflow/rust"}
 
 # HTTP_CLIENT
