@@ -53,7 +53,7 @@ jobs:
           RUST_WF_NAME="gf_prod_rust.yaml"
 
           # GE_RUN_ID
-          RUST_RUN_ID=`gh run --repo ${{ github.repository }} list --status completed --workflow ${RUST_WF_NAME} --json databaseId --jq .[0].databaseId`
+          RUST_RUN_ID=`gh run --repo ${{ github.repository }} list --status success --workflow ${RUST_WF_NAME} --json databaseId --jq .[0].databaseId`
 
           echo "::set-output name=rust_build_run_id::$RUST_RUN_ID"
 
