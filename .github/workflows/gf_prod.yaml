@@ -34,7 +34,7 @@ jobs:
       #-------------------------------
       # DOWNLOAD_RUST_ARTIFACTS
       - name: download Rust build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: rust_build_artifacts
           path: /home/gf/rust/build
@@ -227,13 +227,43 @@ jobs:
           sed -i 's/GF_COMMIT_SHA/${{ github.sha }}/g' /home/gf/go/gf_core/gf_sys_release_info.go
 
       #-------------------------------
-      # DOWNLOAD_RUST_ARTIFACTS
+      # # DOWNLOAD_RUST_ARTIFACTS
+      # - name: download Rust build artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: rust_build_artifacts
+      #     github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+      #     path: /home/gf/rust/build
+      #     run-id: 
+
+      - name: get latest Rust build run_id
+        id: getrunid
+        run: |
+
+          WF_NAME="gf_prod_rust.yaml"
+
+          # REPO="gloflow/gloflow"
+          # ARTIFACT_NAME="rust_build_artifacts"
+
+          # GE_RUN_ID
+          RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${WF_NAME} --json databaseId --jq .[0].databaseId`
+          
+          # DOWNLOAD
+          # gh run --repo ${REPO} download ${RUN_ID} -n ${ARTIFACT_NAME}
+
+          echo "::set-output name=run_id::$RUN_ID"
+          
+        env:
+          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+
       - name: download Rust build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: rust_build_artifacts
+          github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
           path: /home/gf/rust/build
-
+          run-id: ${{ steps.getrunid.outputs.run_id }}
+      
       #-------------------------------
       # "-u" - run unbuffered to see all stdout/stderr as it happens
       # "-build_outof_cont" - dont build in a container, since this build stage already runs in a container.
@@ -246,7 +276,7 @@ jobs:
       #-------------------------------
       # UPLOAD_ARTIFACTS
       - name: upload Go build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: go_build_artifacts
           path: |
@@ -284,7 +314,7 @@ jobs:
       #-------------------------------
       # UPLOAD_ARTIFACTS
       - name: upload Web build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: web_build_artifacts
           path: |
@@ -323,7 +353,7 @@ jobs:
       #-------------------------------
       # DOWNLOAD_RUST_ARTIFACTS
       - name: download Rust build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: rust_build_artifacts
           path: /home/gf/rust/build
@@ -331,7 +361,7 @@ jobs:
       #-------------------------------
       # DOWNLOAD_GO_ARTIFACTS
       - name: download Go build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: go_build_artifacts
           path: /home/gf/build/gf_apps/gf_solo/
@@ -339,7 +369,7 @@ jobs:
       #-------------------------------
       # DOWNLOAD_WEB_ARTIFACTS
       - name: download Web build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: web_build_artifacts
           path: /home/gf/web/build
