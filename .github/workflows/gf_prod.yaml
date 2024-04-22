@@ -251,7 +251,7 @@ jobs:
   #--------------------------------------------------------------------
   # BUILD_GO
   build-go:
-    needs: [test-go]
+    needs: [test-go, check-download-prebuilt-artifacts]
     runs-on: ubuntu-latest
     container:
       image: glofloworg/gf_builder_go_ubuntu:latest
@@ -382,7 +382,7 @@ jobs:
   #--------------------------------------------------------------------
   # BUILD_CONTAINERS
   build-and-publish-containers:
-    needs: [build-web, build-go]
+    needs: [build-web, build-go, check-download-prebuilt-artifacts]
     runs-on: ubuntu-latest
     container:
       image: glofloworg/gf_builder_go_ubuntu:latest
@@ -407,11 +407,14 @@ jobs:
 
       #-------------------------------
       # DOWNLOAD_RUST_ARTIFACTS
+
       - name: download Rust build artifacts
         uses: actions/download-artifact@v4
         with:
           name: rust_build_artifacts
+          github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
           path: /home/gf/rust/build
+          run-id: "${{ needs.check-download-prebuilt-artifacts.outputs.rust_build_run_id }}"
       
       #-------------------------------
       # DOWNLOAD_GO_ARTIFACTS
