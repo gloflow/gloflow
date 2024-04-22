@@ -59,3 +59,16 @@ jobs:
           retention-days: 30
 
       #-------------------------------
+      
+
+  #--------------------------------------------------------------------
+  # NOTIFY_COMPLETION
+  notify_completion:
+    needs: build-web
+    runs-on: ubuntu-latest
+    steps:
+      - name: trigger container build workflow
+        run: gh workflow run gf_prod_containers.yaml
+
+  #--------------------------------------------------------------------
+  
