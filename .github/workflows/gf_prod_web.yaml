@@ -66,8 +66,11 @@ jobs:
   notify_completion:
     needs: build-web
     runs-on: ubuntu-latest
+    
     steps:
       - name: trigger container build workflow
+        env:
+          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
         run: gh workflow run gf_prod_containers.yaml
 
   #--------------------------------------------------------------------
