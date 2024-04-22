@@ -157,6 +157,10 @@ jobs:
 
       #-------------------------------
 
+      - name: debug_artifacts_run_id
+        run: |
+          echo "artifacts run_id: ${{ needs.check-download-prebuilt-artifacts.outputs.rust_build_run_id }}"
+
       # GF_IMAGES_CORE
       - name: test gf_images_core
         run: |
@@ -262,7 +266,16 @@ jobs:
           sed -i 's/GF_COMMIT_SHA/${{ github.sha }}/g' /home/gf/go/gf_core/gf_sys_release_info.go
 
       #-------------------------------
-      # # DOWNLOAD_RUST_ARTIFACTS
+      # DOWNLOAD_RUST_ARTIFACTS
+
+      - name: download Rust build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: rust_build_artifacts
+          github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+          path: /home/gf/rust/build
+          run-id: ${{ needs.check-download-prebuilt-artifacts.outputs.rust_build_run_id }}
+
       # - name: download Rust build artifacts
       #   uses: actions/download-artifact@v4
       #   with:
@@ -291,13 +304,7 @@ jobs:
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
 
-      - name: download Rust build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: rust_build_artifacts
-          github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
-          path: /home/gf/rust/build
-          run-id: ${{ needs.check-download-prebuilt-artifacts.outputs.rust_build_run_id }}
+      
       
       #-------------------------------
       # "-u" - run unbuffered to see all stdout/stderr as it happens
