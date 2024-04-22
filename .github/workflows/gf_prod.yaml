@@ -29,15 +29,40 @@ jobs:
 
   check-download-prebuilt-artifacts:
     runs-on: ubuntu-latest
+    outputs:
+      rust_build_run_id: ${{ steps.getrunid.outputs.rust_build_run_id }}
     steps:
-    
+
+      #-------------------------------
+      - name: get latest Rust build run_id
+        id: getrunid
+        run: |
+
+          WF_NAME="gf_prod_rust.yaml"
+
+          # REPO="gloflow/gloflow"
+          # ARTIFACT_NAME="rust_build_artifacts"
+
+          # GE_RUN_ID
+          RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${WF_NAME} --json databaseId --jq .[0].databaseId`
+          
+          # DOWNLOAD
+          # gh run --repo ${REPO} download ${RUN_ID} -n ${ARTIFACT_NAME}
+
+          echo "::set-output name=rust_build_run_id::$RUN_ID"
+          
+        env:
+          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+
       #-------------------------------
       # DOWNLOAD_RUST_ARTIFACTS
       - name: download Rust build artifacts
         uses: actions/download-artifact@v4
         with:
           name: rust_build_artifacts
+          github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
           path: /home/gf/rust/build
+          run-id: ${{ steps.getrunid.outputs.rust_build_run_id }}
 
       #-------------------------------
 
@@ -236,25 +261,25 @@ jobs:
       #     path: /home/gf/rust/build
       #     run-id: 
 
-      - name: get latest Rust build run_id
-        id: getrunid
-        run: |
-
-          WF_NAME="gf_prod_rust.yaml"
-
-          # REPO="gloflow/gloflow"
-          # ARTIFACT_NAME="rust_build_artifacts"
-
-          # GE_RUN_ID
-          RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${WF_NAME} --json databaseId --jq .[0].databaseId`
-          
-          # DOWNLOAD
-          # gh run --repo ${REPO} download ${RUN_ID} -n ${ARTIFACT_NAME}
-
-          echo "::set-output name=run_id::$RUN_ID"
-          
-        env:
-          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+      # - name: get latest Rust build run_id
+      #   id: getrunid
+      #   run: |
+      #
+      #     WF_NAME="gf_prod_rust.yaml"
+      #
+      #     # REPO="gloflow/gloflow"
+      #     # ARTIFACT_NAME="rust_build_artifacts"
+      #
+      #     # GE_RUN_ID
+      #     RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${WF_NAME} --json databaseId --jq .[0].databaseId`
+      #   
+      #     # DOWNLOAD
+      #     # gh run --repo ${REPO} download ${RUN_ID} -n ${ARTIFACT_NAME}
+      #
+      #     echo "::set-output name=run_id::$RUN_ID"
+      #   
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
 
       - name: download Rust build artifacts
         uses: actions/download-artifact@v4
@@ -262,7 +287,7 @@ jobs:
           name: rust_build_artifacts
           github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
           path: /home/gf/rust/build
-          run-id: ${{ steps.getrunid.outputs.run_id }}
+          run-id: ${{ needs.check-download-prebuilt-artifacts.outputs.rust_build_run_id }}
       
       #-------------------------------
       # "-u" - run unbuffered to see all stdout/stderr as it happens
