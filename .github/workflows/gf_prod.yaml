@@ -29,6 +29,12 @@ jobs:
 
   check-download-prebuilt-artifacts:
     runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_go_ubuntu:latest
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf
     outputs:
       rust_build_run_id: ${{ steps.getrunid.outputs.rust_build_run_id }}
     steps:
