@@ -1,0 +1,182 @@
+name: containers - prod
+on:
+  push:
+    branches: 
+      - master
+    paths:
+      - "**"
+      
+      # dont build on Rust changes, it has its own workflow
+      - "!rust/**"
+
+  # workflow_run:
+  #   # trigger this workflow if the Rust workflow completes succesfuly
+  #   workflows: ["gf_prod_rust"]
+  #   types:
+  #     - completed
+
+  # workflow is also triggered via github REST API/manually
+  workflow_dispatch:
+
+env:
+  ENV: prod
+  AWS_REGION: us-east-1
+  CONTAINER_IMAGE: glofloworg/gf_solo
+  IMAGE_TAG: latest
+
+jobs:
+
+  #--------------------------------------------------------------------
+  # DOWNLOAD_PREBUILT_ARTIFACTS - test fetchability or dependency assets
+
+  check-download-prebuilt-artifacts:
+    runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_go_ubuntu:latest
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf
+    outputs:
+      go_build_run_id:   ${{ steps.get_run_id.outputs.go_build_run_id }}
+      rust_build_run_id: ${{ steps.get_run_id.outputs.rust_build_run_id }}
+      web_build_run_id:  ${{ steps.get_run_id.outputs.web_build_run_id }}
+    steps:
+
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+
+      #-------------------------------
+      - name: get latest Rust build run_id
+        id: get_run_id
+        env:
+          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+        run: |
+
+          # VARS
+          GO_WF_NAME="gf_prod_go.yaml"
+          RUST_WF_NAME="gf_prod_rust.yaml"
+          WEB_WF_NAME="gf_prod_web.yaml"
+
+          # GET_RUN_ID
+          GO_RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${GO_WF_NAME} --json databaseId --jq .[0].databaseId`
+          RUST_RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${RUST_WF_NAME} --json databaseId --jq .[0].databaseId`
+          WEB_RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${WEB_WF_NAME} --json databaseId --jq .[0].databaseId`
+
+          # SET_OUTPUTS
+          echo "::set-output name=go_build_run_id::$GO_RUN_ID"
+          echo "::set-output name=rust_build_run_id::$RUST_RUN_ID"
+          echo "::set-output name=web_build_run_id::$WEB_RUN_ID"
+
+      #-------------------------------
+
+
+  #--------------------------------------------------------------------
+  # BUILD_CONTAINERS
+  build-and-publish-containers:
+    needs: [check-download-prebuilt-artifacts]
+    runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_go_ubuntu:latest
+      env:
+        GF_DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+        GF_DOCKERHUB_P: ${{ secrets.DOCKERHUB_TOKEN_GF_SOLO }}
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf
+
+        # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
+        #               connect to the Docker daemon running on the host machine. this connection
+        #               is whats used for container building.
+        - /var/run/docker.sock:/var/run/docker.sock
+
+    steps:
+
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+
+      #-------------------------------
+      # DOWNLOAD_GO_ARTIFACTS
+      - name: download Go build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: go_build_artifacts
+          github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+          path: /home/gf/build/gf_apps/gf_solo/
+          run-id: "${{ needs.check-download-prebuilt-artifacts.outputs.go_build_run_id }}"
+
+      #-------------------------------
+      # DOWNLOAD_RUST_ARTIFACTS
+
+      - name: download Rust build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: rust_build_artifacts
+          github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+          path: /home/gf/rust/build
+          run-id: "${{ needs.check-download-prebuilt-artifacts.outputs.rust_build_run_id }}"
+
+      #-------------------------------
+      # DOWNLOAD_WEB_ARTIFACTS
+      - name: download Web build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: web_build_artifacts
+          github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+          path: /home/gf/web/build
+          run-id: "${{ needs.check-download-prebuilt-artifacts.outputs.web_build_run_id }}"
+
+      #-------------------------------
+      # BUILD_CONTAINER
+      - name: build container
+        # "-u" - run unbuffered to see all stdout/stderr as it happens
+        # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_web
+        run: |
+          python3 -u /home/gf/ops/cli__build.py -run=build_containers -app=gf_solo
+
+      #-------------------------------
+      # PUBLISH_CONTAINER
+      - name: publish container to dockerhub
+        # "-u" - run unbuffered to see all stdout/stderr as it happens
+        # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_web
+        run: |
+          python3 -u /home/gf/ops/cli__build.py -run=publish_containers -app=gf_solo
+
+      #-------------------------------
+
+  #--------------------------------------------------------------------
+  # NOTIFY_COMPLETION
+  notify_completion:
+    needs: build-and-publish-containers
+    runs-on: ubuntu-latest
+    steps:
+
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+      
+      #-------------------------------
+      # INITIALIZE_PYTHON3
+      - name: initialize python3
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: install python3 dependencies for cli__build.py
+        run: |
+          pip3 install -r requirements.txt
+
+      #-------------------------------
+      # NOTIFY_COMPLETION
+      - name: notify completion via HTTP
+        env:
+          GF_NOTIFY_COMPLETION_URL: ${{ secrets.GF_NOTIFY_COMPLETION_URL__GF_SOLO }}
+        run: |
+          python3 ops/cli__build.py -run=notify_completion -app=gf_solo
+
+      #-------------------------------
+
+  #--------------------------------------------------------------------

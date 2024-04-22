@@ -1,0 +1,61 @@
+name: web - prod
+on:
+  push:
+    branches: 
+      - master
+    paths:
+      - "web/**"
+
+  # workflow_run:
+  #   # trigger this workflow if the Rust workflow completes succesfuly
+  #   workflows: ["gf_prod_rust"]
+  #   types:
+  #     - completed
+
+  # workflow is also triggered via github REST API/manually
+  workflow_dispatch:
+
+env:
+  ENV: prod
+  AWS_REGION: us-east-1
+  CONTAINER_IMAGE: glofloworg/gf_solo
+  IMAGE_TAG: latest
+
+jobs:
+
+  #--------------------------------------------------------------------
+  # BUILD_WEB
+  build-web:
+    runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_web:latest
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf
+
+    steps:
+
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+
+      #-------------------------------
+      # BUILD_WEB
+      - name: build Web code
+        # "-u" - run unbuffered to see all stdout/stderr as it happens
+        # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_web
+        run: |
+          python3 -u /home/gf/ops/cli__build.py -run=build_web -build_outof_cont -app=gf_solo
+
+      #-------------------------------
+      # UPLOAD_ARTIFACTS
+      - name: upload Web build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: web_build_artifacts
+          path: |
+            /home/gf/web/build
+          retention-days: 30
+
+      #-------------------------------

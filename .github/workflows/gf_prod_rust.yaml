@@ -1,4 +1,4 @@
-name: prod - rust
+name: rust - prod
 on:
   push:
     branches: [ master ]

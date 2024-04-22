@@ -1,0 +1,254 @@
+name: go - prod
+on:
+  push:
+    branches: 
+      - master
+    paths:
+      - "go/**"
+
+  # workflow_run:
+  #   # trigger this workflow if the Rust workflow completes succesfuly
+  #   workflows: ["gf_prod_rust"]
+  #   types:
+  #     - completed
+
+  # workflow is also triggered via github REST API/manually
+  workflow_dispatch:
+
+env:
+  ENV: prod
+  AWS_REGION: us-east-1
+  CONTAINER_IMAGE: glofloworg/gf_solo
+  IMAGE_TAG: latest
+
+jobs:
+                                      
+  #--------------------------------------------------------------------
+  # CHECK_DOWNLOAD_PREBUILT_ARTIFACTS - test fetchability or dependency assets
+
+  check-download-prebuilt-artifacts:
+    runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_go_ubuntu:latest
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf
+    outputs:
+      rust_build_run_id: ${{ steps.get_run_id.outputs.rust_build_run_id }}
+    steps:
+
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+              
+      #-------------------------------
+      - name: get latest Rust build run_id
+        id: get_run_id
+        env:
+          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+        run: |
+
+          WF_NAME="gf_prod_rust.yaml"
+
+          # GE_RUN_ID
+          RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${WF_NAME} --json databaseId --jq .[0].databaseId`
+
+          echo "::set-output name=rust_build_run_id::$RUN_ID"
+
+      #-------------------------------
+
+  #--------------------------------------------------------------------
+  # TEST_GO
+  test-go:
+    needs: [check-download-prebuilt-artifacts]
+    runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_go_ubuntu:latest
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf
+      env:
+        GF_LOG_LEVEL: debug
+        GF_ALCHEMY_SERVICE_ACC__API_KEY: ${{ secrets.GF_ALCHEMY_SERVICE_ACC__API_KEY }}
+
+        # currently these are used by web3 tests
+        GF_TEST_MONGODB_HOST_PORT: mongo
+        GF_TEST_SQL_HOST_PORT: postgres
+
+        AUTH0_DOMAIN: ${{ secrets.GF_AUTH0_DOMAIN }}
+
+    services:
+      mongo:
+        image: mongo
+      postgres:
+        image: postgres
+        env:
+
+          # disable auth on SQL server
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: gf_tests
+          POSTGRES_USER: gf
+
+    steps:
+
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+
+      #-------------------------------
+      # DEBUG
+
+      # # RUST_BUILD_RUN_ID
+      # - name: debug - artifacts_run_id
+      #   run: |
+      #     echo "artifacts run_id: ${{ needs.check-download-prebuilt-artifacts.outputs.rust_build_run_id }}"
+      
+      # # DOWNLOAD_RUST_ARTIFACTS
+      # - name: debug - download Rust build artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: rust_build_artifacts
+      #     github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+      #     path: /home/gf/rust/build
+      #     run-id: "${{ needs.check-download-prebuilt-artifacts.outputs.rust_build_run_id }}"
+
+      #-------------------------------
+      # GF_IMAGES_CORE
+      - name: test gf_images_core
+        run: |
+          cd /home/gf/go/gf_apps/gf_images_lib/gf_images_core
+          go test -v -mongodb_host=mongo -sql_host=postgres
+
+      # GF_IMAGES_FLOWS
+      - name: test gf_images_flows
+        run: |
+          cd /home/gf/go/gf_apps/gf_images_lib/gf_images_flows
+          go test -v -mongodb_host=mongo -sql_host=postgres
+
+      # GF_IMAGES_SERVICE
+      - name: test gf_images_service
+        run: |
+          cd /home/gf/go/gf_apps/gf_images_lib/gf_images_service
+          go test -v -mongodb_host=mongo -sql_host=postgres
+
+      # GF_TAGGER
+      - name: test gf_tagger
+        run: |
+          cd /home/gf/go/gf_apps/gf_tagger_lib
+          go test -v -mongodb_host=mongo -sql_host=postgres
+          
+      # GF_LANG
+      - name: test gf_lang
+        run: |
+          cd /home/gf/gf_lang/go/gf_lang
+          go test -v
+
+      # GF_POLICY
+      - name: test gf_policy
+        run: |
+          cd /home/gf/go/gf_identity/gf_policy
+          go test -v -mongodb_host=mongo -sql_host=postgres
+
+      # GF_IDENTITY_LIB
+      - name: test gf_identity
+        run: |
+          cd /home/gf/go/gf_identity
+          go test -v -mongodb_host=mongo -sql_host=postgres
+          
+      # GF_WEB3
+      - name: test gf_web3
+        run: |
+          cd /home/gf/go/gf_web3/gf_web3_lib
+          go test -v
+      
+      # GF_HOME
+      - name: test gf_home
+        run: |
+          cd /home/gf/go/gf_apps/gf_home_lib
+          go test -v -mongodb_host=mongo -sql_host=postgres
+
+      # GF_ADMIN
+      - name: test gf_admin
+        run: |
+          cd /home/gf/go/gf_apps/gf_admin_lib
+          go test -v -mongodb_host=mongo -sql_host=postgres
+
+      # GF_BOOKMARKS
+      - name: test gf_bookmarks
+        run: |
+          cd /home/gf/go/gf_apps/gf_tagger_lib/gf_bookmarks
+          go test -v -mongodb_host=mongo -sql_host=postgres
+      
+      # GF_LANDING_PAGE
+      - name: test gf_landing_page
+        run: |
+          cd /home/gf/go/gf_apps/gf_landing_page_lib
+          go test -v -mongodb_host=mongo -sql_host=postgres
+
+      #-------------------------------
+
+  #--------------------------------------------------------------------
+  # BUILD_GO
+  build-go:
+    needs: [test-go, check-download-prebuilt-artifacts]
+    runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_go_ubuntu:latest
+      env:
+        
+        # currently set to avoid the error raised on go build:
+        # > error obtaining VCS status: exit status 128"
+        # > Use -buildvcs=false to disable VCS stamping.
+        GOFLAGS: "-buildvcs=false"
+
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf
+    steps:
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+
+      #-------------------------------
+      # "sed" - insert GIT commit into gf_sys_release_info.go by replacing string "GF_COMMIT_SHA"
+      # "-i" - modify file in place 
+      - name: add git commit hash
+        run: |
+          sed -i 's/GF_COMMIT_SHA/${{ github.sha }}/g' /home/gf/go/gf_core/gf_sys_release_info.go
+
+      #-------------------------------
+      # DOWNLOAD_RUST_ARTIFACTS
+
+      - name: download Rust build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: rust_build_artifacts
+          github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+          path: /home/gf/rust/build
+          run-id: "${{ needs.check-download-prebuilt-artifacts.outputs.rust_build_run_id }}"
+      
+      #-------------------------------
+      # "-u" - run unbuffered to see all stdout/stderr as it happens
+      # "-build_outof_cont" - dont build in a container, since this build stage already runs in a container.
+      #                       by default all builds done with cli__build.py are run in a container.
+      # -fetch_deps
+      - name: build Go code
+        run: |
+          python3 -u /home/gf/ops/cli__build.py -run=build_go -build_outof_cont -app=gf_solo
+
+      #-------------------------------
+      # UPLOAD_ARTIFACTS
+      - name: upload Go build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: go_build_artifacts
+          path: |
+            /home/gf/build/gf_apps/gf_solo/gf_solo
+          retention-days: 30
+
+      #-------------------------------
+  
+  #--------------------------------------------------------------------

@@ -26,6 +26,9 @@ env:
 
 jobs:
 
+                                                                           
+
+
   #--------------------------------------------------------------------
   # DOWNLOAD_PREBUILT_ARTIFACTS - test fetchability or dependency assets
 
@@ -38,16 +41,28 @@ jobs:
         # mount the dir where the gloflow repo is cloned
         - ${{ github.workspace }}:/home/gf
     outputs:
-      rust_build_run_id: ${{ steps.getrunid.outputs.rust_build_run_id }}
+      rust_build_run_id: ${{ steps.get_run_id.outputs.rust_build_run_id }}
     steps:
 
       #-------------------------------
       # GIT_CHECKOUT
       - uses: actions/checkout@v3
 
+      # #-------------------------------
+      # - name: Check for changes in specific directory
+      #   id: set_changed_dirs
+      #   run: |
+      #     GO_DIR=/home/gf/go
+      #     WEB_DIR=/home/gf/web
+      #
+      #     echo "::set-output name=go_dir_changed::$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep '^${GO_DIR}' && echo 'true' || echo 'false')"
+      #     echo "::set-output name=web_dir_changed::$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep '^${WEB_DIR}' && echo 'true' || echo 'false')"
+              
       #-------------------------------
       - name: get latest Rust build run_id
-        id: getrunid
+        id: get_run_id
+        env:
+          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
         run: |
 
           WF_NAME="gf_prod_rust.yaml"
@@ -63,9 +78,6 @@ jobs:
 
           echo "::set-output name=rust_build_run_id::$RUN_ID"
           
-        env:
-          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
-
       #-------------------------------
       # # DOWNLOAD_RUST_ARTIFACTS
       # - name: download Rust build artifacts
@@ -77,46 +89,6 @@ jobs:
       #     run-id: ${{ steps.getrunid.outputs.rust_build_run_id }}
 
       #-------------------------------
-
-  # #--------------------------------------------------------------------
-  # # BUILD_RUST
-  # build-rust:
-  #   runs-on: ubuntu-latest
-  #   container:
-  #     image: glofloworg/gf_builder_rust_ubuntu:latest
-  #     volumes:
-  #
-  #       # mount the dir where the gloflow repo is cloned
-  #       - ${{ github.workspace }}:/home/gf
-  #
-  #   steps:
-  #
-  #     #-------------------------------
-  #     # GIT_CHECKOUT
-  #     - uses: actions/checkout@v3
-  #
-  #     #-------------------------------
-  #     # BUILD_RUST
-  #     - name: build Rust code
-  #
-  #       # "-u" - run unbuffered to see all stdout/stderr as it happens
-  #       # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_rust
-  #       # "-build_outof_cont" - cli__build.py is run in a container, so command itself should spawn a new container
-  #       run: |
-  #         rustup default nightly
-  #         python3 -u /home/gf/ops/cli__build.py -run=build_rust -app=gf_images_jobs -build_outof_cont
-  #
-  #     #-------------------------------
-  #     # UPLOAD_ARTIFACTS
-  #     - name: upload Rust build artifacts
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: rust_build_artifacts
-  #         path: |
-  #           /home/gf/rust/build
-  #         retention-days: 1
-  #
-  #     #-------------------------------
 
   #--------------------------------------------------------------------
   # TEST_GO
@@ -289,36 +261,6 @@ jobs:
           github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
           path: /home/gf/rust/build
           run-id: "${{ needs.check-download-prebuilt-artifacts.outputs.rust_build_run_id }}"
-
-      # - name: download Rust build artifacts
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: rust_build_artifacts
-      #     github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
-      #     path: /home/gf/rust/build
-      #     run-id: 
-
-      # - name: get latest Rust build run_id
-      #   id: getrunid
-      #   run: |
-      #
-      #     WF_NAME="gf_prod_rust.yaml"
-      #
-      #     # REPO="gloflow/gloflow"
-      #     # ARTIFACT_NAME="rust_build_artifacts"
-      #
-      #     # GE_RUN_ID
-      #     RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${WF_NAME} --json databaseId --jq .[0].databaseId`
-      #   
-      #     # DOWNLOAD
-      #     # gh run --repo ${REPO} download ${RUN_ID} -n ${ARTIFACT_NAME}
-      #
-      #     echo "::set-output name=run_id::$RUN_ID"
-      #   
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
-
-      
       
       #-------------------------------
       # "-u" - run unbuffered to see all stdout/stderr as it happens
@@ -337,7 +279,7 @@ jobs:
           name: go_build_artifacts
           path: |
             /home/gf/build/gf_apps/gf_solo/gf_solo
-          retention-days: 1
+          retention-days: 30
 
       #-------------------------------
 
@@ -375,7 +317,7 @@ jobs:
           name: web_build_artifacts
           path: |
             /home/gf/web/build
-          retention-days: 1
+          retention-days: 30
 
       #-------------------------------
 
