@@ -5,6 +5,7 @@ on:
       - master
     paths:
       - "go/**"
+      - .github/workflows/gf_prod_go.yaml
 
   # workflow_run:
   #   # trigger this workflow if the Rust workflow completes succesfuly
@@ -52,7 +53,7 @@ jobs:
           WF_NAME="gf_prod_rust.yaml"
 
           # GE_RUN_ID
-          RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${WF_NAME} --json databaseId --jq .[0].databaseId`
+          RUN_ID=`gh run --repo ${{ github.repository }} list --state completed --workflow ${WF_NAME} --json databaseId --jq .[0].databaseId`
 
           echo "::set-output name=rust_build_run_id::$RUN_ID"
 
@@ -251,4 +252,17 @@ jobs:
 
       #-------------------------------
   
+  #--------------------------------------------------------------------
+  # NOTIFY_COMPLETION - run containers build workflow
+
+  notify_completion:
+    needs: build-go
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: trigger container build workflow
+        env:
+          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+        run: gh workflow run gf_prod_containers.yaml --repo ${{ github.repository }} --ref master
+
   #--------------------------------------------------------------------

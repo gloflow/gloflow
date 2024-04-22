@@ -5,6 +5,7 @@ on:
       - master
     paths:
       - "web/**"
+      - .github/workflows/gf_prod_web.yaml
 
   # workflow_run:
   #   # trigger this workflow if the Rust workflow completes succesfuly
@@ -62,7 +63,8 @@ jobs:
       
 
   #--------------------------------------------------------------------
-  # NOTIFY_COMPLETION
+  # NOTIFY_COMPLETION - run containers build workflow
+
   notify_completion:
     needs: build-web
     runs-on: ubuntu-latest

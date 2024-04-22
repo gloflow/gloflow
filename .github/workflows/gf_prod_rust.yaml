@@ -4,6 +4,7 @@ on:
     branches: [ master ]
     paths:
       - "rust/**"
+      - .github/workflows/gf_prod_rust.yaml
 
   # workflow is also triggered via github REST API/manually
   workflow_dispatch:
@@ -54,3 +55,18 @@ jobs:
           retention-days: 30
           
       #-------------------------------
+  
+  #--------------------------------------------------------------------
+  # NOTIFY_COMPLETION - run containers build workflow
+
+  notify_completion:
+    needs: build-rust
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: trigger container build workflow
+        env:
+          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+        run: gh workflow run gf_prod_containers.yaml --repo ${{ github.repository }} --ref master
+
+  #--------------------------------------------------------------------

@@ -1,10 +1,10 @@
 name: containers - prod
 on:
-  # push:
-  #   branches: 
-  #     - master
-  #   paths:
-  #     - "**"
+  push:
+    branches: 
+      - master
+    paths:
+      - .github/workflows/gf_prod_containers.yaml
 
   # workflow_run:
   #   # trigger this workflow if the Rust workflow completes succesfuly
@@ -57,9 +57,9 @@ jobs:
           WEB_WF_NAME="gf_prod_web.yaml"
 
           # GET_RUN_ID
-          GO_RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${GO_WF_NAME} --json databaseId --jq .[0].databaseId`
-          RUST_RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${RUST_WF_NAME} --json databaseId --jq .[0].databaseId`
-          WEB_RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${WEB_WF_NAME} --json databaseId --jq .[0].databaseId`
+          GO_RUN_ID=`gh run --repo ${{ github.repository }} list --state completed --workflow ${GO_WF_NAME} --json databaseId --jq .[0].databaseId`
+          RUST_RUN_ID=`gh run --repo ${{ github.repository }} list --state completed --workflow ${RUST_WF_NAME} --json databaseId --jq .[0].databaseId`
+          WEB_RUN_ID=`gh run --repo ${{ github.repository }} list --state completed --workflow ${WEB_WF_NAME} --json databaseId --jq .[0].databaseId`
 
           # SET_OUTPUTS
           echo "::set-output name=go_build_run_id::$GO_RUN_ID"
