@@ -1,4 +1,4 @@
-name: prod
+name: prod - full
 on:
   push:
     branches: 
