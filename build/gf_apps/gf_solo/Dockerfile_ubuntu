@@ -85,7 +85,7 @@ ADD ./libs libs
 # HACK!! - tensorflow wants to load libtensorflow_framework.so.1 even though libtensorflow_framework.so
 #          is present. so just doing a quick solution of making a copy here via Dockerfile. 
 #          see to move this into some more appropriate place (lib preparation stage).
-RUN cp libs/libtensorflow_framework.so libs/libtensorflow_framework.so.1
+# RUN cp libs/libtensorflow_framework.so libs/libtensorflow_framework.so.1
 
 # C_LIBS - so that the libs can be loaded by linker/gf_solo
 ENV LD_LIBRARY_PATH=libs
