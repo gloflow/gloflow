@@ -66,5 +66,17 @@
 			
 				
 		</script>
+		
+		<script type="text/javascript" src="./../ts/gf_maps.ts"></script>
+		<script>
+			System.import('gf_apps/gf_maps/ts/gf_maps').then(function(m){});
+		</script>
+		
+		{{- /*-----------------------------------------------------*/}}
+		{{- /*SUBTEMPLATE*/}}
+		{{ if (call .IsSubtmplDef "gf_footer")}}
+			{{ template "gf_footer" }}
+		{{ end }}
+		{{- /*------------------------------------------------------*/}}
 	</body>
 </html>

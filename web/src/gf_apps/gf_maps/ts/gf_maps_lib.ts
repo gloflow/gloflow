@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2023 Ivan Trajkovic
+Copyright (C) 2024 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,10 +23,6 @@ import * as gf_identity       from "./../../../gf_identity/ts/gf_identity";
 import * as gf_identity_http  from "./../../../gf_identity/ts/gf_identity_http";
 import * as gf_flows_picker   from "./../../gf_images/ts/gf_images_flows_browser/gf_flows_picker";
 import * as gf_tags_picker    from "./../../gf_tagger/ts/gf_tags_picker/gf_tags_picker";
-import * as gf_images         from "./gf_images";
-import * as gf_posts          from "./gf_posts";
-import * as gf_procedural_art from "./procedural_art/gf_procedural_art";
-// import * as gf_image_colors   from "./../../../gf_core/ts/gf_image_colors";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
 declare var gf_upload__init;
@@ -82,40 +78,14 @@ export async function init(p_plugin_callbacks_map,
 	}
 
 	//---------------------
-	// POSTS_INIT
-	gf_posts.init(gf_host_str, p_log_fun);
-
-	//---------------------
-	// GF_IMAGES_INIT
-	gf_images.init(logged_in_bool,
-		p_plugin_callbacks_map,
-		gf_host_str,
-		p_log_fun);
-
-	//---------------------
 	// WINDOW_RESIZE - draw a new canvas when the view is resized, and delete the old one (with the old dimensions)
 	$(window).on("resize", ()=>{
 
 		// small screen widths dont display procedural_art
 		if ($(window).innerWidth() > 660) {
 
-			// ABOUT_SECTION - when screen is small (for mobile) dont display it all.
-			//                 has to removed here directly because its included in the template.
-			$("#about_section").remove();
-
-			gf_procedural_art.remove();
-			gf_procedural_art.init(p_log_fun);
+        
 		}
-	});
-
-	//---------------------
-	// GF_PROCEDURAL_ART
-	gf_procedural_art.init(p_log_fun);
-
-	// regenerate new piece on click 
-	$("#randomized_art").on("click", ()=>{
-		gf_procedural_art.remove();
-		gf_procedural_art.init(p_log_fun);
 	});
 
 	//---------------------
