@@ -32,3 +32,5 @@ RUN npm install -g typescript
 RUN npm install -g uglify-js
 
 #-----------------------------
+
+WORKDIR /home/gf
