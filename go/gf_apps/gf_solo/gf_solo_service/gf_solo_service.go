@@ -105,9 +105,12 @@ func Run(pConfig *GFconfig,
 	// GF_IDENTITY
 
 	gfIdentityServiceInfo := &gf_identity_core.GFserviceInfo{
-		NameStr:       "gf_identity",
-		DomainBaseStr: pConfig.DomainBaseStr,
+		NameStr: "gf_identity",
 
+		// DOMAINS
+		DomainBaseStr:           pConfig.DomainBaseStr,
+		DomainForAuthCookiesStr: &pConfig.DomainForAuthCookiesStr,
+		
 		AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
 
 		AuthLoginURLstr:                authLoginURLstr, // on email confirm redirect user to this

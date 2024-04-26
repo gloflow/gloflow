@@ -31,24 +31,27 @@ type GFconfig struct {
 	// ENVIRONMENT
 	EnvStr string `mapstructure:"env"`
 
-	// DOMAIN - where this gf_solo instance is reachable on
+	// DOMAINS - where this gf_solo instance is reachable on
 	DomainBaseStr      string `mapstructure:"domain_base"`
 	DomainAdminBaseStr string `mapstructure:"domain_admin_base"`
-	
+
+	// DOMAIN_FOR_AUTH_COOKIES - domain/pattern that is set on the auth cookies to restrict their scope.
+	DomainForAuthCookiesStr string `mapstructure:"domain_for_auth_cookies"`
+
 	// PORTS
 	PortStr        string `mapstructure:"port"`
 	PortAdminStr   string `mapstructure:"port_admin"`
 	PortMetricsStr string `mapstructure:"port_metrics"`
-
-	// MONGODB - this is the dedicated mongodb DB
-	MongoHostStr   string `mapstructure:"mongodb_host"`
-	MongoDBnameStr string `mapstructure:"mongodb_db_name"`
 
 	// SQL
 	SQLuserNameStr string `mapstructure:"sql_user_name"`
 	SQLpassStr     string `mapstructure:"sql_pass"`
 	SQLhostStr     string `mapstructure:"sql_host"`
 	SQLdbNameStr   string `mapstructure:"sql_db_name"`
+
+	// MONGODB - this is the dedicated mongodb DB
+	MongoHostStr   string `mapstructure:"mongodb_host"`
+	MongoDBnameStr string `mapstructure:"mongodb_db_name"`
 
 	// ELASTICSEARCH
 	ElasticsearchHostStr string `mapstructure:"elasticsearch_host"`
@@ -94,7 +97,16 @@ type GFconfig struct {
 }
 
 //-------------------------------------------------------------
+// CONFIG_INIT
 
+/*
+load config for gf_solo from all the sources.
+Viper lib is used for config loading.
+configs are loaded from:
+- ENV vars
+- gf_solo.yaml config file
+- via CLI args
+*/
 func ConfigInit(pConfigDirPathStr string,
 	pConfigFileNameStr string) (*GFconfig, error) {
 
@@ -105,14 +117,17 @@ func ConfigInit(pConfigDirPathStr string,
 	viper.SetConfigName(configNameStr)
 	
 	//--------------------
+	// ENV_VARS
+	// all config members that have their mapstructure name for Viper config, 
+	// also have a corresponding ENV var name thats generated for them by
+	// upper-casing their name.
+	//--------------------
 	// ENV_PREFIX - "GF" becomes "GF_" - prefix expected in all recognized ENV vars.
+
 	viper.SetEnvPrefix("GF")
 
-	// ENV_VARS
 	// IMPORTANT!! - enable Viper parsing ENV vars.
-	//               all config members that have their mapstructure name for Viper config, 
-	//               also have a corresponding ENV var name thats generated for them by
-	//               upper-casing their name.
+	
 	viper.AutomaticEnv()
 	
 	//--------------------

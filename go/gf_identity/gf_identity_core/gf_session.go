@@ -119,7 +119,8 @@ func SessionValidate(pReq *http.Request,
 //---------------------------------------------------
 
 func CreateAuthCookie(pJWTtokenStr string,
-	pResp http.ResponseWriter) {
+	pDomainStr *string,
+	pResp      http.ResponseWriter) {
 
 	sessionTTLhoursInt, _ := GetSessionTTL()
 
@@ -127,12 +128,14 @@ func CreateAuthCookie(pJWTtokenStr string,
 	cookieDataStr := fmt.Sprintf("Bearer %s", pJWTtokenStr)
 	gf_core.HTTPsetCookieOnResp(cookieNameStr,
 		cookieDataStr,
+		pDomainStr,
 		pResp,
 		sessionTTLhoursInt)
 }
 
 func CreateAuthCookieOnReq(pJWTtokenStr string,
-	pReq *http.Request) {
+	pDomainStr *string,
+	pReq       *http.Request) {
 
 	sessionTTLhoursInt, _ := GetSessionTTL()
 
@@ -141,6 +144,7 @@ func CreateAuthCookieOnReq(pJWTtokenStr string,
 
 	gf_core.HTTPsetCookieOnReq(cookieNameStr,
 		cookieDataStr,
+		pDomainStr,
 		pReq,
 		sessionTTLhoursInt)
 }
@@ -148,7 +152,8 @@ func CreateAuthCookieOnReq(pJWTtokenStr string,
 //---------------------------------------------------
 
 func CreateSessionIDcookie(pSessionIDstr string,
-	pResp http.ResponseWriter) {
+	pDomainStr *string,
+	pResp      http.ResponseWriter) {
 	
 	sessionTTLhoursInt, _ := GetSessionTTL()
 
@@ -156,6 +161,7 @@ func CreateSessionIDcookie(pSessionIDstr string,
 	cookieDataStr := pSessionIDstr
 	gf_core.HTTPsetCookieOnResp(cookieNameStr,
 		cookieDataStr,
+		pDomainStr,
 		pResp,
 		sessionTTLhoursInt)
 }

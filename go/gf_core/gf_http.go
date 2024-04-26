@@ -115,6 +115,7 @@ func HTTPgetAllCookies(pReq *http.Request) map[string]interface{} {
 
 func HTTPsetCookieOnResp(pCookieNameStr string,
 	pDataStr     string,
+	pDomainStr   *string,
 	pResp        http.ResponseWriter,
 	pTTLhoursInt int) {
 
@@ -158,11 +159,24 @@ func HTTPsetCookieOnResp(pCookieNameStr string,
 		// some protection against cross-site request forgery attacks.
 		SameSite: http.SameSiteStrictMode,
 	}
+
+	//------------------
+	// DOMAIN - associates a domain with the cookie.
+	//          if the domain name is prefixed with ".", this cookie will be accessible
+	//          by all subdomains as well.
+	
+	if pDomainStr != nil {
+		cookie.Domain = *pDomainStr
+	}
+
+	//------------------
+
 	http.SetCookie(pResp, &cookie)
 }
 
 func HTTPsetCookieOnReq(pCookieNameStr string,
 	pDataStr     string,
+	pDomainStr   *string,
 	pReq         *http.Request,
 	pTTLhoursInt int) {
 
@@ -171,6 +185,17 @@ func HTTPsetCookieOnReq(pCookieNameStr string,
         Value: pDataStr,
         Path:  "/",
     }
+
+	//------------------
+	// DOMAIN - associates a domain with the cookie.
+	//          if the domain name is prefixed with ".", this cookie will be accessible
+	//          by all subdomains as well.
+	
+	if pDomainStr != nil {
+		cookie.Domain = *pDomainStr
+	}
+
+	//------------------
 
     pReq.AddCookie(cookie)
 }

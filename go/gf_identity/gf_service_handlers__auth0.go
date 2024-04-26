@@ -217,10 +217,14 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			// COOKIES 
 			
 			// SESSION_ID - sets gf_sess cookie
-			gf_identity_core.CreateSessionIDcookie(string(sessionID), pResp)
+			gf_identity_core.CreateSessionIDcookie(string(sessionID),
+				pServiceInfo.DomainForAuthCookiesStr,
+				pResp)
 
 			// JWT - sets "Authorization" cookie
-			gf_identity_core.CreateAuthCookie(output.JWTtokenStr, pResp)
+			gf_identity_core.CreateAuthCookie(output.JWTtokenStr,
+				pServiceInfo.DomainForAuthCookiesStr,
+				pResp)
 			
 			//------------------
 			// HTTP_REDIRECT - redirect user to logged in page

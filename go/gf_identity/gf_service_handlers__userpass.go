@@ -114,11 +114,15 @@ func initHandlersUserpass(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 					// SESSION_ID - sets gf_sess cookie
 					sessionIDstr := string(output.SessionID)
-					gf_identity_core.CreateSessionIDcookie(sessionIDstr, pResp)
+					gf_identity_core.CreateSessionIDcookie(sessionIDstr,
+						pServiceInfo.DomainForAuthCookiesStr,
+						pResp)
 
 					// JWT - sets "Authorization" cookie
 					jwtTokenValStr := string(output.JWTtokenVal)
-					gf_identity_core.CreateAuthCookie(jwtTokenValStr, pResp)
+					gf_identity_core.CreateAuthCookie(jwtTokenValStr,
+						pServiceInfo.DomainForAuthCookiesStr,
+						pResp)
 				}
 
 				//---------------------

@@ -290,7 +290,9 @@ func initHandlers(pAuthLoginURLstr string,
 						//---------------------
 						// SET_COOKIES
 						jwtTokenValStr := string(loginFinalizeOutput.JWTtokenVal)
-						gf_identity_core.CreateAuthCookie(jwtTokenValStr, pResp)
+						gf_identity_core.CreateAuthCookie(jwtTokenValStr,
+							pServiceInfo.DomainForAuthCookiesStr,
+							pResp)
 
 						//---------------------
 
@@ -379,7 +381,9 @@ func initHandlers(pAuthLoginURLstr string,
 					//---------------------	
 					// SET_COOKIES
 					jwtTokenValStr := string(loginFinalizeOutput.JWTtokenVal)
-					gf_identity_core.CreateAuthCookie(jwtTokenValStr, pResp)
+					gf_identity_core.CreateAuthCookie(jwtTokenValStr,
+						pServiceInfo.DomainForAuthCookiesStr,
+						pResp)
 
 					//---------------------
 				}

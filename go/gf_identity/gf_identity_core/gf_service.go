@@ -34,8 +34,17 @@ type GFserviceInfo struct {
 	// name of this service, in case multiple are spawned
 	NameStr string
 
+	//------------------------
 	// DOMAIN - where this gf_solo instance is reachable on
 	DomainBaseStr string
+	
+	// DOMAIN_FOR_AUTH_COOKIES - domain/pattern that is set on
+	//                           auth cookies, to restrict their scope.
+	// its either the same as DomainBaseStr, or can be prefixed with "."
+	// to include all the subdomains of that base domain.
+	// example:
+	// "gloflow.org" | ".gloflow.org" (include subdomains as well)
+	DomainForAuthCookiesStr *string
 
 	//------------------------
 	// AUTH_SUBSYSTEM_TYPE - userpass | auth0
