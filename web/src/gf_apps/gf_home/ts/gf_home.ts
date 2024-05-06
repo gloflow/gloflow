@@ -204,16 +204,17 @@ function init_color_picker(p_parent_element,
     });
 	*/
 
-	const container = gf_color_picker.init(async (p_color_hex_str)=>{
+	const container = gf_color_picker.init("#background_color_picker #control",
+		async (p_color_hex_str)=>{
 
-		$("body").css("background-color", `${p_color_hex_str}`);
+			$("body").css("background-color", `${p_color_hex_str}`);
 
-		// update component remotely
-		const component_name_str = "background_color_picker";
-		await gf_utils.update_viz_background_color(component_name_str,
-			p_color_hex_str,
-			p_http_api_map);
-	})
+			// update component remotely
+			const component_name_str = "background_color_picker";
+			await gf_utils.update_viz_background_color(component_name_str,
+				p_color_hex_str,
+				p_http_api_map);
+		})
 
 	// DRAG_N_DROP
 	gf_dragndrop.init(container,

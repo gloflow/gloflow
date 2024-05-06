@@ -20,7 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 declare var iro :any;
 
 //--------------------------------------------------------
-export function init(p_on_color_change_fun :any) {
+export function init(p_target_selector_str :string,
+    p_on_color_change_fun :any) {
 
     const container = $(`
 		<div id="color_picker">
