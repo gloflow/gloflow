@@ -40,6 +40,7 @@ templates_paths:
   gf_posts_browser:        "./templates/gf_posts_browser/gf_posts_browser.html"
   gf_tag_objects:          "./templates/gf_tag_objects/gf_tag_objects.html"
   gf_bookmarks:            "./templates/gf_bookmarks/gf_bookmarks.html"
+  gf_maps:                 "./templates/gf_maps/gf_maps.html"
 
 #--------------------
 # GF_IMAGES

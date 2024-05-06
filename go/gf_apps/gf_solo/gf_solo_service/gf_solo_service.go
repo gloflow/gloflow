@@ -44,6 +44,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_web3/gf_web3_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	"github.com/gloflow/gloflow/gf_lang/go/gf_lang_server/gf_lang_service"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_maps_lib"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -351,6 +352,19 @@ func Run(pConfig *GFconfig,
 		if gfErr != nil {
 			return
 		}
+	}
+
+	//-------------
+	// GF_MAPS
+
+	mapServiceInfo := &gf_maps_lib.GFserviceInfo{
+
+	}
+	gfErr := gf_maps_lib.InitService(gfSoloHTTPmux,
+		mapServiceInfo,
+		pRuntimeSys)
+	if gfErr != nil {
+		return
 	}
 
 	//-------------
