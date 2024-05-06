@@ -204,7 +204,7 @@ function init_color_picker(p_parent_element,
     });
 	*/
 
-	const container = gf_color_picker.init("#background_color_picker #control",
+	const container = gf_color_picker.init(p_parent_element,
 		async (p_color_hex_str)=>{
 
 			$("body").css("background-color", `${p_color_hex_str}`);

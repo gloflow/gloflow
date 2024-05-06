@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 declare var iro :any;
 
 //--------------------------------------------------------
-export function init(p_target_selector_str :string,
+export function init(p_parent_element :HTMLElement,
     p_on_color_change_fun :any) {
 
     const container = $(`
@@ -28,6 +28,7 @@ export function init(p_target_selector_str :string,
 			<div id="control"></div>
 			<div id="picked_color">#000000</div>
 		</div>`);
+    $(p_parent_element).append(container);
 
     const color_picker_color_element = $(container).find("#picked_color");
 
