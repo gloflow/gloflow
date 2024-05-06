@@ -34,36 +34,52 @@
 				<input type="text" id="sketch_name" value="test_sketch"/>
 				<textarea id="editor">
 
-// Boilerplate p5.js code
+					//----------------------
+					// GloFlow
+					// Boilerplate p5.js code
+					//----------------------
+					
+					let x, y;
+					
+					function setup() {
+						createCanvas(720, 400);
 
-// Where is the circle
-let x, y;
+						// starts in the middle
+						x = width / 2;
+						y = height;
+					}
+					
+					function draw() {
+						background(200);
+						
+						element();
+						element();
+						element();
+						element();
+						element();
+						
+					}
+					
+					function element() {
 
-function setup() {
-	createCanvas(720, 400);
-	// Starts in the middle
-	x = width / 2;
-	y = height;
-}
+						// Draw a circle
+						stroke(50);
+						fill(100);
+						ellipse(x, y, 24, 24);
+						
+						// Jiggling randomly on the horizontal axis
+						x = x + random(-15, 15);
 
-function draw() {
-	background(200);
-	
-	// Draw a circle
-	stroke(50);
-	fill(100);
-	ellipse(x, y, 24, 24);
-	
-	// Jiggling randomly on the horizontal axis
-	x = x + random(-1, 1);
-	// Moving up at a constant speed
-	y = y - 1;
-	
-	// Reset to the bottom
-	if (y < 0) {
-		y = height;
-	}
-}
+						// Moving up at a constant speed
+						y = y - 0.5;
+						
+						// Reset to the bottom
+						if (y < 0) {
+							y = height;
+						}
+					}
+					
+									
 
 				</textarea>
 				<button id="execute-button">play</button>
