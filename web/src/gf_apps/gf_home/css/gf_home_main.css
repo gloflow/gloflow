@@ -280,15 +280,3 @@ body {
 }
 
 /*------------------------------------------------------------------*/
-/*COLOR_PICKER*/
-#background_color_picker {
-	background-color: #d1bf7d;
-    padding: 11px;
-    position: absolute;
-}
-#background_color_picker #picked_color {
-	text-align: center;
-    font-size: 14px;
-    padding-top: 7px;
-    color: #545454;
-}

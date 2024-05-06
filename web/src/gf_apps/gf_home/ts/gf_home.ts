@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../d/jquery.d.ts" />
 
 import * as gf_dragndrop          from "./../../../gf_core/ts/gf_dragndrop";
+import * as gf_color_picker       from "./../../../gf_core/ts/gf_color_picker";
 import * as gf_home_eth_addresses from "gf_home_eth_addresses";
 import * as gf_utils              from "gf_utils";
 import * as gf_sys_panel          from "./../../../gf_sys_panel/ts/gf_sys_panel";
@@ -174,7 +175,8 @@ export async function init(p_http_api_map,
 function init_color_picker(p_parent_element,
 	p_http_api_map,
 	p_assets_paths_map) {
-
+	
+	/*
 	const container = $(`
 		<div id="background_color_picker">
 			<div id="control"></div>
@@ -200,6 +202,18 @@ function init_color_picker(p_parent_element,
 			background_color_hex_str,
 			p_http_api_map);
     });
+	*/
+
+	const container = gf_color_picker.init(async (p_color_hex_str)=>{
+
+		$("body").css("background-color", `${p_color_hex_str}`);
+
+		// update component remotely
+		const component_name_str = "background_color_picker";
+		await gf_utils.update_viz_background_color(component_name_str,
+			p_color_hex_str,
+			p_http_api_map);
+	})
 
 	// DRAG_N_DROP
 	gf_dragndrop.init(container,

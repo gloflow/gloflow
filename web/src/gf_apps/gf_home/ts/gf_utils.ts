@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //--------------------------------------------------------
 export async function get_user_info(p_identity_http_api_map) {
 
-	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+	return new Promise(async function(p_resolve_fun, p_reject_fun) {
 		var screen_name_str;
 		var profile_image_url_str;
 		try {
@@ -44,14 +44,13 @@ export async function get_user_info(p_identity_http_api_map) {
 		p_resolve_fun(user_info_map);
 
 	});
-	return p;
 }
 
 //--------------------------------------------------------
 export function update_viz_component_remote(p_component_name_str :string,
 	p_drag_data_map,
 	p_http_api_map) {
-	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+	return new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 		const x_new_int = p_drag_data_map["x_int"];
 		const y_new_int = p_drag_data_map["y_int"];
@@ -65,7 +64,6 @@ export function update_viz_component_remote(p_component_name_str :string,
 
 		p_resolve_fun(output_map);
 	});
-	return p;
 }
 
 //--------------------------------------------------------
