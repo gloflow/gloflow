@@ -17,14 +17,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../d/jquery.d.ts" />
+// ///<reference path="../../d/jquery.d.ts" />
 
 import * as gf_identity_http from "./gf_identity_http";
 
 //-------------------------------------------------
-export function init(p_user_name_str,
-    p_http_api_map,
-    p_on_mfa_validate_fun) {
+export function init(p_user_name_str :string,
+    p_http_api_map :any,
+    p_on_mfa_validate_fun :any) {
 
     const container = $(`<div id="mfa_dialog">
         <div id="mfa_background"></div>

@@ -22,10 +22,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // rotates the target div when the mouse moves, so that it always faces the cursor
 // p_transform_constraint_coefficient_int - limits/dampens the rotation. the larger the number to smaller the rotation
 
-export function div_follow_mouse(p_target_div_element, p_container_div_element,
-    p_transform_constraint_coefficient_int) {
+export function div_follow_mouse(p_target_div_element :any,
+    p_container_div_element :any,
+    p_transform_constraint_coefficient_int :number) {
 
-    function transforms(p_x, p_y) {
+    function transforms(p_x :any, p_y :any) {
 
         let box          = p_target_div_element.getBoundingClientRect();
         let x_calculated = -(p_y - box.y - (box.height / 2)) / p_transform_constraint_coefficient_int;

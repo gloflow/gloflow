@@ -17,16 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../d/jquery.d.ts" />
+// ///<reference path="../../d/jquery.d.ts" />
 
 import * as gf_ops from "./gf_ops";
-// import * as gf_identity_http from "./gf_identity_http";
 
-declare const window: any;
-declare var Web3;
+declare const window :any;
+declare var Web3 :any;
 
 //-------------------------------------------------
-export async function user_auth_pipeline(p_http_api_map) {
+export async function user_auth_pipeline(p_http_api_map :any) {
 
     const user_address_eth_str = await wallet_connect() as string;
 
@@ -76,12 +75,12 @@ export async function user_auth_pipeline(p_http_api_map) {
 }
 
 //-------------------------------------------------
-async function user_create(p_username_str :string,
+async function user_create(p_username_str :string | null,
     p_user_address_eth_str :string,
-    p_nonce_val_str,
-    p_http_api_map) {
+    p_nonce_val_str :string,
+    p_http_api_map  :any) :Promise<any> {
 
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
 
         const create_user_dialog = $(`
             <div id='create_user_prompt_dialog'>
@@ -121,20 +120,19 @@ async function user_create(p_username_str :string,
             }
         });
     });
-    return p;
 }
 
 //-------------------------------------------------
 async function sign(p_nonce_val_str :string,
-    p_user_address_eth_str :string) {
+    p_user_address_eth_str :string) :Promise<string> {
 
     const auth_signature_str = await window.web3.eth.personal.sign(p_nonce_val_str, p_user_address_eth_str);    
     return auth_signature_str;
 }
 
 //-------------------------------------------------
-export function wallet_connect() {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+export function wallet_connect() :Promise<string> {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
 
         // providers like MetaMask and Status must continue to inject window.ethereum,
         // but now the window.ethereum object itself is a provider type that supports the 
@@ -145,7 +143,7 @@ export function wallet_connect() {
             //               or the wallet is not unlocked, this async method will return only
             //               once all that is done. 
             const p = window.ethereum.send('eth_requestAccounts');
-            p.then((p_r)=>{
+            p.then((p_r :any)=>{
 
                 // get the first user address? or give the user choice 
                 // over which address to use if multiple are returned?
@@ -164,5 +162,4 @@ export function wallet_connect() {
             p_reject_fun();
         }
     });
-    return p;
 }

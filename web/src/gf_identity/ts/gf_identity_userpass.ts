@@ -17,15 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../d/jquery.d.ts" />
+// ///<reference path="../../d/jquery.d.ts" />
 import * as gf_utils from "../../gf_core/ts/gf_utils";
 
 //-------------------------------------------------
-export async function user_auth_pipeline(p_notifications_meta_map,
-    p_http_api_map,
-    p_urls_map) {
+export async function user_auth_pipeline(p_notifications_meta_map :any,
+    p_http_api_map :any,
+    p_urls_map     :any) {
 
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
 
         const container_identity = $("#identity");
         const container = $(`
@@ -68,12 +68,11 @@ export async function user_auth_pipeline(p_notifications_meta_map,
             create_activate(container, p_http_api_map);
         });
     });
-    return p;
 }
 
 //-------------------------------------------------
-async function create_activate(p_container,
-    p_http_api_map) {
+async function create_activate(p_container :any,
+    p_http_api_map :any) {
         
 
     // ADD!! - do frontend validation on username
@@ -138,10 +137,10 @@ async function create_activate(p_container,
 }
 
 //-------------------------------------------------
-async function login_activate(p_container,
-    p_notifications_meta_map,
-    p_http_api_map,
-    p_urls_map) {
+async function login_activate(p_container :any,
+    p_notifications_meta_map :any,
+    p_http_api_map           :any,
+    p_urls_map               :any) {
 
     console.log("login activate");
 

@@ -17,16 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../d/jquery.d.ts" />
+// ///<reference path="../../d/jquery.d.ts" />
 
 import * as gf_gifs from "./gf_gifs";
 
 //-------------------------------------------------
-export function init(p_image_element,
+export function init(p_image_element :any,
 	p_img_id_str      :string,
 	p_flows_names_lst :string[],
-	p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_gifs_viewer.init()');
+	p_log_fun :any) {
 
 	// const img_thumb_medium_url = $(p_image_element).find('img').data('img_thumb_medium_url');
 

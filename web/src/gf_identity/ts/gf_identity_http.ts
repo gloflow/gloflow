@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../d/jquery.d.ts" />
+// ///<reference path="../../d/jquery.d.ts" />
 
 import * as gf_admin_http from "./gf_admin_http";
 
@@ -44,22 +44,22 @@ export function get_admin_http_urls() {
 }
 
 //-------------------------------------------------
-export function get_http_api(p_urls_map) {
+export function get_http_api(p_urls_map :any) {
     const http_api_map = {
 
         // ETH
         "eth": {
-            "user_preflight_fun": async (p_user_address_eth_str)=>{
+            "user_preflight_fun": async (p_user_address_eth_str :string)=>{
                 const output_map = await user_preflight(null, p_user_address_eth_str);
                 return output_map;
             },
-            "user_login_fun": async (p_user_address_eth_str, p_auth_signature_str)=>{
+            "user_login_fun": async (p_user_address_eth_str :string, p_auth_signature_str :string)=>{
                 
                 const output_map = await user_eth_login(p_user_address_eth_str,
                     p_auth_signature_str);
                 return output_map;
             },
-            "user_create_fun": async (p_user_address_eth_str, p_auth_signature_str)=>{
+            "user_create_fun": async (p_user_address_eth_str :string, p_auth_signature_str :string)=>{
                 const output_map = await user_eth_create(p_user_address_eth_str, p_auth_signature_str);
                 return output_map;
             }
@@ -67,7 +67,7 @@ export function get_http_api(p_urls_map) {
 
         // USERPASS
         "userpass": {
-            "user_login_fun": async (p_user_name_str, p_pass_str, p_email_str)=>{
+            "user_login_fun": async (p_user_name_str :string, p_pass_str :string, p_email_str :string)=>{
                 const url_str    = p_urls_map["login"];
                 const output_map = await user_userpass_login(p_user_name_str,
                     p_pass_str,
@@ -75,7 +75,7 @@ export function get_http_api(p_urls_map) {
                     url_str);
                 return output_map;
             },
-            "user_create_fun": async (p_user_name_str, p_pass_str, p_email_str)=>{
+            "user_create_fun": async (p_user_name_str :string, p_pass_str :string, p_email_str :string)=>{
                 const output_map = await user_userpass_create(p_user_name_str,
                     p_pass_str,
                     p_email_str);
@@ -85,7 +85,7 @@ export function get_http_api(p_urls_map) {
 
         // MFA
         "mfa": {
-            "user_mfa_confirm": async (p_user_name_str, p_mfa_val_str)=>{
+            "user_mfa_confirm": async (p_user_name_str :string, p_mfa_val_str :string)=>{
                 const output_map = await user_mfa_confirm(p_user_name_str,
                     p_mfa_val_str);
                 return output_map;
@@ -205,8 +205,8 @@ export function logged_in() :Promise<boolean> {
 // LOGIN
 //-------------------------------------------------
 // USER_PREFLIGHT__HTTP
-export function user_preflight(p_user_name_str,
-    p_user_address_eth_str) {
+export function user_preflight(p_user_name_str :string | null,
+    p_user_address_eth_str :string) {
     return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "user_name_str":        p_user_name_str,
@@ -421,7 +421,7 @@ export function user_userpass_create(p_user_name_str :string,
 // UPDATE
 //-------------------------------------------------
 // USER_UPDATE__HTTP
-export function user_update(p_user_data_map) {
+export function user_update(p_user_data_map :any) {
 
     return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {

@@ -17,13 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../d/jquery.d.ts" />
+// ///<reference path="../../d/jquery.d.ts" />
 
 //-------------------------------------------------
 // GET_ALL_USERS
 export function delete_user(p_user_id_str :string,
     p_user_name_str :string) {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = { 
             "user_id_str":   p_user_id_str,
             "user_name_str": p_user_name_str
@@ -50,7 +50,6 @@ export function delete_user(p_user_id_str :string,
             }
         });
     });
-    return p;
 }
 
 //-------------------------------------------------
@@ -58,7 +57,7 @@ export function delete_user(p_user_id_str :string,
 export function resend_email_confirm(p_user_id_str :string,
     p_user_name_str :string,
     p_email_str     :string) {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "user_id_str":   p_user_id_str,
             "user_name_str": p_user_name_str,
@@ -86,13 +85,12 @@ export function resend_email_confirm(p_user_id_str :string,
             }
         });
     });
-    return p;
 }
 
 //-------------------------------------------------
 // GET_ALL_USERS
 export function get_all_users() {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {};
 
         const url_str = '/v1/admin/users/get_all';
@@ -116,13 +114,12 @@ export function get_all_users() {
             }
         });
     });
-    return p;
 }
 
 //-------------------------------------------------
 // GET_ALL_INVITE_LIST
 export function get_all_invite_list() {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {};
 
         const url_str = '/v1/admin/users/get_all_invite_list';
@@ -146,12 +143,11 @@ export function get_all_invite_list() {
             }
         });
     });
-    return p;
 }
 
 //-------------------------------------------------
 export function add_to_invite_list(p_email_str :string) {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "email_str": p_email_str,
         };
@@ -177,12 +173,11 @@ export function add_to_invite_list(p_email_str :string) {
             }
         });
     });
-    return p;
 }
 
 //-------------------------------------------------
 export function remove_from_invite_list(p_email_str :string) {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "email_str": p_email_str,
         };
@@ -208,5 +203,4 @@ export function remove_from_invite_list(p_email_str :string) {
             }
         });
     });
-    return p;
 }

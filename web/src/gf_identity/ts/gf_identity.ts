@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../d/jquery.d.ts" />
+// ///<reference path="../../d/jquery.d.ts" />
 
 import * as gf_identity_auth0    from "./gf_identity_auth0";
 import * as gf_identity_eth      from "./gf_identity_eth";
@@ -25,15 +25,15 @@ import * as gf_identity_userpass from "./gf_identity_userpass";
 import * as gf_identity_http     from "./gf_identity_http";
 import * as gf_utils             from "../../gf_core/ts/gf_utils";
 
-declare const window: any;
-declare var Web3;
+declare const window :any;
+declare var Web3 :any;
 
 //-------------------------------------------------
 // INIT_ME_CONTROL
 
-export async function init_me_control(p_parent_node,
-    p_auth_http_api_map,
-    p_home_url_str) {
+export async function init_me_control(p_parent_node :any,
+    p_auth_http_api_map :any,
+    p_home_url_str      :string) {
     
     var me_user_map;
     try {
@@ -87,15 +87,15 @@ export async function init_me_control(p_parent_node,
 //                            allows external users of gf_identity functionality
 //                            to customize text and various user messages that are displayed.
 //                            example: different for admins and regular users.
-export async function init_with_http(p_notifications_meta_map,
-    p_urls_map) {
+export async function init_with_http(p_notifications_meta_map :any,
+    p_urls_map :any) {
     
     const http_api_map = gf_identity_http.get_http_api(p_urls_map);
     init(p_notifications_meta_map, http_api_map, p_urls_map);
 }
 
 //-------------------------------------------------
-export async function init(p_notifications_meta_map, p_http_api_map, p_urls_map) {
+export async function init(p_notifications_meta_map :any, p_http_api_map :any, p_urls_map :any) {
 
     const logged_in_bool = await p_http_api_map["general"]["logged_in"]();
 
@@ -137,7 +137,7 @@ export async function init(p_notifications_meta_map, p_http_api_map, p_urls_map)
 }
 
 //-------------------------------------------------
-async function auth_method_pick(p_logged_in_bool) {
+async function auth_method_pick(p_logged_in_bool :boolean) {
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
         const container_identity = $("#identity");
