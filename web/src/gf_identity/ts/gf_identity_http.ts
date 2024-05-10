@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_admin_http from "./gf_admin_http";
 
 //-------------------------------------------------
-export function get_standard_http_urls() {
-    const login_url_str = '/v1/identity/userpass/login';
-    const home_url_str  = "/v1/home/view";
+export function get_standard_http_urls(p_host_str :string) {
+    const login_url_str = `${p_host_str}/v1/identity/userpass/login`;
+    const home_url_str  = `${p_host_str}/v1/home/view`;
     const urls_map = {
         "login": login_url_str,
         "home":  home_url_str,
@@ -33,9 +33,9 @@ export function get_standard_http_urls() {
 }
 
 //-------------------------------------------------
-export function get_admin_http_urls() {
-    const login_url_str = '/v1/admin/login';
-    const home_url_str  = "/v1/admin/dashboard";
+export function get_admin_http_urls(p_host_str :string) {
+    const login_url_str = `${p_host_str}/v1/admin/login`;
+    const home_url_str  = `${p_host_str}/v1/admin/dashboard`;
     const urls_map = {
         "login": login_url_str,
         "home":  home_url_str,

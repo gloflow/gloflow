@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
+import * as gf_core_utils     from "./../../../gf_core/ts/gf_utils";
 import * as gf_identity       from "./../../../gf_identity/ts/gf_identity";
 import * as gf_identity_http  from "./../../../gf_identity/ts/gf_identity_http";
 import * as gf_flows_picker   from "./../../gf_images/ts/gf_images_flows_browser/gf_flows_picker";
@@ -36,10 +37,7 @@ declare var gf_upload__init;
 export async function init(p_plugin_callbacks_map,
 	p_log_fun) {
 	
-	const domain_str   = window.location.hostname;
-	const protocol_str = window.location.protocol;
-	const gf_host_str = `${protocol_str}//${domain_str}`;
-	console.log("gf_host", gf_host_str);
+	const current_host_str = gf_core_utils.get_current_host();
 
     $("time.timeago").timeago();
     
@@ -52,7 +50,7 @@ export async function init(p_plugin_callbacks_map,
 	//---------------------
 	// IDENTITY
 	// first complete main initialization and only then initialize gf_identity
-	const urls_map          = gf_identity_http.get_standard_http_urls();
+	const urls_map          = gf_identity_http.get_standard_http_urls(current_host_str);
 	const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
 	gf_identity.init_with_http(notifications_meta_map, urls_map);
 	
@@ -83,13 +81,13 @@ export async function init(p_plugin_callbacks_map,
 
 	//---------------------
 	// POSTS_INIT
-	gf_posts.init(gf_host_str, p_log_fun);
+	gf_posts.init(current_host_str, p_log_fun);
 
 	//---------------------
 	// GF_IMAGES_INIT
 	gf_images.init(logged_in_bool,
 		p_plugin_callbacks_map,
-		gf_host_str,
+		current_host_str,
 		p_log_fun);
 
 	//---------------------

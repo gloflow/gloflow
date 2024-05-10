@@ -85,7 +85,7 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 		view_page(pages_lst, pages_user_names_lst);
 
 
-		const gf_host_str = gf_core_utils.get_gf_host();
+		const gf_host_str = gf_core_utils.get_current_host();
 		
 		//---------------------------------------------------
 		function view_page(p_pages_lst, p_pages_user_names_lst) {

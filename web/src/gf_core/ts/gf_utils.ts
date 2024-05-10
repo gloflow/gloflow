@@ -20,12 +20,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // ///<reference path="../../d/jquery.d.ts" />
 
 //-------------------------------------------------
-export function get_gf_host() :string {
+export function get_current_host() :string {
 	const domain_str   = window.location.hostname;
 	const protocol_str = window.location.protocol;
-	const gf_host_str :string = `${protocol_str}//${domain_str}`;
-	console.log("gf_host", gf_host_str);
-	return gf_host_str;
+	const host_str :string = `${protocol_str}//${domain_str}`;
+
+	console.log("gf_host", host_str);
+	return host_str;
 }
 
 //-------------------------------------------------

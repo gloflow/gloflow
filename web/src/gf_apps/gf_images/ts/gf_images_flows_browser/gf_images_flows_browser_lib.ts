@@ -44,7 +44,7 @@ declare var gf_upload__init;
 export async function init(p_plugin_callbacks_map,
 	p_log_fun) {
 
-	const gf_host_str = gf_core_utils.get_gf_host();
+	const current_host_str = gf_core_utils.get_current_host();
 	
 	//---------------------
 	// META
@@ -75,7 +75,7 @@ export async function init(p_plugin_callbacks_map,
 	//---------------------
 	// IDENTITY
 	// first complete main initialization and only then initialize gf_identity
-	const urls_map          = gf_identity_http.get_standard_http_urls();
+	const urls_map          = gf_identity_http.get_standard_http_urls(current_host_str);
 	const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
 	gf_identity.init_with_http(notifications_meta_map, urls_map);
 	
@@ -127,7 +127,7 @@ export async function init(p_plugin_callbacks_map,
 		gf_image_control.init_existing_dom(image_element,
 			[flow_name_str],
 
-			gf_host_str,
+			current_host_str,
 			logged_in_bool,
 			p_plugin_callbacks_map,
 			p_log_fun);

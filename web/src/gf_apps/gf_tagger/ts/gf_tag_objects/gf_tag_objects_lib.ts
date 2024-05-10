@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/masonry.layout.d.ts" />
 ///<reference path="../../../../d/jquery.timeago.d.ts" />
 
+import * as gf_core_utils    from "./../../../../gf_core/ts/gf_utils";
 import * as gf_identity_http from "./../../../../gf_identity/ts/gf_identity_http";
 import * as gf_image_control from "./../../../gf_images/ts/gf_images_core/gf_image_control";
 import * as gf_images_paging from "./../../../gf_images/ts/gf_images_core/gf_images_paging";
@@ -38,13 +39,10 @@ export async function init(p_tag_str :string,
 	p_plugin_callbacks_map,
 	p_log_fun) {
 
-	const domain_str   = window.location.hostname;
-	const protocol_str = window.location.protocol;
-	const gf_host_str = `${protocol_str}//${domain_str}`;
-	console.log("gf_host", gf_host_str);
+	const current_host_str = gf_core_utils.get_current_host();
 	
 	// inspect if user is logged-in or not
-	const urls_map          = gf_identity_http.get_standard_http_urls();
+	const urls_map          = gf_identity_http.get_standard_http_urls(current_host_str);
 	const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
 	const logged_in_bool = await auth_http_api_map["general"]["logged_in"]();
 
@@ -69,7 +67,7 @@ export async function init(p_tag_str :string,
     //---------------------
 	// IMAGES
     init_images(logged_in_bool,
-		gf_host_str,
+		current_host_str,
 		p_plugin_callbacks_map,
 		p_log_fun);
 
