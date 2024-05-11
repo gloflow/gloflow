@@ -20,24 +20,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_maps_lib
 
 import (
-	// "fmt"
 	"context"
-	"strconv"
 	"bytes"
-	"strings"
 	"text/template"
-	"encoding/json"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
+
+//------------------------------------------------
+
+type gfTemplates struct {
+	template             *template.Template
+	subtemplatesNamesLst []string
+}
 
 //-------------------------------------------------
 
-func renderInitialPage(pFlowNameStr string,
-	pInitialPagesNumInt   int, // 6
-	pPageSizeInt          int, // 5
-	pTmpl                 *template.Template,
+func renderInitialPage(pTmpl *template.Template,
 	pSubtemplatesNamesLst []string,
 	pUserID               gf_core.GF_ID,
 	pCtx                  context.Context,
@@ -47,6 +45,7 @@ func renderInitialPage(pFlowNameStr string,
 	templateRenderedStr, gfErr := renderTemplate(pTmpl,
 		pSubtemplatesNamesLst,
 		pUserID,
+		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
@@ -57,32 +56,26 @@ func renderInitialPage(pFlowNameStr string,
 
 //-------------------------------------------------
 
-func renderTemplate(
-	pTemplate                *template.Template,
-	pSubtemplatesNamesLst    []string,
-	pUserID                  gf_core.GF_ID,
-	pRuntimeSys              *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-
-	// plugin
-	metadataFilterDefinedBool := false
-	if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback != nil {
-		metadataFilterDefinedBool = true
-	}
+func renderTemplate(pTemplate *template.Template,
+	pSubtemplatesNamesLst []string,
+	pUserID               gf_core.GF_ID,
+	pCtx                  context.Context,
+	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 
 	type tmplData struct {
-		Sys_release_info gf_core.SysReleaseInfo
-		Is_subtmpl_def   func(string) bool //used inside the main_template to check if the subtemplate is defined
+		SysReleaseInfo gf_core.SysReleaseInfo
+		IsSubtmplDef   func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 
 	buff := new(bytes.Buffer)
 	err := pTemplate.Execute(buff, tmplData{
-		Sys_release_info: sysReleaseInfo,
+		SysReleaseInfo: sysReleaseInfo,
 
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
-		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
+		IsSubtmplDef: func(p_subtemplate_name_str string) bool {
 			for _, n := range pSubtemplatesNamesLst {
 				if n == p_subtemplate_name_str {
 					return true
@@ -95,11 +88,10 @@ func renderTemplate(
 	})
 
 	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to render the images flow template",
+		gfErr := gf_core.ErrorCreate("failed to render the maps template",
 			"template_render_error",
 			map[string]interface{}{
-				"flow_name_str": pFlowNameStr,
-				"user_id_str":   pUserID,
+				"user_id_str": pUserID,
 			},
 			err, "gf_images_lib", pRuntimeSys)
 		return "", gfErr
@@ -107,4 +99,24 @@ func renderTemplate(
 
 	templateRenderedStr := buff.String()
 	return templateRenderedStr, nil
+}
+
+//-------------------------------------------------
+
+func templatesLoad(pTemplatesPathsMap map[string]string,
+	pRuntimeSys *gf_core.RuntimeSys) (*gfTemplates, *gf_core.GFerror) {
+
+	mainTemplateFilepathStr := pTemplatesPathsMap["gf_maps"]
+
+	template, subtemplatesNamesLst, gf_err := gf_core.TemplatesLoad(mainTemplateFilepathStr,
+		pRuntimeSys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	gfTemplates := &gfTemplates{
+		template:             template,
+		subtemplatesNamesLst: subtemplatesNamesLst,
+	}
+	return gfTemplates, nil
 }

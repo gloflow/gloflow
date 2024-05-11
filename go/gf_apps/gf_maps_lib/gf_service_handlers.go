@@ -26,22 +26,20 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //-------------------------------------------------
 
-func InitHandlers(pAuthSubsystemTypeStr string,
+func initHandlers(pAuthSubsystemTypeStr string,
 	pAuthLoginURLstr   string,
 	pKeyServer         *gf_identity_core.GFkeyServerInfo,
 	pHTTPmux           *http.ServeMux,
 	pTemplatesPathsMap map[string]string,
-	pJobsMngrCh        chan gf_images_jobs_core.JobMsg,
 	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
-	templates, gfErr := tmplLoad(pTemplatesPathsMap, pRuntimeSys)
+	templates, gfErr := templatesLoad(pTemplatesPathsMap, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -49,7 +47,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	//---------------------
 	// METRICS
 	handlersEndpointsLst := []string{
-		"/v1/maps/view"
+		"/v1/maps/view",
 	}
 	metricsGroupNameStr := "maps"
 	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_maps", handlersEndpointsLst)
@@ -72,33 +70,33 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 	//-------------------------------------------------
 	// MAPS_VIEW
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/maps/view",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/maps/view",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
-				allFlowsNamesLst, gfErr := pipelineGetAll(pCtx, pRuntimeSys)
+				
+				userID := gf_core.GF_ID("anon")
+				
+				// RENDER
+				templateRenderedStr, gfErr := renderTemplate(templates.template,
+					templates.subtemplatesNamesLst,
+					userID,
+					pCtx,
+					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
+				
 
-				//------------------
-				// OUTPUT
-				dataMap := map[string]interface{}{
-					"all_flows_lst": allFlowsNamesLst,
-				}
-				return dataMap, nil
-
-				//------------------
+				pResp.Write([]byte(templateRenderedStr))
 			}
 			return nil, nil
 		},
-		pHTTPmux,
-		metrics,
-		true, // pStoreRunBool
-		nil, 
+		rpcHandlerRuntime,
 		pRuntimeSys)
 
 	//-------------------------------------------------
 
 	return nil
 }
+

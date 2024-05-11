@@ -357,11 +357,11 @@ func Run(pConfig *GFconfig,
 	//-------------
 	// GF_MAPS
 
-	mapServiceInfo := &gf_maps_lib.GFserviceInfo{
-
-	}
-	gfErr := gf_maps_lib.InitService(gfSoloHTTPmux,
-		mapServiceInfo,
+	gfErr = gf_maps_lib.InitService(pConfig.AuthSubsystemTypeStr,
+		authLoginURLstr,
+		keyServer,
+		pConfig.TemplatesPathsMap,
+		gfSoloHTTPmux,
 		pRuntimeSys)
 	if gfErr != nil {
 		return

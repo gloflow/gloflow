@@ -20,34 +20,44 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_maps_lib
 
 import (
-	"fmt"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
 
 //-------------------------------------------------
 
-func InitService(pTemplates_paths_map map[string]string,
-	p_http_mux    *http.ServeMux,
-	pRuntimeSys *gf_core.RuntimeSys) {
+func InitService(pAuthSubsystemTypeStr string,
+	pAuthLoginURLstr   string,
+	pKeyServer         *gf_identity_core.GFkeyServerInfo,
+	pTemplatesPathsMap map[string]string,
+	pHTTPmux           *http.ServeMux,
+	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//------------------------
 	// STATIC FILES SERVING
-	static_files__url_base_str := "/v1/maps"
-	local_dir_path_str         := "./static"
-	gf_core.HTTPinitStaticServingWithMux(static_files__url_base_str,
-		local_dir_path_str,
-		p_http_mux,
+	staticFilesURLbaseStr := "/v1/maps"
+	localDirPathStr       := "./static"
+	gf_core.HTTPinitStaticServingWithMux(staticFilesURLbaseStr,
+		localDirPathStr,
+		pHTTPmux,
 		pRuntimeSys)
 
 	//------------------------
 	// HANDLERS
-	gf_err := init_handlers(pTemplates_paths_map, p_http_mux, pRuntimeSys)
-	if gf_err != nil {
-		panic(gf_err.Error)
+	gfErr := initHandlers(pAuthSubsystemTypeStr,
+		pAuthLoginURLstr,
+		pKeyServer,
+		pHTTPmux,
+		pTemplatesPathsMap,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//------------------------
+
+	return nil
 }
 
 //-------------------------------------------------

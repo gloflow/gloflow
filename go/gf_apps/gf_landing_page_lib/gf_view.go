@@ -89,9 +89,9 @@ func renderTemplate(pFeaturedPostsLst []*GFfeaturedPost,
 func templatesLoad(pTemplatesPathsMap map[string]string,
 	pRuntimeSys *gf_core.RuntimeSys) (*gfTemplates, *gf_core.GFerror) {
 
-	main_template_filepath_str := pTemplatesPathsMap["gf_landing_page"]
+	mainTemplateFilepathStr := pTemplatesPathsMap["gf_landing_page"]
 
-	template, subtemplatesNamesLst, gf_err := gf_core.TemplatesLoad(main_template_filepath_str,
+	template, subtemplatesNamesLst, gf_err := gf_core.TemplatesLoad(mainTemplateFilepathStr,
 		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
