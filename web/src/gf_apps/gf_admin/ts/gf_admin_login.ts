@@ -64,10 +64,10 @@ function init(p_log_fun) {
 
 	const current_host_str = gf_core_utils.get_current_host();
 	const urls_map = gf_identity_http.get_admin_http_urls(current_host_str);
-	gf_identity.init_with_http(notifications_meta_map, urls_map);
+	gf_identity.init_with_http(notifications_meta_map, urls_map, current_host_str);
 
 	
-	const http_api_map = gf_identity_http.get_http_api(urls_map);
+	const http_api_map = gf_identity_http.get_http_api(urls_map, current_host_str);
 
 	// MFA_CONFIRM - check if login is in MFA_confirm stage of login
 	if ($('#identiy_mfa_confirm').length > 0) {

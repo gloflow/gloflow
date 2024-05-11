@@ -52,7 +52,7 @@ $(document).ready(()=>{
 	const current_host_str = gf_core_utils.get_current_host();
 	const http_api_map          = gf_home_http.get_http_api();
 	const identity_urls_map     = gf_identity_http.get_standard_http_urls(current_host_str);
-	const identity_http_api_map = gf_identity_http.get_http_api(identity_urls_map);
+	const identity_http_api_map = gf_identity_http.get_http_api(identity_urls_map, current_host_str);
 
 	gf_home.init(http_api_map,
 		identity_http_api_map,

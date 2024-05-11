@@ -47,7 +47,7 @@ export async function init_with_http(p_log_fun) {
 	
 	const current_host_str = gf_core_utils.get_current_host();
 	const urls_map     = gf_identity_http.get_admin_http_urls(current_host_str);
-	const http_api_map = gf_identity_http.get_http_api(urls_map);
+	const http_api_map = gf_identity_http.get_http_api(urls_map, current_host_str);
 	
     gf_admin.init(http_api_map, p_log_fun);
 }

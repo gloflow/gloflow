@@ -88,14 +88,22 @@ export async function init_me_control(p_parent_node :any,
 //                            to customize text and various user messages that are displayed.
 //                            example: different for admins and regular users.
 export async function init_with_http(p_notifications_meta_map :any,
-    p_urls_map :any) {
+    p_urls_map :any,
+    p_host_str :string) {
     
-    const http_api_map = gf_identity_http.get_http_api(p_urls_map);
-    init(p_notifications_meta_map, http_api_map, p_urls_map);
+    const http_api_map = gf_identity_http.get_http_api(p_urls_map, p_host_str);
+
+    init(p_notifications_meta_map,
+        http_api_map,
+        p_urls_map,
+        p_host_str);
 }
 
 //-------------------------------------------------
-export async function init(p_notifications_meta_map :any, p_http_api_map :any, p_urls_map :any) {
+export async function init(p_notifications_meta_map :any,
+    p_http_api_map :any,
+    p_urls_map     :any,
+    p_host_str     :string) {
 
     const logged_in_bool = await p_http_api_map["general"]["logged_in"]();
 
@@ -116,7 +124,7 @@ export async function init(p_notifications_meta_map :any, p_http_api_map :any, p
                 //--------------------------
                 // ETH_METAMASK
                 case "eth_metamask":
-                    await gf_identity_eth.user_auth_pipeline(p_http_api_map);
+                    await gf_identity_eth.user_auth_pipeline(p_http_api_map, p_host_str);
                     break;
                 
                 //--------------------------
@@ -138,7 +146,7 @@ export async function init(p_notifications_meta_map :any, p_http_api_map :any, p
 
 //-------------------------------------------------
 async function auth_method_pick(p_logged_in_bool :boolean) {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
 
         const container_identity = $("#identity");
         const container = $(`
@@ -221,5 +229,4 @@ async function auth_method_pick(p_logged_in_bool :boolean) {
         });
         */
     });
-    return p;
 }

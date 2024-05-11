@@ -25,7 +25,7 @@ declare const window :any;
 declare var Web3 :any;
 
 //-------------------------------------------------
-export async function user_auth_pipeline(p_http_api_map :any) {
+export async function user_auth_pipeline(p_http_api_map :any, p_host_str :string) {
 
     const user_address_eth_str = await wallet_connect() as string;
 
@@ -68,7 +68,7 @@ export async function user_auth_pipeline(p_http_api_map :any) {
 
         // only after that offer to the user to upload their details.
         // for update to succeed the user has to be logedin
-        const user_data_map = await gf_ops.user_update_dialog();
+        const user_data_map = await gf_ops.user_update_dialog(p_host_str);
     }
 
     //--------------------------

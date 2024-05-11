@@ -24,8 +24,8 @@ import * as gf_identity_http from "./gf_identity_http";
 
 //-------------------------------------------------
 // UPDATE
-export function user_update_dialog() {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+export function user_update_dialog(p_host_str :string) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
 
         const update_user_dialog = $(`
             <div id='update_user_dialog'>
@@ -63,7 +63,7 @@ export function user_update_dialog() {
 
             //--------------------------
             // USER_UPDATE_HTTP
-            await gf_identity_http.user_update(data_map);
+            await gf_identity_http.user_update(data_map, p_host_str);
 
             //--------------------------
             $(update_user_dialog).remove();
@@ -71,5 +71,4 @@ export function user_update_dialog() {
             p_resolve_fun(data_map);
         });
     });
-    return p;
 }

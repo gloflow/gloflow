@@ -107,14 +107,16 @@ function init(p_log_fun) {
 
 		const current_host_str = gf_core_utils.get_current_host();
 		const urls_map = gf_identity_http.get_standard_http_urls(current_host_str);
-		const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
+		const auth_http_api_map = gf_identity_http.get_http_api(urls_map, current_host_str);
 		
 		// META
 		const notifications_meta_map = {
 			"login_first_stage_success": "login success"
 		};
 
-		gf_identity.init_with_http(notifications_meta_map, urls_map);
+		gf_identity.init_with_http(notifications_meta_map,
+			urls_map,
+			current_host_str);
 
 		
 

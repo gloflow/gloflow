@@ -30,7 +30,7 @@ export async function init_with_auth(p_log_fun) {
 	const current_host_str = gf_core_utils.get_current_host();
 	const urls_map = gf_identity_http.get_standard_http_urls(current_host_str);
 	
-	const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
+	const auth_http_api_map = gf_identity_http.get_http_api(urls_map, current_host_str);
 
 	await init(auth_http_api_map, urls_map, p_log_fun);
 }

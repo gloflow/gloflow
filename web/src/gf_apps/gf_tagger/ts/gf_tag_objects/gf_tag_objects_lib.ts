@@ -43,7 +43,7 @@ export async function init(p_tag_str :string,
 	
 	// inspect if user is logged-in or not
 	const urls_map          = gf_identity_http.get_standard_http_urls(current_host_str);
-	const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
+	const auth_http_api_map = gf_identity_http.get_http_api(urls_map, current_host_str);
 	const logged_in_bool = await auth_http_api_map["general"]["logged_in"]();
 
 	

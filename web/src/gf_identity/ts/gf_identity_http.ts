@@ -44,23 +44,25 @@ export function get_admin_http_urls(p_host_str :string) {
 }
 
 //-------------------------------------------------
-export function get_http_api(p_urls_map :any) {
+export function get_http_api(p_urls_map :any,
+    p_host_str :string) {
     const http_api_map = {
 
         // ETH
         "eth": {
             "user_preflight_fun": async (p_user_address_eth_str :string)=>{
-                const output_map = await user_preflight(null, p_user_address_eth_str);
+                const output_map = await user_preflight(null, p_user_address_eth_str, p_host_str);
                 return output_map;
             },
             "user_login_fun": async (p_user_address_eth_str :string, p_auth_signature_str :string)=>{
                 
                 const output_map = await user_eth_login(p_user_address_eth_str,
-                    p_auth_signature_str);
+                    p_auth_signature_str,
+                    p_host_str);
                 return output_map;
             },
             "user_create_fun": async (p_user_address_eth_str :string, p_auth_signature_str :string)=>{
-                const output_map = await user_eth_create(p_user_address_eth_str, p_auth_signature_str);
+                const output_map = await user_eth_create(p_user_address_eth_str, p_auth_signature_str, p_host_str);
                 return output_map;
             }
         },
@@ -78,7 +80,8 @@ export function get_http_api(p_urls_map :any) {
             "user_create_fun": async (p_user_name_str :string, p_pass_str :string, p_email_str :string)=>{
                 const output_map = await user_userpass_create(p_user_name_str,
                     p_pass_str,
-                    p_email_str);
+                    p_email_str,
+                    p_host_str);
                 return output_map;
             }
         },
@@ -87,7 +90,8 @@ export function get_http_api(p_urls_map :any) {
         "mfa": {
             "user_mfa_confirm": async (p_user_name_str :string, p_mfa_val_str :string)=>{
                 const output_map = await user_mfa_confirm(p_user_name_str,
-                    p_mfa_val_str);
+                    p_mfa_val_str,
+                    p_host_str);
                 return output_map;
             }
         },
@@ -128,11 +132,11 @@ export function get_http_api(p_urls_map :any) {
 
         "general": {
             "get_me": async ()=>{
-                const output_map = await user_get_me();
+                const output_map = await user_get_me(p_host_str);
                 return output_map;
             },
             "logged_in": async () :Promise<boolean> =>{
-                const logged_in_bool = await logged_in();
+                const logged_in_bool = await logged_in(p_host_str);
                 return logged_in_bool;
             },
         }
@@ -143,13 +147,13 @@ export function get_http_api(p_urls_map :any) {
 //-------------------------------------------------
 // ME
 //-------------------------------------------------
-export function user_get_me() {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+export function user_get_me(p_host_str :string) {
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
 
         // auth_r=0 - toggle off redirecting to login url in case the validation fails.
         //            redirecting not needed since /me is called by subcomponents of pages
         //            and on failure should not redirect.
-        const url_str = '/v1/identity/me?auth_r=0';
+        const url_str = `${p_host_str}/v1/identity/me?auth_r=0`;
         $.ajax({
             'url':         url_str,
             'type':        'GET',
@@ -170,16 +174,15 @@ export function user_get_me() {
             }
         });
     });
-    return p;
 }
 
-export function logged_in() :Promise<boolean> {
+export function logged_in(p_host_str :string) :Promise<boolean> {
     return new Promise(function(p_resolve_fun, p_reject_fun) {
 
         // auth_r=0 - toggle off redirecting to login url in case the validation fails.
         //            redirecting not needed since /me is called by subcomponents of pages
         //            and on failure should not redirect.
-        const url_str = '/v1/identity/logged_in?auth_r=0';
+        const url_str = `${p_host_str}/v1/identity/logged_in?auth_r=0`;
         $.ajax({
             'url':         url_str,
             'type':        'GET',
@@ -206,14 +209,16 @@ export function logged_in() :Promise<boolean> {
 //-------------------------------------------------
 // USER_PREFLIGHT__HTTP
 export function user_preflight(p_user_name_str :string | null,
-    p_user_address_eth_str :string) {
+    p_user_address_eth_str :string,
+    p_host_str             :string) {
+    
     return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "user_name_str":        p_user_name_str,
             "user_address_eth_str": p_user_address_eth_str,
         };
 
-        const url_str = '/v1/identity/users/preflight';
+        const url_str = `${p_host_str}/v1/identity/users/preflight`;
         $.ajax({
             'url':         url_str,
             'type':        'POST',
@@ -240,7 +245,8 @@ export function user_preflight(p_user_name_str :string | null,
 //-------------------------------------------------
 // USER_ETH_LOGIN__HTTP
 export function user_eth_login(p_user_address_eth_str :string,
-    p_auth_signature_str :string) {
+    p_auth_signature_str :string,
+    p_host_str           :string) {
     
     return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
@@ -248,7 +254,7 @@ export function user_eth_login(p_user_address_eth_str :string,
             "auth_signature_str":   p_auth_signature_str,
         };
 
-        const url_str = '/v1/identity/users/login';
+        const url_str = `${p_host_str}/v1/identity/users/login`;
         $.ajax({
             'url':         url_str,
             'type':        'POST',
@@ -312,14 +318,15 @@ export function user_userpass_login(p_user_name_str :string,
 //-------------------------------------------------
 // USER_MFA_CONFIRM
 export function user_mfa_confirm(p_user_name_str :string,
-    p_mfa_val_str :string) {
+    p_mfa_val_str :string,
+    p_host_str    :string) {
     return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "user_name_str": p_user_name_str,
             "mfa_val_str":   p_mfa_val_str,
         };
 
-        const url_str = '/v1/identity/mfa_confirm';
+        const url_str = `${p_host_str}/v1/identity/mfa_confirm`;
         $.ajax({
             'url':         url_str,
             'type':        'POST',
@@ -348,7 +355,8 @@ export function user_mfa_confirm(p_user_name_str :string,
 //-------------------------------------------------
 // USER_ETH_CREATE__HTTP
 export function user_eth_create(p_user_address_eth_str :string,
-    p_auth_signature_str :string) {
+    p_auth_signature_str :string,
+    p_host_str           :string) {
 
     return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
@@ -356,7 +364,7 @@ export function user_eth_create(p_user_address_eth_str :string,
             "auth_signature_str":   p_auth_signature_str,
         };
 
-        const url_str = '/v1/identity/users/create';
+        const url_str = `${p_host_str}/v1/identity/users/create`;
         $.ajax({
             'url':         url_str,
             'type':        'POST',
@@ -384,7 +392,8 @@ export function user_eth_create(p_user_address_eth_str :string,
 // USER_USERPASS_CREATE__HTTP
 export function user_userpass_create(p_user_name_str :string,
     p_pass_str  :string,
-    p_email_str :string) {
+    p_email_str :string,
+    p_host_str  :string) {
 
     return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
@@ -393,7 +402,7 @@ export function user_userpass_create(p_user_name_str :string,
             "email_str":     p_email_str, 
         };
 
-        const url_str = '/v1/identity/userpass/create';
+        const url_str = `${p_host_str}/v1/identity/userpass/create`;
         $.ajax({
             'url':         url_str,
             'type':        'POST',
@@ -421,7 +430,8 @@ export function user_userpass_create(p_user_name_str :string,
 // UPDATE
 //-------------------------------------------------
 // USER_UPDATE__HTTP
-export function user_update(p_user_data_map :any) {
+export function user_update(p_user_data_map :any,
+    p_host_str :string) {
 
     return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
@@ -430,7 +440,7 @@ export function user_update(p_user_data_map :any) {
             "user_description_str": p_user_data_map["description_str"],
         };
 
-        const url_str = '/v1/identity/update';
+        const url_str = `${p_host_str}/v1/identity/update`;
         $.ajax({
             'url':         url_str,
             'type':        'POST',

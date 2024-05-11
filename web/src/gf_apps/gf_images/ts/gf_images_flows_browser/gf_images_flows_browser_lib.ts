@@ -76,8 +76,8 @@ export async function init(p_plugin_callbacks_map,
 	// IDENTITY
 	// first complete main initialization and only then initialize gf_identity
 	const urls_map          = gf_identity_http.get_standard_http_urls(current_host_str);
-	const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
-	gf_identity.init_with_http(notifications_meta_map, urls_map);
+	const auth_http_api_map = gf_identity_http.get_http_api(urls_map, current_host_str);
+	gf_identity.init_with_http(notifications_meta_map, urls_map, current_host_str);
 	
 
 	
