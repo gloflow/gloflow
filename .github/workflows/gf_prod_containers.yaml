@@ -5,6 +5,7 @@ on:
       - master
     paths:
       - .github/workflows/gf_prod_containers.yaml
+      - build/gf_apps/gf_solo/**
 
   # workflow_run:
   #   # trigger this workflow if the Rust workflow completes succesfuly
