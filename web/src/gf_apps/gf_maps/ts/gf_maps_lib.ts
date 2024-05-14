@@ -17,16 +17,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../../d/jquery.d.ts" />
+// ///<reference path="../../../d/jquery.d.ts" />
 
 import * as gf_core_utils     from "./../../../gf_core/ts/gf_utils";
 import * as gf_identity       from "./../../../gf_identity/ts/gf_identity";
 import * as gf_identity_http  from "./../../../gf_identity/ts/gf_identity_http";
-import * as gf_flows_picker   from "./../../gf_images/ts/gf_images_flows_browser/gf_flows_picker";
-import * as gf_tags_picker    from "./../../gf_tagger/ts/gf_tags_picker/gf_tags_picker";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
-declare var gf_upload__init;
+declare var L;
 
 //--------------------------------------------------------
 // INIT
@@ -64,18 +62,7 @@ export async function init(p_plugin_callbacks_map,
 	// inspect if user is logged-in or not
 	const logged_in_bool = await auth_http_api_map["general"]["logged_in"]();
 
-	//---------------------
-	// FLOWS_PICKER - display it if the user is logged in
-	if (logged_in_bool) {
 
-		gf_flows_picker.init(p_log_fun)
-	}
-
-	// TAGS_PICKER - display it if the user is logged in
-	if (logged_in_bool) {
-
-		gf_tags_picker.init(p_log_fun)
-	}
 
 	//---------------------
 	// WINDOW_RESIZE - draw a new canvas when the view is resized, and delete the old one (with the old dimensions)
@@ -89,45 +76,32 @@ export async function init(p_plugin_callbacks_map,
 	});
 
 	//---------------------
-	// UPLOAD__INIT
 
-	var   upload_flow_name_str;
-	const default_flow_name_str  = "general";
+	init_map();
+}
+
+//--------------------------------------------------------
+function init_map() {
+	var map = L.map('map').setView([51.505, -0.09], 13);
+
+	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 19,
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	}).addTo(map);
 
 
-	// LOCAL_STORAGE
-	const previous_flow_name_str = localStorage.getItem("gf:upload_flow_name_str");
+
+	var polygon = L.polygon([
+		[51.509, -0.08],
+		[51.503, -0.06],
+		[51.51, -0.047]
+	]).addTo(map);
+
+	var circle = L.circle([51.508, -0.11], {
+		color: 'red',
+		fillColor: '#f03',
+		fillOpacity: 0.5,
+		radius: 500
+	}).addTo(map);
 	
-	// get old value from localStorage if it exists, if it doesnt use the default
-	if (previous_flow_name_str == null) {
-		upload_flow_name_str = default_flow_name_str;
-	} else {
-		upload_flow_name_str = previous_flow_name_str;
-	}
-
-	// use "" so that no host is set in URL's for issued requests
-	// (forces usage of origin host that the page came from)
-	const target_full_host_str = "";
-
-	gf_upload__init(upload_flow_name_str,
-		target_full_host_str,
-		(p_upload_gf_image_id_str)=>{
-
-		});
-
-	//---------------------
-	// ABOUT_SECTION
-	$("#about_section").on('click', function() {
-		$("#about_section #desc").css("visibility", "visible");
-	});
-
-	//---------------------
-	// PLUGINS
-	// INIT - allows for arbitrary init code to be run when landing_page is done initializing
-	if ("init" in p_plugin_callbacks_map) {
-
-		p_plugin_callbacks_map["init"]();
-	}
-
-	//---------------------
 }

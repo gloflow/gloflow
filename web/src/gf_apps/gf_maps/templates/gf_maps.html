@@ -15,58 +15,11 @@
 	</head>
 	<body>
 		<div id="map"></div>
-
-
-		<script>
-			$(document).ready(()=>{
-				//-------------------------------------------------
-				function log_fun(p_g, p_m) {
-					var msg_str = p_g+':'+p_m;
-					switch (p_g) {
-						case "INFO":
-							console.log("%cINFO"+":"+"%c"+p_m, "color:green; background-color:#ACCFAC;", "background-color:#ACCFAC;");
-							break;
-						case "FUN_ENTER":
-							console.log("%cFUN_ENTER"+":"+"%c"+p_m, "color:yellow; background-color:lightgray", "background-color:lightgray");
-							break;
-					}
-				}
-
-				//-------------------------------------------------
-
-				init();
-			});
-
-			//---------------------------------------------------
-			function init() {
-				var map = L.map('map').setView([51.505, -0.09], 13);
-
-				L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-					maxZoom: 19,
-					attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-				}).addTo(map);
-
-
-
-				var polygon = L.polygon([
-					[51.509, -0.08],
-					[51.503, -0.06],
-					[51.51, -0.047]
-				]).addTo(map);
-
-				var circle = L.circle([51.508, -0.11], {
-					color: 'red',
-					fillColor: '#f03',
-					fillOpacity: 0.5,
-					radius: 500
-				}).addTo(map);
-			}
-
-			//---------------------------------------------------
-			
-				
-		</script>
 		
+		<script type="text/javascript" src="./../../../../libs/js/system.min.js"></script>
+		<script type="text/javascript" src="./../../../../libs/js/system_named_register_ext.js"></script> <!-- without this SystemJS extension modules dont load -->
+		<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+
 		<script type="text/javascript" src="./../ts/gf_maps.ts"></script>
 		<script>
 			System.import('gf_apps/gf_maps/ts/gf_maps').then(function(m){});
