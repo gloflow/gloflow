@@ -202,8 +202,6 @@ func TestUsersHTTPeth(pTest *testing.T) {
 		pTest.FailNow()
 	}
 
-	
-	
 	// check if the login response sets a cookie for all future auth requests
 	sessionIDcookiePresentBool := false
 	authCookiePresentBool := false
@@ -222,6 +220,7 @@ func TestUsersHTTPeth(pTest *testing.T) {
 		}
 	}
 
+
 	cookiesInRespLst := (*http.Response)(resp).Cookies()
 
     // Print all of the current cookies
@@ -235,8 +234,6 @@ func TestUsersHTTPeth(pTest *testing.T) {
 	assert.True(pTest, authCookiePresentBool,
 		"login response does not contain the expected 'Authorization' cookie")
 	
-	
-
 	bodyMap = map[string]interface{}{}
 	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
 		fmt.Println(err)
