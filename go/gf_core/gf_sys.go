@@ -77,6 +77,10 @@ type ExternalPlugins struct {
 	// RPC_HANDLERS
 	RPChandlersGetCallback func(*RuntimeSys) ([]HTTPhandlerInfo, *GFerror)
 
+	// CORS_DOMAINS - domains that are allowed to access the API, beyond the domain
+	// 			  	  that the API is hosted on.
+	CORSoriginDomainsLst []string
+
 	//---------------------------
 	// IMAGES
 	ImageFilterMetadataCallback func(map[string]interface{}) map[string]interface{}

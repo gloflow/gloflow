@@ -252,6 +252,24 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			}
 
 			//-----------------------
+			// CORS
+			// if the user has supplied CORS domains, check if the request origin domain is in the list
+			if pRuntimeSys.ExternalPlugins.CORSoriginDomainsLst != nil {
+				
+				// get the origin domain of the request
+				originStr := pReq.Header.Get("Origin")
+				if originStr != "" {
+
+					// check if the origin domain is in the list of allowed domains
+					if gf_core.StringInList(originStr, pRuntimeSys.ExternalPlugins.CORSoriginDomainsLst) {
+						pResp.Header().Set("Access-Control-Allow-Origin", originStr)
+						pResp.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+						pResp.Header().Set("Access-Control-Allow-Credentials", "true")
+					}
+				}
+			}
+
+			//-----------------------
 			// APP_HANDLER - external app request handler function, executed with an
 			//               authenticated context.
 

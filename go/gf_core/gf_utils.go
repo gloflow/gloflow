@@ -58,6 +58,19 @@ func HashValSha256(pVal interface{}) string {
 }
 
 //-------------------------------------------------------------
+
+func StringInList(pTargetStr string,
+	pLst []string) bool {
+
+	for _, s := range pLst {
+		if s == pTargetStr {
+			return true
+		}
+	}
+	return false
+}
+
+//-------------------------------------------------------------
 // MAP
 //-------------------------------------------------------------
 

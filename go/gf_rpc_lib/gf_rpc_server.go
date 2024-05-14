@@ -39,11 +39,15 @@ func ServerInitWithMux(pServerNameStr string,
 
 	log.WithFields(log.Fields{"name": pServerNameStr, "port": pPortInt,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
 	
+	//-------------
+	// SENTRY
 	// IMPORTANT!! - wrap mux with Sentry.
 	//               without this handler contexts are not initialized properly
 	//               and creating spans and other sentry primitives fails with nul pointer exceptions.
 	sentryHandler := sentryhttp.New(sentryhttp.Options{}).Handle(pMux)
 
+	//-------------
+	
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%d", pPortInt),
 		Handler: sentryHandler,
