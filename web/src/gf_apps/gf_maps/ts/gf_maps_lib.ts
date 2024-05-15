@@ -33,9 +33,6 @@ export async function init(p_plugin_callbacks_map,
 	
 		
 	const current_host_str = gf_core_utils.get_current_host();
-
-
-    $("time.timeago").timeago();
     
 	//---------------------
 	// META
@@ -52,7 +49,7 @@ export async function init(p_plugin_callbacks_map,
 	
 
 	
-	const parent_node = $("#right_section");
+	const parent_node = $("body");
 	const home_url_str = urls_map["home"];
 
 	gf_identity.init_me_control(parent_node,
