@@ -158,7 +158,19 @@ export function user_get_me(p_host_str :string) {
             'url':         url_str,
             'type':        'GET',
             'contentType': 'application/json',
-            'success':     (p_response_map)=>{
+
+            /*
+            The XMLHttpRequest.withCredentials property is a Boolean that indicates
+            whether or not cross-site Access-Control requests should be made using
+            credentials such as cookies, authorization headers or TLS client certificates.
+            Setting withCredentials has no effect on same-site requests.
+            if withCredentials is set to true in an XHR request,
+            the Origin header will be included in the request for cross-origin requests.
+            */
+            xhrFields: {
+                withCredentials: true
+            },
+            'success': (p_response_map)=>{
 
                 const status_str = p_response_map["status"];
                 const data_map   = p_response_map["data"];
@@ -187,6 +199,18 @@ export function logged_in(p_host_str :string) :Promise<boolean> {
             'url':         url_str,
             'type':        'GET',
             'contentType': 'application/json',
+
+            /*
+            The XMLHttpRequest.withCredentials property is a Boolean that indicates
+            whether or not cross-site Access-Control requests should be made using
+            credentials such as cookies, authorization headers or TLS client certificates.
+            Setting withCredentials has no effect on same-site requests.
+            if withCredentials is set to true in an XHR request,
+            the Origin header will be included in the request for cross-origin requests.
+            */
+            xhrFields: {
+                withCredentials: true
+            },
             'success':     (p_response_map)=>{
 
                 const status_str = p_response_map["status"];
@@ -224,6 +248,18 @@ export function user_preflight(p_user_name_str :string | null,
             'type':        'POST',
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
+
+            /*
+            The XMLHttpRequest.withCredentials property is a Boolean that indicates
+            whether or not cross-site Access-Control requests should be made using
+            credentials such as cookies, authorization headers or TLS client certificates.
+            Setting withCredentials has no effect on same-site requests.
+            if withCredentials is set to true in an XHR request,
+            the Origin header will be included in the request for cross-origin requests.
+            */
+            xhrFields: {
+                withCredentials: true
+            },
             'success':     (p_response_map)=>{
 
                 const status_str = p_response_map["status"];
@@ -260,7 +296,19 @@ export function user_eth_login(p_user_address_eth_str :string,
             'type':        'POST',
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
-            'success':     (p_response_map)=>{
+
+            /*
+            The XMLHttpRequest.withCredentials property is a Boolean that indicates
+            whether or not cross-site Access-Control requests should be made using
+            credentials such as cookies, authorization headers or TLS client certificates.
+            Setting withCredentials has no effect on same-site requests.
+            if withCredentials is set to true in an XHR request,
+            the Origin header will be included in the request for cross-origin requests.
+            */
+            xhrFields: {
+                withCredentials: true
+            },
+            'success': (p_response_map)=>{
                 
                 const status_str = p_response_map["status"];
                 const data_map   = p_response_map["data"];
@@ -297,7 +345,19 @@ export function user_userpass_login(p_user_name_str :string,
             'type':        'POST',
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
-            'success':     (p_response_map)=>{
+
+            /*
+            The XMLHttpRequest.withCredentials property is a Boolean that indicates
+            whether or not cross-site Access-Control requests should be made using
+            credentials such as cookies, authorization headers or TLS client certificates.
+            Setting withCredentials has no effect on same-site requests.
+            if withCredentials is set to true in an XHR request,
+            the Origin header will be included in the request for cross-origin requests.
+            */
+            xhrFields: {
+                withCredentials: true
+            },
+            'success': (p_response_map)=>{
                 
                 const status_str = p_response_map["status"];
                 const data_map   = p_response_map["data"];
@@ -332,7 +392,19 @@ export function user_mfa_confirm(p_user_name_str :string,
             'type':        'POST',
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
-            'success':     (p_response_map)=>{
+
+            /*
+            The XMLHttpRequest.withCredentials property is a Boolean that indicates
+            whether or not cross-site Access-Control requests should be made using
+            credentials such as cookies, authorization headers or TLS client certificates.
+            Setting withCredentials has no effect on same-site requests.
+            if withCredentials is set to true in an XHR request,
+            the Origin header will be included in the request for cross-origin requests.
+            */
+            xhrFields: {
+                withCredentials: true
+            },
+            'success': (p_response_map)=>{
                 
                 const status_str = p_response_map["status"];
                 const data_map   = p_response_map["data"];
@@ -370,7 +442,19 @@ export function user_eth_create(p_user_address_eth_str :string,
             'type':        'POST',
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
-            'success':     (p_response_map)=>{
+
+            /*
+            The XMLHttpRequest.withCredentials property is a Boolean that indicates
+            whether or not cross-site Access-Control requests should be made using
+            credentials such as cookies, authorization headers or TLS client certificates.
+            Setting withCredentials has no effect on same-site requests.
+            if withCredentials is set to true in an XHR request,
+            the Origin header will be included in the request for cross-origin requests.
+            */
+            xhrFields: {
+                withCredentials: true
+            },
+            'success': (p_response_map)=>{
                 
                 const status_str = p_response_map["status"];
                 const data_map   = p_response_map["data"];
@@ -408,7 +492,19 @@ export function user_userpass_create(p_user_name_str :string,
             'type':        'POST',
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
-            'success':     (p_response_map)=>{
+
+            /*
+            The XMLHttpRequest.withCredentials property is a Boolean that indicates
+            whether or not cross-site Access-Control requests should be made using
+            credentials such as cookies, authorization headers or TLS client certificates.
+            Setting withCredentials has no effect on same-site requests.
+            if withCredentials is set to true in an XHR request,
+            the Origin header will be included in the request for cross-origin requests.
+            */
+            xhrFields: {
+                withCredentials: true
+            },
+            'success': (p_response_map)=>{
                 
                 const status_str = p_response_map["status"];
                 const data_map   = p_response_map["data"];
@@ -446,7 +542,19 @@ export function user_update(p_user_data_map :any,
             'type':        'POST',
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
-            'success':     (p_response_map)=>{
+
+            /*
+            The XMLHttpRequest.withCredentials property is a Boolean that indicates
+            whether or not cross-site Access-Control requests should be made using
+            credentials such as cookies, authorization headers or TLS client certificates.
+            Setting withCredentials has no effect on same-site requests.
+            if withCredentials is set to true in an XHR request,
+            the Origin header will be included in the request for cross-origin requests.
+            */
+            xhrFields: {
+                withCredentials: true
+            },
+            'success': (p_response_map)=>{
                 
                 const status_str = p_response_map["status"];
                 const data_map   = p_response_map["data"];
