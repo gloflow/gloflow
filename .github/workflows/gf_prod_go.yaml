@@ -6,6 +6,7 @@ on:
     paths:
       - "go/**"
       - .github/workflows/gf_prod_go.yaml
+      - meta/gf_meta.py
 
   # workflow_run:
   #   # trigger this workflow if the Rust workflow completes succesfuly

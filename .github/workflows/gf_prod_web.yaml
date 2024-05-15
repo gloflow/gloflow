@@ -6,6 +6,7 @@ on:
     paths:
       - "web/**"
       - .github/workflows/gf_prod_web.yaml
+      - meta/gf_web_meta.py
 
   # workflow_run:
   #   # trigger this workflow if the Rust workflow completes succesfuly
