@@ -21,3 +21,8 @@ r = delegator.run(f"tsc --module system --target es2016 --out {output_file_str} 
 
 print(r.out)
 print(r.err)
+
+
+
+r = delegator.run(f"cp ./build/gf_lang.js ./../build/gf_lang.js")
+r = delegator.run(f"cp ./../go/build/gf_lang_web.wasm ./../build/gf_lang_web.wasm")

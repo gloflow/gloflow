@@ -56,16 +56,19 @@ jobs:
           GO_WF_NAME="gf_prod_go.yaml"
           RUST_WF_NAME="gf_prod_rust.yaml"
           WEB_WF_NAME="gf_prod_web.yaml"
+          GF_LANG_WF_NAME="gf_prod_gf_lang.yaml"
 
           # GET_RUN_ID
           GO_RUN_ID=`gh run --repo ${{ github.repository }} list --status success --workflow ${GO_WF_NAME} --json databaseId --jq .[0].databaseId`
           RUST_RUN_ID=`gh run --repo ${{ github.repository }} list --status success --workflow ${RUST_WF_NAME} --json databaseId --jq .[0].databaseId`
           WEB_RUN_ID=`gh run --repo ${{ github.repository }} list --status success --workflow ${WEB_WF_NAME} --json databaseId --jq .[0].databaseId`
+          GF_LANG_RUN_ID=`gh run --repo ${{ github.repository }} list --status success --workflow ${GF_LANG_WF_NAME} --json databaseId --jq .[0].databaseId`
 
           # SET_OUTPUTS
           echo "::set-output name=go_build_run_id::$GO_RUN_ID"
           echo "::set-output name=rust_build_run_id::$RUST_RUN_ID"
           echo "::set-output name=web_build_run_id::$WEB_RUN_ID"
+          echo "::set-output name=web_build_run_id::$GF_LANG_RUN_ID"
 
       #-------------------------------
 
@@ -125,6 +128,16 @@ jobs:
           github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
           path: /home/gf/web/build
           run-id: "${{ needs.check-download-prebuilt-artifacts.outputs.web_build_run_id }}"
+
+      #-------------------------------
+      # DOWNLOAD_GF_LANG_ARTIFACTS
+      - name: download Web build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: web_build_artifacts
+          github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+          path: /home/gf/web/build/gf_apps/gf_images
+          run-id: "${{ needs.check-download-prebuilt-artifacts.outputs.gf_lang_build_run_id }}"
 
       #-------------------------------
       # BUILD_CONTAINER

@@ -78,13 +78,20 @@ jobs:
           go build -o ${{ env.GF_OUTPUT_DIR }}
 
       #-------------------------------
+      - name: build Web code for tests
+        run: |
+          python3 -u /home/gf/gloflow/gf_lang/test/build.py
+
+          ls -al /home/gf/gloflow/gf_lang/build
+
+      #-------------------------------
       # UPLOAD_ARTIFACTS
       - name: upload Go build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: gf_lang_build_artifacts
           path: |
-            /home/gf/gloflow/build
+            /home/gf/gloflow/gf_lang/build
           retention-days: 30
 
       #-------------------------------
