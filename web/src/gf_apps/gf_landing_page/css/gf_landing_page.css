@@ -107,6 +107,25 @@ body {
 }
 
 /*-------------------------------------------*/
+/* GF_LANG */
+
+#gf_lang {
+	position: fixed;
+    bottom: 30px;
+    left: 26px;
+    width: 20px;
+    height: 16px;
+    background-color: gray;
+    z-index: 10;
+    font-size: 10px;
+    text-align: center;
+    padding-top: 4px;
+}
+#gf_lang a {
+    text-decoration: none;
+}
+
+/*-------------------------------------------*/
 /* MAPS */
 
 #maps {
