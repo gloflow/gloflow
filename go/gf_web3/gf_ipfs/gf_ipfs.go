@@ -21,12 +21,13 @@ package gf_ipfs
 
 import (
 	ipfs "github.com/ipfs/go-ipfs-api"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
 
 func IPFSinit(pIPFSnodeHostStr string,
-	pRuntimeSys *RuntimeSys) (*ipfs.Shell, *GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*ipfs.Shell, *gf_core.GFerror) {
 
 
 
