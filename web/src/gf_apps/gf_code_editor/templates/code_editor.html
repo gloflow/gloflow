@@ -34,6 +34,7 @@
 				<input type="text" id="sketch_name" value="test_sketch"/>
 				<textarea id="editor">
 
+					
 					//----------------------
 					// GloFlow
 					// Boilerplate p5.js code
@@ -52,15 +53,17 @@
 					function draw() {
 						background(200);
 						
-						element();
-						element();
-						element();
-						element();
-						element();
+                      	for (var i=0;i<5;i++) {
+                          element(0.5);
+                          element(0.2);
+                          element(0.1);
+                          element(0.6);
+                          element(0.4);
+                        }
 						
 					}
 					
-					function element() {
+					function element(p_y_random_range) {
 
 						// Draw a circle
 						stroke(50);
@@ -68,16 +71,20 @@
 						ellipse(x, y, 24, 24);
 						
 						// Jiggling randomly on the horizontal axis
-						x = x + random(-15, 15);
+						x = x + random(-5, 5);
 
 						// Moving up at a constant speed
-						y = y - 0.5;
+						y = y - random(0, p_y_random_range);
 						
 						// Reset to the bottom
 						if (y < 0) {
 							y = height;
 						}
 					}
+					
+									
+
+				
 					
 									
 
