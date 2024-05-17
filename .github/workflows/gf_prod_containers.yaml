@@ -129,17 +129,7 @@ jobs:
           github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
           path: /home/gf/web/build
           run-id: "${{ needs.check-download-prebuilt-artifacts.outputs.web_build_run_id }}"
-
-      #-------------------------------
-      # DOWNLOAD_GF_LANG_ARTIFACTS
-      - name: download gf_lang build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: gf_lang_build_artifacts
-          github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
-          path: /home/gf/web/build/gf_apps/gf_images
-          run-id: "${{ needs.check-download-prebuilt-artifacts.outputs.gf_lang_build_run_id }}"
-
+      
       #-------------------------------
       # BUILD_CONTAINER
       - name: build container
