@@ -1,0 +1,105 @@
+name: gf_lang - prod
+on:
+  push:
+    branches: 
+      - master
+    paths:
+      - "gf_lang/**"
+      - .github/workflows/gf_prod_gf_lang.yaml
+
+  # workflow is also triggered via github REST API/manually
+  workflow_dispatch:
+
+env:
+  ENV: prod
+  AWS_REGION: us-east-1
+
+jobs:                            
+
+  #--------------------------------------------------------------------
+  # TEST_GO
+  test-go:
+    needs: []
+    runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_go_ubuntu:latest
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf
+      env:
+        GF_LOG_LEVEL: debug
+
+    steps:
+
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+
+      # GF_LANG
+      - name: test gf_lang
+        run: |
+          cd /home/gf/gf_lang/go/gf_lang
+          go test -v
+
+      #-------------------------------
+
+  #--------------------------------------------------------------------
+  # BUILD_GO
+  build-go:
+    needs: [test-go]
+    runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_go_ubuntu:latest
+      env:
+        
+        # currently set to avoid the error raised on go build:
+        # > error obtaining VCS status: exit status 128"
+        # > Use -buildvcs=false to disable VCS stamping.
+        GOFLAGS: "-buildvcs=false"
+
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf/gloflow
+    steps:
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+      
+      #-------------------------------
+      - name: build Go code
+        env:
+          GOOS: js
+          GOARCH: wasm
+          GF_OUTPUT_DIR: /home/gf/gloflow/gf_lang/go/build/gf_lang_web.wasm
+        run: |
+          cd gloflow/gf_lang/go/gf_lang_web
+          go build -o ${{ env.GF_OUTPUT_DIR }}
+
+      #-------------------------------
+      # UPLOAD_ARTIFACTS
+      - name: upload Go build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gf_lang_build_artifacts
+          path: |
+            /home/gf/gloflow/build
+          retention-days: 30
+
+      #-------------------------------
+  
+  #--------------------------------------------------------------------
+  # NOTIFY_COMPLETION - run containers build workflow
+
+  notify_completion:
+    needs: build-go
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: trigger container build workflow
+        env:
+          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+        run: gh workflow run gf_prod_containers.yaml --repo ${{ github.repository }} --ref master
+
+  #--------------------------------------------------------------------
