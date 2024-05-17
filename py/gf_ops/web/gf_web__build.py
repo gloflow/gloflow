@@ -351,16 +351,30 @@ def process_files_to_copy(p_page_info_map, p_log_fun):
 		assert isinstance(file_to_copy_tpl, tuple)
 		src_file_str, target_dir_str = file_to_copy_tpl
 
-		assert os.path.isfile(src_file_str)
 		
+		
+		# TARGET_DIR
 		if not os.path.isdir(target_dir_str):
 			gf_core_cli.run(f'mkdir -p {target_dir_str}')
 
 
-		gf_core_cli.run(f"cp {src_file_str} {target_dir_str}")
+		c_lst = ["cp"]
 
-		final_path_str = f"{target_dir_str}/{os.path.basename(src_file_str)}"
-		assert os.path.isfile(final_path_str)
+
+		if os.path.isdir(src_file_str):
+			c_lst.append("-r")
+		else:
+			assert os.path.isfile(src_file_str)
+
+		c_lst.append(src_file_str)
+		c_lst.append(target_dir_str)
+
+		c_str = " ".join(c_lst)
+		gf_core_cli.run(c_str)
+
+		if os.path.isfile(src_file_str):
+			final_path_str = f"{target_dir_str}/{os.path.basename(src_file_str)}"
+			assert os.path.isfile(final_path_str)
 
 #---------------------------------------------------
 def process_subtemplates(p_page_name_str,

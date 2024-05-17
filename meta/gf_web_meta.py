@@ -29,11 +29,16 @@ def get():
 		}
 	}
 
+
+
+
+	images_base_build_dir_str = f"{modd_str}/../web/build/gf_apps/gf_images"
+
 	gf_images__pages_map = {
 		#-------------
 		# IMAGES_VIEW
 		"gf_images_view": {
-			"build_dir_str":      f"{modd_str}/../web/build/gf_apps/gf_images",
+			"build_dir_str":      images_base_build_dir_str,
 			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_images/templates/gf_images_view/gf_images_view.html",
 			"url_base_str":       "/images/static",
 		},
@@ -52,7 +57,7 @@ def get():
 		#         are manipulated with this bookmarklet but also bookmarks/tags/etc.
 		#         this should possibly go into the tagger
 		"gf_page_picker": {
-			"build_dir_str": f"{modd_str}/../web/build/gf_apps/gf_images",
+			"build_dir_str": images_base_build_dir_str,
 			"files_to_copy_lst": [
 				(f"{modd_str}/../web/src/gf_apps/gf_images/ts/gf_page_picker/gf_page_picker.js", f"{modd_str}/../web/build/gf_apps/gf_images/js"),
 				
@@ -70,9 +75,9 @@ def get():
 		# CODE_EDITOR
 
 		"gf_code_editor": {
-			"build_dir_str": f"{modd_str}/../web/build/gf_apps/gf_images",
+			"build_dir_str": images_base_build_dir_str,
 			"files_to_copy_lst": [
-				(f"{modd_str}/../web/src/gf_apps/gf_code_editor/templates/code_editor.html", f"{modd_str}/../web/build/gf_apps/gf_images"),
+				(f"{modd_str}/../web/src/gf_apps/gf_code_editor/templates/code_editor.html", images_base_build_dir_str),
 			]
 		},
 
@@ -80,12 +85,22 @@ def get():
 		# MAPS
 	
 		"gf_maps": {
-			"build_dir_str": f"{modd_str}/../web/build/gf_apps/gf_images",
+			"build_dir_str": images_base_build_dir_str,
 			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_maps/templates/gf_maps.html",
 			"url_base_str":       "/images/static"
 			# "files_to_copy_lst": [
-			# 	(f"{modd_str}/../web/src/gf_apps/gf_maps/templates/maps.html", f"{modd_str}/../web/build/gf_apps/gf_images"),
+			# 	(f"{modd_str}/../web/src/gf_apps/gf_maps/templates/maps.html", images_base_build_dir_str),
 			# ]
+		},
+
+		#-------------
+		# GF_LANG
+	
+		"gf_lang": {
+			"build_dir_str": images_base_build_dir_str,
+			"files_to_copy_lst": [
+				(f"{modd_str}/../gf_lang/test", images_base_build_dir_str),
+			]
 		}
 
 		#-------------
