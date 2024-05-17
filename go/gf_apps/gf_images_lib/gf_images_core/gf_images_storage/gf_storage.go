@@ -23,6 +23,7 @@ import (
 	"fmt"
 	ipfs "github.com/ipfs/go-ipfs-api"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_ipfs"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 )
 
@@ -145,7 +146,7 @@ func Init(pConfig *GFimageStorageConfig,
 		// IPFS
 		case "ipfs":
 
-			ipfsShell, gfErr := gf_core.IPFSinit(pConfig.IPFSnodeHostStr,
+			ipfsShell, gfErr := gf_ipfs.IPFSinit(pConfig.IPFSnodeHostStr,
 				pRuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr
