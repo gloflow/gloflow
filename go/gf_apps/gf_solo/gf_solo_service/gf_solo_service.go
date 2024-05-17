@@ -275,7 +275,7 @@ func Run(pConfig *GFconfig,
 		Media_domain_str:       imagesConfig.MediaDomainStr,
 		Py_stats_dirs_lst:      pConfig.AnalyticsPyStatsDirsLst,
 		Run_indexer_bool:       pConfig.AnalyticsRunIndexerBool,
-		Elasticsearch_host_str: pConfig.ElasticsearchHostStr,
+		// Elasticsearch_host_str: pConfig.ElasticsearchHostStr,
 
 		Templates_paths_map: pConfig.TemplatesPathsMap,
 

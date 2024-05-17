@@ -54,7 +54,7 @@ type GFconfig struct {
 	MongoDBnameStr string `mapstructure:"mongodb_db_name"`
 
 	// ELASTICSEARCH
-	ElasticsearchHostStr string `mapstructure:"elasticsearch_host"`
+	// ElasticsearchHostStr string `mapstructure:"elasticsearch_host"`
 
 	// SENTRY_ENDPOINT
 	SentryEndpointStr string `mapstructure:"sentry_endpoint"`

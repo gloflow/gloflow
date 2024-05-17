@@ -21,13 +21,14 @@ package gf_analytics_lib
 
 import (
 	// "os"
-	"fmt"
+	// "fmt"
 	"net/http"
-	"github.com/olivere/elastic"
 	"github.com/gloflow/gloflow/go/gf_core"
-	// "github.com/gloflow/gloflow/go/gf_stats/gf_stats_apps"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_domains_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib"
+
+	// "github.com/olivere/elastic"
+	// "github.com/gloflow/gloflow/go/gf_stats/gf_stats_apps"
+	// "github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -43,7 +44,7 @@ type GFserviceInfo struct {
 	Media_domain_str       string 
 	Py_stats_dirs_lst      []string
 	Run_indexer_bool       bool
-	Elasticsearch_host_str string
+	// Elasticsearch_host_str string
 	Templates_paths_map map[string]string
 
 	// IMAGES_STORAGE
@@ -58,6 +59,7 @@ func InitService(pServiceInfo *GFserviceInfo,
 
 	//-----------------
 	// ELASTICSEARCH
+	/*
 	var esearch_client *elastic.Client
 	var gfErr          *gf_core.GFerror
 	if pServiceInfo.Run_indexer_bool {
@@ -67,6 +69,7 @@ func InitService(pServiceInfo *GFserviceInfo,
 		}
 	}
 	fmt.Println("ELASTIC_SEARCH_CLIENT >>> OK")
+	*/
 
 	//-----------------
 	initHandlers(pServiceInfo.Templates_paths_map, pHTTPmux, pRuntimeSys)
@@ -75,7 +78,7 @@ func InitService(pServiceInfo *GFserviceInfo,
 	// GF_DOMAINS
 	gf_domains_lib.DBmongoIndexInit(pRuntimeSys)
 	gf_domains_lib.InitDomainsAggregation(pRuntimeSys)
-	gfErr = gf_domains_lib.InitHandlers(pServiceInfo.Templates_paths_map,
+	gfErr := gf_domains_lib.InitHandlers(pServiceInfo.Templates_paths_map,
 		pHTTPmux,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -85,6 +88,7 @@ func InitService(pServiceInfo *GFserviceInfo,
 	//------------------------
 	// GF_CRAWL
 
+	/*
 	crawl_config := &gf_crawl_lib.GFcrawlerConfig{
 		Crawled_images_s3_bucket_name_str: "gf--discovered--img",
 		Images_s3_bucket_name_str:         "gf--img",
@@ -102,6 +106,7 @@ func InitService(pServiceInfo *GFserviceInfo,
 		esearch_client,
 		pHTTPmux,
 		pRuntimeSys)
+	*/
 
 	//------------------------
 	/*
