@@ -78,7 +78,7 @@ export function init(p_target_element,
         // is in progress. otherwise its event handlers (including dragging)
         // will be removed and disturbed while user is dragging.
         if (!element_dragged_bool) {
-            $(control).remove();
+            // $(control).remove();
         }
     });
 
@@ -136,7 +136,8 @@ export function init(p_target_element,
 
             $(control).css("pointer", "grab");
 
-            $("body").on("mousemove", mouse_move_fun);
+            // $("body").on("mousemove", mouse_move_fun);
+            $(document).on("mousemove", mouse_move_fun);
             element_dragged_bool = true;
             
             // EVENT
@@ -145,37 +146,42 @@ export function init(p_target_element,
         });
 
         // MOUSE_UP
-        $(control).on("mouseup", (p_event)=>{
-            
-            $(control).css("pointer", "pointer");
+        // $(control).on("mouseup", (p_event)=>{
+        $(document).on("mouseup", (p_event)=>{
+            if (element_dragged_bool) {
 
-            $("body").unbind("mousemove", mouse_move_fun);
-            element_dragged_bool = false;
+                element_dragged_bool = false;
+
+                $(control).css("pointer", "pointer");
+
+                // $("body").unbind("mousemove", mouse_move_fun);
+                $(document).unbind("mousemove", mouse_move_fun);
 
 
-            // final coords of the element that was droped
-            var final_x_int;
-            switch (control_side_str) {
-                case "left":
-                    final_x_int = p_event.pageX + distance_to_target_origin_x;
-                    break;
-                
-                case "right":
-                    final_x_int = p_event.pageX - distance_to_target_origin_x;
-                    break;
+                // final coords of the element that was droped
+                var final_x_int;
+                switch (control_side_str) {
+                    case "left":
+                        final_x_int = p_event.pageX + distance_to_target_origin_x;
+                        break;
+                    
+                    case "right":
+                        final_x_int = p_event.pageX - distance_to_target_origin_x;
+                        break;
+                }
+
+
+
+
+                const final_y_int = p_event.pageY - distance_to_target_origin_y;
+                const data_map = {
+                    "x_int": final_x_int,
+                    "y_int": final_y_int,
+                };
+
+                // EVENT
+                p_on_dnd_event_fun("drag_stop", data_map);
             }
-
-
-
-
-            const final_y_int = p_event.pageY - distance_to_target_origin_y;
-            const data_map = {
-                "x_int": final_x_int,
-                "y_int": final_y_int,
-            };
-
-            // EVENT
-            p_on_dnd_event_fun("drag_stop", data_map);
         });
     }
 
