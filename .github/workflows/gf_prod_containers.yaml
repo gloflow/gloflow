@@ -39,6 +39,7 @@ jobs:
       go_build_run_id:   ${{ steps.get_run_id.outputs.go_build_run_id }}
       rust_build_run_id: ${{ steps.get_run_id.outputs.rust_build_run_id }}
       web_build_run_id:  ${{ steps.get_run_id.outputs.web_build_run_id }}
+      gf_lang_build_run_id:  ${{ steps.get_run_id.outputs.gf_lang_build_run_id }}
     steps:
 
       #-------------------------------
@@ -68,7 +69,7 @@ jobs:
           echo "::set-output name=go_build_run_id::$GO_RUN_ID"
           echo "::set-output name=rust_build_run_id::$RUST_RUN_ID"
           echo "::set-output name=web_build_run_id::$WEB_RUN_ID"
-          echo "::set-output name=web_build_run_id::$GF_LANG_RUN_ID"
+          echo "::set-output name=gf_lang_build_run_id::$GF_LANG_RUN_ID"
 
       #-------------------------------
 
