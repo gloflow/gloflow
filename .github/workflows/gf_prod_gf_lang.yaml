@@ -74,7 +74,7 @@ jobs:
           GOARCH: wasm
           GF_OUTPUT_DIR: /home/gf/gloflow/gf_lang/go/build/gf_lang_web.wasm
         run: |
-          cd gloflow/gf_lang/go/gf_lang_web
+          cd /home/gf/gloflow/gf_lang/go/gf_lang_web
           go build -o ${{ env.GF_OUTPUT_DIR }}
 
       #-------------------------------
