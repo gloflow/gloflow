@@ -55,6 +55,7 @@ func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 		test__mongodb_host_str = test__mongodb_db_name_env_str
 	}
 
+	/*
 	// ELASTICSEARCH
 	test__es_host_str := "127.0.0.1:9200"
 	
@@ -64,7 +65,8 @@ func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 	if test__es_host_env_str != "" {
 		test__es_host_str = test__es_host_env_str
 	}
-
+	*/
+	
 	//-------------
 
 	logFun, logNewFun := gf_core.LogsInit()
@@ -87,12 +89,14 @@ func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 	runtimeSys.Mongo_coll = mongo_db.Collection("data_symphony")
 	
 	//-------------
+	/*
 	// ELASTICSEARCH
 	esearch_client, gfErr := gf_core.Elastic__get_client(test__es_host_str, runtimeSys)
 	if gfErr != nil {
 		panic("failed to get ElasticSearch client in test initialization")
 		return nil, nil
 	}
+	*/
 
 	//-------------
 	// S3
@@ -102,7 +106,7 @@ func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 
 	crawlerRuntime := &GFcrawlerRuntime{
 		EventsCtx:     nil,
-		EsearchClient: esearch_client,
+		// EsearchClient: esearch_client,
 		S3info:        s3testInfo.GFs3Info,
 	}
 

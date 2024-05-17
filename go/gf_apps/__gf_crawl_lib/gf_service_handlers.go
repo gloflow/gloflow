@@ -133,6 +133,7 @@ func initHandlers(pMediaDomainStr string,
 				query_term_str := pReq.URL.Query()["term"][0]
 				pRuntimeSys.LogFun("INFO", "query_term_str - "+query_term_str)
 
+				/*
 				// IMPORTANT!! - only query if the indexer is enabled
 				if pRuntime.EsearchClient != nil {
 					gfErr := gf_crawl_core.IndexQuery(query_term_str, pRuntime, pRuntimeSys)
@@ -140,6 +141,8 @@ func initHandlers(pMediaDomainStr string,
 						return nil, gfErr
 					}
 				}
+				*/
+				
 				//------------------
 				// OUTPUT
 				output_map := map[string]interface{}{}

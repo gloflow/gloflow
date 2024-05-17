@@ -238,6 +238,7 @@ func FetchParseResult(pURLfetch *GFcrawlerURLfetch,
 		pRuntimeSys)
 
 	//----------------
+	/*
 	// INDEX URL_FETCH
 
 	// IMPORTANT!! - index only if the indexer is initialized
@@ -247,7 +248,8 @@ func FetchParseResult(pURLfetch *GFcrawlerURLfetch,
 			return gfErr
 		}
 	}
-
+	*/
+	
 	//----------------
 
 	return nil

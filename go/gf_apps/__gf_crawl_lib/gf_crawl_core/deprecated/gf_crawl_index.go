@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"github.com/olivere/elastic"
+	// "github.com/olivere/elastic"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -65,7 +65,7 @@ func IndexQuery(p_term_str string,
 
 	ctx := context.Background()
 
-	query_result,err := pRuntime.EsearchClient.Search().
+	query_result, err := pRuntime.EsearchClient.Search().
 	    Index(index_name_str).                                   // search in index "twitter"
 	    Query(term_query).                                       // specify the query
 	    Highlight(elastic.NewHighlight().Field(field_name_str)). // result HIGHLIGHTING

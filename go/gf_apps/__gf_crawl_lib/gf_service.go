@@ -96,7 +96,7 @@ func Init(pConfig *GFcrawlerConfig,
 
 	runtime := &gf_crawl_core.GFcrawlerRuntime{
 		EventsCtx:                     eventsCtx,
-		EsearchClient:                 pEsearchClient,
+		// EsearchClient:                 pEsearchClient,
 		S3info:                        gf_s3_info,
 		ImagesUseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
 	}
@@ -105,17 +105,21 @@ func Init(pConfig *GFcrawlerConfig,
 	// IMPORTANT!! - make sure mongo has indexes build for relevant queries
 	dbMongoIndexInit(pRuntimeSys)
 	
-	/*crawlersMap, gfErr := gf_crawl_core.GetAllCrawlers(pConfig.Crawl_config_file_path_str,
+	/*
+	crawlersMap, gfErr := gf_crawl_core.GetAllCrawlers(pConfig.Crawl_config_file_path_str,
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
-	}*/
+	}
+	*/
 
-	/*startCrawlersCycles(crawlersMap,
+	/*
+	startCrawlersCycles(crawlersMap,
 		pConfig.Images_local_dir_path_str,
 		crawled_images_s3_bucket_name_str,
 		runtime,
-		pRuntimeSys)*/
+		pRuntimeSys)
+	*/
 
 	//--------------
 	// HTTP_HANDLERS
