@@ -153,5 +153,10 @@ function main(p_log_fun) {
 		"gf_bar_handle_btn": "./../../../../assets/gf_bar_handle_btn.svg"
 	}
 
-    gf_home.init(http_api_map, assets_paths_map, p_log_fun);
+	const identity_http_api_map = {};
+
+    gf_home.init(http_api_map,
+		identity_http_api_map,
+		assets_paths_map,
+		p_log_fun);
 }
