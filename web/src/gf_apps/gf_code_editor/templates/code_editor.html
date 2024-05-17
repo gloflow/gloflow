@@ -180,17 +180,17 @@
 
 								try {
 
-										//-------------------------
-										// IMPORTANT!! - evaluate code in the context of a p5 object, meaning that
-										//               like in the p5 web editor, all p5 functions are in scope and available.
-										with (p5) {
-												eval(p_code_str);
-										}
-										
-										//-------------------------
-										
+									//-------------------------
+									// IMPORTANT!! - evaluate code in the context of a p5 object, meaning that
+									//               like in the p5 web editor, all p5 functions are in scope and available.
+									with (p5) {
+										eval(p_code_str);
+									}
+									
+									//-------------------------
+									
 								} catch (e) {
-										console.log(e);
+									console.log(e);
 								}
 
 								console.log("JS LOADED CODE >>>>>>>>>>>>>>>>>>>")
@@ -207,23 +207,23 @@
 								// Copy over p5 functions and variables to p5canvas
 								for (var key in p5) {
 
-										//-------------------------
-										// ATTENTION!! - potentially risky. its copying over the 
-										//               entire p5 scope to the prototype of setup()/draw() p5 functions.
-										//               needed for p5 JS functions to be in scope to the code in the
-										//               users text/code editor.
-										// console.log("--", key)
-										setup.prototype[key] = p5[key];
-										draw.prototype[key]  = p5[key];
-										
-										//-------------------------
-										
-										/*
-										// cant use this test to limit what gets copied to setup()/draw(), because it seems
-										// most of the important p5 functions are defined up to the prototype chain
-										// to p5's objects parents.
-										if (p5.hasOwnProperty(key)) {}
-										*/
+									//-------------------------
+									// ATTENTION!! - potentially risky. its copying over the 
+									//               entire p5 scope to the prototype of setup()/draw() p5 functions.
+									//               needed for p5 JS functions to be in scope to the code in the
+									//               users text/code editor.
+									// console.log("--", key)
+									setup.prototype[key] = p5[key];
+									draw.prototype[key]  = p5[key];
+									
+									//-------------------------
+									
+									/*
+									// cant use this test to limit what gets copied to setup()/draw(), because it seems
+									// most of the important p5 functions are defined up to the prototype chain
+									// to p5's objects parents.
+									if (p5.hasOwnProperty(key)) {}
+									*/
 								}
 
 								//-------------------------

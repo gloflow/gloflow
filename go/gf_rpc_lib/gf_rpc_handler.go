@@ -273,6 +273,18 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 						its necesary to explicitly allow these headers using the Access-Control-Allow-Headers header.
 						*/
 						pResp.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+						/*
+						The XMLHttpRequest.withCredentials property is a Boolean that indicates
+						whether or not cross-site Access-Control requests should be made using
+						credentials such as cookies, authorization headers or TLS client certificates.
+						Setting withCredentials has no effect on same-site requests
+						
+						js jquery $.ajax() param:
+							xhrFields: {
+								withCredentials: true
+							}
+						*/
 						pResp.Header().Set("Access-Control-Allow-Credentials", "true")
 					}
 				}
