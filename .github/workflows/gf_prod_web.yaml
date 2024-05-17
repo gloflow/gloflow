@@ -26,8 +26,46 @@ env:
 jobs:
 
   #--------------------------------------------------------------------
+  # DOWNLOAD_PREBUILT_ARTIFACTS - test fetchability or dependency assets
+
+  get-workflow-deps:
+    runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_go_ubuntu:latest
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf
+    outputs:
+      gf_lang_build_run_id:  ${{ steps.get_run_id.outputs.gf_lang_build_run_id }}
+    steps:
+
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+
+      #-------------------------------
+      - name: get latest workflows run_id's
+        id: get_run_id
+        env:
+          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+        run: |
+
+          # VARS
+          GF_LANG_WF_NAME="gf_prod_gf_lang.yaml"
+
+          # GET_RUN_ID
+          GF_LANG_RUN_ID=`gh run --repo ${{ github.repository }} list --status success --workflow ${GF_LANG_WF_NAME} --json databaseId --jq .[0].databaseId`
+
+          # SET_OUTPUTS
+          echo "::set-output name=gf_lang_build_run_id::$GF_LANG_RUN_ID"
+
+      #-------------------------------
+
+  #--------------------------------------------------------------------
   # BUILD_WEB
   build-web:
+    needs: [get-workflow-deps]
     runs-on: ubuntu-latest
     container:
       image: glofloworg/gf_builder_web:latest
@@ -50,7 +88,7 @@ jobs:
           name: gf_lang_build_artifacts
           github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
           path: /home/gf/web/build/gf_apps/gf_images
-          run-id: "${{ needs.check-download-prebuilt-artifacts.outputs.gf_lang_build_run_id }}"
+          run-id: "${{ needs.get-workflow-deps.outputs.gf_lang_build_run_id }}"
           
       #-------------------------------
       # BUILD_WEB
