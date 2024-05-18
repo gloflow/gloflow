@@ -29,6 +29,7 @@ import (
 	"net/http"
 	"context"
 	"time"
+	"strings"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
@@ -241,9 +242,10 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		//-------------------------------------------------
 		authHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
 			
+			pathStr := pReq.URL.Path
 			pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> auth http handler...`,
 				map[string]interface{}{
-					"path_str":                pReq.URL.Path,
+					"path_str":                pathStr,
 					"auth_subsystem_type_str": pHandlerRuntime.AuthSubsystemTypeStr,
 				})
 
@@ -260,6 +262,23 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			reqIDstr := genRequestID()
 			ctxWithReqID := context.WithValue(*ctxAuth, "gf_req_id", reqIDstr)
 
+
+			//------------------
+			// EVENT
+			if pHandlerRuntime.EnableEventsBool && strings.HasPrefix(pathStr, "/v1/identity"){
+				eventMeta := map[string]interface{}{
+					"path_str":   pathStr,
+					"req_id_str": reqIDstr,
+					"auth_subsystem_type_str": pHandlerRuntime.AuthSubsystemTypeStr,
+				}
+				gf_events.EmitApp(GF_EVENT_RPC__IDENTITY_REQUEST,
+					eventMeta,
+					pRuntimeSys)
+			}
+
+			//------------------
+
+			
 			//-----------------------
 			// CORS
 			// if the user has supplied CORS domains, check if the request origin domain is in the list
@@ -275,9 +294,10 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 					// EVENT
 					if pHandlerRuntime.EnableEventsBool {
 						eventMeta := map[string]interface{}{
-							"path_str":   pReq.URL.Path,
+							"path_str":   pathStr,
 							"origin_str": originStr,
 							"req_id_str": reqIDstr,
+							"auth_subsystem_type_str": pHandlerRuntime.AuthSubsystemTypeStr,
 						}
 						gf_events.EmitApp(GF_EVENT_RPC__CORS_REQUEST,
 							eventMeta,
