@@ -268,19 +268,19 @@ func Run(pConfig *GFconfig,
 	
 	gfAnalyticsServiceInfo := &gf_analytics_lib.GFserviceInfo{
 
-		Crawl__config_file_path_str:      pConfig.CrawlConfigFilePathStr,
-		Crawl__cluster_node_type_str:     pConfig.CrawlClusterNodeTypeStr,
-		Crawl__images_local_dir_path_str: pConfig.CrawlImagesLocalDirPathStr,
-
-		Media_domain_str:       imagesConfig.MediaDomainStr,
-		Py_stats_dirs_lst:      pConfig.AnalyticsPyStatsDirsLst,
-		Run_indexer_bool:       pConfig.AnalyticsRunIndexerBool,
+		Media_domain_str:  imagesConfig.MediaDomainStr,
+		Py_stats_dirs_lst: pConfig.AnalyticsPyStatsDirsLst,
+		Run_indexer_bool:  pConfig.AnalyticsRunIndexerBool,
 		// Elasticsearch_host_str: pConfig.ElasticsearchHostStr,
 
 		Templates_paths_map: pConfig.TemplatesPathsMap,
 
 		// IMAGES_STORAGE
 		ImagesUseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
+
+		// Crawl__config_file_path_str:      pConfig.CrawlConfigFilePathStr,
+		// Crawl__cluster_node_type_str:     pConfig.CrawlClusterNodeTypeStr,
+		// Crawl__images_local_dir_path_str: pConfig.CrawlImagesLocalDirPathStr,
 	}
 	gf_analytics_lib.InitService(gfAnalyticsServiceInfo,
 		gfSoloHTTPmux,

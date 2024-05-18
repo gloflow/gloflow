@@ -35,20 +35,22 @@ import (
 //-------------------------------------------------
 
 type GFserviceInfo struct {
+	
 	Port_str string
 
-	Crawl__config_file_path_str      string
-	Crawl__cluster_node_type_str     string
-	Crawl__images_local_dir_path_str string
-
-	Media_domain_str       string 
-	Py_stats_dirs_lst      []string
-	Run_indexer_bool       bool
-	// Elasticsearch_host_str string
+	Media_domain_str  string 
+	Py_stats_dirs_lst []string
+	Run_indexer_bool  bool
+	
 	Templates_paths_map map[string]string
 
 	// IMAGES_STORAGE
 	ImagesUseNewStorageEngineBool bool
+
+	// Elasticsearch_host_str string
+	// Crawl__config_file_path_str      string
+	// Crawl__cluster_node_type_str     string
+	// Crawl__images_local_dir_path_str string
 }
 
 //-------------------------------------------------

@@ -78,10 +78,6 @@ type GFconfig struct {
 	AnalyticsPyStatsDirsLst []string `mapstructure:"analytics__py_stats_dirs"`
 	AnalyticsRunIndexerBool bool     `mapstructure:"analytics__run_indexer"`
 
-	CrawlConfigFilePathStr     string `mapstructure:"crawl__config_file_path"`
-	CrawlClusterNodeTypeStr    string `mapstructure:"crawl__cluster_node_type"`
-	CrawlImagesLocalDirPathStr string `mapstructure:"crawl__images_local_dir_path"`
-
 	//--------------------
 	// ALCHEMY
 	AlchemyAPIkeyStr string `mapstructure:"alchemy_api_key"`
@@ -92,6 +88,12 @@ type GFconfig struct {
 
 	// IPFS
 	IPFSnodeHostStr string `mapstructure:"ipfs_node_host"`
+
+	//--------------------
+	// DEPRECATED!!
+	// CrawlConfigFilePathStr     string `mapstructure:"crawl__config_file_path"`
+	// CrawlClusterNodeTypeStr    string `mapstructure:"crawl__cluster_node_type"`
+	// CrawlImagesLocalDirPathStr string `mapstructure:"crawl__images_local_dir_path"`
 
 	//--------------------
 }
