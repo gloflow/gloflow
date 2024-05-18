@@ -22,6 +22,8 @@ package gf_mixpanel
 import (
 	"fmt"
 	"encoding/json"
+	"encoding/base64"
+	"strings"
 	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -44,7 +46,9 @@ func EventSend(pEventTypeStr string,
 	request := gorequest.New()
 
 	// AUTH - mixpanel uses basic http auth
-	request.Header.Add("user", fmt.Sprintf("%s:%s", pInfo.Username_str, pInfo.Secret_str))
+	// request.Header.Add("user", fmt.Sprintf("%s:%s", pInfo.Username_str, pInfo.Secret_str))
+	auth := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", pInfo.Username_str, pInfo.Secret_str)))
+	request.Header.Add("Authorization", fmt.Sprintf("Basic %s", auth))
 
 	dataMap := map[string]interface{}{
 		"event":      pEventTypeStr,
@@ -54,7 +58,7 @@ func EventSend(pEventTypeStr string,
 
 
 	urlStr := fmt.Sprintf("https://api.mixpanel.com/import?strict=1&project_id=%s", pInfo.Project_id_str)
-	_, _, errs := request.Post(urlStr).
+	resp, body, errs := request.Post(urlStr).
 		Send(string(dataBytesLst)).
 		End()
 
@@ -66,6 +70,34 @@ func EventSend(pEventTypeStr string,
 			err, "gf_mixpanel", pRuntimeSys)
 		return gfErr
 	}
+
+
+
+	if len(errs) > 0 {
+		
+		// log all errors
+		errorMessages := make([]string, len(errs))
+		for i, err := range errs {
+			errorMessages[i] = err.Error()
+		}
+		gfErr := gf_core.ErrorCreate("failed to send event to mixpanel",
+			"http_client_req_error",
+			map[string]interface{}{"url_str": urlStr, "response": body},
+			fmt.Errorf(strings.Join(errorMessages, ", ")), "gf_mixpanel", pRuntimeSys)
+		return gfErr
+	}
+
+
+
+	// check the HTTP response status code for success
+	if resp.StatusCode != 200 {
+		gfErr := gf_core.ErrorCreate("unexpected status code from mixpanel",
+			"http_client_req_error",
+			map[string]interface{}{"url_str": urlStr, "response": body},
+			fmt.Errorf("status code: %d", resp.StatusCode), "gf_mixpanel", pRuntimeSys)
+		return gfErr
+	}
+
 
 	return nil
 }
