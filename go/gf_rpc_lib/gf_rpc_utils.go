@@ -28,8 +28,23 @@ import (
 	// "fmt"
 	"encoding/json"
 	"net/http"
+	"github.com/google/uuid"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
+//-------------------------------------------------
+
+func getRequestID(pReq *http.Request) string {
+    if reqIDstr, ok := pReq.Context().Value("gf_req_id").(string); ok {
+        return reqIDstr
+    }
+    return ""
+}
+
+func genRequestID() string {
+	reqIDstr := uuid.New().String()
+	return reqIDstr
+}
 
 //-------------------------------------------------
 

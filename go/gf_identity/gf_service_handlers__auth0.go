@@ -64,6 +64,8 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 		// url redirected too if user not logged in and tries to access auth handler
 		AuthLoginURLstr: "/v1/identity/login_ui",
 		AuthKeyServer:   pKeyServer,
+
+		EnableEventsBool: true,
 	}
 
 	//---------------------

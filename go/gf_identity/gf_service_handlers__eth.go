@@ -59,6 +59,8 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 		// url redirected too if user not logged in and tries to access auth handler
 		AuthLoginURLstr: "/landing/main",
 		AuthKeyServer:   pKeyServer,
+
+		EnableEventsBool: true,
 	}
 
 	//---------------------

@@ -53,9 +53,6 @@ type GFconfig struct {
 	MongoHostStr   string `mapstructure:"mongodb_host"`
 	MongoDBnameStr string `mapstructure:"mongodb_db_name"`
 
-	// ELASTICSEARCH
-	// ElasticsearchHostStr string `mapstructure:"elasticsearch_host"`
-
 	// SENTRY_ENDPOINT
 	SentryEndpointStr string `mapstructure:"sentry_endpoint"`
 
@@ -91,6 +88,11 @@ type GFconfig struct {
 
 	//--------------------
 	// DEPRECATED!!
+
+	// ELASTICSEARCH
+	// ElasticsearchHostStr string `mapstructure:"elasticsearch_host"`
+
+	// CRAWLER
 	// CrawlConfigFilePathStr     string `mapstructure:"crawl__config_file_path"`
 	// CrawlClusterNodeTypeStr    string `mapstructure:"crawl__cluster_node_type"`
 	// CrawlImagesLocalDirPathStr string `mapstructure:"crawl__images_local_dir_path"`

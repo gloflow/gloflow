@@ -36,7 +36,7 @@ type GFmixpanelInfo struct {
 
 //-------------------------------------------------------------
 
-func Event_send(pEventTypeStr string,
+func EventSend(pEventTypeStr string,
 	pEventMetaMap map[string]interface{},
 	pInfo         *GFmixpanelInfo,
 	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {

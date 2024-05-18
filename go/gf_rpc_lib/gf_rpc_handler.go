@@ -31,6 +31,7 @@ import (
 	"time"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_session"
 	// "github.com/davecgh/go-spew/spew"
@@ -47,6 +48,8 @@ type GFrpcHandlerRuntime struct {
 	AuthSubsystemTypeStr string
 	AuthLoginURLstr      string // url redirected too if user not logged in and tries to access auth handler
 	AuthKeyServer        *gf_identity_core.GFkeyServerInfo
+
+	EnableEventsBool bool
 }
 
 type GFrpcHandlerRun struct {
@@ -244,12 +247,18 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 					"auth_subsystem_type_str": pHandlerRuntime.AuthSubsystemTypeStr,
 				})
 
+			
+
 			//-----------------------
 			// VALIDATE_SESSION
 			ctxAuth := validateSessionFun(pResp, pReq)
 			if ctxAuth == nil {
 				return
 			}
+
+			// REQ_ID
+			reqIDstr := genRequestID()
+			ctxWithReqID := context.WithValue(*ctxAuth, "gf_req_id", reqIDstr)
 
 			//-----------------------
 			// CORS
@@ -262,6 +271,21 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 				if originStr != "" {
 
+					//------------------
+					// EVENT
+					if pHandlerRuntime.EnableEventsBool {
+						eventMeta := map[string]interface{}{
+							"path_str":   pReq.URL.Path,
+							"origin_str": originStr,
+							"req_id_str": reqIDstr,
+						}
+						gf_events.EmitApp(GF_EVENT_RPC__CORS_REQUEST,
+							eventMeta,
+							pRuntimeSys)
+					}
+
+					//------------------
+					
 					// check if the origin domain is in the list of allowed domains
 					if gf_core.StringInList(originStr, pRuntimeSys.ExternalPlugins.CORSoriginDomainsLst) {
 
@@ -302,7 +326,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			// APP_HANDLER - external app request handler function, executed with an
 			//               authenticated context.
 
-			appHandlerFun(pResp, pReq.WithContext(*ctxAuth))
+			appHandlerFun(pResp, pReq.WithContext(ctxWithReqID))
 
 			//-----------------------
 		}
