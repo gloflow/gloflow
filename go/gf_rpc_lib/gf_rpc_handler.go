@@ -264,6 +264,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 					// check if the origin domain is in the list of allowed domains
 					if gf_core.StringInList(originStr, pRuntimeSys.ExternalPlugins.CORSoriginDomainsLst) {
+
 						pResp.Header().Set("Access-Control-Allow-Origin", originStr)
 						pResp.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 
@@ -288,6 +289,13 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 						pResp.Header().Set("Access-Control-Allow-Credentials", "true")
 					}
 				}
+			}
+
+			//-----------------------
+			// handle OPTIONS preflight request
+			if pReq.Method == http.MethodOptions {
+				pResp.WriteHeader(http.StatusNoContent)
+				return
 			}
 
 			//-----------------------
