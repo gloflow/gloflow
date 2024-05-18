@@ -170,6 +170,12 @@ export function user_get_me(p_host_str :string) {
             xhrFields: {
                 withCredentials: true
             },
+
+            // HEADERS
+            headers: {
+                'X-GF-Identity': 'true'
+            },
+
             'success': (p_response_map)=>{
 
                 const status_str = p_response_map["status"];
@@ -211,7 +217,13 @@ export function logged_in(p_host_str :string) :Promise<boolean> {
             xhrFields: {
                 withCredentials: true
             },
-            'success':     (p_response_map)=>{
+
+            // HEADERS
+            headers: {
+                'X-GF-Identity': 'true'
+            },
+
+            'success': (p_response_map)=>{
 
                 const status_str = p_response_map["status"];
 
@@ -260,7 +272,13 @@ export function user_preflight(p_user_name_str :string | null,
             xhrFields: {
                 withCredentials: true
             },
-            'success':     (p_response_map)=>{
+
+            // HEADERS
+            headers: {
+                'X-GF-Identity': 'true'
+            },
+            
+            'success': (p_response_map)=>{
 
                 const status_str = p_response_map["status"];
                 const data_map   = p_response_map["data"];
@@ -308,6 +326,12 @@ export function user_eth_login(p_user_address_eth_str :string,
             xhrFields: {
                 withCredentials: true
             },
+
+            // HEADERS
+            headers: {
+                'X-GF-Identity': 'true'
+            },
+
             'success': (p_response_map)=>{
                 
                 const status_str = p_response_map["status"];
@@ -357,6 +381,12 @@ export function user_userpass_login(p_user_name_str :string,
             xhrFields: {
                 withCredentials: true
             },
+
+            // HEADERS
+            headers: {
+                'X-GF-Identity': 'true'
+            },
+
             'success': (p_response_map)=>{
                 
                 const status_str = p_response_map["status"];
@@ -404,6 +434,12 @@ export function user_mfa_confirm(p_user_name_str :string,
             xhrFields: {
                 withCredentials: true
             },
+
+            // HEADERS
+            headers: {
+                'X-GF-Identity': 'true'
+            },
+            
             'success': (p_response_map)=>{
                 
                 const status_str = p_response_map["status"];
@@ -454,6 +490,12 @@ export function user_eth_create(p_user_address_eth_str :string,
             xhrFields: {
                 withCredentials: true
             },
+
+            // HEADERS
+            headers: {
+                'X-GF-Identity': 'true'
+            },
+
             'success': (p_response_map)=>{
                 
                 const status_str = p_response_map["status"];
@@ -504,6 +546,12 @@ export function user_userpass_create(p_user_name_str :string,
             xhrFields: {
                 withCredentials: true
             },
+
+            // HEADERS
+            headers: {
+                'X-GF-Identity': 'true'
+            },
+
             'success': (p_response_map)=>{
                 
                 const status_str = p_response_map["status"];
@@ -554,6 +602,12 @@ export function user_update(p_user_data_map :any,
             xhrFields: {
                 withCredentials: true
             },
+
+            // HEADERS
+            headers: {
+                'X-GF-Identity': 'true'
+            },
+
             'success': (p_response_map)=>{
                 
                 const status_str = p_response_map["status"];
