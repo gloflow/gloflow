@@ -84,7 +84,7 @@ jobs:
       # DOWNLOAD_GF_LANG_ARTIFACTS
 
       # WEB_GO
-      - name: download gf_lang build artifacts
+      - name: download gf_lang web_go build artifacts
         uses: actions/download-artifact@v4
         with:
           name: gf_lang_web_go_build_artifacts
@@ -93,7 +93,7 @@ jobs:
           run-id: "${{ needs.get-workflow-deps.outputs.gf_lang_build_run_id }}"
 
       # WEB
-      - name: download gf_lang build artifacts
+      - name: download gf_lang web build artifacts
         uses: actions/download-artifact@v4
         with:
           name: gf_lang_web_build_artifacts

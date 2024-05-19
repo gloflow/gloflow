@@ -18,13 +18,30 @@ for f in ts_files_lst:
     print(f)
 
 
-c_str = f"tsc --module system --target es2016 --out {output_file_str} {' '.join(ts_files_lst)}"
+c_str = f"tsc --module system --target es2016 --outFile {output_file_str} {' '.join(ts_files_lst)}"
 r = delegator.run(c_str)
 
 print(r.out)
 print(r.err)
 
 
+print("--------------------------------------------------")
+print("COPYING FILES...")
 
-r = delegator.run(f"cp {modd_str}/build/gf_lang.js {modd_str}/../build/gf_lang.js")
-r = delegator.run(f"cp {modd_str}/../go/build/gf_lang_web.wasm {modd_str}/../build/gf_lang_web.wasm")
+copy_lst = [
+    (f"{modd_str}/build/gf_lang.js",             f"{modd_str}/../build/gf_lang.js"),
+    (f"{modd_str}/../go/build/gf_lang_web.wasm", f"{modd_str}/../build/gf_lang_web.wasm"),
+    (f"{modd_str}/gf_lang_test.html",            f"{modd_str}/../build/gf_lang_test.html"),
+    (f"{modd_str}/../css/gf_ide.css",            f"{modd_str}/../build/gf_ide.css")
+]
+
+for f in copy_lst:
+    print(f[0], "  ", f[1])
+
+    r = delegator.run(f"cp {f[0]} {f[1]}")
+    if not r.out == "": print(r.out)
+    if not r.err == "": print(r.err)
+
+    if r.return_code != 0:
+        print("ERROR")
+        sys.exit(1)
