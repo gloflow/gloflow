@@ -20,25 +20,56 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_mixpanel
 
 import (
-	"fmt"
-	"encoding/json"
-	"encoding/base64"
-	"strings"
-	"github.com/parnurzeal/gorequest"
+	// "fmt"
+	// "encoding/json"
+	// "encoding/base64"
+	// "strings"
+	// "github.com/parnurzeal/gorequest"
+	"context"
+	"github.com/mixpanel/mixpanel-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------------------
 
 type GFmixpanelInfo struct {
-	Username_str   string
-	Secret_str     string
-	Project_id_str string
+	UsernameStr  string
+	SecretStr    string
+	ProjectIDstr string
+	ProjectTokenStr string
 }
 
 //-------------------------------------------------------------
 
 func EventSend(pEventTypeStr string,
+	pEventMetaMap map[string]interface{},
+	
+	pInfo         *GFmixpanelInfo,
+	pUserID       gf_core.GF_ID,
+	pCtx          context.Context,
+	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	mp := mixpanel.NewApiClient(pInfo.ProjectIDstr)
+
+	err := mp.Track(pCtx, []*mixpanel.Event{
+		mp.NewEvent(pEventTypeStr, string(pUserID), pEventMetaMap),
+	})
+	
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to send event to mixpanel",
+			"library_error",
+			map[string]interface{}{"event_meta_map": pEventMetaMap,},
+			err, "gf_mixpanel", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
+
+//-------------------------------------------------------------
+
+/*
+func EventSendHTTP(pEventTypeStr string,
 	pEventMetaMap map[string]interface{},
 	pInfo         *GFmixpanelInfo,
 	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -101,3 +132,4 @@ func EventSend(pEventTypeStr string,
 
 	return nil
 }
+*/
