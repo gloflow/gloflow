@@ -22,9 +22,11 @@ require (
 	github.com/h2non/bimg v1.1.9
 	github.com/ianoshen/uaparser v0.0.0-20170929040706-6aabb7c4e98c
 	github.com/ipfs/go-ipfs-api v0.4.0
+	github.com/lib/pq v1.10.9
 	github.com/libp2p/go-libp2p v0.26.2
 	github.com/libp2p/go-libp2p-kad-dht v0.21.1
 	github.com/mitchellh/mapstructure v1.5.0
+	github.com/mixpanel/mixpanel-go v1.2.1
 	github.com/multiformats/go-multiaddr v0.9.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/olivere/elastic v6.2.37+incompatible
@@ -33,7 +35,7 @@ require (
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.8.4
 	go.mongodb.org/mongo-driver v1.12.1
 	golang.org/x/crypto v0.13.0
 	golang.org/x/oauth2 v0.6.0
@@ -123,7 +125,6 @@ require (
 	github.com/koron/go-ssdp v0.0.4 // indirect
 	github.com/leesper/go_rng v0.0.0-20190531154944-a612b043e353 // indirect
 	github.com/leodido/go-urn v1.2.2 // indirect
-	github.com/lib/pq v1.10.9 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
 	github.com/libp2p/go-cidranger v1.1.0 // indirect
 	github.com/libp2p/go-flow-metrics v0.1.0 // indirect

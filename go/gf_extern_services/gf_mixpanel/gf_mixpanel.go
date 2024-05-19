@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_mixpanel
 
 import (
-	// "fmt"
+	"fmt"
 	// "encoding/json"
 	// "encoding/base64"
 	// "strings"
@@ -49,7 +49,7 @@ func EventSend(pEventTypeStr string,
 	pCtx          context.Context,
 	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	mp := mixpanel.NewApiClient(pInfo.ProjectIDstr)
+	mp := mixpanel.NewApiClient(pInfo.ProjectTokenStr)
 
 	err := mp.Track(pCtx, []*mixpanel.Event{
 		mp.NewEvent(pEventTypeStr, string(pUserID), pEventMetaMap),
