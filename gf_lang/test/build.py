@@ -29,10 +29,11 @@ print("--------------------------------------------------")
 print("COPYING FILES...")
 
 copy_lst = [
-    (f"{modd_str}/build/gf_lang.js",             f"{modd_str}/../build/gf_lang.js"),
-    (f"{modd_str}/../go/build/gf_lang_web.wasm", f"{modd_str}/../build/gf_lang_web.wasm"),
-    (f"{modd_str}/gf_lang_test.html",            f"{modd_str}/../build/gf_lang_test.html"),
-    (f"{modd_str}/../css/gf_ide.css",            f"{modd_str}/../build/gf_ide.css")
+    (f"{modd_str}/build/gf_lang.js",  f"{modd_str}/../build/gf_lang.js"),
+    (f"{modd_str}/gf_lang_test.html", f"{modd_str}/../build/gf_lang_test.html"),
+    (f"{modd_str}/../css/gf_ide.css", f"{modd_str}/../build/gf_ide.css"),
+
+    # (f"{modd_str}/../go/build/gf_lang_web.wasm", f"{modd_str}/../build/gf_lang_web.wasm"),
 ]
 
 for f in copy_lst:
