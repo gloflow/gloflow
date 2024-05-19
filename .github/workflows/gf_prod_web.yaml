@@ -82,10 +82,21 @@ jobs:
 
       #-------------------------------
       # DOWNLOAD_GF_LANG_ARTIFACTS
+
+      # WEB_GO
       - name: download gf_lang build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: gf_lang_build_artifacts
+          name: gf_lang_web_go_build_artifacts
+          github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+          path: /home/gf/web/build/gf_apps/gf_images
+          run-id: "${{ needs.get-workflow-deps.outputs.gf_lang_build_run_id }}"
+
+      # WEB
+      - name: download gf_lang build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: gf_lang_web_build_artifacts
           github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
           path: /home/gf/web/build/gf_apps/gf_images
           run-id: "${{ needs.get-workflow-deps.outputs.gf_lang_build_run_id }}"
