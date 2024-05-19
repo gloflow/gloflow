@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_events
 
 import (
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -27,6 +28,8 @@ import (
 
 func EmitApp(pEventAppTypeStr string,
 	pMetaMap    map[string]interface{},
+	pUserID     gf_core.GF_ID,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	go func() {
@@ -34,6 +37,8 @@ func EmitApp(pEventAppTypeStr string,
 		// CALLBACK
 		pRuntimeSys.ExternalPlugins.EventCallback(pEventAppTypeStr,
 			pMetaMap,
+			pUserID,
+			pCtx,
 			pRuntimeSys)
 
 	}()

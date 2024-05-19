@@ -140,6 +140,8 @@ func SharePipeline(pInput *GFshareInput,
 		}
 		gf_events.EmitApp(GF_ENVET_APP__IMAGE_SHARE,
 			eventMeta,
+			pUserID,
+			pCtx,
 			pRuntimeSys)
 	}
 

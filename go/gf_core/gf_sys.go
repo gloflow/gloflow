@@ -25,6 +25,7 @@ SOFTWARE.
 package gf_core
 
 import (
+	"context"
 	"database/sql"
 	"go.mongodb.org/mongo-driver/mongo"
 	"github.com/go-playground/validator"
@@ -87,7 +88,7 @@ type ExternalPlugins struct {
 	
 	//---------------------------
 	// EVENTS
-	EventCallback func(string, map[string]interface{}, *RuntimeSys) *GFerror
+	EventCallback func(string, map[string]interface{}, GF_ID, context.Context, *RuntimeSys) *GFerror
 
 	//---------------------------
 	// SECRETS

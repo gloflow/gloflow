@@ -257,12 +257,14 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			if ctxAuth == nil {
 				return
 			}
+			userID, _ := gf_identity_core.GetUserIDfromCtx(*ctxAuth)
 
 			// REQ_ID
 			reqIDstr := genRequestID()
 			ctxWithReqID := context.WithValue(*ctxAuth, "gf_req_id", reqIDstr)
 
 
+			
 			//------------------
 			// EVENT
 			if pHandlerRuntime.EnableEventsBool && strings.HasPrefix(pathStr, "/v1/identity"){
@@ -273,6 +275,8 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 				}
 				gf_events.EmitApp(GF_EVENT_RPC__IDENTITY_REQUEST,
 					eventMeta,
+					userID,
+					ctxWithReqID,
 					pRuntimeSys)
 			}
 
@@ -301,6 +305,8 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 						}
 						gf_events.EmitApp(GF_EVENT_RPC__CORS_REQUEST,
 							eventMeta,
+							userID,
+							ctxWithReqID,
 							pRuntimeSys)
 					}
 
