@@ -41,7 +41,7 @@ func TestEventSend(t *testing.T) {
 		UsernameStr:    "testuser",
 		SecretStr:      "secret",
 		ProjectIDstr:   "projectID",
-		ProjectTokenStr: "0b9c1c4d50d55f6ae626a7c2cf66bab7", // "projectToken",
+		ProjectTokenStr: "", // "projectToken",
 	}
 	eventTypeStr := "test_event"
 	eventMetaMap := map[string]interface{}{
