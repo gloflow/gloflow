@@ -41,18 +41,23 @@ type GFmixpanelInfo struct {
 
 //-------------------------------------------------------------
 
+func Init(pInfo *GFmixpanelInfo) *mixpanel.Client {
+	mp := mixpanel.NewApiClient(pInfo.ProjectTokenStr)
+	return mp
+}
+
 func EventSend(pEventTypeStr string,
 	pEventMetaMap map[string]interface{},
 	
-	pInfo         *GFmixpanelInfo,
-	pUserID       gf_core.GF_ID,
-	pCtx          context.Context,
-	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
+	pMixpanelClient *mixpanel.Client,
+	pUserID         gf_core.GF_ID,
+	pCtx            context.Context,
+	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	mp := mixpanel.NewApiClient(pInfo.ProjectTokenStr)
+	
 
-	err := mp.Track(pCtx, []*mixpanel.Event{
-		mp.NewEvent(pEventTypeStr, string(pUserID), pEventMetaMap),
+	err := pMixpanelClient.Track(pCtx, []*mixpanel.Event{
+		pMixpanelClient.NewEvent(pEventTypeStr, string(pUserID), pEventMetaMap),
 	})
 	
 	if err != nil {
