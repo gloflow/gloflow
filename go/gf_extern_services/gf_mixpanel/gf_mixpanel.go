@@ -41,7 +41,7 @@ type GFmixpanelInfo struct {
 
 //-------------------------------------------------------------
 
-func Init(pInfo *GFmixpanelInfo) *mixpanel.Client {
+func Init(pInfo *GFmixpanelInfo) *mixpanel.ApiClient {
 	mp := mixpanel.NewApiClient(pInfo.ProjectTokenStr)
 	return mp
 }
@@ -49,7 +49,7 @@ func Init(pInfo *GFmixpanelInfo) *mixpanel.Client {
 func EventSend(pEventTypeStr string,
 	pEventMetaMap map[string]interface{},
 	
-	pMixpanelClient *mixpanel.Client,
+	pMixpanelClient *mixpanel.ApiClient,
 	pUserID         gf_core.GF_ID,
 	pCtx            context.Context,
 	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
