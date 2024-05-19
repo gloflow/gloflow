@@ -89,7 +89,52 @@ jobs:
       - name: upload Go build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: gf_lang_build_artifacts
+
+          # "web_go" - Go code is packaged for web/browser deployment,
+          #            so its named with that component.
+          name: gf_lang_web_go_build_artifacts
+          path: |
+            /home/gf/gloflow/gf_lang/build
+          retention-days: 30
+
+      #-------------------------------
+
+  #--------------------------------------------------------------------
+  # BUILD_WEB
+  build-web:
+    needs: [test-go]
+    runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_web_ubuntu:latest
+      env:
+        
+        # currently set to avoid the error raised on go build:
+        # > error obtaining VCS status: exit status 128"
+        # > Use -buildvcs=false to disable VCS stamping.
+        GOFLAGS: "-buildvcs=false"
+
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf/gloflow
+    steps:
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+
+      #-------------------------------
+      - name: build Web code for tests
+        run: |
+          python3 -u /home/gf/gloflow/gf_lang/test/build.py
+
+          ls -al /home/gf/gloflow/gf_lang/build
+
+      #-------------------------------
+      # UPLOAD_ARTIFACTS
+      - name: upload Go build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gf_lang_web_build_artifacts
           path: |
             /home/gf/gloflow/gf_lang/build
           retention-days: 30
@@ -100,7 +145,7 @@ jobs:
   # NOTIFY_COMPLETION - run web build workflow
 
   notify_completion:
-    needs: build-go
+    needs: [build-go, build-web]
     runs-on: ubuntu-latest
     
     steps:

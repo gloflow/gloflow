@@ -30,6 +30,7 @@ export function run(p_program_ast_lst) {
     // AST_EXPANSION
     const expanded_program_ast_lst = [];
     for (let root_expression_lst of p_program_ast_lst) {
+        
         const expanded_root_expression_lst = expand_tree(root_expression_lst, 0);
 
         // only include expressions which are not "expanded" to expression of 0 length

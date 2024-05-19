@@ -68,6 +68,9 @@ func sysFuncEval(pExprLst []interface{},
         if len(argsExprLst) != 2 {
 			return nil, errors.New("'make' system function can only be called with 2 arg, 'list|map' and initial values or list length")
 		}
+
+        //---------------------
+        // MAKE_TYPE
         var makeTypeStr string
         if typeStr, ok := argsExprLst[0].(string); true {
 
@@ -80,6 +83,8 @@ func sysFuncEval(pExprLst []interface{},
             makeTypeStr = typeStr
         }
 
+        //---------------------
+        
         switch makeTypeStr {
         
         //---------------------
