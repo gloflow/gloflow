@@ -105,7 +105,7 @@ jobs:
     needs: [test-go]
     runs-on: ubuntu-latest
     container:
-      image: glofloworg/gf_builder_web_ubuntu:latest
+      image: glofloworg/gf_builder_web:latest
       env:
         
         # currently set to avoid the error raised on go build:
