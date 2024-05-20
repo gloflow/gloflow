@@ -26,6 +26,7 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
@@ -187,6 +188,23 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 				//-----------------
 				pResp.Write([]byte(templateRenderedStr))
+
+				//------------------
+				// EVENT
+				if pServiceInfo.EnableEventsAppBool {
+					eventMeta := map[string]interface{}{
+						"user_id":  userID,
+						"image_id": imageIDstr,
+						"path":     pathStr,
+					}
+					gf_events.EmitApp(gf_images_core.GF_EVENT_APP__IMAGE_VIEW_PAGE,
+						eventMeta,
+						userID,
+						pCtx,
+						pRuntimeSys)
+				}
+
+				//------------------
 			}
 
 			return nil, nil
