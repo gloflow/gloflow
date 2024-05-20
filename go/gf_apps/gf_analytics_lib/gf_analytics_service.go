@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_domains_lib"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 
 	// "github.com/olivere/elastic"
 	// "github.com/gloflow/gloflow/go/gf_stats/gf_stats_apps"
@@ -47,6 +48,17 @@ type GFserviceInfo struct {
 	// IMAGES_STORAGE
 	ImagesUseNewStorageEngineBool bool
 
+	//------------------------
+	// AUTH_SUBSYSTEM_TYPE
+	AuthSubsystemTypeStr string
+
+	// AUTH_LOGIN_URL - url of the login page to which the system should
+	//                  redirect users when email is confirmed.
+	AuthLoginURLstr string
+	KeyServer       *gf_identity_core.GFkeyServerInfo
+
+	//------------------------
+
 	// Elasticsearch_host_str string
 	// Crawl__config_file_path_str      string
 	// Crawl__cluster_node_type_str     string
@@ -58,23 +70,14 @@ type GFserviceInfo struct {
 func InitService(pServiceInfo *GFserviceInfo,
 	pHTTPmux  *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) {
-
+		
 	//-----------------
-	// ELASTICSEARCH
-	/*
-	var esearch_client *elastic.Client
-	var gfErr          *gf_core.GFerror
-	if pServiceInfo.Run_indexer_bool {
-		esearch_client, gfErr = gf_core.Elastic__get_client(pServiceInfo.Elasticsearch_host_str, pRuntimeSys)
-		if gfErr != nil {
-			panic(gfErr.Error)
-		}
-	}
-	fmt.Println("ELASTIC_SEARCH_CLIENT >>> OK")
-	*/
-
-	//-----------------
-	initHandlers(pServiceInfo.Templates_paths_map, pHTTPmux, pRuntimeSys)
+	initHandlers(pServiceInfo.Templates_paths_map,
+		pServiceInfo.AuthSubsystemTypeStr,
+		pServiceInfo.AuthLoginURLstr,
+		pServiceInfo.KeyServer,
+		pHTTPmux,
+		pRuntimeSys)
 
 	//------------------------
 	// GF_DOMAINS
@@ -88,9 +91,30 @@ func InitService(pServiceInfo *GFserviceInfo,
 	}
 
 	//------------------------
-	// GF_CRAWL
+	// STATIC FILES SERVING
+	staticFilesURLbaseStr := "/a"
+	localDirPathStr       := "./static"
+	gf_core.HTTPinitStaticServingWithMux(staticFilesURLbaseStr,
+		localDirPathStr,
+		pHTTPmux,
+		pRuntimeSys)
+
+	//------------------------
+	// ELASTICSEARCH
+	/*
+	var esearch_client *elastic.Client
+	var gfErr          *gf_core.GFerror
+	if pServiceInfo.Run_indexer_bool {
+		esearch_client, gfErr = gf_core.Elastic__get_client(pServiceInfo.Elasticsearch_host_str, pRuntimeSys)
+		if gfErr != nil {
+			panic(gfErr.Error)
+		}
+	}
+	fmt.Println("ELASTIC_SEARCH_CLIENT >>> OK")
+	*/
 
 	/*
+	// GF_CRAWL
 	crawl_config := &gf_crawl_lib.GFcrawlerConfig{
 		Crawled_images_s3_bucket_name_str: "gf--discovered--img",
 		Images_s3_bucket_name_str:         "gf--img",
@@ -122,18 +146,8 @@ func InitService(pServiceInfo *GFserviceInfo,
 		panic(gfErr.Error)
 	}
 	*/
-
+	
 	//------------------------
-	// STATIC FILES SERVING
-	staticFilesURLbaseStr := "/a"
-	localDirPathStr       := "./static"
-	gf_core.HTTPinitStaticServingWithMux(staticFilesURLbaseStr,
-		localDirPathStr,
-		pHTTPmux,
-		pRuntimeSys)
-
-	//------------------------
-
 }
 
 //-------------------------------------------------

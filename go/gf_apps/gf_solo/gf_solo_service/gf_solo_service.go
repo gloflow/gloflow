@@ -119,7 +119,6 @@ func Run(pConfig *GFconfig,
 		DomainForAuthCookiesStr: &pConfig.DomainForAuthCookiesStr,
 		
 		AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
-
 		AuthLoginURLstr:                authLoginURLstr, // on email confirm redirect user to this
 		AuthLoginSuccessRedirectURLstr: "/v1/home/main", // on login success redirecto to home
 		
@@ -171,7 +170,6 @@ func Run(pConfig *GFconfig,
 			DomainBaseStr: pConfig.DomainAdminBaseStr,
 
 			AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
-
 			AdminMFAsecretKeyBase32str: pConfig.AdminMFAsecretKeyBase32str,
 			AuthLoginURLstr:            "/v1/admin/login_ui", // on email confirm redirect user to this
 
@@ -277,13 +275,17 @@ func Run(pConfig *GFconfig,
 		Media_domain_str:  imagesConfig.MediaDomainStr,
 		Py_stats_dirs_lst: pConfig.AnalyticsPyStatsDirsLst,
 		Run_indexer_bool:  pConfig.AnalyticsRunIndexerBool,
-		// Elasticsearch_host_str: pConfig.ElasticsearchHostStr,
-
+		
 		Templates_paths_map: pConfig.TemplatesPathsMap,
 
 		// IMAGES_STORAGE
 		ImagesUseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
 
+		AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
+		AuthLoginURLstr:                authLoginURLstr, // on email confirm redirect user to this
+		// AuthLoginSuccessRedirectURLstr: "/v1/home/main", // on login success redirecto to home
+
+		// Elasticsearch_host_str: pConfig.ElasticsearchHostStr,
 		// Crawl__config_file_path_str:      pConfig.CrawlConfigFilePathStr,
 		// Crawl__cluster_node_type_str:     pConfig.CrawlClusterNodeTypeStr,
 		// Crawl__images_local_dir_path_str: pConfig.CrawlImagesLocalDirPathStr,
