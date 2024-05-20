@@ -38,7 +38,6 @@ func EmitApp(pEventAppTypeStr string,
 		pRuntimeSys.ExternalPlugins.EventCallback(pEventAppTypeStr,
 			pMetaMap,
 			pUserID,
-			pCtx,
 			pRuntimeSys)
 
 	}()
