@@ -127,8 +127,8 @@ function init_seeker_bar(p_first_page_int :number,
     
     // SEEKER BAR
     $(seeker_bar_element).css("position", 'absolute');
-    $(seeker_bar_element).css("right",    '0px');
-    $(seeker_bar_element).css("top",      '0px');
+    $(seeker_bar_element).css("right",    '67px');
+    $(seeker_bar_element).css("top",      '106px');
     $(seeker_bar_element).css("width",    `${p_viz_props.seeker_bar_width_px}px`);
     $(seeker_bar_element).css("height",   `${p_viz_props.seeker_container_height_px}px`);
     
