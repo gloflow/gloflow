@@ -21,6 +21,6 @@ package gf_tagger_core
 
 const (
 
-	GF_EVENT_APP__TAG_ADD = "GF_EVENT_APP__TAG_ADD"
+	GF_EVENT_APP__TAG_ADD = "GF_TAG_ADD"
 )
 

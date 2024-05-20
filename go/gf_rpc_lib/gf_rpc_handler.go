@@ -267,11 +267,11 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			
 			//------------------
 			// EVENT
-			if pHandlerRuntime.EnableEventsBool && strings.HasPrefix(pathStr, "/v1/identity"){
+			if pHandlerRuntime.EnableEventsBool && strings.HasPrefix(pathStr, "/v1/identity") {
 				eventMeta := map[string]interface{}{
-					"path_str":   pathStr,
-					"req_id_str": reqIDstr,
-					"auth_subsystem_type_str": pHandlerRuntime.AuthSubsystemTypeStr,
+					"path":   pathStr,
+					"req_id": reqIDstr,
+					"auth_subsystem_type": pHandlerRuntime.AuthSubsystemTypeStr,
 				}
 				gf_events.EmitApp(GF_EVENT_RPC__IDENTITY_REQUEST,
 					eventMeta,
@@ -298,10 +298,10 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 					// EVENT
 					if pHandlerRuntime.EnableEventsBool {
 						eventMeta := map[string]interface{}{
-							"path_str":   pathStr,
-							"origin_str": originStr,
-							"req_id_str": reqIDstr,
-							"auth_subsystem_type_str": pHandlerRuntime.AuthSubsystemTypeStr,
+							"path":   pathStr,
+							"origin": originStr,
+							"req_id": reqIDstr,
+							"auth_subsystem_type": pHandlerRuntime.AuthSubsystemTypeStr,
 						}
 						gf_events.EmitApp(GF_EVENT_RPC__CORS_REQUEST,
 							eventMeta,
