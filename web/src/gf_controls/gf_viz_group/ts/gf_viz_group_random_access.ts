@@ -124,11 +124,12 @@ function init_seeker_bar(p_first_page_int :number,
     // SEEKER CONTAINER
     $(container_element).css('height',   `${p_viz_props.seeker_container_height_px}px`);
     $(container_element).css('width',    `${p_viz_props.seeker_container_width_px}px`);
-    
+    $(container_element).css("right",    '67px');
+    $(container_element).css("top",      '106px');
+
     // SEEKER BAR
     $(seeker_bar_element).css("position", 'absolute');
-    $(seeker_bar_element).css("right",    '67px');
-    $(seeker_bar_element).css("top",      '106px');
+    
     $(seeker_bar_element).css("width",    `${p_viz_props.seeker_bar_width_px}px`);
     $(seeker_bar_element).css("height",   `${p_viz_props.seeker_container_height_px}px`);
     
@@ -143,7 +144,7 @@ function init_seeker_bar(p_first_page_int :number,
     $(seeker_range_bar_element).css("position", 'absolute');
     $(seeker_range_bar_element).css("right",    '0px');
     
-    $(seeker_range_bar_element).css("background-color", "green"); // p_viz_props.seeker_range_bar_color_str);
+    $(seeker_range_bar_element).css("background-color", "#b5b5b5");
     
     //------------
     // seek_page_index
