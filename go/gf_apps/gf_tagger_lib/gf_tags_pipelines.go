@@ -28,6 +28,8 @@ import (
 	"io"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_events"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib/gf_tagger_core"
 )
 
 //---------------------------------------------------
@@ -123,6 +125,23 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 	}
 
 	//----------------
+
+	//------------------
+	// EVENT
+	if pRuntimeSys.EnableEventsAppBool {
+		eventMeta := map[string]interface{}{
+			"tags":        tagsStr,
+			"object_type": objectTypeStr,
+			"object_id":   objectExternIDstr,
+		}
+		gf_events.EmitApp(gf_tagger_core.GF_EVENT_APP__TAG_ADD,
+			eventMeta,
+			pUserID,
+			pCtx,
+			pRuntimeSys)
+	}
+
+	//------------------
 	return nil
 }
 

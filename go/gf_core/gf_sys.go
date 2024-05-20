@@ -67,6 +67,9 @@ type RuntimeSys struct {
 
 	// SENTRY - used to pass the DNS to py sentry clients.
 	SentryDSNstr string
+
+	// EVENTS
+	EnableEventsAppBool bool
 }
 
 //-------------------------------------------------

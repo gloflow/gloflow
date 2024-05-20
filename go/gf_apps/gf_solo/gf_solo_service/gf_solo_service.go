@@ -58,6 +58,12 @@ func Run(pConfig *GFconfig,
 
 	pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("%s%s", yellow("GF_SOLO"), green("===============")), nil)
 	
+
+
+	// EVENTS
+	enableEventsAppBool := true
+	pRuntimeSys.EnableEventsAppBool = enableEventsAppBool
+
 	//-------------
 	// CONFIG
 	portMetricsInt := 9110
@@ -118,7 +124,7 @@ func Run(pConfig *GFconfig,
 		AuthLoginSuccessRedirectURLstr: "/v1/home/main", // on login success redirecto to home
 		
 		// EVENTS
-		EnableEventsAppBool: true,
+		EnableEventsAppBool: enableEventsAppBool,
 
 		EnableUserCredsInSecretsStoreBool:     true,
 		EnableEmailBool:                       true,
@@ -151,7 +157,7 @@ func Run(pConfig *GFconfig,
 			NameStr:                           "gf_admin",
 			AuthSubsystemTypeStr:              pConfig.AuthSubsystemTypeStr,
 			AdminEmailStr:                     pConfig.AdminEmailStr,
-			EnableEventsAppBool:               true,
+			EnableEventsAppBool:               enableEventsAppBool,
 			EnableUserCredsInSecretsStoreBool: true,
 			EnableEmailBool:                   true,
 		}
@@ -170,7 +176,7 @@ func Run(pConfig *GFconfig,
 			AuthLoginURLstr:            "/v1/admin/login_ui", // on email confirm redirect user to this
 
 			// FEATURE_FLAGS
-			EnableEventsAppBool:                   true,
+			EnableEventsAppBool:                   enableEventsAppBool,
 			EnableUserCredsInSecretsStoreBool:     true,
 			EnableEmailBool:                       true,
 			EnableEmailRequireConfirmForLoginBool: true,
@@ -255,7 +261,7 @@ func Run(pConfig *GFconfig,
 		IPFSnodeHostStr: imagesConfig.IPFSnodeHostStr,
 
 		// EVENTS
-		EnableEventsAppBool: true,
+		EnableEventsAppBool: enableEventsAppBool,
 	}
 
 	imagesJobsMngrCh := gf_images_lib.InitService(gfSoloHTTPmux,
