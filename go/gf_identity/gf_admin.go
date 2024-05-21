@@ -440,7 +440,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 
 			// EVENT
 			if pServiceInfo.EnableEventsAppBool {
-				eventMetaMap := map[string]interface{}{ := map[string]interface{}{
+				eventMetaMap := map[string]interface{}{
 					"user_id":     userID,
 					"user_name":   pInput.UserNameStr,
 					"domain_base": pServiceInfo.DomainBaseStr,
@@ -474,7 +474,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 
 			// EVENT
 			if pServiceInfo.EnableEventsAppBool {
-				eventMetaMap := map[string]interface{}{ := map[string]interface{}{
+				eventMetaMap := map[string]interface{}{
 					"user_id":     userID,
 					"user_name":   pInput.UserNameStr,
 					"domain_base": pServiceInfo.DomainBaseStr,
