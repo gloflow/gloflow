@@ -43,6 +43,7 @@ export async function init(p_plugin_callbacks_map,
     
 	//---------------------
 	// META
+	const events_enabled_bool = true;
 	const notifications_meta_map = {
 		"login_first_stage_success": "login success"
 	};
@@ -70,7 +71,9 @@ export async function init(p_plugin_callbacks_map,
 	// FLOWS_PICKER - display it if the user is logged in
 	if (logged_in_bool) {
 
-		gf_flows_picker.init(p_log_fun)
+		gf_flows_picker.init(events_enabled_bool,
+			current_host_str,
+			p_log_fun)
 	}
 
 	// TAGS_PICKER - display it if the user is logged in

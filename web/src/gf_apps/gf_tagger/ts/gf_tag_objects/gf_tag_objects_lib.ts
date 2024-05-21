@@ -39,6 +39,7 @@ export async function init(p_tag_str :string,
 	p_plugin_callbacks_map,
 	p_log_fun) {
 
+	const events_enabled_bool = true;
 	const current_host_str = gf_core_utils.get_current_host();
 	
 	// inspect if user is logged-in or not
@@ -55,7 +56,9 @@ export async function init(p_tag_str :string,
 	// FLOWS_PICKER - display it if the user is logged in
 	if (logged_in_bool) {
 
-		gf_flows_picker.init(p_log_fun)
+		gf_flows_picker.init(events_enabled_bool,
+			current_host_str,
+			p_log_fun)
 	}
 
 	// TAGS_PICKER - display it if the user is logged in

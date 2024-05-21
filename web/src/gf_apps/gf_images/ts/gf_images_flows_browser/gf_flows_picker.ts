@@ -17,12 +17,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../../../d/jquery.d.ts" />
+// ///<reference path="../../../../d/jquery.d.ts" />
+
+import * as gf_images_events from "./../gf_images_core/gf_events";
+import * as gf_user_events from "./../../../../gf_events/ts/gf_user_events";
 
 //---------------------------------------------------
-export async function init(p_log_fun) {
+export async function init(p_events_enabled_bool :boolean,
+    p_host_str :string,
+    p_log_fun) {
 
-    const all_flows_lst = await http__get_all_flows(p_log_fun) as {}[];
+    const all_flows_lst = await http__get_all_flows(p_host_str, p_log_fun) as {}[];
 
 
     // <div id="flows_experimental_label">experimental:</div>
@@ -65,6 +70,21 @@ export async function init(p_log_fun) {
             $(all_flows_container).find("#flows").css("display", "block");
             $(all_flows_container).find("#flows_experimental").css("display", "block");
             visible_bool = true;
+
+            //------------------
+            // EVENTS
+            if (p_events_enabled_bool) {
+                
+                const event_meta_map = {
+
+                };
+                gf_user_events.send_event_http(gf_images_events.GF_IMAGES_FLOW_PICKER_OPEN,
+                    "browser",
+                    event_meta_map,
+                    p_host_str)
+            }
+
+            //------------------
         }
     });
 
@@ -83,8 +103,8 @@ export async function init(p_log_fun) {
             continue;
         }
 
-        const flow_imgs_count_int = flow_map["flow_imgs_count_int"];
-        const flow_url_str = `/images/flows/browser?fname=${flow_name_str}`;
+        const flow_imgs_count_int :number = flow_map["flow_imgs_count_int"];
+        const flow_url_str        :string = `${p_host_str}/images/flows/browser?fname=${flow_name_str}`;
 
         var target_container_id_str :string;
         if (experimental_flows_lst.includes(flow_name_str)) {
@@ -105,10 +125,10 @@ export async function init(p_log_fun) {
 }
 
 //---------------------------------------------------
-async function http__get_all_flows(p_log_fun) {
+async function http__get_all_flows(p_host_str :string,  p_log_fun) {
     return new Promise(function(p_resolve_fun, p_reject_fun) {
 
-        const url_str = `/v1/images/flows/all`;
+        const url_str = `${p_host_str}/v1/images/flows/all`;
         p_log_fun('INFO', `url_str - ${url_str}`);
 
         //-------------------------

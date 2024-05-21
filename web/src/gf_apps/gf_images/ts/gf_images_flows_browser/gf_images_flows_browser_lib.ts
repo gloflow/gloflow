@@ -48,6 +48,7 @@ export async function init(p_plugin_callbacks_map,
 	
 	//---------------------
 	// META
+	const events_enabled_bool = true;
 	const notifications_meta_map = {
 		"login_first_stage_success": "login success"
 	};
@@ -70,7 +71,11 @@ export async function init(p_plugin_callbacks_map,
 
 	//-----------------
 	gf_sys_panel.init_with_auth(p_log_fun);
-	gf_flows_picker.init(p_log_fun);
+
+
+	gf_flows_picker.init(events_enabled_bool,
+		current_host_str,
+		p_log_fun);
 	
 	//---------------------
 	// IDENTITY
