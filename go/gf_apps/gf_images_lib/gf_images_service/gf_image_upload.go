@@ -207,11 +207,11 @@ func UploadInit(pImageNameStr string,
 	//------------------
 	// EVENT
 	if pServiceInfo.EnableEventsAppBool {
-		eventMeta := map[string]interface{}{
+		eventMetaMap := map[string]interface{}{
 			"user_id": pUserID,
 		}
 		gf_events.EmitApp(gf_images_core.GF_EVENT_APP__IMAGE_UPLOAD_INIT,
-			eventMeta,
+			eventMetaMap,
 			pUserID,
 			pCtx,
 			pRuntimeSys)
@@ -279,11 +279,11 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
 	//------------------------
 	// EVENT
 	if pServiceInfo.EnableEventsAppBool {
-		eventMeta := map[string]interface{}{
+		eventMetaMap := map[string]interface{}{
 			"user_id": pUserID,
 		}
 		gf_events.EmitApp(gf_images_core.GF_EVENT_APP__IMAGE_UPLOAD_COMPLETE,
-			eventMeta,
+			eventMetaMap,
 			pUserID,
 			pCtx,
 			pRuntimeSys)

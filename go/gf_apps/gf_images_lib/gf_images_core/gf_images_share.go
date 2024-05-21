@@ -133,13 +133,13 @@ func SharePipeline(pInput *GFshareInput,
 	//------------------------
 	// EVENT
 	if pServiceInfo.EnableEventsAppBool {
-		eventMeta := map[string]interface{}{
+		eventMetaMap := map[string]interface{}{
 			"image_id": pInput.ImageID,
 			"user_id":  pUserID,
 			"email":    pInput.EmailAddressStr,
 		}
 		gf_events.EmitApp(GF_ENVET_APP__IMAGE_SHARE,
-			eventMeta,
+			eventMetaMap,
 			pUserID,
 			pCtx,
 			pRuntimeSys)

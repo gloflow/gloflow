@@ -84,11 +84,11 @@ func ImageClassify(pInput *GFimageClassifyInput,
 	//------------------
 	// EVENT
 	if pServiceInfo.EnableEventsAppBool {
-		eventMeta := map[string]interface{}{
+		eventMetaMap := map[string]interface{}{
 			"user_id": pUserID,
 		}
 		gf_events.EmitApp(gf_images_core.GF_EVENT_APP__IMAGE_CLASSIFY,
-			eventMeta,
+			eventMetaMap,
 			pUserID,
 			pCtx,
 			pRuntimeSys)
