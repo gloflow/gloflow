@@ -29,10 +29,10 @@ import (
 	"net/http"
 	"context"
 	"time"
-	"strings"
+	// "strings"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_events"
+	// "github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_session"
 	// "github.com/davecgh/go-spew/spew"
@@ -209,10 +209,13 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		// SESSION_NOT_VALID
 		if !validBool {
 
+			//-----------------------
 			// METRICS
 			if pHandlerRuntime.Metrics != nil {
 				pHandlerRuntime.Metrics.HandlersAuthSessionInvalidCounter.Inc()
 			}
+
+			//-----------------------
 
 			// if no redirection of auth failure is specified (which happens in ValidateOrRedirectToLogin())
 			// return an error
@@ -236,6 +239,74 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 	}
 
 	//-------------------------------------------------
+	// CORS
+
+	CORSfun := func(pResp http.ResponseWriter, pReq *http.Request) {
+
+		//-----------------------
+		// METRICS
+		if pHandlerRuntime.Metrics != nil {
+			pHandlerRuntime.Metrics.HandlersAuthSessionCORScounter.Inc()
+		}
+
+		//-----------------------
+		/*
+		//------------------
+		// EVENT
+		if pHandlerRuntime.EnableEventsBool {
+			eventMeta := map[string]interface{}{
+				"path":   pathStr,
+				"origin": originStr,
+				"req_id": reqIDstr,
+				"auth_subsystem_type": pHandlerRuntime.AuthSubsystemTypeStr,
+			}
+			gf_events.EmitApp(GF_EVENT_RPC__CORS_REQUEST,
+				eventMeta,
+				userID,
+				ctxWithReqID,
+				pRuntimeSys)
+		}
+
+		//------------------
+		*/
+		
+		if pRuntimeSys.ExternalPlugins != nil &&
+			pRuntimeSys.ExternalPlugins.CORSoriginDomainsLst != nil {
+			
+			originStr := pReq.Header.Get("Origin")
+
+			// check if the origin domain is in the list of allowed domains
+			if gf_core.StringInList(originStr, pRuntimeSys.ExternalPlugins.CORSoriginDomainsLst) {
+
+				pResp.Header().Set("Access-Control-Allow-Origin", originStr)
+				pResp.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+
+				/*
+				specify which headers are allowed to be received by CORS requests.
+				if the request includes other (non-simple) headers (Authorization, Content-Type with application/json),
+				its necesary to explicitly allow these headers using the Access-Control-Allow-Headers header.
+				*/
+				pResp.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+				/*
+				The XMLHttpRequest.withCredentials property is a Boolean that indicates
+				whether or not cross-site Access-Control requests should be made using
+				credentials such as cookies, authorization headers or TLS client certificates.
+				Setting withCredentials has no effect on same-site requests
+				
+				js jquery $.ajax() param:
+					xhrFields: {
+						withCredentials: true
+					}
+				*/
+				pResp.Header().Set("Access-Control-Allow-Credentials", "true")
+			}
+		}
+	}
+
+	//-------------------------------------------------
+
+
 
 	if pAuthBool {
 
@@ -257,7 +328,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			if ctxAuth == nil {
 				return
 			}
-			userID, _ := gf_identity_core.GetUserIDfromCtx(*ctxAuth)
+			// userID, _ := gf_identity_core.GetUserIDfromCtx(*ctxAuth)
 
 			// REQ_ID
 			reqIDstr := genRequestID()
@@ -266,6 +337,8 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 			
 			//------------------
+			
+			/*
 			// EVENT
 			if pHandlerRuntime.EnableEventsBool && strings.HasPrefix(pathStr, "/v1/identity") {
 				eventMeta := map[string]interface{}{
@@ -279,6 +352,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 					ctxWithReqID,
 					pRuntimeSys)
 			}
+			*/
 
 			//------------------
 
@@ -286,60 +360,16 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			//-----------------------
 			// CORS
 			// if the user has supplied CORS domains, check if the request origin domain is in the list
-			if pRuntimeSys.ExternalPlugins != nil &&
-				pRuntimeSys.ExternalPlugins.CORSoriginDomainsLst != nil {
-				
-				// get the origin domain of the request
-				originStr := pReq.Header.Get("Origin")
+			
+			// get the origin domain of the request
+			originStr := pReq.Header.Get("Origin")
 
-				if originStr != "" {
+			if originStr != "" {
 
-					//------------------
-					// EVENT
-					if pHandlerRuntime.EnableEventsBool {
-						eventMeta := map[string]interface{}{
-							"path":   pathStr,
-							"origin": originStr,
-							"req_id": reqIDstr,
-							"auth_subsystem_type": pHandlerRuntime.AuthSubsystemTypeStr,
-						}
-						gf_events.EmitApp(GF_EVENT_RPC__CORS_REQUEST,
-							eventMeta,
-							userID,
-							ctxWithReqID,
-							pRuntimeSys)
-					}
-
-					//------------------
-					
-					// check if the origin domain is in the list of allowed domains
-					if gf_core.StringInList(originStr, pRuntimeSys.ExternalPlugins.CORSoriginDomainsLst) {
-
-						pResp.Header().Set("Access-Control-Allow-Origin", originStr)
-						pResp.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-
-						/*
-						specify which headers are allowed to be received by CORS requests.
-						if the request includes other (non-simple) headers (Authorization, Content-Type with application/json),
-						its necesary to explicitly allow these headers using the Access-Control-Allow-Headers header.
-						*/
-						pResp.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-						/*
-						The XMLHttpRequest.withCredentials property is a Boolean that indicates
-						whether or not cross-site Access-Control requests should be made using
-						credentials such as cookies, authorization headers or TLS client certificates.
-						Setting withCredentials has no effect on same-site requests
-						
-						js jquery $.ajax() param:
-							xhrFields: {
-								withCredentials: true
-							}
-						*/
-						pResp.Header().Set("Access-Control-Allow-Credentials", "true")
-					}
-				}
+				CORSfun(pResp, pReq)
 			}
+			
+			
 
 			//-----------------------
 			// handle OPTIONS preflight request

@@ -38,6 +38,9 @@ type GF_metrics struct {
 	// AUTH_SESSION_INVALID - counter for when auth session validation fails when
 	//                        request is received and validated
 	HandlersAuthSessionInvalidCounter prometheus.Counter
+
+	// AUTH_SESSION_CORS
+	HandlersAuthSessionCORScounter prometheus.Counter
 }
 
 //-------------------------------------------------
@@ -71,9 +74,16 @@ func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 	})
 	prometheus.MustRegister(handlersAuthSessionInvalidCounter)
 
+	handlersAuthSessionCORScounter := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: fmt.Sprintf("gf_rpc__handler_auth_session_cors_num__%s_%s", pServiceNameStr, pMetricsGroupNameStr), 
+		Help: "number of CORS (cross-domain) auth session requests received",
+	})
+	prometheus.MustRegister(handlersAuthSessionInvalidCounter)
+
 	metrics := &GF_metrics{
 		HandlersCountersMap:               handlersCountersMap,
 		HandlersAuthSessionInvalidCounter: handlersAuthSessionInvalidCounter,
+		HandlersAuthSessionCORScounter:    handlersAuthSessionCORScounter,
 	}
 
 	return metrics
