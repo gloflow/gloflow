@@ -334,8 +334,6 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			reqIDstr := genRequestID()
 			ctxWithReqID := context.WithValue(*ctxAuth, "gf_req_id", reqIDstr)
 
-
-			
 			//------------------
 			
 			/*
