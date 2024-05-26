@@ -282,8 +282,8 @@ func Run(pConfig *GFconfig,
 		ImagesUseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
 
 		AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
-		AuthLoginURLstr:                authLoginURLstr, // on email confirm redirect user to this
-		// AuthLoginSuccessRedirectURLstr: "/v1/home/main", // on login success redirecto to home
+		AuthLoginURLstr:      authLoginURLstr, // on email confirm redirect user to this
+		KeyServer:            keyServer,
 
 		// Elasticsearch_host_str: pConfig.ElasticsearchHostStr,
 		// Crawl__config_file_path_str:      pConfig.CrawlConfigFilePathStr,
