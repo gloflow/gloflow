@@ -78,7 +78,7 @@ export async function init(p_events_enabled_bool :boolean,
                 const event_meta_map = {
 
                 };
-                gf_user_events.send_event_http(gf_images_events.GF_IMAGES_FLOW_PICKER_OPEN,
+                gf_user_events.send_event_http(gf_images_events.GF_IMAGES_FLOWS_PICKER_OPEN,
                     "browser",
                     event_meta_map,
                     p_host_str)
