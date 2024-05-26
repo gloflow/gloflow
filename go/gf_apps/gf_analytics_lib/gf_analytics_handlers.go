@@ -90,6 +90,13 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 					userID,
 					pCtx,
 					pRuntimeSys)
+
+				//------------------
+				// OUTPUT
+				dataMap := map[string]interface{}{}
+				return dataMap, nil
+
+				//------------------
 			}
 			return nil, nil
 		},
