@@ -78,7 +78,7 @@ func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 		Name: fmt.Sprintf("gf_rpc__handler_auth_session_cors_num__%s_%s", pServiceNameStr, pMetricsGroupNameStr), 
 		Help: "number of CORS (cross-domain) auth session requests received",
 	})
-	prometheus.MustRegister(handlersAuthSessionInvalidCounter)
+	prometheus.MustRegister(handlersAuthSessionCORScounter)
 
 	metrics := &GF_metrics{
 		HandlersCountersMap:               handlersCountersMap,
