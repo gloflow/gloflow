@@ -24,9 +24,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_time             from "./../../../../gf_core/ts/gf_time";
 
 import * as gf_core_utils       from "./../../../../gf_core/ts/gf_utils";
+import * as gf_user_events      from "./../../../../gf_events/ts/gf_user_events";
 import * as gf_sys_panel        from "./../../../../gf_sys_panel/ts/gf_sys_panel";
 import * as gf_identity         from "./../../../../gf_identity/ts/gf_identity";
 import * as gf_identity_http    from "./../../../../gf_identity/ts/gf_identity_http";
+import * as gf_images_events    from "./../gf_images_core/gf_events";
 import * as gf_images_http      from "./../gf_images_core/gf_images_http";
 import * as gf_image_control    from "./../gf_images_core/gf_image_control";
 import * as gf_images_paging    from "../gf_images_core/gf_images_paging";
@@ -97,7 +99,20 @@ export async function init(p_plugin_callbacks_map,
 	const logged_in_bool = await auth_http_api_map["general"]["logged_in"]();
 
 	const flow_name_str = get_current_flow();
+	
+	//---------------------
+	// EVENTS
+	if (events_enabled_bool && logged_in_bool) {
+		
+		const event_meta_map = {
 
+		};
+		gf_user_events.send_event_http(gf_images_events.GF_IMAGES_FLOWS_BROWSER_LOAD,
+			"browser",
+			event_meta_map,
+			current_host_str)
+	}
+	
 	//---------------------
 	// UPLOAD
 

@@ -17,5 +17,4 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-export const GF_IMAGES_FLOWS_BROWSER_LOAD = "GF_IMAGES_FLOWS_BROWSER_LOAD";
-export const GF_IMAGES_FLOWS_PICKER_OPEN  = "GF_IMAGES_FLOWS_PICKER_OPEN";
+export const GF_LANDING_PAGE_LOAD = "GF_LANDING_PAGE_LOAD";
