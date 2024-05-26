@@ -138,7 +138,7 @@ func SharePipeline(pInput *GFshareInput,
 			"user_id":  pUserID,
 			"email":    pInput.EmailAddressStr,
 		}
-		gf_events.EmitApp(GF_ENVET_APP__IMAGE_SHARE,
+		gf_events.EmitApp(GF_EVENT_APP__IMAGE_SHARE,
 			eventMetaMap,
 			pUserID,
 			pCtx,
