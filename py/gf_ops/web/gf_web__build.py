@@ -198,6 +198,13 @@ def build_page(p_page_name_str,
 						# Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports
 						# '--esModuleInterop',
 						f"--outFile {p_out_file_str}",
+
+						#---------------------
+						# TSCONFIG 
+						# f"-p {modd_str}/../../../web/tsconfig.json",
+						
+						#---------------------
+
 						main_ts_file_str
 					]
 					cmd_str = " ".join(cmd_lst)
