@@ -25,7 +25,7 @@ import * as gf_user_events from "./../../../../gf_events/ts/gf_user_events";
 //---------------------------------------------------
 export async function init(p_events_enabled_bool :boolean,
     p_host_str :string,
-    p_log_fun) {
+    p_log_fun :any) {
 
     const all_flows_lst = await http__get_all_flows(p_host_str, p_log_fun) as {}[];
 
@@ -95,7 +95,7 @@ export async function init(p_events_enabled_bool :boolean,
         "gifs"
     ];
     for (const flow_map of all_flows_lst ) {
-        const flow_name_str = flow_map["flow_name_str"];
+        const flow_name_str :string = flow_map["flow_name_str"];
 
         // FIX!! - allow access to these flows only to logged in users, ton of content there
         //         but not filtered yet for NSFW.
@@ -125,7 +125,7 @@ export async function init(p_events_enabled_bool :boolean,
 }
 
 //---------------------------------------------------
-async function http__get_all_flows(p_host_str :string,  p_log_fun) {
+async function http__get_all_flows(p_host_str :string,  p_log_fun :any) {
     return new Promise(function(p_resolve_fun, p_reject_fun) {
 
         const url_str = `${p_host_str}/v1/images/flows/all`;

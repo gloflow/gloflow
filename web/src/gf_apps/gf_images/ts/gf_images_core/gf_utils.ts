@@ -17,9 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../../../d/jquery.d.ts" />
+// ///<reference path="../../../../d/jquery.d.ts" />
 
-import * as gf_image_viewer from "../../../../gf_core/ts/gf_image_viewer";
+// import * as gf_image_viewer from "./gf_image_viewer";
 import * as gf_gifs_viewer  from "../../../../gf_core/ts/gf_gifs_viewer";
 import * as gf_images_http  from "./gf_images_http";
 

@@ -43,8 +43,8 @@ declare var URLSearchParams;
 declare var gf_upload__init;
 
 //-------------------------------------------------
-export async function init(p_plugin_callbacks_map,
-	p_log_fun) {
+export async function init(p_plugin_callbacks_map :any,
+	p_log_fun :any) {
 
 	const current_host_str = gf_core_utils.get_current_host();
 	
@@ -116,7 +116,10 @@ export async function init(p_plugin_callbacks_map,
 	//---------------------
 	// UPLOAD
 
-	init_upload(flow_name_str, p_log_fun);
+	init_upload(flow_name_str,
+		events_enabled_bool,
+		current_host_str,
+		p_log_fun);
 
 	//---------------------
 	// MASONRY
@@ -149,6 +152,7 @@ export async function init(p_plugin_callbacks_map,
 
 			current_host_str,
 			logged_in_bool,
+			events_enabled_bool,
 			p_plugin_callbacks_map,
 			p_log_fun);
 	});
@@ -162,7 +166,10 @@ export async function init(p_plugin_callbacks_map,
 	//---------------------
 	// VIEW_TYPE_PICKER
 
-	gf_view_type_picker.init(flow_name_str, p_log_fun);
+	gf_view_type_picker.init(flow_name_str,
+		events_enabled_bool,
+		current_host_str,
+		p_log_fun);
 
 	//------------------
 	// LOAD_PAGES_ON_SCROLL
@@ -194,6 +201,7 @@ export async function init(p_plugin_callbacks_map,
 					current_page_int,
 					current_image_view_type_str,
 					logged_in_bool,
+					events_enabled_bool,
 					p_plugin_callbacks_map,
 					p_log_fun);
 
@@ -213,7 +221,10 @@ export async function init(p_plugin_callbacks_map,
 
 //---------------------------------------------------
 function init_upload(p_flow_name_str :string,
-	p_log_fun) {
+
+	p_events_enabled_bool :boolean,
+	p_host_str :string,
+	p_log_fun  :any) {
 
 	// use "" so that no host is set in URL's for issued requests
 	// (forces usage of origin host that the page came from)
@@ -223,10 +234,10 @@ function init_upload(p_flow_name_str :string,
 		
 		//-------------------------------------------------
 		// p_on_upload_fun
-		async (p_upload_gf_image_id_str)=>{
+		async (p_upload_gf_image_id_str :string)=>{
 
 			var image_exists_bool;
-			var image_result_map;
+			var image_result_map :any;
 
 			// start attempting to get uploaded image metadata, until the upload succeeds
 			const attempts_num_int = 6;
@@ -297,10 +308,12 @@ function init_upload(p_flow_name_str :string,
 					img__owner_user_name_str,
 					img__flows_names_lst,
 					current_image_view_type_str,
-
+					
+					p_events_enabled_bool,
+					p_host_str,
 					//---------------------------------------------------
 					// p_on_img_load_fun
-					(p_image_container)=>{
+					(p_image_container :any)=>{
 						// IMPORTANT!! - add ".gf_image" to the DOM after the image is fully loaded.
 						// add it as the first element since its an uploaded image
 						$("#gf_images_flow_container #items").prepend(p_image_container);

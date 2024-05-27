@@ -71,6 +71,7 @@ export async function init(p_tag_str :string,
 	// IMAGES
     init_images(logged_in_bool,
 		current_host_str,
+		events_enabled_bool,
 		p_plugin_callbacks_map,
 		p_log_fun);
 
@@ -108,6 +109,7 @@ export async function init(p_tag_str :string,
 					current_page_int,
 					image_view_type_str,
 					logged_in_bool,
+					events_enabled_bool,
 					p_plugin_callbacks_map,
 					p_log_fun);
 				
@@ -126,8 +128,9 @@ export async function init(p_tag_str :string,
 //-------------------------------------------------
 function init_images(p_logged_in_bool :boolean,
 	p_gf_host_str :string,
-	p_plugin_callbacks_map,
-	p_log_fun) {
+	p_events_enabled_bool :boolean,
+	p_plugin_callbacks_map :any,
+	p_log_fun :any) {
 
 	$('#images_container').masonry({
 		itemSelector: '.gf_image',
@@ -165,6 +168,7 @@ function init_images(p_logged_in_bool :boolean,
 
 			p_gf_host_str,
 			p_logged_in_bool,
+			p_events_enabled_bool,
 			p_plugin_callbacks_map,
 			p_log_fun);
 
@@ -209,8 +213,8 @@ function init_images(p_logged_in_bool :boolean,
 }
 
 //-------------------------------------------------
-function init_posts(p_plugin_callbacks_map,
-	p_log_fun) {
+function init_posts(p_plugin_callbacks_map :any,
+	p_log_fun :any) {
 
 	$('#posts_container').masonry({
 		itemSelector: '.gf_post',

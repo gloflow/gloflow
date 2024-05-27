@@ -36,10 +36,11 @@ declare var gf_tagger__init_ui_v2;
 declare var gf_tagger__http_add_tags_to_obj;
 
 //-------------------------------------------------
-export function init(p_logged_in_bool,
-	p_plugin_callbacks_map,
-	p_gf_host_str,
-	p_log_fun) {
+export function init(p_logged_in_bool :boolean,
+	p_plugin_callbacks_map :any,
+	p_gf_host_str          :string,
+	p_events_enabled_bool  :boolean,
+	p_log_fun :any) {
 
 	$('#featured_images_0').find('.image_info').each((p_i, p_image_info_element)=>{
 		
@@ -61,6 +62,8 @@ export function init(p_logged_in_bool,
 
 			p_gf_host_str,
 			p_logged_in_bool,
+
+			p_events_enabled_bool,
 			p_plugin_callbacks_map,
 			p_log_fun);
 
@@ -175,9 +178,9 @@ export function init(p_logged_in_bool,
 //---------------------------------------------------
 // TAGGING_UI
 
-function init_tagging(p_image_id_str,
+function init_tagging(p_image_id_str :string,
 	p_image_container_element,
-	p_gf_host_str,
+	p_gf_host_str :string,
 	p_log_fun) {
 
 	const http_api_map = {
@@ -185,8 +188,8 @@ function init_tagging(p_image_id_str,
 		// GF_TAGGER
 		"gf_tagger": {
 			"add_tags_to_obj": async (p_new_tags_lst,
-				p_obj_id_str,
-				p_obj_type_str,
+				p_obj_id_str   :string,
+				p_obj_type_str :string,
 				p_tags_meta_map,
 				p_log_fun)=>{
 				const p = new Promise(async function(p_resolve_fun, p_reject_fun) {

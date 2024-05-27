@@ -108,6 +108,7 @@ export async function init(p_plugin_callbacks_map,
 	gf_images.init(logged_in_bool,
 		p_plugin_callbacks_map,
 		current_host_str,
+		events_enabled_bool,
 		p_log_fun);
 
 	//---------------------

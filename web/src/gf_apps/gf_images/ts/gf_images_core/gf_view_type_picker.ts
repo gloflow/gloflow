@@ -17,11 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../../../d/jquery.d.ts" />
+// ///<reference path="../../../../d/jquery.d.ts" />
 
 import * as gf_viz_group    from "../../../../gf_controls/gf_viz_group/ts/gf_viz_group";
 import * as gf_gifs_viewer  from "../../../../gf_core/ts/gf_gifs_viewer";
-import * as gf_image_viewer from "../../../../gf_core/ts/gf_image_viewer";
+import * as gf_image_viewer from "./gf_image_viewer";
 import * as gf_images_http  from "./gf_images_http";
 import * as gf_paging       from "./gf_images_paging";
 
@@ -37,7 +37,10 @@ export function get_current_view_type() {
 // view_type_picker - picks the type of view that is used to display images in a flow.
 //                    default is masonry with 6 columns.
 export function init(p_flow_name_str :string,
-	p_log_fun) {
+
+	p_events_enabled_bool :boolean,
+	p_host_str :string,
+	p_log_fun :any) {
 
 	const container = $(`
 		<div id='view_type_picker'>
@@ -126,6 +129,9 @@ export function init(p_flow_name_str :string,
 		init__viz_group_view(p_flow_name_str,
 			flow_pages_num_int,
 			current_page_int,
+
+			p_events_enabled_bool,
+			p_host_str,
 			p_log_fun);
 
 		//------------------
@@ -136,13 +142,17 @@ export function init(p_flow_name_str :string,
 function init__viz_group_view(p_flow_name_str :string,
 	p_flow_pages_num_int :number,
 	p_initial_page_int   :number,
-	p_log_fun) {
+
+	
+	p_events_enabled_bool :boolean,
+	p_host_str :string,
+	p_log_fun :any) {
 
 	const current_image_view_type_str = "viz_group_medium_view";
-	const initial_elements_lst = [];
+	const initial_elements_lst :any = [];
 	//-------------------------------------------------
 	// ELEMENT_CREATE
-    function element_create_fun(p_element_map) {
+    function element_create_fun(p_element_map :any) {
 
 		const image_id_str                  = p_element_map['id_str'];
 		const img__format_str               = p_element_map['format_str'];
@@ -185,6 +195,8 @@ function init__viz_group_view(p_flow_name_str :string,
 				img__thumbnail_medium_url_str,
 				img__thumbnail_large_url_str,
 				img__flows_names_lst,
+				p_events_enabled_bool,
+				p_host_str,
 				p_log_fun);
 		}
 

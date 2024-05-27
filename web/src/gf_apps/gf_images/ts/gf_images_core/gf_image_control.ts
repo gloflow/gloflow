@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/jquery.d.ts" />
 
 import * as gf_gifs_viewer  from "./../../../../gf_core/ts/gf_gifs_viewer";
-import * as gf_image_viewer from "./../../../../gf_core/ts/gf_image_viewer";
 import * as gf_image_colors from "./../../../../gf_core/ts/gf_image_colors";
 import * as gf_color        from "./../../../../gf_core/ts/gf_color";
+import * as gf_image_viewer from "./gf_image_viewer";
 import * as gf_images_share from "./gf_images_share";
 import * as gf_utils from "./gf_utils";
 
@@ -47,9 +47,11 @@ export function create(p_image_id_str :string,
 	p_flows_names_lst               :string[],
 	p_current_image_view_type_str   :string,
 
-	p_on_img_load_fun,
-	p_on_img_load_error_fun,
-	p_log_fun) {
+	p_events_enabled_bool	   :boolean,
+	p_host_str				   :string,
+	p_on_img_load_fun :any,
+	p_on_img_load_error_fun :any,
+	p_log_fun :any) {
 
 	var img_url_str;
 	switch (p_current_image_view_type_str) {
@@ -126,6 +128,8 @@ export function create(p_image_id_str :string,
 				p_img__thumbnail_medium_url_str,
 				p_img__thumbnail_large_url_str,
 				p_flows_names_lst,
+				p_events_enabled_bool,
+				p_host_str,
 				p_log_fun);
 		}
 
@@ -165,7 +169,7 @@ export function create(p_image_id_str :string,
 	//------------------
 
 	//---------------------------------------------------
-	function init_pallete(p_image_info_element) {
+	function init_pallete(p_image_info_element :any) {
 
 		console.log("init_pallete...");
 
@@ -176,8 +180,8 @@ export function create(p_image_id_str :string,
 		}
 		gf_image_colors.init_pallete(img,
 			assets_paths_map,
-			(p_color_dominant_hex_str,
-			p_colors_hexes_lst)=>{
+			(p_color_dominant_hex_str :string,
+			p_colors_hexes_lst :string[])=>{
 
 				console.log("init_pallete post callback...");
 
@@ -230,12 +234,14 @@ created server side when loaded into the browser, and just needs to be initializ
 (no creation of the DOM tree for the image control)
 */
 
-export function init_existing_dom(p_image_element,
+export function init_existing_dom(p_image_element :any,
 	p_flows_names_lst :string[],
 	p_gf_host_str     :string,
 	p_logged_in_bool  :boolean,
-	p_plugin_callbacks_map,
-	p_log_fun) {
+
+	p_events_enabled_bool :boolean,
+	p_plugin_callbacks_map :any,
+	p_log_fun :any) {
 
 
 
@@ -282,6 +288,8 @@ export function init_existing_dom(p_image_element,
 			img_thumb_medium_url_str,
 			img_thumb_large_url_str,
 			flows_names_lst,
+			p_events_enabled_bool,
+			p_gf_host_str,
 			p_log_fun);
 	}
 

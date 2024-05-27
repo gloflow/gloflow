@@ -17,15 +17,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../d/jquery.d.ts" />
+// ///<reference path="../../d/jquery.d.ts" />
+
+import * as gf_events from "./gf_events";
+import * as gf_user_events from "./../../../../gf_events/ts/gf_user_events";
 
 //-------------------------------------------------
-export function init(p_image_element,
+export function init(p_image_element :any,
 	p_image_id_str             :string,
 	p_img_thumb_medium_url_str :string,
 	p_img_thumb_large_url_str  :string,
 	p_flows_names_lst          :string[],
-	p_log_fun) {
+	p_events_enabled_bool	   :boolean,
+	p_host_str				   :string,
+	p_log_fun :any) {
 
 	$(p_image_element).find("img").click(()=>{
 
@@ -83,14 +88,44 @@ export function init(p_image_element,
 
 	    	// turn vertical scrolling back on when done viewing the image
 	    	$("body").css("overflow", "auto");
+
+			//------------------
+            // EVENTS
+            if (p_events_enabled_bool) {
+                
+                const event_meta_map = {
+					"image_id": p_image_id_str,
+                };
+                gf_user_events.send_event_http(gf_events.GF_IMAGES_IMAGE_VIEWER_CLOSE,
+                    "browser",
+                    event_meta_map,
+                    p_host_str)
+            }
+
+            //------------------
 	    });
 
 	    //----------------------
+
+		//------------------
+		// EVENTS
+		if (p_events_enabled_bool) {
+			
+			const event_meta_map = {
+				"image_id": p_image_id_str,
+			};
+			gf_user_events.send_event_http(gf_events.GF_IMAGES_IMAGE_VIEWER_OPEN,
+				"browser",
+				event_meta_map,
+				p_host_str)
+		}
+
+		//------------------
 	});
 }
 
 //-------------------------------------------------
-function image_position_and_scale(p_image_detail_element) {
+function image_position_and_scale(p_image_detail_element :any) {
 
 	const window_width_int        = $(window).width() - 100;  // some padding removed from real window width
 	const window_height_int       = $(window).height() - 100; // some padding removed from real window height

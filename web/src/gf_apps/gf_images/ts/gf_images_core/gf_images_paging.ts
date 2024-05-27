@@ -34,8 +34,9 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 	p_current_page_int            :number,
 	p_current_image_view_type_str :string,
 	p_logged_in_bool              :boolean,
-	p_plugin_callbacks_map,
-	p_log_fun) {
+	p_events_enabled_bool         :boolean,
+	p_plugin_callbacks_map :any,
+	p_log_fun :any) {
 
 	return new Promise(async function(p_resolve_fun, p_reject_fun) {
 
@@ -88,7 +89,7 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 		const gf_host_str = gf_core_utils.get_current_host();
 		
 		//---------------------------------------------------
-		function view_page(p_pages_lst, p_pages_user_names_lst) {
+		function view_page(p_pages_lst :any, p_pages_user_names_lst) {
 
 			var img_i_int = 0;
 			$.each(p_pages_lst, (p_i, p_page_lst)=>{
@@ -121,9 +122,11 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 						img__flows_names_lst,
 						p_current_image_view_type_str,
 
+						p_events_enabled_bool,
+						gf_host_str,
 						//---------------------------------------------------
 						// p_on_img_load_fun
-						(p_image_container)=>{
+						(p_image_container :any)=>{
 							
 							// IMPORTANT!! - add ".gf_image" to the DOM after the image is fully loaded.
 							$("#gf_images_flow_container #items").append(p_image_container);
