@@ -20,9 +20,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../d/jquery.d.ts" />
 
 import * as gf_core_utils     from "./../../../gf_core/ts/gf_utils";
+import * as gf_user_events    from "./../../../gf_events/ts/gf_user_events";
 import * as gf_identity       from "./../../../gf_identity/ts/gf_identity";
 import * as gf_identity_http  from "./../../../gf_identity/ts/gf_identity_http";
-import * as gf_user_events    from "./../../../gf_events/ts/gf_user_events";
+
 import * as gf_flows_picker   from "./../../gf_images/ts/gf_images_flows_browser/gf_flows_picker";
 import * as gf_tags_picker    from "./../../gf_tagger/ts/gf_tags_picker/gf_tags_picker";
 import * as gf_events         from "./gf_events";
