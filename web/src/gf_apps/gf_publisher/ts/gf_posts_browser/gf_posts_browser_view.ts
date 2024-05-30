@@ -183,7 +183,7 @@ function init_posts(p_posts_infos_lst :Object[],
 //--------------------------------------------------------
 function create_posts_from_page(p_page_lst,
     p_page_index_int :number,
-    p_log_fun) {
+    p_log_fun :any) {
 
     //--------------------------------------------------------
     function create_post(p_post_map :Object) {
@@ -216,6 +216,7 @@ function create_posts_from_page(p_page_lst,
 
         const tags_container = $(post).find('.tags_container');
 
+        
         for (var tag_str of tags_lst) {
 
             const a :HTMLAnchorElement = <HTMLAnchorElement> $('<a class="gf_post_tag" href="/v1/tags/objects?tag='+tag_str+'&otype=post">#'+tag_str+'</a>')[0];
@@ -278,6 +279,7 @@ function init_posts_images(p_posts_infos_lst :Object[],
             post,
             //--------------------------------------------------------
             (p_image_element :HTMLImageElement)=>{
+                
                 console.log('image loaded');
                 const post_url_str :string = p_post_info_map['post_url_str'];
                 
@@ -296,7 +298,7 @@ function init_posts_images(p_posts_infos_lst :Object[],
             },
 
             //--------------------------------------------------------
-            (p_error_str)=>{
+            (p_error_str :string)=>{
                 p_log_fun("ERROR",p_error_str);
             },
 
@@ -310,9 +312,9 @@ function init_post_image(p_thumbnail_image_src :string,
     p_error_img_url_str       :string,
     p_video_thumb_img_url_str :string,
     p_post                    :HTMLDivElement,
-    p_on_complete_fun,
-    p_on_error_fun,
-    p_log_fun) {
+    p_on_complete_fun :any,
+    p_on_error_fun    :any,
+    p_log_fun         :any) {
 
     const image :HTMLImageElement = <HTMLImageElement> $(p_post).find('img')[0];
 
@@ -344,8 +346,8 @@ function init_post_image(p_thumbnail_image_src :string,
 //--------------------------------------------------------
 function init_post(p_post :HTMLDivElement,
     p_post_url_str :string,
-    p_http_api_map,
-    p_log_fun) {
+    p_http_api_map :any,
+    p_log_fun :any) {
     p_log_fun('FUN_ENTER', 'gf_posts_browser_view.init_post()');
 
     init_post_date(p_post, p_log_fun);
@@ -412,7 +414,7 @@ function init_post(p_post :HTMLDivElement,
     //---------------------
 }
 //--------------------------------------------------------
-function init_post_date(p_post :HTMLDivElement, p_log_fun) {
+function init_post_date(p_post :HTMLDivElement, p_log_fun :any) {
 
     const creation_time_element :HTMLDivElement = <HTMLDivElement> $(p_post).find('.creation_time')[0];
     const creation_time_utc_str :string         = $(creation_time_element).text();

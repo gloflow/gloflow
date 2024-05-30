@@ -141,20 +141,20 @@ export async function init(p_log_fun :any) {
 //-----------------------------------------------------
 // DATA LOADING
 //-----------------------------------------------------
-function load_data_from_dom(p_log_fun) {
+function load_data_from_dom(p_log_fun :any) {
         
     const page_posts_infos_lst :Object[] = [];
 
-    $('body #gf_posts_container').find('.gf_post').each((p_i, p_post)=>{
+    $('body #gf_posts_container').find('.gf_post').each((p_i :number, p_post)=>{
 
-        const post_id_str :string = $(p_post).data('sys_id');
+        const post_id_str    :string = $(p_post).data('sys_id');
         const post_title_str :string = $(p_post).find('.post_title').text().trim();
-        const post_url_str   :string = '/posts/'+post_title_str;
+        const post_url_str   :string = `/posts/${post_title_str}`;
 
         //---------------------
         // TAGS
-        const tags_infos_lst :Object[] = [];
-        $(p_post).find('.gf_post_tag').each((p_i,p_tag_element)=>{
+        const tags_lst :Object[] = [];
+        $(p_post).find('.gf_post_tag').each((p_i, p_tag_element)=>{
             const tag_str     :string = $(p_tag_element).text();
             const tag_url_str :string = $(p_tag_element).attr('href');
 
@@ -163,7 +163,7 @@ function load_data_from_dom(p_log_fun) {
                 'tag_url_str': tag_url_str
             };
 
-            tags_infos_lst.push(tag_info_map);
+            tags_lst.push(tag_info_map);
         });
 
         //--------------------
@@ -178,7 +178,7 @@ function load_data_from_dom(p_log_fun) {
             'post_id_str':       post_id_str,
             'post_title_str':    post_title_str, 
             'post_url_str':      post_url_str,
-            'tags_infos_lst':    tags_infos_lst,
+            'tags_lst':          tags_lst,
             'thumbnail_url_str': thumbnail_url_str
         };
 

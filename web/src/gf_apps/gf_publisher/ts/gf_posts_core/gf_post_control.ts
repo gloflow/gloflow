@@ -62,9 +62,13 @@ export async function create(p_post_map,
     // TAGS
     const tags_container = $(post).find('.tags_container');
 
-    for (var tag_str of tags_lst) {
+    for (var tag_info_map of tags_lst) {
+        
+        const tag_str     :string = tag_info_map["tag_str"];
+        const tag_url_str :string = tag_info_map["tag_url_str"];
 
-        const a :HTMLAnchorElement = <HTMLAnchorElement> $('<a class="gf_post_tag" href="/v1/tags/objects?tag='+tag_str+'&otype=post">#'+tag_str+'</a>')[0];
+        const a :HTMLAnchorElement = <HTMLAnchorElement> $(
+            '<a class="gf_post_tag" href="/v1/tags/objects?tag='+tag_str+'&otype=post">#'+tag_str+'</a>')[0];
         $(tags_container).append(a);
     }
 
