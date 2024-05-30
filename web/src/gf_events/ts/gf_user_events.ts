@@ -31,6 +31,21 @@ export function send_event_http(p_event_type_str :string,
         };
 
         const url_str = `${p_host_str}/v1/a/ue`;
+
+        /*
+        if (navigator.sendBeacon) {
+            
+            const data = JSON.stringify(data_map);
+            const blob = new Blob([data], { type: 'application/json' });
+
+            navigator.sendBeacon(url_str, blob);
+
+            const resp_data_map = {};
+            p_resolve_fun(resp_data_map);
+        }
+        */
+
+        
         $.ajax({
             'url':         url_str,
             'type':        'POST',

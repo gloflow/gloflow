@@ -19,11 +19,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // ///<reference path="../../../../d/jquery.d.ts" />
 
-import * as gf_viz_group    from "../../../../gf_controls/gf_viz_group/ts/gf_viz_group";
-import * as gf_gifs_viewer  from "../../../../gf_core/ts/gf_gifs_viewer";
+import * as gf_user_events  from "./../../../../gf_events/ts/gf_user_events";
+import * as gf_viz_group    from "./../../../../gf_controls/gf_viz_group/ts/gf_viz_group";
+import * as gf_gifs_viewer  from "./../../../../gf_core/ts/gf_gifs_viewer";
 import * as gf_image_viewer from "./gf_image_viewer";
 import * as gf_images_http  from "./gf_images_http";
 import * as gf_paging       from "./gf_images_paging";
+import * as gf_events       from "./gf_events";
 
 // FIX!! - remove this from global scope!!
 export var image_view_type_str = "small_view";
@@ -37,7 +39,7 @@ export function get_current_view_type() {
 // view_type_picker - picks the type of view that is used to display images in a flow.
 //                    default is masonry with 6 columns.
 export function init(p_flow_name_str :string,
-
+	p_logged_in_bool      :boolean,
 	p_events_enabled_bool :boolean,
 	p_host_str :string,
 	p_log_fun :any) {
@@ -75,6 +77,22 @@ export function init(p_flow_name_str :string,
 		// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
 		$('#gf_images_flow_container #items').masonry();
 		$('#gf_images_flow_container #items').masonry(<any>"reloadItems");
+
+
+		//---------------------
+		// EVENTS
+		if (p_events_enabled_bool && p_logged_in_bool) {
+			
+			const event_meta_map = {
+				"view_type": "masonry_small"
+			};
+			gf_user_events.send_event_http(gf_events.GF_IMAGES_VIEW_TYPE_PICKER_ACTIVATE_VIEW,
+				"browser",
+				event_meta_map,
+				p_host_str)
+		}
+		
+		//---------------------
 	});
 
 	// MASONRY_MEDIUM_IMAGES
@@ -98,6 +116,21 @@ export function init(p_flow_name_str :string,
 		// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
 		$('#gf_images_flow_container #items').masonry();
 		$('#gf_images_flow_container #items').masonry(<any>"reloadItems");
+
+		//---------------------
+		// EVENTS
+		if (p_events_enabled_bool && p_logged_in_bool) {
+			
+			const event_meta_map = {
+				"view_type": "masonry_medium"
+			};
+			gf_user_events.send_event_http(gf_events.GF_IMAGES_VIEW_TYPE_PICKER_ACTIVATE_VIEW,
+				"browser",
+				event_meta_map,
+				p_host_str)
+		}
+		
+		//---------------------
 	});
 
 	// VIZ_GROUP
@@ -134,7 +167,22 @@ export function init(p_flow_name_str :string,
 			p_host_str,
 			p_log_fun);
 
-		//------------------
+		//---------------------
+
+		//---------------------
+		// EVENTS
+		if (p_events_enabled_bool && p_logged_in_bool) {
+			
+			const event_meta_map = {
+				"view_type": "viz_group_medium"
+			};
+			gf_user_events.send_event_http(gf_events.GF_IMAGES_VIEW_TYPE_PICKER_ACTIVATE_VIEW,
+				"browser",
+				event_meta_map,
+				p_host_str)
+		}
+		
+		//---------------------
 	});
 }
 

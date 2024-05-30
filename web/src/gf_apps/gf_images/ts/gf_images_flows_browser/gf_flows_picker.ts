@@ -113,7 +113,7 @@ export async function init(p_events_enabled_bool :boolean,
             target_container_id_str = "flows";
         }
 
-        $(all_flows_container).find(`#${target_container_id_str}`).append(`
+        const flow_element = $(`
             <div class="flow_info">
                 <div class="flow_imgs_count">${flow_imgs_count_int}</div>
                 <div class="flow_name">
@@ -121,6 +121,30 @@ export async function init(p_events_enabled_bool :boolean,
                 </div>
             </div>
         `);
+
+        $(all_flows_container).find(`#${target_container_id_str}`).append(flow_element);
+
+
+        // emit an event on user click on the flow
+        $(flow_element).find(".flow_name a").click(async (p_event)=>{
+
+            p_event.preventDefault();
+
+            //------------------
+            // EVENTS
+            if (p_events_enabled_bool) {
+                
+                const event_meta_map = {
+                    "flow_name": flow_name_str,
+                };
+                await gf_user_events.send_event_http(gf_images_events.GF_IMAGES_FLOW_PICKED,
+                    "browser",
+                    event_meta_map,
+                    p_host_str)
+            }
+
+            //------------------
+        });
     }
 }
 

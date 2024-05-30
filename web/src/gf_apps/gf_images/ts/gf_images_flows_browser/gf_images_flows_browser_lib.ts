@@ -167,6 +167,7 @@ export async function init(p_plugin_callbacks_map :any,
 	// VIEW_TYPE_PICKER
 
 	gf_view_type_picker.init(flow_name_str,
+		logged_in_bool,
 		events_enabled_bool,
 		current_host_str,
 		p_log_fun);
