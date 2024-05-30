@@ -144,6 +144,9 @@ export async function init(p_events_enabled_bool :boolean,
             }
 
             //------------------
+
+            // redirect user browser to the flow page
+            window.location.href = flow_url_str;
         });
     }
 }
