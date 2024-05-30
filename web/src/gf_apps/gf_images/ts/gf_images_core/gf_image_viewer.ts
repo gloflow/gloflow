@@ -82,7 +82,7 @@ export function init(p_image_element :any,
 		$(window).on("resize", resize_handler);
 
 	    //----------------------
-	    $(bg).click(()=>{
+	    $(bg).click(async ()=>{
 	    	$(image_view_element).remove();
 			$(window).off("resize", resize_handler); // stop positioning on resize
 
@@ -96,7 +96,7 @@ export function init(p_image_element :any,
                 const event_meta_map = {
 					"image_id": p_image_id_str,
                 };
-                gf_user_events.send_event_http(gf_events.GF_IMAGES_IMAGE_VIEWER_CLOSE,
+                await gf_user_events.send_event_http(gf_events.GF_IMAGES_IMAGE_VIEWER_CLOSE,
                     "browser",
                     event_meta_map,
                     p_host_str)
