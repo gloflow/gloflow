@@ -35,12 +35,13 @@ import * as gf_procedural_art from "./procedural_art/gf_procedural_art";
 // import * as gf_image_colors   from "./../../../gf_core/ts/gf_image_colors";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
-declare var gf_upload__init;
+declare var gf_upload__init :any;
 
 //--------------------------------------------------------
 // INIT
-export async function init(p_plugin_callbacks_map,
-	p_log_fun) {
+export async function init(p_events_enabled_bool :boolean,
+	p_plugin_callbacks_map :any,
+	p_log_fun :any) {
 	
 	const current_host_str = gf_core_utils.get_current_host();
 
@@ -48,7 +49,6 @@ export async function init(p_plugin_callbacks_map,
     
 	//---------------------
 	// META
-	const events_enabled_bool = true;
 	const notifications_meta_map = {
 		"login_first_stage_success": "login success"
 	};
@@ -74,7 +74,7 @@ export async function init(p_plugin_callbacks_map,
 
 	//---------------------
 	// EVENTS
-	if (events_enabled_bool && logged_in_bool) {
+	if (p_events_enabled_bool && logged_in_bool) {
 		
 		const event_meta_map = {
 
@@ -89,7 +89,7 @@ export async function init(p_plugin_callbacks_map,
 	// FLOWS_PICKER - display it if the user is logged in
 	if (logged_in_bool) {
 
-		gf_flows_picker.init(events_enabled_bool,
+		gf_flows_picker.init(p_events_enabled_bool,
 			current_host_str,
 			p_log_fun)
 	}
@@ -109,7 +109,7 @@ export async function init(p_plugin_callbacks_map,
 	gf_images.init(logged_in_bool,
 		p_plugin_callbacks_map,
 		current_host_str,
-		events_enabled_bool,
+		p_events_enabled_bool,
 		p_log_fun);
 
 	//---------------------
@@ -161,7 +161,7 @@ export async function init(p_plugin_callbacks_map,
 
 	gf_upload__init(upload_flow_name_str,
 		target_full_host_str,
-		(p_upload_gf_image_id_str)=>{
+		(p_upload_gf_image_id_str :string)=>{
 
 		});
 

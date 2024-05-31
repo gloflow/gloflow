@@ -45,6 +45,10 @@ $(document).ready(()=>{
 	// PLUGINS
 	const plugin_callbacks_map = {};
 
-	gf_landing_page_lib.init(plugin_callbacks_map,
+	const events_enabled_bool :boolean = true;
+
+	// INIT
+	gf_landing_page_lib.init(events_enabled_bool,
+		plugin_callbacks_map,
 		log_fun);
 });
