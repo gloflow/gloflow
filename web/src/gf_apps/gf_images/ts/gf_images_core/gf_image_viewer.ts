@@ -24,13 +24,17 @@ import * as gf_user_events from "./../../../../gf_events/ts/gf_user_events";
 
 //-------------------------------------------------
 export function init(p_image_element :any,
+	
 	p_image_id_str             :string,
 	p_img_thumb_medium_url_str :string,
 	p_img_thumb_large_url_str  :string,
-	p_flows_names_lst          :string[],
-	p_events_enabled_bool	   :boolean,
-	p_host_str				   :string,
-	p_log_fun :any) {
+	
+	p_flows_names_lst :string[],
+
+	p_events_enabled_bool  :boolean,
+	p_host_str			   :string,
+	p_plugin_callbacks_map :any,
+	p_log_fun              :any) {
 
 	$(p_image_element).find("img").click(()=>{
 
@@ -107,7 +111,7 @@ export function init(p_image_element :any,
 
 	    //----------------------
 
-		//------------------
+		//--------------------------
 		// EVENTS
 		if (p_events_enabled_bool) {
 			
@@ -120,7 +124,14 @@ export function init(p_image_element :any,
 				p_host_str)
 		}
 
-		//------------------
+		//--------------------------
+		// PLUGIN_CALLBACK
+
+		if ("image_viewer_open" in p_plugin_callbacks_map) {
+			p_plugin_callbacks_map["image_viewer_open"](image_view_element);
+		}
+
+		//--------------------------
 	});
 }
 

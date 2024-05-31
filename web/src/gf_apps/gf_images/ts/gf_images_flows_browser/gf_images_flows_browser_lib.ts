@@ -119,6 +119,7 @@ export async function init(p_plugin_callbacks_map :any,
 	init_upload(flow_name_str,
 		events_enabled_bool,
 		current_host_str,
+		p_plugin_callbacks_map,
 		p_log_fun);
 
 	//---------------------
@@ -170,6 +171,7 @@ export async function init(p_plugin_callbacks_map :any,
 		logged_in_bool,
 		events_enabled_bool,
 		current_host_str,
+		p_plugin_callbacks_map,
 		p_log_fun);
 
 	//------------------
@@ -223,9 +225,10 @@ export async function init(p_plugin_callbacks_map :any,
 //---------------------------------------------------
 function init_upload(p_flow_name_str :string,
 
-	p_events_enabled_bool :boolean,
-	p_host_str :string,
-	p_log_fun  :any) {
+	p_events_enabled_bool  :boolean,
+	p_host_str             :string,
+	p_plugin_callbacks_map :any,
+	p_log_fun              :any) {
 
 	// use "" so that no host is set in URL's for issued requests
 	// (forces usage of origin host that the page came from)
@@ -328,6 +331,7 @@ function init_upload(p_flow_name_str :string,
 					()=>{},
 
 					//---------------------------------------------------
+					p_plugin_callbacks_map,
 					p_log_fun);
 
 				//------------------

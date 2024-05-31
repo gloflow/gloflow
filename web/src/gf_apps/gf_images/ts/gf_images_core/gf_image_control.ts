@@ -51,7 +51,8 @@ export function create(p_image_id_str :string,
 	p_host_str				   :string,
 	p_on_img_load_fun :any,
 	p_on_img_load_error_fun :any,
-	p_log_fun :any) {
+	p_plugin_callbacks_map  :any,
+	p_log_fun               :any) {
 
 	var img_url_str;
 	switch (p_current_image_view_type_str) {
@@ -128,8 +129,10 @@ export function create(p_image_id_str :string,
 				p_img__thumbnail_medium_url_str,
 				p_img__thumbnail_large_url_str,
 				p_flows_names_lst,
+
 				p_events_enabled_bool,
 				p_host_str,
+				p_plugin_callbacks_map,
 				p_log_fun);
 		}
 
@@ -288,8 +291,10 @@ export function init_existing_dom(p_image_element :any,
 			img_thumb_medium_url_str,
 			img_thumb_large_url_str,
 			flows_names_lst,
+
 			p_events_enabled_bool,
 			p_gf_host_str,
+			p_plugin_callbacks_map,
 			p_log_fun);
 	}
 

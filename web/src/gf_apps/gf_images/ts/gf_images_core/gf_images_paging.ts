@@ -177,6 +177,7 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 						},
 
 						//---------------------------------------------------
+						p_plugin_callbacks_map,
 						p_log_fun);
 				});
 			});

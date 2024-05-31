@@ -39,9 +39,10 @@ export function get_current_view_type() {
 // view_type_picker - picks the type of view that is used to display images in a flow.
 //                    default is masonry with 6 columns.
 export function init(p_flow_name_str :string,
-	p_logged_in_bool      :boolean,
-	p_events_enabled_bool :boolean,
-	p_host_str :string,
+	p_logged_in_bool       :boolean,
+	p_events_enabled_bool  :boolean,
+	p_host_str             :string,
+	p_plugin_callbacks_map :any,
 	p_log_fun :any) {
 
 	const container = $(`
@@ -165,6 +166,7 @@ export function init(p_flow_name_str :string,
 
 			p_events_enabled_bool,
 			p_host_str,
+			p_plugin_callbacks_map,
 			p_log_fun);
 
 		//---------------------
@@ -191,13 +193,14 @@ function init__viz_group_view(p_flow_name_str :string,
 	p_flow_pages_num_int :number,
 	p_initial_page_int   :number,
 
-	
-	p_events_enabled_bool :boolean,
-	p_host_str :string,
-	p_log_fun :any) {
+	p_events_enabled_bool  :boolean,
+	p_host_str             :string,
+	p_plugin_callbacks_map :any,
+	p_log_fun              :any) {
 
 	const current_image_view_type_str = "viz_group_medium_view";
 	const initial_elements_lst :any = [];
+
 	//-------------------------------------------------
 	// ELEMENT_CREATE
     function element_create_fun(p_element_map :any) {
@@ -245,6 +248,7 @@ function init__viz_group_view(p_flow_name_str :string,
 				img__flows_names_lst,
 				p_events_enabled_bool,
 				p_host_str,
+				p_plugin_callbacks_map,
 				p_log_fun);
 		}
 
