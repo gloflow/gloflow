@@ -132,9 +132,9 @@ export async function init_existing_dom(p_post_element,
 
 //--------------------------------------------------------
 function init_post(p_post_id_str :string,
-    p_post :HTMLDivElement,
-    p_http_api_map,
-    p_log_fun) {
+    p_post         :HTMLDivElement,
+    p_http_api_map :any,
+    p_log_fun      :any) {
 
     return new Promise(async function(p_resolve_fun, p_reject_fun) {
 
@@ -170,6 +170,8 @@ function init_post(p_post_id_str :string,
             p_post,
             p_http_api_map,
             p_log_fun)
+
+        p_resolve_fun(null);
 
         /*
         gf_tagger_input_ui.init_tag_input(post_title_str, //p_obj_id_str
@@ -260,7 +262,7 @@ function init_post_image(p_thumbnail_image_src :string,
 }
 
 //--------------------------------------------------------
-function init_post_date(p_post :HTMLDivElement, p_log_fun) {
+function init_post_date(p_post :HTMLDivElement, p_log_fun :any) {
 
     const creation_time_element :HTMLDivElement = <HTMLDivElement> $(p_post).find('.creation_time')[0];
     const creation_time_utc_str :string         = $(creation_time_element).text();
@@ -282,7 +284,7 @@ function init_post_date(p_post :HTMLDivElement, p_log_fun) {
 }
 
 //---------------------------------------------------
-function init_posts_img_num(p_post_element) {
+function init_posts_img_num(p_post_element :HTMLDivElement) {
 
     
     const post_images_number = $(p_post_element).find(".post_images_number")[0];
