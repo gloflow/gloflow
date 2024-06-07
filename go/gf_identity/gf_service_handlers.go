@@ -34,10 +34,11 @@ import (
 
 func initHandlers(pAuthLoginURLstr string,
 	pTemplatesPathsMap map[string]string,
-	pKeyServer   *gf_identity_core.GFkeyServerInfo,
-	pHTTPmux     *http.ServeMux,
-	pServiceInfo *gf_identity_core.GFserviceInfo,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
+	pKeyServer         *gf_identity_core.GFkeyServerInfo,
+	pHTTPmux           *http.ServeMux,
+	pRPCglobalMetrics  *gf_rpc_lib.GFglobalMetrics,
+	pServiceInfo       *gf_identity_core.GFserviceInfo,
+	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
@@ -67,6 +68,7 @@ func initHandlers(pAuthLoginURLstr string,
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
 		Mux:                  pHTTPmux,
 		Metrics:              metrics,
+		MetricsGlobal:        pRPCglobalMetrics,
 		StoreRunBool:         true,
 		SentryHub:            nil,
 		AuthSubsystemTypeStr: pServiceInfo.AuthSubsystemTypeStr,

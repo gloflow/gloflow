@@ -29,12 +29,12 @@ import (
 	"net/http"
 	"context"
 	"time"
-	// "strings"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
-	// "github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_session"
+	
+	// "github.com/gloflow/gloflow/go/gf_events"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -42,7 +42,8 @@ import (
 
 type GFrpcHandlerRuntime struct {
 	Mux             *http.ServeMux
-	Metrics         *GF_metrics
+	Metrics         *GFmetrics
+	MetricsGlobal   *GFglobalMetrics
 	StoreRunBool    bool
 	SentryHub       *sentry.Hub
 
@@ -250,6 +251,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		}
 
 		//-----------------------
+		
 		/*
 		//------------------
 		// EVENT
@@ -321,7 +323,14 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 				})
 
 			
+			//-----------------------
+			// METRICS
+			if pHandlerRuntime.MetricsGlobal != nil {
+				pHandlerRuntime.MetricsGlobal.HandlersAuthCounter.Inc()
+			}
 
+			//-----------------------
+			
 			//-----------------------
 			// VALIDATE_SESSION
 			ctxAuth := validateSessionFun(pResp, pReq)
@@ -401,7 +410,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 func CreateHandlerHTTPwithMux(pPathStr string,
 	pHandlerFun   gf_core.HTTPhandler,
 	pMux          *http.ServeMux,
-	pMetrics      *GF_metrics,
+	pMetrics      *GFmetrics,
 	pStoreRunBool bool,
 	pSentryHub    *sentry.Hub,
 	pRuntimeSys   *gf_core.RuntimeSys) {
@@ -423,7 +432,7 @@ func CreateHandlerHTTPwithMux(pPathStr string,
 
 func CreateHandlerHTTPwithMetrics(pPathStr string,
 	pHandlerFun   gf_core.HTTPhandler,
-	pMetrics      *GF_metrics,
+	pMetrics      *GFmetrics,
 	pStoreRunBool bool,
 	pRuntimeSys   *gf_core.RuntimeSys) {
 
@@ -444,7 +453,7 @@ func CreateHandlerHTTPwithMetrics(pPathStr string,
 func getHandler(pAuthBool bool,
 	pPathStr         string,
 	pHandlerFun      gf_core.HTTPhandler,
-	pMetrics         *GF_metrics,
+	pMetrics         *GFmetrics,
 	pStoreRunBool    bool,
 	pSentryHub       *sentry.Hub,
 	pAuthLoginURLstr *string,

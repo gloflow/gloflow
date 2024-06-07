@@ -100,6 +100,9 @@ func Run(pConfig *GFconfig,
 	// HTTP_MUX
 	gfSoloHTTPmux := http.NewServeMux()
 
+	// METRICS
+	metricsRPCglobal := gf_rpc_lib.MetricsCreateGlobal()
+
 	//-------------
 	// GF_LANDING_PAGE
 	// landing_page goes first, its handlers, because it contains the root path handler ("/")
@@ -136,6 +139,7 @@ func Run(pConfig *GFconfig,
 	}
 	keyServer, gfErr := gf_identity.InitService(pConfig.TemplatesPathsMap,
 		gfSoloHTTPmux,
+		metricsRPCglobal,
 		gfIdentityServiceInfo,
 		pRuntimeSys)
 	if gfErr != nil {

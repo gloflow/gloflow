@@ -23,6 +23,7 @@ import (
 	"context"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_policy"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
@@ -31,9 +32,10 @@ import (
 //-------------------------------------------------
 
 func InitService(pTemplatesPathsMap map[string]string,
-	pHTTPmux     *http.ServeMux,
-	pServiceInfo *gf_identity_core.GFserviceInfo,
-	pRuntimeSys  *gf_core.RuntimeSys) (*gf_identity_core.GFkeyServerInfo, *gf_core.GFerror) {
+	pHTTPmux          *http.ServeMux,
+	pRPCglobalMetrics *gf_rpc_lib.GFglobalMetrics,
+	pServiceInfo      *gf_identity_core.GFserviceInfo,
+	pRuntimeSys       *gf_core.RuntimeSys) (*gf_identity_core.GFkeyServerInfo, *gf_core.GFerror) {
 	
 	pRuntimeSys.LogNewFun("INFO", "initializing gf_identity service...", map[string]interface{}{
 		"auth_subsystem_type_str": pServiceInfo.AuthSubsystemTypeStr,
@@ -84,7 +86,10 @@ func InitService(pTemplatesPathsMap map[string]string,
 		pServiceInfo.AuthLoginURLstr,
 		pTemplatesPathsMap,
 		keyServerInfo,
-		pHTTPmux, pServiceInfo, pRuntimeSys)
+		pHTTPmux,
+		pRPCglobalMetrics,
+		pServiceInfo,
+		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

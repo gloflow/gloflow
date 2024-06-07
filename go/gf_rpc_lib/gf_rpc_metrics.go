@@ -32,7 +32,9 @@ import (
 
 //-------------------------------------------------
 
-type GF_metrics struct {
+type GFmetrics struct {
+
+	// HANDLERS
 	HandlersCountersMap map[string]prometheus.Counter
 
 	// AUTH_SESSION_INVALID - counter for when auth session validation fails when
@@ -43,12 +45,37 @@ type GF_metrics struct {
 	HandlersAuthSessionCORScounter prometheus.Counter
 }
 
+// FIX!! - make sure this passed to all services, currently only identity is using it.
+type GFglobalMetrics struct {
+
+	// AUTH
+	HandlersAuthCounter prometheus.Counter
+}
+
 //-------------------------------------------------
-// CREATE_FOR_HANDLER
+// CREATE_GLOBAL
+
+func MetricsCreateGlobal() *GFglobalMetrics {
+
+	handlersAuthCounter := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: fmt.Sprintf("gf_rpc__handler_auth"), 
+		Help: "number of auth requests received",
+	})
+	prometheus.MustRegister(handlersAuthCounter)
+
+	metrics := &GFglobalMetrics{
+		HandlersAuthCounter: handlersAuthCounter,
+	}
+
+	return metrics
+}
+
+//-------------------------------------------------
+// CREATE_FOR_HANDLERS
 
 func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 	pServiceNameStr       string,
-	pHandlersEndpointsLst []string) *GF_metrics {
+	pHandlersEndpointsLst []string) *GFmetrics {
 	
 
 	handlersCountersMap := map[string]prometheus.Counter{}
@@ -67,7 +94,6 @@ func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 		handlersCountersMap[handlerEndpointStr] = handlerReqsNumCounter
 	}
 
-
 	handlersAuthSessionInvalidCounter := prometheus.NewCounter(prometheus.CounterOpts{
 		Name: fmt.Sprintf("gf_rpc__handler_auth_session_invalid_num__%s_%s", pServiceNameStr, pMetricsGroupNameStr), 
 		Help: "number of invalid auth session requests received",
@@ -80,7 +106,7 @@ func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 	})
 	prometheus.MustRegister(handlersAuthSessionCORScounter)
 
-	metrics := &GF_metrics{
+	metrics := &GFmetrics{
 		HandlersCountersMap:               handlersCountersMap,
 		HandlersAuthSessionInvalidCounter: handlersAuthSessionInvalidCounter,
 		HandlersAuthSessionCORScounter:    handlersAuthSessionCORScounter,

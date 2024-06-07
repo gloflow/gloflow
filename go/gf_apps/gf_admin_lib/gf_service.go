@@ -75,6 +75,7 @@ func InitNewService(pTemplatesPathsMap map[string]string,
 
 	keyServer, gfErr := gf_identity.InitService(pTemplatesPathsMap,
 		pHTTPmux,
+		nil,
 		pIdentityServiceInfo,
 		pRuntimeSys)
 

@@ -150,7 +150,10 @@ func TestStartService(pAuthSubsystemTypeStr string,
 		// spew.Dump(pRuntimeSys)
 
 		var gfErr *gf_core.GFerror
-		keyServer, gfErr = InitService(pTemplatesPathsMap, HTTPmux, serviceInfo, pRuntimeSys)
+		keyServer, gfErr = InitService(pTemplatesPathsMap, HTTPmux,
+			nil,
+			serviceInfo,
+			pRuntimeSys)
 		if gfErr != nil {
 			panic("failed to initialize gf_identity service")
 		}
