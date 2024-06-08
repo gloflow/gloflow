@@ -24,9 +24,8 @@ import (
 	"time"
 	"context"
 	"strings"
-	// "github.com/parnurzeal/gorequest"
-	// "encoding/json"
 	"github.com/golang-jwt/jwt"
+	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 	"github.com/davecgh/go-spew/spew"
@@ -303,26 +302,45 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	// check if the "subject" name starts with google prefix
 	if strings.HasPrefix(profileMap["sub"].(string), "google-oauth2") {
 
+		//---------------------------------------------------
+		loadGoogleProfileFun := func() {
 
-		googleUserIDstr   := profileMap["sub"].(string)
-		googleNicknameStr := profileMap["nickname"].(string)
-		userID      = gf_core.GF_ID(googleUserIDstr)
-		userNameStr = GFuserName(googleNicknameStr)
-		
-		googleProfile := &GFgoogleUserProfile {
-			NameStr:       profileMap["name"].(string),
-			GivenNameStr:  profileMap["given_name"].(string),
-			FamilyNameStr: profileMap["family_name"].(string),
-			NicknameStr:   googleNicknameStr,
-			LocaleStr:     profileMap["locale"].(string),
-			UpdatedAtStr:  profileMap["updated_at"].(string),
-			PictureURLstr: profileMap["picture"].(string),
+			googleUserIDstr   := profileMap["sub"].(string)
+			googleNicknameStr := profileMap["nickname"].(string)
+			userID      = gf_core.GF_ID(googleUserIDstr)
+			userNameStr = GFuserName(googleNicknameStr)
+			
+			googleProfile := &GFgoogleUserProfile {
+				NameStr:       profileMap["name"].(string),
+				GivenNameStr:  profileMap["given_name"].(string),
+				FamilyNameStr: profileMap["family_name"].(string),
+				NicknameStr:   googleNicknameStr,
+				LocaleStr:     profileMap["locale"].(string),
+				UpdatedAtStr:  profileMap["updated_at"].(string),
+				PictureURLstr: profileMap["picture"].(string),
+			}
+
+			pRuntimeSys.LogNewFun("DEBUG", "google user profile loaded...", nil)
+			if gf_core.LogsIsDebugEnabled() {
+				spew.Dump(googleProfile)
+			}
 		}
 
-		pRuntimeSys.LogNewFun("DEBUG", "google user profile loaded...", nil)
-		if gf_core.LogsIsDebugEnabled() {
-			spew.Dump(googleProfile)
-		}
+		//---------------------------------------------------
+
+		/*
+		ERROR_HANDLING
+		using WithScope() to attach the profileMap to the Sentry error report, in case loading the google profile fails.
+		this way the profileMap is attached to the error report and can be used to debug the issue, and once this scope is
+		closed the profileMap is removed from the scope.
+		*/
+		sentry.WithScope(func(pScope *sentry.Scope) {
+			for key, value := range profileMap {
+				pScope.SetTag(key, value.(string))
+			}
+
+			loadGoogleProfileFun()
+		})		
 	}
 
 	//---------------------
