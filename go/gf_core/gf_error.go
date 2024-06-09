@@ -382,3 +382,28 @@ func ErrorInitSentry(pSentryEndpointStr string,
 	
 	return nil
 }
+
+//-------------------------------------------------
+
+func AttachMapToSentryScope(pMap map[string]interface{},
+	pScope *sentry.Scope) {
+
+	for key, value := range pMap {
+        var stringValue string
+        switch v := value.(type) {
+        case string:
+            stringValue = v
+        case int:
+            stringValue = fmt.Sprintf("%d", v)
+        case float64:
+            stringValue = fmt.Sprintf("%f", v)
+        case bool:
+            stringValue = fmt.Sprintf("%t", v)
+        case []byte:
+            stringValue = string(v)
+        default:
+            stringValue = fmt.Sprintf("%v", v)
+        }
+        pScope.SetTag(key, stringValue)
+    }
+}

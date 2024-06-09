@@ -333,11 +333,11 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		using WithScope() to attach the profileMap to the Sentry error report, in case loading the google profile fails.
 		this way the profileMap is attached to the error report and can be used to debug the issue, and once this scope is
 		closed the profileMap is removed from the scope.
+		extracting values out of google profile is a frequent source of errors, since some fields might be missing.
 		*/
 		sentry.WithScope(func(pScope *sentry.Scope) {
-			for key, value := range profileMap {
-				pScope.SetTag(key, value.(string))
-			}
+		
+			gf_core.AttachMapToSentryScope(profileMap, pScope)
 
 			loadGoogleProfileFun()
 		})		
