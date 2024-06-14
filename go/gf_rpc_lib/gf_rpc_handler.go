@@ -84,10 +84,10 @@ func CreateHandlersHTTP(pMetricsGroupNameStr string,
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &GFrpcHandlerRuntime {
-		Mux:             pHTTPmux,
-		Metrics:         metrics,
-		StoreRunBool:    true,
-		SentryHub:       nil,
+		Mux:          pHTTPmux,
+		Metrics:      metrics,
+		StoreRunBool: true,
+		SentryHub:    nil,
 
 		// AUTH
 		AuthSubsystemTypeStr: pAuthSubsystemTypeStr,
@@ -105,7 +105,6 @@ func CreateHandlersHTTP(pMetricsGroupNameStr string,
 			rpcHandlerRuntime,
 			pRuntimeSys)
 	}
-
 }
 
 //-------------------------------------------------
@@ -142,6 +141,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 	if pHandlerRuntime.AuthSubsystemTypeStr == gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
 		
 	} else {
+
 		// DEFAULT - USERPASS_AUTH
 		// set the userpass auth_subsystem type as the default value if another value is not set
 		pHandlerRuntime.AuthSubsystemTypeStr = gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__USERPASS
@@ -156,8 +156,6 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		pHandlerRuntime.SentryHub,
 		&pHandlerRuntime.AuthLoginURLstr,
 		pRuntimeSys)
-
-	
 
 	//-------------------------------------------------
 	// VALIDATE_SESSION

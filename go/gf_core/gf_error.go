@@ -297,20 +297,22 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 	// SENTRY
 	if pRuntimeSys.ErrorsSendToSentryBool {
 		
-		/*sentry.ConfigureScope(func(scope *sentry.Scope) {
+		/*
+		sentry.ConfigureScope(func(scope *sentry.Scope) {
 			scope.SetExtra("gf_error.service_name",   gf_error.ServiceNameStr)
 			scope.SetExtra("gf_error.subsystem_name", gf_error.Subsystem_name_str)
 			scope.SetExtra("gf_error.type",           gf_error.Type_str)
-		})*/
+		})
+		*/
 
-		sentry.WithScope(func(scope *sentry.Scope) {
+		sentry.WithScope(func(pScope *sentry.Scope) {
 
-			scope.SetTag(fmt.Sprintf("%s_error.service_name",   namesPrefixStr), gfErr.ServiceNameStr)
-			scope.SetTag(fmt.Sprintf("%s_error.subsystem_name", namesPrefixStr), gfErr.Subsystem_name_str)
-			scope.SetTag(fmt.Sprintf("%s_error.type",           namesPrefixStr), gfErr.Type_str)
+			pScope.SetTag(fmt.Sprintf("%s_error.service_name",   namesPrefixStr), gfErr.ServiceNameStr)
+			pScope.SetTag(fmt.Sprintf("%s_error.subsystem_name", namesPrefixStr), gfErr.Subsystem_name_str)
+			pScope.SetTag(fmt.Sprintf("%s_error.type",           namesPrefixStr), gfErr.Type_str)
 
 			for k, v := range gfErr.Data_map {
-				scope.SetTag(fmt.Sprintf("%s_error.%s", namesPrefixStr, k),
+				pScope.SetTag(fmt.Sprintf("%s_error.%s", namesPrefixStr, k),
 					fmt.Sprint(v))
 			}
 

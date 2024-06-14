@@ -315,10 +315,19 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 				GivenNameStr:  profileMap["given_name"].(string),
 				FamilyNameStr: profileMap["family_name"].(string),
 				NicknameStr:   googleNicknameStr,
-				LocaleStr:     profileMap["locale"].(string),
+				// LocaleStr:     profileMap["locale"].(string),
 				UpdatedAtStr:  profileMap["updated_at"].(string),
 				PictureURLstr: profileMap["picture"].(string),
 			}
+
+			// LOCAL
+			// check if locale is in profile map, or if its nil, and if its an actual string, assign it to the property of googleProfile
+			if localeVal, exists := profileMap["locale"]; exists && localeVal != nil {
+				if locale, ok := localeVal.(string); ok {
+					googleProfile.LocaleStr = locale
+				}
+			}
+
 
 			pRuntimeSys.LogNewFun("DEBUG", "google user profile loaded...", nil)
 			if gf_core.LogsIsDebugEnabled() {
@@ -340,7 +349,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 			gf_core.AttachMapToSentryScope(profileMap, pScope)
 
 			loadGoogleProfileFun()
-		})		
+		})
 	}
 
 	//---------------------
