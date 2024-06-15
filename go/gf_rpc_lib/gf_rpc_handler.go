@@ -379,8 +379,14 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			//-----------------------
 			// handle OPTIONS preflight request
 			if pReq.Method == http.MethodOptions {
-				pResp.WriteHeader(http.StatusNoContent)
+
+				CORSfun(pResp, pReq)
+
+				// pResp.WriteHeader(http.StatusNoContent)
 				return
+			
+				
+			
 			}
 
 			//-----------------------
