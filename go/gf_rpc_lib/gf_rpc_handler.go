@@ -412,7 +412,28 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 	} else {
 
-		pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(appHandlerFun))
+		//-------------------------------------------------
+		wrappedHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
+
+			// CORS
+			originStr := pReq.Header.Get("Origin")
+			if originStr != "" {
+
+				//-----------------------
+				// METRICS
+				if pHandlerRuntime.MetricsGlobal != nil {
+					pHandlerRuntime.MetricsGlobal.HandlersCORScounter.Inc()
+				}
+
+				//-----------------------
+			}
+
+			appHandlerFun(pResp, pReq)
+
+		}
+
+		//-------------------------------------------------
+		pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(wrappedHandlerFun))
 	}
 }
 
