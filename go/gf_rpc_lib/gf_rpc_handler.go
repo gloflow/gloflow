@@ -371,6 +371,14 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 			if originStr != "" {
 
+				//-----------------------
+				// METRICS
+				if pHandlerRuntime.MetricsGlobal != nil {
+					pHandlerRuntime.MetricsGlobal.HandlersCORScounter.Inc()
+				}
+
+				//-----------------------
+				
 				CORSfun(pResp, pReq)
 			}
 			

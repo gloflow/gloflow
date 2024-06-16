@@ -50,6 +50,9 @@ type GFglobalMetrics struct {
 
 	// AUTH
 	HandlersAuthCounter prometheus.Counter
+
+	// CORS
+	HandlersCORScounter prometheus.Counter
 }
 
 //-------------------------------------------------
@@ -63,8 +66,15 @@ func MetricsCreateGlobal() *GFglobalMetrics {
 	})
 	prometheus.MustRegister(handlersAuthCounter)
 
+	handlersCORScounter := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: fmt.Sprintf("gf_rpc__handler_cors"), 
+		Help: "number of CORS requests received",
+	})
+	prometheus.MustRegister(handlersCORScounter)
+
 	metrics := &GFglobalMetrics{
 		HandlersAuthCounter: handlersAuthCounter,
+		HandlersCORScounter: handlersCORScounter,
 	}
 
 	return metrics
