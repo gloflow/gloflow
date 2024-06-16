@@ -35,7 +35,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_identity/gf_session"
 	
 	// "github.com/gloflow/gloflow/go/gf_events"
-	// "github.com/davecgh/go-spew/spew"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -368,6 +368,11 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			
 			// get the origin domain of the request
 			originStr := pReq.Header.Get("Origin")
+
+
+
+			fmt.Println("request HEADERS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+			spew.Dump(pReq.Header)
 
 			if originStr != "" {
 
