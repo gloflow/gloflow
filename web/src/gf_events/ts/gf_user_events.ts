@@ -66,7 +66,7 @@ export function send_event_http(p_event_type_str :string,
 
             // HEADERS
             headers: {
-                'X-GF-Identity': 'true'
+                
             },
 
             'success': (p_response_map)=>{

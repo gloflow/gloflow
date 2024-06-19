@@ -173,7 +173,7 @@ export function user_get_me(p_host_str :string) {
 
             // HEADERS
             headers: {
-                'X-GF-Identity': 'true'
+                // 'X-GF-Identity': 'true'
             },
 
             'success': (p_response_map)=>{
@@ -220,7 +220,7 @@ export function logged_in(p_host_str :string) :Promise<boolean> {
 
             // HEADERS
             headers: {
-                'X-GF-Identity': 'true'
+                // 'X-GF-Identity': 'true'
             },
 
             'success': (p_response_map)=>{
@@ -275,7 +275,7 @@ export function user_preflight(p_user_name_str :string | null,
 
             // HEADERS
             headers: {
-                'X-GF-Identity': 'true'
+                // 'X-GF-Identity': 'true'
             },
             
             'success': (p_response_map)=>{
@@ -329,7 +329,7 @@ export function user_eth_login(p_user_address_eth_str :string,
 
             // HEADERS
             headers: {
-                'X-GF-Identity': 'true'
+                // 'X-GF-Identity': 'true'
             },
 
             'success': (p_response_map)=>{
@@ -384,7 +384,7 @@ export function user_userpass_login(p_user_name_str :string,
 
             // HEADERS
             headers: {
-                'X-GF-Identity': 'true'
+                // 'X-GF-Identity': 'true'
             },
 
             'success': (p_response_map)=>{
@@ -437,7 +437,7 @@ export function user_mfa_confirm(p_user_name_str :string,
 
             // HEADERS
             headers: {
-                'X-GF-Identity': 'true'
+                // 'X-GF-Identity': 'true'
             },
             
             'success': (p_response_map)=>{
@@ -493,7 +493,7 @@ export function user_eth_create(p_user_address_eth_str :string,
 
             // HEADERS
             headers: {
-                'X-GF-Identity': 'true'
+                // 'X-GF-Identity': 'true'
             },
 
             'success': (p_response_map)=>{
@@ -549,7 +549,7 @@ export function user_userpass_create(p_user_name_str :string,
 
             // HEADERS
             headers: {
-                'X-GF-Identity': 'true'
+                // 'X-GF-Identity': 'true'
             },
 
             'success': (p_response_map)=>{
@@ -605,7 +605,7 @@ export function user_update(p_user_data_map :any,
 
             // HEADERS
             headers: {
-                'X-GF-Identity': 'true'
+                // 'X-GF-Identity': 'true'
             },
 
             'success': (p_response_map)=>{
