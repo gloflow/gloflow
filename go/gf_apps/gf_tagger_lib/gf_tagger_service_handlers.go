@@ -287,13 +287,17 @@ func initHandlers(pAuthSubsystemTypeStr string,
 
 			if pReq.Method == "GET" {
 
-				objectsWithTagLst, gfErr := tagsPipelineGetObjects(pReq, pResp, 
+				objectsWithTagLst, abortReasonMap, gfErr := tagsPipelineGetObjects(pReq, pResp, 
 					gfTemplates.TagObjects,
 					gfTemplates.TagObjectsSubtemplatesNamesLst,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
+				}
+
+				if abortReasonMap != nil {
+					return abortReasonMap, nil
 				}
 
 				// if the response_format was HTML then objects_with_tag_lst is nil,

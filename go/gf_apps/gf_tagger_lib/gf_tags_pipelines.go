@@ -153,7 +153,7 @@ func tagsPipelineGetObjects(pReq *http.Request,
 	pTemplate             *template.Template,
 	pSubtemplatesNamesLst []string,
 	pCtx                  context.Context,
-	pRuntimeSys           *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys           *gf_core.RuntimeSys) ([]map[string]interface{}, map[string]interface{}, *gf_core.GFerror) {
 
 	//----------------
 	// INPUT
@@ -164,36 +164,52 @@ func tagsPipelineGetObjects(pReq *http.Request,
 	responseFormatStr := gf_rpc_lib.GetResponseFormat(qsMap, pRuntimeSys)
 
 	if _, ok := qsMap["otype"]; !ok {
+		/*
 		gfErr := gf_core.ErrorCreate("input 'otype' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"qs_map": qsMap,},
 			nil, "gf_tagger_lib", pRuntimeSys)
-		return nil, gfErr
+		*/
+
+		abortReasonMap := map[string]interface{}{
+			"msg_str":  "input 'otype' not supplied",
+			"type_str": "verify__missing_key_error",
+			"qs_map":   qsMap,
+		}
+		return nil, abortReasonMap, nil
 	}
 
 	if _, ok := qsMap["tag"]; !ok {
+		/*
 		gfErr := gf_core.ErrorCreate("input 'tag' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"qs_map": qsMap,},
 			nil, "gf_tagger_lib", pRuntimeSys)
-		return nil, gfErr
+		*/
+		abortReasonMap := map[string]interface{}{
+			"msg_str":  "input 'tag' not supplied",
+			"type_str": "verify__missing_key_error",
+			"qs_map":   qsMap,
+		}
+		
+		return nil, abortReasonMap, nil
 	}
 
 	// TrimSpace() - Returns the string without any leading and trailing whitespace.
 	objectTypeStr := strings.TrimSpace(qsMap["otype"][0])
-	tagStr         := strings.TrimSpace(qsMap["tag"][0])
+	tagStr        := strings.TrimSpace(qsMap["tag"][0])
 
 	// PAGE_INDEX
 	pageIndexInt := 0
 	if aLst, ok := qsMap["pg_index"]; ok {
 		inputVal := aLst[0]
-		pageIndexInt, err = strconv.Atoi(inputVal) //user supplied value
+		pageIndexInt, err = strconv.Atoi(inputVal) // user supplied value
 		if err != nil {
 			gfErr := gf_core.ErrorCreate("input pg_index not an integer",
 				"verify__value_not_integer_error",
 				map[string]interface{}{"input_val": inputVal,},
 				nil, "gf_tagger_lib", pRuntimeSys)
-			return nil, gfErr
+			return nil, nil, gfErr
 		}
 	}
 
@@ -201,13 +217,13 @@ func tagsPipelineGetObjects(pReq *http.Request,
 	pageSizeInt := 10
 	if aLst, ok := qsMap["pg_size"]; ok {
 		inputVal := aLst[0]
-		pageSizeInt, err = strconv.Atoi(inputVal) //user supplied value
+		pageSizeInt, err = strconv.Atoi(inputVal) // user supplied value
 		if err != nil {
 			gfErr := gf_core.ErrorCreate("input pg_size not an integer",
 				"verify__value_not_integer_error",
 				map[string]interface{}{"input_val": inputVal,},
 				nil, "gf_tagger_lib", pRuntimeSys)
-			return nil, gfErr
+			return nil, nil, gfErr
 		}
 	}
 
@@ -227,7 +243,7 @@ func tagsPipelineGetObjects(pReq *http.Request,
 				pCtx,
 				pRuntimeSys)
 			if gfErr != nil {
-				return nil, gfErr
+				return nil, nil, gfErr
 			}
 
 			pResp.Write([]byte(templateRenderedStr))
@@ -244,16 +260,16 @@ func tagsPipelineGetObjects(pReq *http.Request,
 				pCtx,
 				pRuntimeSys)
 			if gfErr != nil {
-				return nil, gfErr
+				return nil, nil, gfErr
 			}
 
 			/*
 			FIX!! - objectsWithTagLst - have to be exported for external use, not just serialized
 				from their internal representation
 			*/
-			return objectsWithTagLst, nil
+			return objectsWithTagLst, nil, nil
 
 		//------------------
 	}
-	return nil, nil
+	return nil, nil, nil
 }
