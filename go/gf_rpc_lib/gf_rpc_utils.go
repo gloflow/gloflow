@@ -102,6 +102,8 @@ func GetResponseFormat(p_qs_map map[string][]string,
 }
 
 //-------------------------------------------------
+// CORS
+//-------------------------------------------------
 
 func HTTPcorsPreflightHandle(p_req *http.Request,
 	p_resp http.ResponseWriter) {

@@ -361,7 +361,6 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 			//------------------
 
-			
 			//-----------------------
 			// CORS
 			// if the user has supplied CORS domains, check if the request origin domain is in the list
@@ -387,8 +386,6 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 				CORSfun(pResp, pReq)
 			}
 			
-			
-
 			//-----------------------
 			// handle OPTIONS preflight request
 			if pReq.Method == http.MethodOptions {
@@ -397,9 +394,6 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 				// pResp.WriteHeader(http.StatusNoContent)
 				return
-			
-				
-			
 			}
 
 			//-----------------------
