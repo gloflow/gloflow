@@ -241,7 +241,7 @@ func dbMongoGetObjectsWithTagCount(pTagStr string,
 
 func dbMongoGetObjectsWithTag(pTagStr string,
 	pTargetTypeStr string,
-	pTargetType    interface{},
+	pOutput        interface{},
 	pPageIndexInt  int,
 	pPageSizeInt   int,
 	pCtx           context.Context,
@@ -273,24 +273,25 @@ func dbMongoGetObjectsWithTag(pTagStr string,
 	}
 
 	var err error
-	switch target := pTargetType.(type) {
+	switch output := pOutput.(type) {
 	
 	// IMAGE
 	case *[]*gf_images_core.GFimage:
-		err = cursor.All(pCtx, target)
+		err = cursor.All(pCtx, output)
 
 	// POST
 	case *[]*gf_publisher_core.GFpost:
-		err = cursor.All(pCtx, target)
+		err = cursor.All(pCtx, output)
 	}
 
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to get objects with specified tag in DB",
 			"mongodb_cursor_decode",
 			map[string]interface{}{
-				"tag_str":        pTagStr,
-				"page_index_int": pPageIndexInt,
-				"page_size_int":  pPageSizeInt,
+				"tag_str":         pTagStr,
+				"target_type_str": pTargetTypeStr,
+				"page_index_int":  pPageIndexInt,
+				"page_size_int":   pPageSizeInt,
 			},
 			err, "gf_tagger_lib", pRuntimeSys)
 		return gfErr
