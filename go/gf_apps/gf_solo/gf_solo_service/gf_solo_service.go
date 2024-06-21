@@ -295,6 +295,7 @@ func Run(pConfig *GFconfig,
 		// Crawl__images_local_dir_path_str: pConfig.CrawlImagesLocalDirPathStr,
 	}
 	gf_analytics_lib.InitService(gfAnalyticsServiceInfo,
+		metricsRPCglobal,
 		gfSoloHTTPmux,
 		pRuntimeSys)
 

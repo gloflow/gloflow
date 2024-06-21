@@ -34,6 +34,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	pAuthSubsystemTypeStr string,
 	pAuthLoginURLstr      string,
 	pKeyServer            *gf_identity_core.GFkeyServerInfo,
+	pRPCglobalMetrics     *gf_rpc_lib.GFglobalMetrics,
 	pHTTPmux              *http.ServeMux,
 	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -48,8 +49,10 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:          pHTTPmux,
-		Metrics:      metrics,
+		Mux:           pHTTPmux,
+		Metrics:       metrics,
+		MetricsGlobal: pRPCglobalMetrics,
+		
 		StoreRunBool: true,
 		SentryHub:    nil,
 
@@ -71,7 +74,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			// CORS - preflight request
-			// gf_rpc_lib.HTTPcorsPreflightHandle(pReq, pResp)
+			gf_rpc_lib.HTTPcorsPreflightHandle(pReq, pResp)
 
 			if pReq.Method == "POST" {
 

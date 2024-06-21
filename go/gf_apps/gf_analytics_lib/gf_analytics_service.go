@@ -24,6 +24,7 @@ import (
 	// "fmt"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_domains_lib"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 
@@ -68,14 +69,18 @@ type GFserviceInfo struct {
 //-------------------------------------------------
 
 func InitService(pServiceInfo *GFserviceInfo,
-	pHTTPmux  *http.ServeMux,
-	pRuntimeSys *gf_core.RuntimeSys) {
+	pRPCglobalMetrics *gf_rpc_lib.GFglobalMetrics,
+	pHTTPmux          *http.ServeMux,
+	pRuntimeSys       *gf_core.RuntimeSys) {
 		
 	//-----------------
+	// HANDLERS
+
 	initHandlers(pServiceInfo.Templates_paths_map,
 		pServiceInfo.AuthSubsystemTypeStr,
 		pServiceInfo.AuthLoginURLstr,
 		pServiceInfo.KeyServer,
+		pRPCglobalMetrics,
 		pHTTPmux,
 		pRuntimeSys)
 
@@ -152,6 +157,7 @@ func InitService(pServiceInfo *GFserviceInfo,
 
 //-------------------------------------------------
 
+/*
 func RunService(pServiceInfo *GFserviceInfo,
 	pRuntimeSys *gf_core.RuntimeSys) {
 	
@@ -176,3 +182,4 @@ func RunService(pServiceInfo *GFserviceInfo,
 		panic(err)
 	}
 }
+*/

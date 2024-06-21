@@ -71,6 +71,8 @@ func initHandlers(pAuthLoginURLstr string,
 		MetricsGlobal:        pRPCglobalMetrics,
 		StoreRunBool:         true,
 		SentryHub:            nil,
+
+		// AUTH
 		AuthSubsystemTypeStr: pServiceInfo.AuthSubsystemTypeStr,
 		AuthLoginURLstr:      pAuthLoginURLstr,
 		AuthKeyServer:        pKeyServer,
