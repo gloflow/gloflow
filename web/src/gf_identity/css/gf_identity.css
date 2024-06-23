@@ -5,6 +5,8 @@
     position: fixed;
     right: 8px;
     bottom: 64px;
+
+    z-index: 10;
 }
 #identity #login {
     position: absolute;

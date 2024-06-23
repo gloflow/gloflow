@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // ///<reference path="../../d/jquery.d.ts" />
 
 //--------------------------------------------------------
-export function init(p_target_element,
-    p_on_dnd_event_fun,
-    p_assets_paths_map) {
+export function init(p_target_element :any,
+    p_on_dnd_event_fun :any,
+    p_assets_paths_map :any) {
 
 
     const control = $(`
@@ -41,7 +41,7 @@ export function init(p_target_element,
     $(control).find(".overlay").css("height", `${handle_height_int}px`);
 
 
-    var control_side_str;
+    var control_side_str :string;
     var element_dragged_bool = false;
 
     // MOUSE_ENTER
@@ -89,11 +89,11 @@ export function init(p_target_element,
         // these values indicate by how much the position of the target_element
         // have to be offset when they're moved around, to accound for the dimensions
         // and position of the movement handle and where the user clicked on that handle.
-        var distance_to_target_origin_x;
-        var distance_to_target_origin_y;
+        var distance_to_target_origin_x :number;
+        var distance_to_target_origin_y :number;
 
         //--------------------------------------------------------
-        function mouse_move_fun(p_event) {
+        function mouse_move_fun(p_event :any) {
 
             // const new_x = p_event.pageX + distance_to_target_origin_x;
 
@@ -123,12 +123,12 @@ export function init(p_target_element,
 
             switch (control_side_str) {
                 case "left":
-                    distance_to_target_origin_x = handle_width_int - p_event.offsetX;
+                    distance_to_target_origin_x = handle_width_int! - p_event.offsetX;
                     break;
                 
                 case "right":
-                    const element_width_int = $(p_target_element).outerWidth();
-                    distance_to_target_origin_x = element_width_int + handle_width_int - p_event.offsetX;
+                    const element_width_int = $(p_target_element).outerWidth()!;
+                    distance_to_target_origin_x = element_width_int + handle_width_int! - p_event.offsetX;
                     break;
             }
             

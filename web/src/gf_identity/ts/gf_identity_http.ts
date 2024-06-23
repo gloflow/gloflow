@@ -150,10 +150,15 @@ export function get_http_api(p_urls_map :any,
 export function user_get_me(p_host_str :string) {
     return new Promise(function(p_resolve_fun, p_reject_fun) {
 
+        //-------------------
+        // URL
         // auth_r=0 - toggle off redirecting to login url in case the validation fails.
         //            redirecting not needed since /me is called by subcomponents of pages
         //            and on failure should not redirect.
         const url_str = `${p_host_str}/v1/identity/me?auth_r=0`;
+
+        //-------------------
+        
         $.ajax({
             'url':         url_str,
             'type':        'GET',

@@ -30,8 +30,12 @@ export function send_event_http(p_event_type_str :string,
             "data_map":        p_data_map
         };
 
+        //-------------------
+        // URL
         const url_str = `${p_host_str}/v1/a/ue`;
 
+        //-------------------
+        
         /*
         if (navigator.sendBeacon) {
             
