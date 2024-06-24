@@ -39,3 +39,53 @@ export function click_outside(p_element :any, p_on_click_fun :any) {
         }
     });
 }
+
+//--------------------------------------------------------
+// MEASURE_DIV_DIMENSIONS
+
+export function measureDivDimensions(pTargetElement :HTMLElement,
+    pMeasurementParentElement :HTMLElement) {
+
+    const isAlreadyInDOM = document.body.contains(pTargetElement);
+
+    // IN_DOM
+    if (isAlreadyInDOM) {
+        return {
+            width:  pTargetElement.offsetWidth,
+            height: pTargetElement.offsetHeight
+        };
+    }
+
+    // NOT_IN_DOM
+    else {
+        
+        /*
+        // container for off-screen measurement
+        const offScreenContainer = document.createElement('div');
+        offScreenContainer.style.position = 'absolute';
+        offScreenContainer.style.left = '-9999px';
+        offScreenContainer.style.top = '-9999px';
+        document.body.appendChild(offScreenContainer);
+        */
+
+        // add the div to the off-screen container
+        pMeasurementParentElement.appendChild(pTargetElement);
+
+        const originalVisibility = pTargetElement.style.visibility;
+        pTargetElement.style.visibility = 'hidden';
+
+        // measure the div
+        const dimensionsMap = {
+            width:  pTargetElement.offsetWidth,
+            height: pTargetElement.offsetHeight
+        };
+
+        // remove the off-screen container
+        // document.body.removeChild(offScreenContainer);
+
+        pTargetElement.style.visibility = originalVisibility;
+        pMeasurementParentElement.removeChild(pTargetElement);
+
+        return dimensionsMap;
+    }
+}

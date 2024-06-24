@@ -19,6 +19,105 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // ///<reference path="../../d/jquery.d.ts" />
 
+import * as gf_utils from "./gf_utils";
+
+//--------------------------------------------------------
+export function initCustom(p_target_element :any,
+    p_on_dnd_event_fun :any,
+    p_assets_paths_map :any,
+    p_control_element :HTMLElement) {
+
+    
+    const handle_width_int  = $(p_control_element).outerWidth();
+    const handle_height_int = $(p_control_element).outerHeight();
+    
+
+
+
+    var element_dragged_bool = false;
+
+
+
+
+    
+    //----------------------
+    // DISTANCE_TO_TARGET
+    // IMPORTANT!!
+    // these values indicate by how much the position of the target_element
+    // have to be offset when they're moved around, to accound for the dimensions
+    // and position of the movement handle and where the user clicked on that handle.
+    var distance_to_target_origin_x :number;
+    var distance_to_target_origin_y :number;
+    
+    //----------------------
+
+    //--------------------------------------------------------
+    function mouse_move_fun(p_event :any) {
+
+        // final coords of the element that was droped
+        const new_x = p_event.pageX - distance_to_target_origin_x;
+        const new_y = p_event.pageY - distance_to_target_origin_y;
+
+        $(p_target_element).css("left", `${new_x}px`);
+        $(p_target_element).css("top", `${new_y}px`);
+    }
+
+    //--------------------------------------------------------
+
+    // MOUSE_DOWN
+    $(p_control_element).on("mousedown", (p_event)=>{
+
+        //----------------------
+        // DISTANCE_TO_TARGET
+        // assumes the control is inside the target_element
+        // offsetX - property in JavaScript is local to the coordinate system of the event's target element.
+        distance_to_target_origin_x = handle_width_int! - p_event.offsetX;
+        distance_to_target_origin_y = p_event.offsetY;
+
+        //----------------------
+        $(p_control_element).css("pointer", "grab");
+
+        //----------------------
+        // IMPORTANT!! - critical to add the event listener to the document for global pointer tracking
+        $(document).on("mousemove", mouse_move_fun);
+        
+        //----------------------
+        
+        element_dragged_bool = true;
+        
+        // EVENT
+        const data_map = {};
+        p_on_dnd_event_fun("drag_start", data_map);
+    });
+
+    // MOUSE_UP
+    $(document).on("mouseup", (p_event)=>{
+        if (element_dragged_bool) {
+
+            element_dragged_bool = false;
+
+            $(p_control_element).css("pointer", "pointer");
+
+            $(document).unbind("mousemove", mouse_move_fun);
+
+
+
+
+
+            const final_x_int = p_event.pageX - distance_to_target_origin_x;
+            const final_y_int = p_event.pageY - distance_to_target_origin_y;
+
+            const data_map = {
+                "x_int": final_x_int,
+                "y_int": final_y_int,
+            };
+
+            // EVENT
+            p_on_dnd_event_fun("drag_stop", data_map);
+        }
+    });
+}
+
 //--------------------------------------------------------
 export function init(p_target_element :any,
     p_on_dnd_event_fun :any,
@@ -30,9 +129,19 @@ export function init(p_target_element :any,
             <img class="symbol" src="${p_assets_paths_map["gf_bar_handle_btn"]}"></img>
             <div class="overlay"></div>
         </div>`);
+    
 
-    const handle_height_int = $(p_target_element).outerHeight();
+    //-----------------
+    // DIMENSIONS
+
+    const target_element_width_int  = $(p_target_element).outerWidth();
+    const target_element_height_int = $(p_target_element).outerHeight();
+
+    const handle_height_int = target_element_height_int;
     var   handle_width_int  = $(control).outerWidth();
+    
+    //-----------------
+
     $(control).css("height", `${handle_height_int}px`);
     $(control).css("opacity", `0.6`);
 
@@ -127,8 +236,7 @@ export function init(p_target_element :any,
                     break;
                 
                 case "right":
-                    const element_width_int = $(p_target_element).outerWidth()!;
-                    distance_to_target_origin_x = element_width_int + handle_width_int! - p_event.offsetX;
+                    distance_to_target_origin_x = target_element_width_int! + handle_width_int! - p_event.offsetX;
                     break;
             }
             
