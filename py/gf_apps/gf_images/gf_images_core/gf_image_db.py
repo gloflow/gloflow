@@ -62,8 +62,8 @@ def db_get(p_image_id_str,
 	# DB
 	if p_db_type_str == 'mongo':
 		
-		#SCALING!! - image_exists() does a full query to mongo
-		#            investigate further
+		# SCALING!! - image_exists() does a full query to mongo
+		#             investigate further
 		if image_exists(p_image_id_str,
 			p_db_context_map,
 			p_log_fun,
@@ -78,7 +78,7 @@ def db_get(p_image_id_str,
 
 	#---------------
 
-	#create() - does verification and adt construction
+	# create() - does verification and adt construction
 	image_adt = gf_image.create(image_info_dict, p_db_context_map, p_log_fun)
 	assert isinstance(image_adt, gf_image.Image_ADT)
 	
@@ -93,19 +93,20 @@ def db_put(p_image_adt,
 	p_mongo_coll_name_str = 'images'):
 	assert isinstance(p_image_adt, gf_image.Image_ADT)
 	
-	image_info_dict = gf_image.serialize(p_image_adt,
-									p_log_fun)
+	image_info_map = gf_image.serialize(p_image_adt,
+		p_log_fun)
 	#---------------
 	# DB
 	if p_db_type_str == 'mongo':
 		mongo_client = p_db_context_map['mongodb_client']
 		data_coll    = mongo_client[p_mongo_db_name_str][p_mongo_coll_name_str]
 
-		#spec          - a dict specifying elements which must be present for a document to be updated
-		#upsert = True - insert doc if it doesnt exist, else just update
-		p_mongo_data_collection.update({'id_str':p_image_adt.id_str}, #spec
-			image_info_dict, 
+		# spec          - a dict specifying elements which must be present for a document to be updated
+		# upsert = True - insert doc if it doesnt exist, else just update
+		data_coll.update({'id_str':p_image_adt.id_str}, # spec
+			image_info_map, 
 			upsert = True)
+		
 	#---------------
 	
 #---------------------------------------------------	
@@ -117,7 +118,8 @@ def db_get_all(p_db_context_map,
 	p_mongo_coll_name_str = 'images'):
 
 	#----------
-	#MONGO
+	# MONGO
 	if p_db_type_str == 'mongo':
 		True
+		
 	#----------

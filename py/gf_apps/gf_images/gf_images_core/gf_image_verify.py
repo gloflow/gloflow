@@ -27,40 +27,38 @@ import gf_core_error
 def verify_image_info(p_image_info_map,
 	p_db_context_map,
 	p_log_fun):
-	p_log_fun('FUN_ENTER','gf_image_verify.verify_image_info()')
-	p_log_fun('INFO'     ,'p_image_info_map:%s'%(p_image_info_map))
-	assert isinstance(p_image_info_map,dict)
+	p_log_fun('INFO', 'p_image_info_map:%s'%(p_image_info_map))
+	assert isinstance(p_image_info_map, dict)
 	
 	max_title_characters = 100
 	#-------------------
-	#'id_str' - is None if image_info_dict comes from the outside of the system
-	#           and the ID has not yet been assigned. 
-	#           ID is determined if image_info_dict comes from the DB or someplace
-	#           else within the system
+	# 'id_str' - is None if image_info_dict comes from the outside of the system
+	#            and the ID has not yet been assigned. 
+	#            ID is determined if image_info_dict comes from the DB or someplace
+	#            else within the system
 	
 	id_str = p_image_info_map.get('id_str', None)
 
 	#-------------------
-	#TITLE
+	# TITLE
 	
 	title_str = None
 	try:
 		assert p_image_info_map.has_key('title_str')
 		title_str = p_image_info_map['title_str']
 		
-		assert isinstance(p_image_info_map['title_str'],basestring)
+		assert isinstance(p_image_info_map['title_str'], str)
 		assert len(p_image_info_map['title_str']) < max_title_characters
-	except Exception as e:
-		msg_str = '''title_str [%s] is missing, invalid, or has \
-		             more then max_length [%s] characters'''%(title_str,
-			                                                  max_title_characters)
-		gf_core_error.handle_exception(e,       #p_exception,
-									msg_str, #p_formated_msg_str,
-									(),      #p_surrounding_context_attribs_tpl,
 
-									p_db_context_map,
-									p_log_fun,
-									p_app_name_str = 'gf_image')
+	except Exception as e:
+		msg_str = '''title_str [%s] is missing, invalid, or has more then max_length [%s] characters'''%(title_str, max_title_characters)
+		gf_core_error.handle_exception(e,
+			msg_str, #p_formated_msg_str,
+			(),      #p_surrounding_context_attribs_tpl,
+
+			p_db_context_map,
+			p_log_fun,
+			p_app_name_str = 'gf_image')
 		
 		raise Exception(msg_str)
 	
@@ -78,12 +76,12 @@ def verify_image_info(p_image_info_map,
 		msg_str = '''format_str [%s] is missing or is invalid'''%(format_str)
 		
 		gf_core_error.handle_exception(e,       #p_exception,
-									msg_str, #p_formated_msg_str,
-									(),      #p_surrounding_context_attribs_tpl,
+			msg_str, #p_formated_msg_str,
+			(),      #p_surrounding_context_attribs_tpl,
 
-									p_db_context_map,
-									p_log_fun,
-									p_app_name_str = 'gf_image')
+			p_db_context_map,
+			p_log_fun,
+			p_app_name_str = 'gf_image')
 		
 		raise Exception(msg_str)
 	
@@ -107,12 +105,12 @@ def verify_image_info(p_image_info_map,
 		msg_str = '''width_str/height [%s/%s] is missing or is invalid'''%(width_str,height_str)
 		
 		gf_core_error.handle_exception(e,       #p_exception,
-									msg_str, #p_formated_msg_str,
-									(),      #p_surrounding_context_attribs_tpl,
+			msg_str, #p_formated_msg_str,
+			(),      #p_surrounding_context_attribs_tpl,
 
-									p_db_context_map,
-									p_log_fun,
-									p_app_name_str = 'gf_image')
+			p_db_context_map,
+			p_log_fun,
+			p_app_name_str = 'gf_image')
 		raise Exception(msg_str)
 	
 	#-------------------
@@ -127,12 +125,12 @@ def verify_image_info(p_image_info_map,
 		msg_str = '''origin_url_str [%s] is missing or is invalid'''%(origin_url_str)
 		
 		gf_core_error.handle_exception(e,       #p_exception,
-									msg_str, #p_formated_msg_str,
-									(),      #p_surrounding_context_attribs_tpl,
+			msg_str, #p_formated_msg_str,
+			(),      #p_surrounding_context_attribs_tpl,
 
-									p_db_context_map,
-									p_log_fun,
-									p_app_name_str = 'gf_image')
+			p_db_context_map,
+			p_log_fun,
+			p_app_name_str = 'gf_image')
 		
 		raise Exception(msg_str)
 	
@@ -145,19 +143,19 @@ def verify_image_info(p_image_info_map,
 	#-------------------
 	
 	new_image_info_map = {
-		'id_str'        :id_str,
-		'title_str'     :title_str,
+		'id_str': id_str,
+		'title_str': title_str,
 		
-		'origin_url_str'                :origin_url_str,
-		'original_file_internal_uri_str':original_file_internal_uri_str,
+		'origin_url_str': origin_url_str,
+		'original_file_internal_uri_str': original_file_internal_uri_str,
 		
-		'thumbnail_small_url_str' :thumbnail_small_url_str,
-		'thumbnail_medium_url_str':thumbnail_medium_url_str,
-		'thumbnail_large_url_str' :thumbnail_large_url_str,
+		'thumbnail_small_url_str':  thumbnail_small_url_str,
+		'thumbnail_medium_url_str': thumbnail_medium_url_str,
+		'thumbnail_large_url_str':  thumbnail_large_url_str,
 		
-		'format_str'    :format_str,
-		'width_str'     :width_str,
-		'height_str'    :height_str,
+		'format_str': format_str,
+		'width_str':  width_str,
+		'height_str': height_str,
 		
 		'dominant_color_hex_str':p_image_info_map['dominant_color_hex_str']
 	}
@@ -167,18 +165,16 @@ def verify_image_info(p_image_info_map,
 #---------------------------------------------------	
 #->:String(normalized_format_str)
 def check_image_format_str(p_format_str, p_log_fun):
-	p_log_fun('FUN_ENTER','gf_image_verify.check_image_format_str()')
-	p_log_fun('INFO'     ,'p_format_str:%s'%(p_format_str))
 	
 	normalized_format_str = None
 	
-	assert isinstance(p_format_str,basestring)
+	assert isinstance(p_format_str, str)
 	assert p_format_str == 'jpeg' or \
 		p_format_str == 'jpg'  or \
 		p_format_str == 'gif'  or \
 		p_format_str == 'png'
 				 
-	#normalize "jpg" (variation on jpeg) to "jpeg"
+	# normalize "jpg" (variation on jpeg) to "jpeg"
 	if p_format_str == 'jpg':
 		normalized_format_str = 'jpeg'
 	else:
