@@ -11,11 +11,13 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# You should have received a copy of the GNU G11eneral Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #---------------------------------------------------------------------------------
+# IMPORTANT!! - downloads the whole sheet, all the values of columns
+
 def get_all_columns(p_spreadsheet_id_str,
     p_subsheet_name_str,
     p_service_client):
@@ -34,6 +36,31 @@ def get_all_columns(p_spreadsheet_id_str,
     for column_vals_lst in result['values']:
         
         columns_vals_lst.append(column_vals_lst)
+
+    return columns_vals_lst
+
+
+#---------------------------------------------------------------------------------
+# NAMED_RANGE
+
+def get_named_range(p_range_name_str,
+    p_spreadsheet_id_str,
+    p_service_client):
+
+
+    result = p_service_client.spreadsheets().values().get(spreadsheetId=p_spreadsheet_id_str,
+
+        range=p_range_name_str,
+
+        # format returned data to be in column-first format 
+        majorDimension='COLUMNS').execute()
+    
+    # iterate over each column, and get the one thats needed.
+    columns_vals_lst = []
+    for column_vals_lst in result['values']:
+        
+        if len(column_vals_lst) > 0:
+            columns_vals_lst.append(column_vals_lst)
 
     return columns_vals_lst
 
@@ -60,12 +87,52 @@ def get_column_by_name_from_list(p_column_name_str,
     return None, 0
     
 #---------------------------------------------------------------------------------
+# block is a user-created sub-section of a sheet.
+
+def get_columns_by_name_from_named_range(p_columns_names_lst,
+    p_range_name_str,
+    p_spreadsheet_id_str,
+    p_service_client,
+    p_column_name__row_index_int=0):
+
+
+    columns_lst = get_named_range(p_range_name_str,
+        p_spreadsheet_id_str,
+        p_service_client)
+
+
+    columns_vals_lst = []
+    for column_name_str in p_columns_names_lst:
+
+        i=0
+        for vals_lst in columns_lst:
+             
+            if len(vals_lst) > 0 and len(vals_lst) > (p_column_name__row_index_int):
+                
+                a_column_name_str = vals_lst[p_column_name__row_index_int]
+
+                if column_name_str == a_column_name_str:
+                    column_vals_lst = vals_lst
+                    columns_vals_lst.append((column_vals_lst, i))
+
+                    # column discovered, go to the next one
+                    break
+
+            i+=1
+
+    return columns_vals_lst
+
+#---------------------------------------------------------------------------------
 def get_column_by_name(p_column_name_str,
     p_spreadsheet_id_str,
     p_subsheet_name_str,
     p_service_client,
+
+    # row in which the user-titles of columns are expected
     p_column_name__row_index_int=1):
 
+
+    # get all values of all the columns in a sheet
     columns_vals_lst = get_all_columns(p_spreadsheet_id_str,
         p_subsheet_name_str,
         p_service_client)
