@@ -30,6 +30,7 @@ RUN node -v && npm -v
 
 RUN npm install -g typescript
 RUN npm install -g uglify-js
+RUN npm install -g sass
 
 #-----------------------------
 

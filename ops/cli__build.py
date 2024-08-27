@@ -57,7 +57,7 @@ def main():
 	print("")
 	
 	build_meta_map        = gf_meta.get()["build_info_map"]
-	apps_changes_deps_map = gf_meta.get()["apps_changes_deps_map"]
+	# apps_changes_deps_map = gf_meta.get()["apps_changes_deps_map"]
 	args_map = parse_args()
 	run_str  = args_map["run"]
 
@@ -285,11 +285,11 @@ def main():
 			aws_creds_map)
 
 	#-------------
-	# LIST_CHANGED_APPS
-	elif run_str == "list_changed_apps":
-		changed_apps_map = gf_build_changes.list_changed_apps(apps_changes_deps_map)
-		gf_build_changes.view_changed_apps(changed_apps_map, "go")
-		gf_build_changes.view_changed_apps(changed_apps_map, "web")
+	# # LIST_CHANGED_APPS
+	# elif run_str == "list_changed_apps":
+	# 	changed_apps_map = gf_build_changes.list_changed_apps(apps_changes_deps_map)
+	# 	gf_build_changes.view_changed_apps(changed_apps_map, "go")
+	# 	gf_build_changes.view_changed_apps(changed_apps_map, "web")
 	
 	#-------------
 	# NOTIFY_COMPLETION
@@ -321,9 +321,10 @@ def parse_args():
 - '''+fg('yellow')+'build_containers'+attr(0)+'''    - build app Docker containers
 - '''+fg('yellow')+'publish_containers'+attr(0)+'''  - publish app Docker containers
 - '''+fg('yellow')+'test'+attr(0)+'''                - run app code tests
-- '''+fg('yellow')+'list_changed_apps'+attr(0)+'''   - list all apps (and files) that have changed from last to the last-1 commit (for monorepo CI)
 - '''+fg('yellow')+'notify_completion'+attr(0)+'''   - notify remote HTTP endpoint of build completion
 
+deprecated:
+- '''+fg('yellow')+'list_changed_apps'+attr(0)+'''   - list all apps (and files) that have changed from last to the last-1 commit (for monorepo CI)
 		''')
 		
 	#-------------
