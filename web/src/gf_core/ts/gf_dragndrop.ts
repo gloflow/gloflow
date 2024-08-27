@@ -24,12 +24,12 @@ import * as gf_utils from "./gf_utils";
 //--------------------------------------------------------
 export function initCustom(p_target_element :any,
     p_on_dnd_event_fun :any,
-    p_assets_paths_map :any,
-    p_control_element :HTMLElement) {
+    p_get_drag_control_dist_to_target_origin_fun :any,
+    p_drag_control_element :HTMLElement) {
 
     
-    const handle_width_int  = $(p_control_element).outerWidth();
-    const handle_height_int = $(p_control_element).outerHeight();
+    // const handle_width_int  = $(p_drag_control_element).outerWidth();
+    // const handle_height_int = $(p_drag_control_element).outerHeight();
     
 
 
@@ -46,17 +46,25 @@ export function initCustom(p_target_element :any,
     // these values indicate by how much the position of the target_element
     // have to be offset when they're moved around, to accound for the dimensions
     // and position of the movement handle and where the user clicked on that handle.
+
+    
+
+    // var distance_to_target_origin_x = p_control_distance_to_target_origin_map["x_int"] as number;
+    // var distance_to_target_origin_y = p_control_distance_to_target_origin_map["y_int"] as number;
     var distance_to_target_origin_x :number;
     var distance_to_target_origin_y :number;
-    
+
     //----------------------
 
     //--------------------------------------------------------
     function mouse_move_fun(p_event :any) {
 
         // final coords of the element that was droped
-        const new_x = p_event.pageX - distance_to_target_origin_x;
-        const new_y = p_event.pageY - distance_to_target_origin_y;
+        const new_x = p_event.pageX // + distance_to_target_origin_x;
+        const new_y = p_event.pageY // + distance_to_target_origin_y;
+
+
+        console.log(`>>>>>> ${new_x} ${new_y} -- ${distance_to_target_origin_x}`);
 
         $(p_target_element).css("left", `${new_x}px`);
         $(p_target_element).css("top", `${new_y}px`);
@@ -65,17 +73,19 @@ export function initCustom(p_target_element :any,
     //--------------------------------------------------------
 
     // MOUSE_DOWN
-    $(p_control_element).on("mousedown", (p_event)=>{
+    $(p_drag_control_element).on("mousedown", (p_event)=>{
 
         //----------------------
         // DISTANCE_TO_TARGET
         // assumes the control is inside the target_element
         // offsetX - property in JavaScript is local to the coordinate system of the event's target element.
-        distance_to_target_origin_x = handle_width_int! - p_event.offsetX;
-        distance_to_target_origin_y = p_event.offsetY;
+        // distance_to_target_origin_x = handle_width_int! - p_event.offsetX;
+        // distance_to_target_origin_y = p_event.offsetY;
+
+        [distance_to_target_origin_x, distance_to_target_origin_y] = p_get_drag_control_dist_to_target_origin_fun(p_event);
 
         //----------------------
-        $(p_control_element).css("pointer", "grab");
+        $(p_drag_control_element).css("pointer", "grab");
 
         //----------------------
         // IMPORTANT!! - critical to add the event listener to the document for global pointer tracking
@@ -96,7 +106,7 @@ export function initCustom(p_target_element :any,
 
             element_dragged_bool = false;
 
-            $(p_control_element).css("pointer", "pointer");
+            $(p_drag_control_element).css("pointer", "pointer");
 
             $(document).unbind("mousemove", mouse_move_fun);
 
