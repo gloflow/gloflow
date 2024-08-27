@@ -29,6 +29,23 @@ import (
 
 //---------------------------------------------------
 
+func UsersEmailLoginPipeline(pInput *GFuserHTTPinputEmailLogin,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+
+
+	return nil
+}
+
+func UsersEmailLoginConfirmPipeline(pInput *GFuserHTTPinputEmailLoginConfirm,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	return nil
+}
+
+//---------------------------------------------------
+
 func UsersEmailPipelineVerify(pEmailAddressStr string,
 	pUserNameStr   GFuserName,
 	pUserIDstr     gf_core.GF_ID,

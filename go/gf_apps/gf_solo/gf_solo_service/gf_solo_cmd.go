@@ -344,13 +344,6 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 	}
 
 	// ENV
-	err = viper.BindEnv("domain_admin_base", "GF_DOMAIN_ADMIN_BASE")
-	if err != nil {
-		fmt.Println("failed to bind ENV var to Viper config")
-		panic(err)
-	}
-
-	// ENV
 	err = viper.BindEnv("alchemy_api_key", "GF_ALCHEMY_SERVICE_ACC__API_KEY")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")

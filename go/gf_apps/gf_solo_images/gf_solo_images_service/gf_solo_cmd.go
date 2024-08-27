@@ -136,7 +136,7 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 
 	//--------------------
 	// CLI_ARGUMENT - PORT
-	portDefaultStr := "1900"
+	portDefaultStr := "1902"
 	cmdBase.PersistentFlags().StringP("port", "p", portDefaultStr,
 		"port on which to listen for HTTP traffic")
 
@@ -148,25 +148,6 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 	
 	// ENV
 	err = viper.BindEnv("port", "GF_PORT")
-	if err != nil {
-		fmt.Println("failed to bind ENV var to Viper config")
-		panic(err)
-	}
-
-	//--------------------
-	// CLI_ARGUMENT - PORT_ADMIN
-	portAdminDefaultStr := "1901"
-	cmdBase.PersistentFlags().StringP("port_admin", "a", portAdminDefaultStr,
-		"port on which to listen for HTTP admin traffic")
-	
-	err = viper.BindPFlag("port_admin", cmdBase.PersistentFlags().Lookup("port_admin"))
-	if err != nil {
-		fmt.Println("failed to bind CLI arg to Viper config")
-		panic(err)
-	}
-	
-	// ENV
-	err = viper.BindEnv("port", "GF_PORT_ADMIN")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
@@ -293,65 +274,9 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 	}
 
 	//--------------------
-	// CLI_ARGUMENT - ADMIN_MFA_SECRET_KEY_BASE32
-	adminMFAsecretKeyBase32defaultStr := "aabbccddeeffgghh"
-	cmdBase.PersistentFlags().String("admin_mfa_secret_key_base32", adminMFAsecretKeyBase32defaultStr,
-		"secret key used to verify mfa (totp/hotp), base32 encoded")
-	err = viper.BindPFlag("admin_mfa_secret_key_base32", cmdBase.PersistentFlags().Lookup("admin_mfa_secret_key_base32"))
-	if err != nil {
-		fmt.Println("failed to bind CLI arg to Viper config")
-		panic(err)
-	}
-
-	// ENV
-	err = viper.BindEnv("admin_mfa_secret_key_base32", "GF_ADMIN_MFA_SECRET_KEY_BASE32")
-	if err != nil {
-		fmt.Println("failed to bind ENV var to Viper config")
-		panic(err)
-	}
-
-	//--------------------
-	// CLI_ARGUMENT - ADMIN_EMAIL
-	adminEmailDefaultStr := ""
-	cmdBase.PersistentFlags().String("admin_email", adminEmailDefaultStr, "default email of the administrator to use")
-	err = viper.BindPFlag("admin_email", cmdBase.PersistentFlags().Lookup("admin_email"))
-	if err != nil {
-		fmt.Println("failed to bind CLI arg to Viper config")
-		panic(err)
-	}
-
-	// ENV
-	err = viper.BindEnv("admin_email", "GF_ADMIN_EMAIL")
-	if err != nil {
-		fmt.Println("failed to bind ENV var to Viper config")
-		panic(err)
-	}
-
-	//--------------------
 
 	// ENV
 	err = viper.BindEnv("domain_base", "GF_DOMAIN_BASE")
-	if err != nil {
-		fmt.Println("failed to bind ENV var to Viper config")
-		panic(err)
-	}
-
-	// ENV
-	err = viper.BindEnv("domain_admin_base", "GF_DOMAIN_ADMIN_BASE")
-	if err != nil {
-		fmt.Println("failed to bind ENV var to Viper config")
-		panic(err)
-	}
-
-	// ENV
-	err = viper.BindEnv("domain_admin_base", "GF_DOMAIN_ADMIN_BASE")
-	if err != nil {
-		fmt.Println("failed to bind ENV var to Viper config")
-		panic(err)
-	}
-
-	// ENV
-	err = viper.BindEnv("alchemy_api_key", "GF_ALCHEMY_SERVICE_ACC__API_KEY")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)

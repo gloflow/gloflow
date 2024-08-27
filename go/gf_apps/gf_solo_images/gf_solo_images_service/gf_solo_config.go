@@ -56,9 +56,6 @@ type GFconfig struct {
 	// SENTRY_ENDPOINT
 	SentryEndpointStr string `mapstructure:"sentry_endpoint"`
 
-	// TEMPLATES
-	TemplatesPathsMap map[string]string `mapstructure:"templates_paths"`
-
 	//--------------------
 	// IDENTITY
 	AuthSubsystemTypeStr       string `mapstructure:"auth_subsystem_type"`
@@ -70,32 +67,11 @@ type GFconfig struct {
 	ImagesConfigFilePathStr string `mapstructure:"images__config_file_path"`
 
 	//--------------------
-	// GF_ANALYTICS
-
-	AnalyticsPyStatsDirsLst []string `mapstructure:"analytics__py_stats_dirs"`
-	AnalyticsRunIndexerBool bool     `mapstructure:"analytics__run_indexer"`
-
-	//--------------------
-	// ALCHEMY
-	AlchemyAPIkeyStr string `mapstructure:"alchemy_api_key"`
-
-	//--------------------
 	// NEW_STORAGE_ENGINE - flag indicating if the new image storage engine should be used
 	ImagesUseNewStorageEngineBool bool `mapstructure:"images_use_new_storage_engine"`
 
 	// IPFS
 	IPFSnodeHostStr string `mapstructure:"ipfs_node_host"`
-
-	//--------------------
-	// DEPRECATED!!
-
-	// ELASTICSEARCH
-	// ElasticsearchHostStr string `mapstructure:"elasticsearch_host"`
-
-	// CRAWLER
-	// CrawlConfigFilePathStr     string `mapstructure:"crawl__config_file_path"`
-	// CrawlClusterNodeTypeStr    string `mapstructure:"crawl__cluster_node_type"`
-	// CrawlImagesLocalDirPathStr string `mapstructure:"crawl__images_local_dir_path"`
 
 	//--------------------
 }

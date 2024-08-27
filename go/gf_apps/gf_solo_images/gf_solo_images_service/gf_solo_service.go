@@ -30,6 +30,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib"
@@ -46,8 +47,6 @@ func Run(pConfig *GFconfig,
 
 	pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("%s%s", yellow("GF_SOLO_IMAGES"), green("===============")), nil)
 	
-
-
 	// EVENTS
 	enableEventsAppBool := true
 	pRuntimeSys.EnableEventsAppBool = enableEventsAppBool
@@ -57,11 +56,6 @@ func Run(pConfig *GFconfig,
 	portMetricsInt := 9110
 
 	portInt, err := strconv.Atoi(pConfig.PortStr)
-	if err != nil {
-		panic(err)
-	}
-
-	portAdminInt, err := strconv.Atoi(pConfig.PortAdminStr)
 	if err != nil {
 		panic(err)
 	}
@@ -89,7 +83,15 @@ func Run(pConfig *GFconfig,
 	gfSoloHTTPmux := http.NewServeMux()
 
 	// METRICS
-	metricsRPCglobal := gf_rpc_lib.MetricsCreateGlobal()
+	// metricsRPCglobal := gf_rpc_lib.MetricsCreateGlobal()
+
+	//-------------
+	// GF_IDENTITY
+	auth0initBool := false
+	keyServer, gfErr := gf_identity_core.KSinit(auth0initBool, pRuntimeSys)
+	if gfErr != nil {
+		return
+	}
 
 	//-------------
 	// GF_IMAGES
@@ -114,8 +116,6 @@ func Run(pConfig *GFconfig,
 		MediaDomainStr:                       imagesConfig.MediaDomainStr,
 		ImagesMainS3bucketNameStr:            imagesConfig.MainS3bucketNameStr,
 
-		TemplatesPathsMap: pConfig.TemplatesPathsMap,
-
 		EmailSharingSenderAddressStr: imagesConfig.EmailSharingSenderAddressStr,
 
 		//-------------------------
@@ -124,8 +124,8 @@ func Run(pConfig *GFconfig,
 
 		// AUTH
 		// on user trying to access authed endpoint while not logged in, redirect to this
-		AuthLoginURLstr: authLoginURLstr,
-		KeyServer:       keyServer,
+		// AuthLoginURLstr: authLoginURLstr,
+		KeyServer: keyServer,
 		
 		//-------------------------
 		
@@ -144,6 +144,9 @@ func Run(pConfig *GFconfig,
 		imagesConfig,
 		pRuntimeSys)
 
+
+	fmt.Println(imagesJobsMngrCh)
+	
 	//-------------
 	// GF_ML
 	gf_ml_lib.InitService(gfSoloHTTPmux, pRuntimeSys)
@@ -168,7 +171,7 @@ func Run(pConfig *GFconfig,
 		//-------------
 
 		authSubsystemTypeStr := pConfig.AuthSubsystemTypeStr
-		metricsGroupNameStr  := "gf_solo__plugin_rpc_handlers"
+		metricsGroupNameStr  := "gf_solo_images__plugin_rpc_handlers"
 		
 		gf_rpc_lib.CreateHandlersHTTP(metricsGroupNameStr,
 			handlersLst,
@@ -181,7 +184,7 @@ func Run(pConfig *GFconfig,
 
 	//-------------
 	// SERVER_INIT - blocking
-	gf_rpc_lib.ServerInitWithMux("gf_solo", portInt, gfSoloHTTPmux)
+	gf_rpc_lib.ServerInitWithMux("gf_solo_images", portInt, gfSoloHTTPmux)
 
 	//-------------
 }

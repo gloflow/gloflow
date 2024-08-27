@@ -45,7 +45,7 @@ type GFuserHTTPinputEmailConfirm struct {
 }
 
 type GFuserHTTPinputEmailLogin struct {
-	EmailStr            *string  `json:"email_str"       validate:"min=6,max=50"`
+	EmailStr *string  `json:"email_str" validate:"min=6,max=50"`
 }
 
 type GFuserHTTPinputEmailLoginConfirm struct {
@@ -136,6 +136,13 @@ func GetSessionIDfromCtx(pCtx context.Context) (gf_core.GF_ID, bool) {
 
 //---------------------------------------------------
 // HTTP
+//---------------------------------------------------
+
+func HTTPgetEmailLoginInput(pReq *http.Request) (*GFuserHTTPinputEmailLogin, *gf_core.GFerror) {
+	input := &GFuserHTTPinputEmailLogin{}
+	return input, nil
+}
+
 //---------------------------------------------------
 // GET_AUTH_SUBSYSTEM_TYPE
 

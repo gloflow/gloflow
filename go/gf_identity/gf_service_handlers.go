@@ -240,7 +240,7 @@ func initHandlers(pAuthLoginURLstr string,
 			if pReq.Method == "GET" {
 				//---------------------
 				// INPUT
-				httpInput, gfErr := gf_identity_core.HTTPgetEmailLoginInput(pReq, pRuntimeSys)
+				httpInput, gfErr := gf_identity_core.HTTPgetEmailLoginInput(pReq)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -249,14 +249,15 @@ func initHandlers(pAuthLoginURLstr string,
 
 
 
-				confirmedBool, failMsgStr, gfErr := gf_identity_core.UsersEmailLoginPipeline(httpInput,
+				gfErr = gf_identity_core.UsersEmailLoginPipeline(httpInput,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
-
 			}
+
+			return nil, nil
 		},
 		rpcHandlerRuntime,
 		pRuntimeSys)
