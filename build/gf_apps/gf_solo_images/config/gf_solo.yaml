@@ -1,0 +1,30 @@
+
+# ENVIRONMENT
+env: dev
+
+# PORTS
+port:         1900
+port_metrics: 9110
+
+#--------------------
+# DB
+#--------------------
+# SQL
+sql_user_name: gf
+sql_pass:      password
+sql_host:      "127.0.0.1:5432"
+sql_db_name:   gloflow
+
+# MONGODB
+mongodb_host:    "127.0.0.1:27017"
+mongodb_db_name: "gf"
+
+#--------------------
+# SENTRY_ENDPOINT
+sentry_endpoint: "" # or ENV var
+
+#--------------------
+# GF_IMAGES
+images__config_file_path: "./config/gf_images_config.yaml"
+
+#--------------------

@@ -1,0 +1,205 @@
+name: gf_solo_images - prod
+on:
+  push:
+    branches: 
+      - master
+    paths:
+      - "go/gf_apps/gf_images_lib/**"
+      - "go/gf_apps/gf_ml_lib/**"
+      - "go/gf_apps/gf_solo_images/**"
+      - "go/gf_core/**"
+      - "go/gf_events/**"
+      - "go/gf_extern_services/**"
+      - "go/gf_identity/**"
+      - "go/gf_rpc_lib/**"
+      
+      - .github/workflows/gf_prod_solo_images_go.yaml
+      - meta/gf_meta.py
+
+  # workflow_run:
+  #   # trigger this workflow if the Rust workflow completes succesfuly
+  #   workflows: ["gf_prod_rust"]
+  #   types:
+  #     - completed
+
+  # workflow is also triggered via github REST API/manually
+  workflow_dispatch:
+
+env:
+  ENV: prod
+  AWS_REGION: us-east-1
+  CONTAINER_IMAGE: glofloworg/gf_solo_images
+  IMAGE_TAG: latest
+
+jobs:
+                                      
+  #--------------------------------------------------------------------
+  # CHECK_DOWNLOAD_PREBUILT_ARTIFACTS - test fetchability or dependency assets
+
+  check-download-prebuilt-artifacts:
+    runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_go_ubuntu:latest
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf
+    outputs:
+      rust_build_run_id: ${{ steps.get_run_id.outputs.rust_build_run_id }}
+    steps:
+
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+              
+      #-------------------------------
+      - name: get latest Rust build run_id
+        id: get_run_id
+        env:
+          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+        run: |
+
+          RUST_WF_NAME="gf_prod_rust.yaml"
+
+          # GE_RUN_ID
+          RUST_RUN_ID=`gh run --repo ${{ github.repository }} list --status success --workflow ${RUST_WF_NAME} --json databaseId --jq .[0].databaseId`
+
+          echo "::set-output name=rust_build_run_id::$RUST_RUN_ID"
+
+      #-------------------------------
+
+  #--------------------------------------------------------------------
+  # TEST_GO
+  test-go:
+    needs: [check-download-prebuilt-artifacts]
+    runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_go_ubuntu:latest
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf
+      env:
+        GF_LOG_LEVEL: debug
+
+        # currently these are used by web3 tests
+        GF_TEST_MONGODB_HOST_PORT: mongo
+        GF_TEST_SQL_HOST_PORT: postgres
+
+        AUTH0_DOMAIN: ${{ secrets.GF_AUTH0_DOMAIN }}
+
+    services:
+      mongo:
+        image: mongo
+      postgres:
+        image: postgres
+        env:
+
+          # disable auth on SQL server
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: gf_tests
+          POSTGRES_USER: gf
+
+    steps:
+
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+
+      #-------------------------------
+      # GF_IMAGES_CORE
+      - name: test gf_images_core
+        run: |
+          cd /home/gf/go/gf_apps/gf_images_lib/gf_images_core
+          go test -v -mongodb_host=mongo -sql_host=postgres
+
+      # GF_IMAGES_FLOWS
+      - name: test gf_images_flows
+        run: |
+          cd /home/gf/go/gf_apps/gf_images_lib/gf_images_flows
+          go test -v -mongodb_host=mongo -sql_host=postgres
+
+      # GF_IMAGES_SERVICE
+      - name: test gf_images_service
+        run: |
+          cd /home/gf/go/gf_apps/gf_images_lib/gf_images_service
+          go test -v -mongodb_host=mongo -sql_host=postgres
+
+      #-------------------------------
+
+  #--------------------------------------------------------------------
+  # BUILD_GO
+  build-go:
+    needs: [test-go, check-download-prebuilt-artifacts]
+    runs-on: ubuntu-latest
+    container:
+      image: glofloworg/gf_builder_go_ubuntu:latest
+      env:
+        
+        # currently set to avoid the error raised on go build:
+        # > error obtaining VCS status: exit status 128"
+        # > Use -buildvcs=false to disable VCS stamping.
+        GOFLAGS: "-buildvcs=false"
+
+      volumes:
+
+        # mount the dir where the gloflow repo is cloned
+        - ${{ github.workspace }}:/home/gf
+    steps:
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v3
+
+      #-------------------------------
+      # "sed" - insert GIT commit into gf_sys_release_info.go by replacing string "GF_COMMIT_SHA"
+      # "-i" - modify file in place 
+      - name: add git commit hash
+        run: |
+          sed -i 's/GF_COMMIT_SHA/${{ github.sha }}/g' /home/gf/go/gf_core/gf_sys_release_info.go
+
+      #-------------------------------
+      # DOWNLOAD_RUST_ARTIFACTS
+
+      - name: download Rust build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: rust_build_artifacts
+          github-token: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+          path: /home/gf/rust/build
+          run-id: "${{ needs.check-download-prebuilt-artifacts.outputs.rust_build_run_id }}"
+      
+      #-------------------------------
+      # "-u" - run unbuffered to see all stdout/stderr as it happens
+      # "-build_outof_cont" - dont build in a container, since this build stage already runs in a container.
+      #                       by default all builds done with cli__build.py are run in a container.
+      # -fetch_deps
+      - name: build Go code
+        run: |
+          python3 -u /home/gf/ops/cli__build.py -run=build_go -build_outof_cont -app=gf_solo_images
+
+      #-------------------------------
+      # UPLOAD_ARTIFACTS
+      - name: upload Go build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: go_build_artifacts
+          path: |
+            /home/gf/build/gf_apps/gf_solo_images/gf_solo_images
+          retention-days: 30
+
+      #-------------------------------
+  
+  #--------------------------------------------------------------------
+  # NOTIFY_COMPLETION - run containers build workflow
+
+  notify_completion:
+    needs: build-go
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: trigger container build workflow
+        env:
+          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
+        run: gh workflow run gf_prod_containers.yaml --repo ${{ github.repository }} --ref master
+
+  #--------------------------------------------------------------------

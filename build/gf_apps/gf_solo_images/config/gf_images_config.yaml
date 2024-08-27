@@ -1,0 +1,32 @@
+#----------------------------
+# LOCAL_DIRS
+store_local_dir_path:            "/home/gf/images"
+thumbnails_store_local_dir_path: "/home/gf/images/thumbnails"
+videos_store_local_dir_path:     "/home/gf/videos"
+
+#----------------------------
+
+media_domain:        "media.gloflow.com"
+main_s3_bucket_name: "media.gloflow.com" # "gf-apps--img"
+email_sharing_sender_address: gloflow-share@gloflow.com
+
+#----------------------------
+# UPLOADS/BOOKMARKS
+uploaded_images_s3_bucket: "gf-apps--uploaded--img"
+bookmark_images_s3_bucket: "gf-apps--bookmarks--img"
+
+#----------------------------
+# FLOWS
+# flows that dont have a dedicated S3 bucket use this default one
+images_flow_to_s3_bucket_default: "media.gloflow.com" # "gf-apps--img"
+
+images_flow_to_s3_bucket:
+  general:    "media.gloflow.com" # "gf-apps--img"
+  discovered: "gf-apps--discovered--img"
+  bookmarks:  "gf-apps--bookmarks--img"
+
+#----------------------------
+# PY
+
+plugins_py_dir_path: ./py/gf_apps/gf_images/plugins
+images_classify_py_dir_path: ./py/gf_apps/gf_images/gf_images_classify

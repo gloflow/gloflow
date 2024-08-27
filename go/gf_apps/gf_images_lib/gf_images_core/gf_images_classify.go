@@ -58,6 +58,7 @@ func RunClassify(pImagesIDsLst []GFimageID,
 }
 
 //---------------------------------------------------
+// PY
 
 func RunPyClassify(pImagesIDsLst []GFimageID,
 	pPyDirPathStr string,
