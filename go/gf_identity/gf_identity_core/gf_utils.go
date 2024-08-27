@@ -44,6 +44,15 @@ type GFuserHTTPinputEmailConfirm struct {
 	ConfirmCodeStr string     `validate:"required,min=10,max=20"`
 }
 
+type GFuserHTTPinputEmailLogin struct {
+	EmailStr            *string  `json:"email_str"       validate:"min=6,max=50"`
+}
+
+type GFuserHTTPinputEmailLoginConfirm struct {
+	UserNameStr    GFuserName `validate:"required,min=3,max=50"`
+	ConfirmCodeStr string     `validate:"required,min=10,max=20"`
+}
+
 //---------------------------------------------------
 
 func ResolveUserName(pUserID gf_core.GF_ID,
@@ -221,6 +230,7 @@ func HTTPgetUserUpdateInput(pReq *http.Request,
 }
 
 //---------------------------------------------------
+// GET_EMAIL_CONFIRM_INPUT
 
 func HTTPgetEmailConfirmInput(pReq *http.Request,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFuserHTTPinputEmailConfirm, *gf_core.GFerror) {
@@ -251,6 +261,45 @@ func HTTPgetEmailConfirmInput(pReq *http.Request,
 	}
 
 	input := &GFuserHTTPinputEmailConfirm{
+		UserNameStr:    GFuserName(userNameStr),
+		ConfirmCodeStr: confirmationCodeStr,
+	}
+
+	return input, nil
+}
+
+//---------------------------------------------------
+// GET_EMAIL_LOGIN_CONFIRM_INPUT
+
+func HTTPgetEmailLoginConfirmInput(pReq *http.Request,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFuserHTTPinputEmailLoginConfirm, *gf_core.GFerror) {
+
+	var userNameStr         string
+	var confirmationCodeStr string
+
+	queryArgsMap := pReq.URL.Query()
+	
+	if valuesLst, ok := queryArgsMap["u"]; ok {
+		userNameStr = valuesLst[0]
+	} else {
+		gfErr := gf_core.ErrorCreate("incoming http request is missing the email user_name query-string arg",
+			"verify__missing_key_error",
+			map[string]interface{}{},
+			nil, "gf_identity_core", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	if valuesLst, ok := queryArgsMap["c"]; ok {
+		confirmationCodeStr = valuesLst[0]
+	} else {
+		gfErr := gf_core.ErrorCreate("incoming http request is missing the email confirmation_code query-string arg",
+			"verify__missing_key_error",
+			map[string]interface{}{},
+			nil, "gf_identity_core", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	input := &GFuserHTTPinputEmailLoginConfirm{
 		UserNameStr:    GFuserName(userNameStr),
 		ConfirmCodeStr: confirmationCodeStr,
 	}

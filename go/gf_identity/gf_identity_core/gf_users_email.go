@@ -88,6 +88,7 @@ func UsersEmailPipelineVerify(pEmailAddressStr string,
 }
 
 //---------------------------------------------------
+// USER_EMAIL_PIPELINE_CONFIRM
 
 func UsersEmailPipelineConfirm(pInput *GFuserHTTPinputEmailConfirm,
 	pCtx        context.Context,

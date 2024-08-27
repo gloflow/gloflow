@@ -230,6 +230,117 @@ func initHandlers(pAuthLoginURLstr string,
 		pRuntimeSys)
 
 	//---------------------
+	// EMAIL_LOGIN
+	// NO_AUTH
+
+
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/email/login",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+			if pReq.Method == "GET" {
+				//---------------------
+				// INPUT
+				httpInput, gfErr := gf_identity_core.HTTPgetEmailLoginInput(pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				//---------------------
+
+
+
+				confirmedBool, failMsgStr, gfErr := gf_identity_core.UsersEmailLoginPipeline(httpInput,
+					pCtx,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+			}
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
+
+	// EMAIL_LOGIN_CONFIRM
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/email/login_confirm",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+			if pReq.Method == "GET" {
+
+				//---------------------
+				// INPUT
+				httpInput, gfErr := gf_identity_core.HTTPgetEmailLoginConfirmInput(pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				//---------------------
+
+				confirmedBool, failMsgStr, gfErr := gf_identity_core.UsersEmailLoginConfirmPipeline(httpInput,
+					pCtx,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				if confirmedBool {
+
+					userNameStr := httpInput.UserNameStr
+
+
+
+					// for non-admins email confirmation is only run initially on user creation
+					// and if successfuly will login the user
+					//---------------------
+					// LOGIN_FINALIZE
+
+					loginFinalizeInput := &gf_identity_core.GFuserpassInputLoginFinalize{
+						UserNameStr: userNameStr,
+					}
+					loginFinalizeOutput, gfErr := gf_identity_core.UserpassPipelineLoginFinalize(loginFinalizeInput,
+						pKeyServer,
+						pServiceInfo,
+						pCtx,
+						pRuntimeSys)
+					if gfErr != nil {
+						return nil, gfErr
+					}
+
+					//---------------------
+					// SET_COOKIES
+					jwtTokenValStr := string(loginFinalizeOutput.JWTtokenVal)
+					gf_identity_core.CreateAuthCookie(jwtTokenValStr,
+						pServiceInfo.DomainForAuthCookiesStr,
+						pResp)
+
+					//---------------------
+
+					// now that user is logged in redirect them if a redirect URL was specified. 
+					if pServiceInfo.AuthLoginSuccessRedirectURLstr != "" {
+					
+						http.Redirect(pResp,
+							pReq,
+							pServiceInfo.AuthLoginSuccessRedirectURLstr,
+							301)
+					}
+					
+
+				} else {
+					outputMap := map[string]interface{}{
+						"fail_msg_str": failMsgStr,
+					}
+					return outputMap, nil
+				}
+
+				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+				gf_core.HTTPdisableCachingOfResponse(pResp)
+			}
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
+
+	//---------------------
 	// EMAIL_CONFIRM
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/email_confirm",
