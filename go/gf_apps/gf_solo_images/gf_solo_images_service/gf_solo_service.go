@@ -139,7 +139,7 @@ func Run(pConfig *GFconfig,
 		EnableEventsAppBool: enableEventsAppBool,
 	}
 
-	imagesJobsMngrCh := gf_images_lib.InitService(gfSoloHTTPmux,
+	imagesJobsMngrCh := gf_images_lib.InitSoloService(gfSoloHTTPmux,
 		gfImagesServiceInfo,
 		imagesConfig,
 		pRuntimeSys)
