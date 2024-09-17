@@ -224,6 +224,18 @@ def get():
             },
 
             #------------------------
+            # GF_IMAGES_JOBS
+            # Rust Python extension and lib for image processing
+            "gf_images_jobs": {
+                "type_str":    "lib_rust",
+                "version_str": "latest",
+                "cargo_crate_specs_lst": [
+                    {"dir_path_str": "%s/../rust/gf_images_jobs"%(modd_str), "static_bool": False}, # True},
+                    {"dir_path_str": "%s/../rust/gf_images_jobs_py"%(modd_str)},
+                ]
+            },
+
+            #------------------------
             # SYS
             #------------------------
             # GF_BUILDER_WEB
@@ -276,15 +288,7 @@ def get():
             #     "test_data_to_serve_dir_str": "%s/../go/gf_apps/gf_images_lib/tests_data"%(modd_str), #for tests serve data over http from this dir
             # },
             
-            # # GF_IMAGES_JOBS
-            # "gf_images_jobs": {
-            #     "type_str":    "lib_rust",
-            #     "version_str": "latest",
-            #     "cargo_crate_specs_lst": [
-            #         {"dir_path_str": "%s/../rust/gf_images_jobs"%(modd_str), "static_bool": False}, # True},
-            #         {"dir_path_str": "%s/../rust/gf_images_jobs_py"%(modd_str)},
-            #     ]
-            # },
+            
 
             #------------------------
             # # GF_P2P_TESTER

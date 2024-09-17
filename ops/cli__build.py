@@ -62,8 +62,11 @@ def main():
 	run_str  = args_map["run"]
 
 	app_name_str = args_map["app"]
+	print(f"app name: {app_name_str}")
+
 	assert app_name_str in build_meta_map.keys()
 
+	
 	#--------------------------------------------------
 	def go_build_app_in_cont(p_static_bool):
 
