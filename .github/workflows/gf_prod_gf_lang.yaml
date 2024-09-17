@@ -87,7 +87,7 @@ jobs:
           #            so its named with that component.
           name: gf_lang_web_go_build_artifacts
           path: |
-            /home/gf/gloflow/gf_lang/build
+            /home/gf/gloflow/gf_lang/go/build
           retention-days: 30
 
       #-------------------------------

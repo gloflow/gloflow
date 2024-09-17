@@ -83,7 +83,7 @@ jobs:
       #-------------------------------
       # DOWNLOAD_GF_LANG_ARTIFACTS
 
-      # WEB_GO
+      # WEB_GO - WASM
       - name: download gf_lang web_go build artifacts
         uses: actions/download-artifact@v4
         with:
