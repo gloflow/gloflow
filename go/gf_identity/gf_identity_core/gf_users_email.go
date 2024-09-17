@@ -40,8 +40,8 @@ func UsersEmailLoginPipeline(pInput *GFuserHTTPinputEmailLogin,
 
 func UsersEmailLoginConfirmPipeline(pInput *GFuserHTTPinputEmailLoginConfirm,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	return nil
+	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
+	return true, "", nil
 }
 
 //---------------------------------------------------
