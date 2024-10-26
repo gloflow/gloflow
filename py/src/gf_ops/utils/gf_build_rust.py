@@ -34,7 +34,7 @@ import gf_core_cli
 # RUN_IN_CONTAINER
 def run_in_cont():
 
-    repo_local_path_str = os.path.abspath(f'{modd_str}/../../../../gloflow').strip()
+    repo_local_path_str = os.path.abspath(f'{modd_str}/../../../../../gloflow').strip()
     cmd_lst = [
         "sudo", "docker", "run",
         "--rm", # remove after exit 
@@ -146,7 +146,7 @@ def prepare_libs(p_name_str,
 
     
 
-    target_build_dir_path_str = os.path.abspath("%s/../../../rust/build"%(modd_str))
+    target_build_dir_path_str = os.path.abspath(f"{modd_str}/../../../../rust/build")
     assert os.path.isdir(target_build_dir_path_str)
 
     target_lib_file_path_lst = []
@@ -163,7 +163,7 @@ def prepare_libs(p_name_str,
             '''
             #-------------
             # EXTERN_LIB
-            target_lib_dir_str = f"{modd_str}/../../../rust/build" # f"{modd_str}/../../build/gf_apps/gf_images/tf_lib"
+            target_lib_dir_str = f"{modd_str}/../../../../rust/build" # f"{modd_str}/../../build/gf_apps/gf_images/tf_lib"
 
             prepare_libs__extern(target_lib_dir_str,
                 p_tf_libs_bool=True,
