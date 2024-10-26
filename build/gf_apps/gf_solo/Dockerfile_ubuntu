@@ -92,7 +92,7 @@ ENV LD_LIBRARY_PATH=libs
 
 #------------
 # SERVICES FILES - mainly py files, but other types too
-ADD ./py/gf_apps/gf_images py/gf_apps/gf_images
+ADD ./py/src/gf_apps/gf_images py/src/gf_apps/gf_images
 # ADD ./gf_analytics gf_analytics
 # ADD ./gf_ml_worker gf_ml_worker
 
