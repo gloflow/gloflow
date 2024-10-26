@@ -97,6 +97,7 @@ func Auth0logoutPipeline(pGFsessionID gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
+	// DELETE_SESSION
 	gfErr := dbSQLauth0deleteSession(pGFsessionID, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr

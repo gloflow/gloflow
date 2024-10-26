@@ -82,11 +82,14 @@ func RunPyClassify(pImagesIDsLst []GFimageID,
 	stdoutPrefixStr := "GF_OUT:"
 	inputStdinStr   := ""
 
+	//---------------------
+	// ENV
 	envMap := map[string]string{
 		"SENTRY_DSN": pRuntimeSys.SentryDSNstr,
 		"SENTRY_ENV": pRuntimeSys.EnvStr,
 	}
 
+	//---------------------
 
 	runStartUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 

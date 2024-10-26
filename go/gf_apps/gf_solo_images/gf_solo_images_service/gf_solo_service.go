@@ -33,11 +33,12 @@ import (
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib"
+	// "github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib"
 	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
+// RUN
 
 func Run(pConfig *GFconfig,
 	pRuntimeSys *gf_core.RuntimeSys) {
@@ -149,7 +150,7 @@ func Run(pConfig *GFconfig,
 	
 	//-------------
 	// GF_ML
-	gf_ml_lib.InitService(gfSoloHTTPmux, pRuntimeSys)
+	// gf_ml_lib.InitService(gfSoloHTTPmux, pRuntimeSys)
 
 	//-------------
 	// METRICS - start prometheus metrics endpoint, and get core_metrics

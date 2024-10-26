@@ -95,6 +95,7 @@ func InitService(pHTTPmux *http.ServeMux,
 		metrics,
 		pRuntimeSys)
 
+	// extern HTTP handlers for the images jobs manager
 	gf_images_jobs.InitHandlers(pHTTPmux, jobsMngrCh, pRuntimeSys)
 
 	//-------------
