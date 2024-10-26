@@ -59,8 +59,8 @@ func TestImageClassify(pTest *testing.T) {
 	testImagesThumbnailsStoreLocalDirPathStr := "./../tests_data/thumbnails"
 	testVideosStoreLocalDirPathStr           := "./../tests_data/videos"
 	testMediaDomainStr                       := ""
-	pluginsPyDirPathStr        := "./../../../../py/gf_apps/gf_images/plugins"
-	imagesClassifyPyDirPathStr := "./../../../../py/gf_apps/gf_images/gf_images_classify"
+	pluginsPyDirPathStr        := "./../../../../py/src/gf_apps/gf_images/plugins"
+	imagesClassifyPyDirPathStr := "./../../../../py/src/gf_apps/gf_images/gf_images_classify"
 
 
 	//------------------------
