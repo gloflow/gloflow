@@ -1,0 +1,16 @@
+beautifulsoup4
+# fabric
+clint
+pymongo
+boto3
+bs4
+colored==1.4.4
+delegator-py
+Pillow
+numpy
+matplotlib
+requests
+colored
+
+google-auth
+google-cloud-bigquery

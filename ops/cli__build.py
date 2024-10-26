@@ -17,6 +17,7 @@
 
 import os, sys
 modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
+sys.path.append(f"{modd_str}/../py/src")
 
 import argparse
 
@@ -27,26 +28,26 @@ sys.path.append("%s/../meta"%(modd_str))
 import gf_meta
 import gf_web_meta
 
-sys.path.append("%s/../py/gf_ops/utils"%(modd_str))
+sys.path.append("%s/../py/src/gf_ops/utils"%(modd_str))
 import gf_build_go
 import gf_build_rust
 import gf_build_changes
 import gf_log
 import gf_notify_completion
 
-sys.path.append("%s/../py/gf_ops/tests"%(modd_str))
+sys.path.append("%s/../py/src/gf_ops/tests"%(modd_str))
 import gf_tests
 
-sys.path.append("%s/../py/gf_ops/web"%(modd_str))
+sys.path.append("%s/../py/src/gf_ops/web"%(modd_str))
 import gf_web__build
 
-sys.path.append("%s/../py/gf_ops/containers"%(modd_str))
+sys.path.append("%s/../py/src/gf_ops/containers"%(modd_str))
 import gf_containers
 
 # sys.path.append("%s/../py/gf_ops/gf_builder"%(modd_str))
 # import gf_builder_ops
 
-sys.path.append("%s/../py/gf_extern_services/gf_aws"%(modd_str))
+sys.path.append("%s/../py/src/gf_extern_services/gf_aws"%(modd_str))
 import gf_aws_s3
 
 #--------------------------------------------------

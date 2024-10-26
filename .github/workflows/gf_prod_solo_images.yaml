@@ -5,14 +5,14 @@ on:
       - master
     paths:
       - "go/gf_apps/gf_images_lib/**"
-      - "go/gf_apps/gf_ml_lib/**"
       - "go/gf_apps/gf_solo_images/**"
       - "go/gf_core/**"
       - "go/gf_events/**"
       - "go/gf_extern_services/**"
       - "go/gf_identity/**"
       - "go/gf_rpc_lib/**"
-      
+      # - "go/gf_apps/gf_ml_lib/**"
+
       - .github/workflows/gf_prod_solo_images_go.yaml
       - meta/gf_meta.py
 
