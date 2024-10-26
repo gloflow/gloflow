@@ -168,7 +168,7 @@ jobs:
 
       - name: install python3 dependencies for cli__build.py
         run: |
-          pip3 install -r requirements.txt
+          pip3 install -r py/requirements.txt
 
       #-------------------------------
       # NOTIFY_COMPLETION
