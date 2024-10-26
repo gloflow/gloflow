@@ -1,16 +1,22 @@
-beautifulsoup4
-# fabric
-clint
+
+
+
 pymongo
+requests
 boto3
-bs4
+
 colored==1.4.4
 delegator-py
+
+# PIL fork, use both by GF code and matplotlib
 Pillow
+
+beautifulsoup4
+
 numpy
 matplotlib
-requests
-colored
 
 google-auth
 google-cloud-bigquery
+
+# fabric
