@@ -104,6 +104,7 @@ def read_process_std_stream(p_std_stream,
 
 #---------------------------------------------------
 # DEPRECATED!! - move all users over to run()
+
 def run_cmd(p_cmd_str,
 	p_env_map           = None,
 	p_print_output_bool = True):
@@ -140,7 +141,6 @@ def run_cmd(p_cmd_str,
 #               what is returned by services get_service_info() function
 
 def parse_args(p_cmd_line_args_defs_map, p_log_fun):
-	p_log_fun("FUN_ENTER", "gf_core_cli.parse_args()")
 	assert isinstance(p_cmd_line_args_defs_map, dict)
 	
 	passed_in_args_lst = sys.argv[1:]
@@ -160,6 +160,7 @@ def parse_args(p_cmd_line_args_defs_map, p_log_fun):
 			action  = "store",
 			default = arg_default,
 			help    = arg_help_str)
+	
 	#:Namespace
 	args_namespace = arg_parser.parse_args(passed_in_args_lst)
 	
