@@ -12,7 +12,7 @@ authors_lst = [
 
 setup(
     name="gloflow",
-    version="0.1.14",
+    version="0.1.17",
     author=",".join(authors_lst),
     author_email="glofloworg@gmail.com",
     description="""

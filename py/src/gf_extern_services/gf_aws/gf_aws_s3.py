@@ -19,8 +19,7 @@ import os, sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import boto3
-
-import gf_os_aws_creds
+from botocore.exceptions import ClientError
 
 #--------------------------------------------------
 class GFs3info:
@@ -29,19 +28,19 @@ class GFs3info:
     s3_resource             = None
 
 #--------------------------------------------------
-# FIX!! - use gf_aws_creds.get_from_file() directly
-def parse_creds(p_aws_creds_file_path_str):
-    aws_s3_creds_map = gf_aws_creds.get_from_file(p_aws_creds_file_path_str)
-    
-    assert "AWS_ACCESS_KEY_ID" in aws_s3_creds_map.keys()
-    assert "AWS_SECRET_ACCESS_KEY" in aws_s3_creds_map.keys()
-    assert(len(aws_s3_creds_map["AWS_ACCESS_KEY_ID"]) == 20)
-    assert(len(aws_s3_creds_map["AWS_SECRET_ACCESS_KEY"]) == 40)
-    
-    return aws_s3_creds_map
+def file_exists(p_bucket_name_str, p_object_key_str):
+    s3 = boto3.client('s3')
+    try:
+        s3.head_object(Bucket=p_bucket_name_str, Key=p_object_key_str)
+        return True  # File exists
+    except ClientError as e:
+        if e.response['Error']['Code'] == '404':
+            return False # file does not exist
+        else:
+            raise # re-raise other exceptions
 
 #---------------------------------------------------
-def s3_connect(p_aws_access_key_id_str,
+def connect(p_aws_access_key_id_str,
     p_aws_secret_access_key_str):
 
     session = boto3.Session(
@@ -59,3 +58,18 @@ def s3_connect(p_aws_access_key_id_str,
     gf_s3_info.s3_resource             = s3_resource
 
     return gf_s3_info
+
+#--------------------------------------------------
+"""
+# FIX!! - use gf_aws_creds.get_from_file() directly
+
+def parse_creds(p_aws_creds_file_path_str):
+    aws_s3_creds_map = gf_aws_creds.get_from_file(p_aws_creds_file_path_str)
+    
+    assert "AWS_ACCESS_KEY_ID" in aws_s3_creds_map.keys()
+    assert "AWS_SECRET_ACCESS_KEY" in aws_s3_creds_map.keys()
+    assert(len(aws_s3_creds_map["AWS_ACCESS_KEY_ID"]) == 20)
+    assert(len(aws_s3_creds_map["AWS_SECRET_ACCESS_KEY"]) == 40)
+    
+    return aws_s3_creds_map
+"""
