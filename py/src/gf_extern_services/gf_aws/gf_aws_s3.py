@@ -29,6 +29,9 @@ class GFs3info:
 
 #--------------------------------------------------
 def file_exists(p_bucket_name_str, p_object_key_str):
+    assert(isinstance(p_bucket_name_str, str))
+    assert(isinstance(p_object_key_str, str))
+    
     s3 = boto3.client('s3')
     try:
         s3.head_object(Bucket=p_bucket_name_str, Key=p_object_key_str)

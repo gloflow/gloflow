@@ -47,9 +47,8 @@ def main():
 			"and":  "other"
 		},
 		p_url_str = url_str,
-		p_resp_type_str = "html",
-		p_resp_data_html_str = "<html>...</html>",
-		p_resp_store_file_name_str = "test_resp_file.html")
+		p_resp_data_map = {"test_html_str": "<html>...</html>"},
+		p_cache_file_path_str = "test_resp_file.html")
 	
 	#-------------------
 

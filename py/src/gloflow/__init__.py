@@ -1,12 +1,6 @@
-
-
-
-
-
 from gf_core import gf_core_sql_db
 from gf_apps.gf_images.gf_images_client import gf_images_client
 from gf_observe import gf_extern_load
-
 
 print("gloflow...")
 version = "0.1.17"
@@ -23,8 +17,9 @@ db_table_exists = gf_core_sql_db.table_exists
 add_image = gf_images_client.add_image
 
 # OBSERVE
-observe_init     = gf_extern_load.init
-observe_ext_load = gf_extern_load.observe
+observe_init      = gf_extern_load.init
+observe_ext_load  = gf_extern_load.observe
+observe_get_cache = gf_extern_load.get_cache
 
 #-------------------------
 def run():

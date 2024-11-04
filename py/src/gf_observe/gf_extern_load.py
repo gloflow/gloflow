@@ -52,51 +52,50 @@ def observe(p_load_type_str,
 	p_runtime_map,
 	p_meta_map={},
 	p_url_str=None,
-	p_resp_type_str="json",
-	p_resp_data_html_str=None,
-	p_resp_data_json_map=None,
-	p_resp_store_file_path_str=None):
+	p_resp_data_map=None,
+	p_cache_file_path_str=None):
 	
 	assert(isinstance(p_load_type_str, str))
-	assert(p_resp_type_str == "html" or p_resp_type_str == "json")
-	if p_resp_type_str == "json":
-		assert(isinstance(p_resp_data_json_map, dict))
-
-
-	if p_resp_store_file_path_str is None:
+	
+	if p_cache_file_path_str is None:
 		store_result_bool = False
 	else:
 		store_result_bool = True
 
+	
+	#-----------------------
+	# RESP_FILE_STORAGE
+	cache_s3_key_str = None
+	if store_result_bool:
+
+		assert(isinstance(p_resp_data_map, dict))
+		resp_data_str = json.dumps(p_resp_data_map)
+			
+		cache_s3_key_str = upload_cache(resp_data_str,
+			p_cache_file_path_str,
+			p_source_domain_str,
+			p_runtime_map)
+
+	#-----------------------
+	# DB
 	id_str = db_insert(p_load_type_str,
 		p_part_key_str,
 		p_source_domain_str,
+		cache_s3_key_str,
 		p_runtime_map["db_client"],
 		p_meta_map,
 		p_url_str)
 
 	ic(id_str)
 
+	#-----------------------
 
-	if store_result_bool:
-		if not p_resp_data_json_map is None:
-			resp_data_str = json.dumps(p_resp_data_json_map)
-		else:
-			resp_data_str = p_resp_data_html_str
-			
-		s3_key_str = upload_resp(resp_data_str,
-			p_source_domain_str,
-			p_resp_store_file_path_str,
-			p_runtime_map)
-		
-		return s3_key_str
-	
-	return None
+	return cache_s3_key_str
 
 #---------------------------------------------------------------------------------
-def upload_resp(p_data_str,
+def upload_cache(p_data_str,
+	p_cache_file_path_str,
 	p_source_domain_str,
-	p_resp_store_file_path_str,
 	p_runtime_map):
 	assert(isinstance(p_data_str, str))
 
@@ -105,7 +104,7 @@ def upload_resp(p_data_str,
 
 	s3 = boto3.client('s3')
 
-	file_path_norm_str = os.path.normpath(p_resp_store_file_path_str)
+	file_path_norm_str = os.path.normpath(p_cache_file_path_str)
 	s3_key_str = f'gf/ext_load/{p_source_domain_str}/{file_path_norm_str}'
 	ic(s3_key_str)
 
@@ -120,6 +119,25 @@ def upload_resp(p_data_str,
 	return s3_key_str
 
 #---------------------------------------------------------------------------------
+def get_cache(p_resp_store_file_path_str,
+	p_source_domain_str,
+	p_runtime_map):
+
+
+
+	db_get_load_latest()
+
+
+	bucket_name_str = p_runtime_map.get("s3_data_sink_bucket_str", "gf")
+	ic(bucket_name_str)
+
+	s3 = boto3.client('s3')
+
+
+
+
+
+#---------------------------------------------------------------------------------
 def init(p_db_client):
 
 	db_init(p_db_client)
@@ -127,9 +145,17 @@ def init(p_db_client):
 #---------------------------------------------------------------------------------
 # DB
 #---------------------------------------------------------------------------------
+def db_get_load_latest(p_meta_map,
+	p_runtime_map):
+
+
+	True
+
+
 def db_insert(p_load_type_str,
 	p_part_key_str,
 	p_source_domain_str,
+	p_cache_s3_key_str,
 	p_db_client,
 	p_meta_map={},
 	p_url_str=None):
@@ -141,10 +167,11 @@ def db_insert(p_load_type_str,
 			load_type,
 			part_key,
 			url,
+			resp_cache_file_path,
 			meta_map,
 			source_domain
 		)
-		VALUES (%s, %s, %s, %s, %s)
+		VALUES (%s, %s, %s, %s, %s, %s)
 		RETURNING id
 	'''
 
@@ -153,6 +180,7 @@ def db_insert(p_load_type_str,
 			p_load_type_str,
 			p_part_key_str,
 			p_url_str,
+			p_cache_s3_key_str,
 			json.dumps(p_meta_map),
 			p_source_domain_str
 		))
@@ -196,10 +224,7 @@ def db_init(p_db_client):
 				
 				-- -----------------------
 				-- RESPONSE
-				-- coming from the external source, can be html, json, etc.
-				resp_type      VARCHAR(255),
-				resp_data_html TEXT,
-				resp_data_json JSONB,
+				resp_cache_file_path TEXT,
 
 				-- -----------------------
 				-- META
