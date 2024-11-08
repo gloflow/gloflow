@@ -37,7 +37,10 @@ import gloflow as gf
 # stores data on loading/processing of external models info
 # such as from automani or some other source.
 table_name__extern_load_str = "gf_extern_load"
+default_s3_bucket_name_str  = "gf"
 
+#---------------------------------------------------------------------------------
+# PUBLIC
 #---------------------------------------------------------------------------------
 # OBSERVE
 # p_resp_store_file_path_str - allow external users of this API to determine the file path
@@ -45,6 +48,8 @@ table_name__extern_load_str = "gf_extern_load"
 #                              naming structure makes sense for their domain.
 #                              files are stored in some block storage, local or remote (s3, etc.).
 #                              filepath should be relative.
+# p_related_observations_ids_lst - list of observation ids that this observation depends on.
+#                                  that dependance is usually in the form of a data dependency.
 
 def observe(p_load_type_str,
 	p_part_key_str,
@@ -53,10 +58,13 @@ def observe(p_load_type_str,
 	p_meta_map={},
 	p_url_str=None,
 	p_resp_data_map=None,
-	p_cache_file_path_str=None):
+	p_cache_file_path_str=None,
+	p_related_observations_ids_lst=None):
 	
 	assert(isinstance(p_load_type_str, str))
-	
+	if p_related_observations_ids_lst is not None:
+		assert(isinstance(p_related_observations_ids_lst, list))
+
 	if p_cache_file_path_str is None:
 		store_result_bool = False
 	else:
@@ -72,40 +80,106 @@ def observe(p_load_type_str,
 		resp_data_str = json.dumps(p_resp_data_map)
 			
 		cache_s3_key_str = upload_cache(resp_data_str,
+			p_load_type_str,
 			p_cache_file_path_str,
 			p_source_domain_str,
 			p_runtime_map)
 
 	#-----------------------
 	# DB
-	id_str = db_insert(p_load_type_str,
+	observation_id_str = db_insert(p_load_type_str,
 		p_part_key_str,
 		p_source_domain_str,
 		cache_s3_key_str,
 		p_runtime_map["db_client"],
-		p_meta_map,
-		p_url_str)
+		p_meta_map=p_meta_map,
+		p_url_str=p_url_str,
+		p_related_observations_ids_lst=p_related_observations_ids_lst)
 
-	ic(id_str)
+	ic(observation_id_str)
 
 	#-----------------------
 
-	return cache_s3_key_str
+	return observation_id_str
 
 #---------------------------------------------------------------------------------
+# RELATE
+def relate(p_observation_id_str,
+	p_related_observations_ids_lst,
+	p_runtime_map):
+
+	assert(isinstance(p_observation_id_str, str))
+	assert(isinstance(p_related_observations_ids_lst, list))
+
+	db_relate_observations(p_observation_id_str,
+		p_related_observations_ids_lst,
+		p_runtime_map["db_client"])
+	
+#---------------------------------------------------------------------------------
+# GET_CACHE
+
+def get_cache(p_load_type_str,
+	p_part_key_str,
+	p_source_domain_str,
+	p_runtime_map):
+	assert(isinstance(p_load_type_str, str))
+
+	#-----------------------
+	# DB
+	latest_load_map = db_get_latest_load(p_load_type_str,
+		p_part_key_str,
+		p_source_domain_str,
+		p_runtime_map["db_client"])
+
+	#-----------------------
+	# S3
+
+	ic(latest_load_map)
+	
+	bucket_name_str = p_runtime_map.get("s3_data_sink_bucket_str", default_s3_bucket_name_str)
+	ic(bucket_name_str)
+
+	s3 = boto3.client('s3')
+	resp = s3.get_object(Bucket=bucket_name_str,
+		Key=latest_load_map["resp_cache_file_path"])
+
+	r = resp['Body']
+	
+	resp_str = resp['Body'].read().decode('utf-8')
+	resp_map = json.loads(resp_str)
+	assert(isinstance(resp_map, dict))
+
+	#-----------------------
+	
+	observation_id_int = latest_load_map["id"]
+	assert(isinstance(observation_id_int, int))
+
+	return resp_map, observation_id_int
+
+#---------------------------------------------------------------------------------
+def init(p_db_client):
+
+	db_init(p_db_client)
+
+#---------------------------------------------------------------------------------
+# CACHE
+#---------------------------------------------------------------------------------
 def upload_cache(p_data_str,
+	p_load_type_str,
 	p_cache_file_path_str,
 	p_source_domain_str,
 	p_runtime_map):
 	assert(isinstance(p_data_str, str))
-
+	assert(isinstance(p_load_type_str, str))
 	bucket_name_str = p_runtime_map.get("s3_data_sink_bucket_str", "gf")
 	ic(bucket_name_str)
 
 	s3 = boto3.client('s3')
 
+	#-----------------------
 	file_path_norm_str = os.path.normpath(p_cache_file_path_str)
-	s3_key_str = f'gf/ext_load/{p_source_domain_str}/{file_path_norm_str}'
+	dir_str            = f"gf/ext_load/{p_source_domain_str}/{p_load_type_str}"
+	s3_key_str         = f'{dir_str}/{file_path_norm_str}'
 	ic(s3_key_str)
 
 	#-----------------------
@@ -119,39 +193,79 @@ def upload_cache(p_data_str,
 	return s3_key_str
 
 #---------------------------------------------------------------------------------
-def get_cache(p_resp_store_file_path_str,
-	p_source_domain_str,
-	p_runtime_map):
-
-
-
-	db_get_load_latest()
-
-
-	bucket_name_str = p_runtime_map.get("s3_data_sink_bucket_str", "gf")
-	ic(bucket_name_str)
-
-	s3 = boto3.client('s3')
-
-
-
-
-
-#---------------------------------------------------------------------------------
-def init(p_db_client):
-
-	db_init(p_db_client)
-
-#---------------------------------------------------------------------------------
 # DB
 #---------------------------------------------------------------------------------
-def db_get_load_latest(p_meta_map,
-	p_runtime_map):
+def db_relate_observations(p_target_observation_id_str,
+	p_related_observations_ids_lst,
+	p_db_client):
+	assert(isinstance(p_target_observation_id_str, str))
+	assert(isinstance(p_related_observations_ids_lst, list))
+	for o in p_related_observations_ids_lst:
+		assert(isinstance(o, int))
 
+	cur = p_db_client.cursor()
 
-	True
+	query_str = f'''
+		UPDATE {table_name__extern_load_str}
+		SET related_observations = %s
+		WHERE id = %s
+	'''
 
+	cur.execute(query_str, 
+		(
+			p_related_observations_ids_lst,
+			p_target_observation_id_str
+		))
+	
+	p_db_client.commit()
+	cur.close()
 
+#---------------------------------------------------------------------------------
+# GET_LATEST_LOAD
+
+def db_get_latest_load(p_load_type_str,
+	p_part_key_str,
+	p_source_domain_str,
+	p_db_client):
+
+	cur = p_db_client.cursor()
+	query_str = f'''
+		SELECT
+			id,
+			url,
+			resp_cache_file_path,
+			meta_map
+		FROM {table_name__extern_load_str}
+		WHERE
+			
+			load_type = %s
+			AND
+			part_key = %s
+			AND
+			source_domain = %s
+		
+		ORDER BY fetch_datetime DESC
+		LIMIT 1;
+	'''
+
+	cur.execute(query_str,
+		(
+			p_load_type_str,
+			p_part_key_str,
+			p_source_domain_str
+		))
+	
+	result_tpl = cur.fetchone()
+	load_map = {
+		"id":                   result_tpl[0],
+		"url":                  result_tpl[1],
+		"resp_cache_file_path": result_tpl[2],
+		"meta_map":             result_tpl[3]
+	}
+	return load_map
+
+#---------------------------------------------------------------------------------
+# INSERT
 def db_insert(p_load_type_str,
 	p_part_key_str,
 	p_source_domain_str,
@@ -192,6 +306,7 @@ def db_insert(p_load_type_str,
 	return id_int
 
 #---------------------------------------------------------------------------------
+# INIT
 def db_init(p_db_client):
 
 	cur = p_db_client.cursor()
@@ -216,12 +331,20 @@ def db_init(p_db_client):
 				part_key VARCHAR(255),
 
 				-- -----------------------
+				-- URL
 				-- for html data this is the URL of the page, for json
 				-- returns it might be the URL of the API endpoint.
 				-- for other types of data it might be None.
 
 				url VARCHAR(1000),
 				
+				-- -----------------------
+				-- RELATED_OBSERVATIONS
+				-- these are observations that this observations depends on or is related to.
+				-- there can be multiple observations that can be used by this observation.
+
+				related_observations INT[],
+
 				-- -----------------------
 				-- RESPONSE
 				resp_cache_file_path TEXT,

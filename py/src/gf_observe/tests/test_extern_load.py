@@ -38,7 +38,7 @@ def main():
 	# OBSERVE_EXTERN_LOAD
 	
 	part_key_str  = f"{part_dim_1_str}__{part_dim_2_str}__{part_dim_3_str}"
-	result_s3_key_str = gf.observe_ext_load("load_type_A",
+	result_s3_key_str = gf.observe.ext_load("load_type_A",
 		part_key_str,
 		domain_str,
 		runtime_map,

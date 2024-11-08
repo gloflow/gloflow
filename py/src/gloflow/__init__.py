@@ -17,12 +17,13 @@ db_table_exists = gf_core_sql_db.table_exists
 add_image = gf_images_client.add_image
 
 # OBSERVE
-observe_init      = gf_extern_load.init
-observe_ext_load  = gf_extern_load.observe
-observe_get_cache = gf_extern_load.get_cache
+class observe():
+    init      = gf_extern_load.init
+    ext_load  = gf_extern_load.observe
+    get_cache = gf_extern_load.get_cache
+    relate    = gf_extern_load.relate
 
 #-------------------------
 def run():
     print("gloflow.run()")
     True
-
