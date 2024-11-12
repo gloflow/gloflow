@@ -58,19 +58,15 @@ def observe(p_load_type_str,
 	p_meta_map={},
 	p_url_str=None,
 	p_resp_data_map=None,
-	p_cache_file_path_str=None,
-	p_related_observations_ids_lst=None):
+	p_cache_file_path_str=None):
 	
 	assert(isinstance(p_load_type_str, str))
-	if p_related_observations_ids_lst is not None:
-		assert(isinstance(p_related_observations_ids_lst, list))
 
 	if p_cache_file_path_str is None:
 		store_result_bool = False
 	else:
 		store_result_bool = True
 
-	
 	#-----------------------
 	# RESP_FILE_STORAGE
 	cache_s3_key_str = None
@@ -93,8 +89,7 @@ def observe(p_load_type_str,
 		cache_s3_key_str,
 		p_runtime_map["db_client"],
 		p_meta_map=p_meta_map,
-		p_url_str=p_url_str,
-		p_related_observations_ids_lst=p_related_observations_ids_lst)
+		p_url_str=p_url_str)
 
 	ic(observation_id_str)
 
@@ -104,14 +99,16 @@ def observe(p_load_type_str,
 
 #---------------------------------------------------------------------------------
 # RELATE
-def relate(p_observation_id_str,
+def relate(p_observation_id_int,
 	p_related_observations_ids_lst,
 	p_runtime_map):
-
-	assert(isinstance(p_observation_id_str, str))
+	
+	assert(isinstance(p_observation_id_int, int))
 	assert(isinstance(p_related_observations_ids_lst, list))
 
-	db_relate_observations(p_observation_id_str,
+	print(f"relate observation {p_observation_id_int} to observations {p_related_observations_ids_lst}")
+	
+	db_relate_observations(p_observation_id_int,
 		p_related_observations_ids_lst,
 		p_runtime_map["db_client"])
 	
@@ -195,10 +192,10 @@ def upload_cache(p_data_str,
 #---------------------------------------------------------------------------------
 # DB
 #---------------------------------------------------------------------------------
-def db_relate_observations(p_target_observation_id_str,
+def db_relate_observations(p_target_observation_id_int,
 	p_related_observations_ids_lst,
 	p_db_client):
-	assert(isinstance(p_target_observation_id_str, str))
+	assert(isinstance(p_target_observation_id_int, int))
 	assert(isinstance(p_related_observations_ids_lst, list))
 	for o in p_related_observations_ids_lst:
 		assert(isinstance(o, int))
@@ -214,7 +211,7 @@ def db_relate_observations(p_target_observation_id_str,
 	cur.execute(query_str, 
 		(
 			p_related_observations_ids_lst,
-			p_target_observation_id_str
+			p_target_observation_id_int
 		))
 	
 	p_db_client.commit()
@@ -256,13 +253,18 @@ def db_get_latest_load(p_load_type_str,
 		))
 	
 	result_tpl = cur.fetchone()
-	load_map = {
-		"id":                   result_tpl[0],
-		"url":                  result_tpl[1],
-		"resp_cache_file_path": result_tpl[2],
-		"meta_map":             result_tpl[3]
-	}
-	return load_map
+
+	if result_tpl is None:
+		return None
+	else:
+		ic(result_tpl)
+		load_map = {
+			"id":                   result_tpl[0],
+			"url":                  result_tpl[1],
+			"resp_cache_file_path": result_tpl[2],
+			"meta_map":             result_tpl[3]
+		}
+		return load_map
 
 #---------------------------------------------------------------------------------
 # INSERT
