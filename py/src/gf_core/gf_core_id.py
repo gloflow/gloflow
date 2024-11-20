@@ -17,19 +17,28 @@
 
 import hashlib
 import binascii
+import datetime
 
 #---------------------------------------------------------------------------------
-def id_create(p_unique_vals_for_id_lst,
-    p_unix_time_f):
+def create():
+	unix_time_f = datetime.datetime.utcnow().timestamp()
+	h = hashlib.md5()
+	h.update(str(unix_time_f).encode())
+	hex_str = binascii.hexlify(h.digest()).decode()
+	id_str = hex_str
+	return id_str
 
-    h = hashlib.md5()
+#---------------------------------------------------------------------------------
+def create_from(p_unique_vals_for_id_lst,
+	p_unix_time_f):
 
-    h.update(str(p_unix_time_f).encode())
+	h = hashlib.md5()
+	h.update(str(p_unix_time_f).encode())
 
-    for v in p_unique_vals_for_id_lst:
-        h.update(v.encode())
+	for v in p_unique_vals_for_id_lst:
+		h.update(v.encode())
 
-    hex_str = binascii.hexlify(h.digest()).decode()
-    id_str = hex_str
+	hex_str = binascii.hexlify(h.digest()).decode()
+	id_str = hex_str
 
-    return id_str
+	return id_str
