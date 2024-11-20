@@ -1,29 +1,31 @@
-from gf_core import gf_core_sql_db
+from gf_core import gf_core_id, gf_core_sql_db
 from gf_apps.gf_images.gf_images_client import gf_images_client
 from gf_observe import gf_extern_load
 
 print("gloflow...")
-version = "0.1.17"
+version = "0.1.18"
 
 #-------------------------
 # EXPORT_API
 # simplified unified GF Py API with flattened namespace
 
 # DB
-db_init_client  = gf_core_sql_db.init_db_client
-db_table_exists = gf_core_sql_db.table_exists
+class db():
+    init         = gf_core_sql_db.init_db_client
+    table_exists = gf_core_sql_db.table_exists
 
 # IMAGES
-add_image = gf_images_client.add_image
+class images():
+    add = gf_images_client.add_image
+
+# CORE
+class core():
+    create_id = gf_core_id.create
 
 # OBSERVE
 class observe():
-    init      = gf_extern_load.init
-    ext_load  = gf_extern_load.observe
-    get_cache = gf_extern_load.get_cache
-    relate    = gf_extern_load.relate
-
-#-------------------------
-def run():
-    print("gloflow.run()")
-    True
+    init           = gf_extern_load.init
+    ext_load       = gf_extern_load.observe
+    get_cached     = gf_extern_load.get_cached
+    get_cached_group = gf_extern_load.get_cached_group
+    relate           = gf_extern_load.relate
