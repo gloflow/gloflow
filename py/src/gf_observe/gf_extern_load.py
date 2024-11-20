@@ -34,15 +34,17 @@ import boto3
 from icecream import ic
 import gloflow as gf
 
+from gf_observe import gf_extern_load_db as db
+
 # stores data on loading/processing of external models info
 # such as from automani or some other source.
-table_name__extern_load_str = "gf_extern_load"
 default_s3_bucket_name_str  = "gf"
 
 #---------------------------------------------------------------------------------
 # PUBLIC
 #---------------------------------------------------------------------------------
 # OBSERVE
+# p_url_str - url from which the observation is coming, if relevant.
 # p_resp_store_file_path_str - allow external users of this API to determine the file path
 # 	                           to be used for caching the response data. user knows best what
 #                              naming structure makes sense for their domain.
@@ -50,15 +52,18 @@ default_s3_bucket_name_str  = "gf"
 #                              filepath should be relative.
 # p_related_observations_ids_lst - list of observation ids that this observation depends on.
 #                                  that dependance is usually in the form of a data dependency.
+# p_group_id_str - user can supply assign observations to a group, if needed.
+#                  useful if multiple observations are related and need to be grouped.
 
 def observe(p_load_type_str,
 	p_part_key_str,
 	p_source_domain_str,
 	p_runtime_map,
-	p_meta_map={},
-	p_url_str=None,
-	p_resp_data_map=None,
-	p_cache_file_path_str=None):
+	p_group_id_str        = None,
+	p_meta_map            = {},
+	p_url_str             = None,
+	p_resp_data_map       = None,
+	p_cache_file_path_str = None):
 	
 	assert(isinstance(p_load_type_str, str))
 
@@ -83,18 +88,32 @@ def observe(p_load_type_str,
 
 	#-----------------------
 	# DB
-	observation_id_str = db_insert(p_load_type_str,
+	observation_id_str = db.insert(p_load_type_str,
 		p_part_key_str,
 		p_source_domain_str,
 		cache_s3_key_str,
 		p_runtime_map["db_client"],
-		p_meta_map=p_meta_map,
-		p_url_str=p_url_str)
+		p_meta_map     = p_meta_map,
+		p_url_str      = p_url_str,
+		p_group_id_str = p_group_id_str)
 
 	ic(observation_id_str)
 
 	#-----------------------
+	# MONITORING
+	if "monitoring_fun" in p_runtime_map:
+		assert(callable(p_runtime_map["monitoring_fun"]))
+		p_runtime_map["monitoring_fun"](p_event_map={
+				"type":  "gf.observe.extern_load",
+				"level": "info",
 
+				# APP_LEVEL
+				"load_type":     p_load_type_str,
+				"source_domain": p_source_domain_str,
+			})
+
+	#-----------------------
+		
 	return observation_id_str
 
 #---------------------------------------------------------------------------------
@@ -108,29 +127,32 @@ def relate(p_observation_id_int,
 
 	print(f"relate observation {p_observation_id_int} to observations {p_related_observations_ids_lst}")
 	
-	db_relate_observations(p_observation_id_int,
+	db.relate_observations(p_observation_id_int,
 		p_related_observations_ids_lst,
 		p_runtime_map["db_client"])
-	
-#---------------------------------------------------------------------------------
-# GET_CACHE
 
-def get_cache(p_load_type_str,
+#---------------------------------------------------------------------------------
+# GET_CACHED
+
+def get_cached(p_load_type_str,
 	p_part_key_str,
 	p_source_domain_str,
 	p_runtime_map):
 	assert(isinstance(p_load_type_str, str))
+	assert(isinstance(p_part_key_str, str))
+	assert(isinstance(p_runtime_map, dict))
+	assert(isinstance(p_source_domain_str, str) or p_source_domain_str is None)
 
 	#-----------------------
 	# DB
-	latest_load_map = db_get_latest_load(p_load_type_str,
+	latest_load_map = db.get_latest(p_load_type_str,
 		p_part_key_str,
 		p_source_domain_str,
 		p_runtime_map["db_client"])
 
 	#-----------------------
 	# S3
-
+	
 	ic(latest_load_map)
 	
 	bucket_name_str = p_runtime_map.get("s3_data_sink_bucket_str", default_s3_bucket_name_str)
@@ -143,20 +165,82 @@ def get_cache(p_load_type_str,
 	r = resp['Body']
 	
 	resp_str = resp['Body'].read().decode('utf-8')
-	resp_map = json.loads(resp_str)
-	assert(isinstance(resp_map, dict))
+	info_map = json.loads(resp_str)
+	assert(isinstance(info_map, dict))
 
 	#-----------------------
 	
 	observation_id_int = latest_load_map["id"]
 	assert(isinstance(observation_id_int, int))
 
-	return resp_map, observation_id_int
+	return info_map, observation_id_int
+
+#---------------------------------------------------------------------------------
+# GET_CACHED_GROUP
+def get_cached_group(p_load_type_str,
+	p_part_key_str,
+	p_source_domain_str,
+	p_runtime_map):
+
+	#-----------------------
+	# DB
+	latest_group_id_str = db.get_latest_group_id(p_load_type_str,
+		p_source_domain_str,
+		p_runtime_map["db_client"])
+
+	#-----------------------
+
+	ic(latest_group_id_str)
+
+
+
+	loads_lst = db.get_group(p_load_type_str,
+		p_part_key_str,
+		p_source_domain_str,
+		latest_group_id_str,
+		p_runtime_map["db_client"])
+	assert(isinstance(loads_lst, list))
+
+	ic(loads_lst)
+
+
+	#-----------------------
+	# S3
+
+	bucket_name_str = p_runtime_map.get("s3_data_sink_bucket_str", default_s3_bucket_name_str)
+	ic(bucket_name_str)
+
+	s3 = boto3.client('s3')
+
+	#---------------------------------------------------------------------------------
+	def get_file(p_load_map):
+		
+		resp = s3.get_object(Bucket=bucket_name_str,
+			Key=p_load_map["resp_cache_file_path"])
+
+		r = resp['Body']
+		
+		resp_str = resp['Body'].read().decode('utf-8')
+		info_map = json.loads(resp_str)
+		assert(isinstance(info_map, dict))
+		return info_map
+	
+	#---------------------------------------------------------------------------------
+	
+	
+	infos_lst = []
+	for l_map in loads_lst:
+		info_map = get_file(l_map)
+		infos_lst.append(info_map)
+
+	#-----------------------
+	
+	return infos_lst
 
 #---------------------------------------------------------------------------------
 def init(p_db_client):
 
-	db_init(p_db_client)
+	db.init(p_db_client)
 
 #---------------------------------------------------------------------------------
 # CACHE
@@ -188,179 +272,3 @@ def upload_cache(p_data_str,
 	#-----------------------
 
 	return s3_key_str
-
-#---------------------------------------------------------------------------------
-# DB
-#---------------------------------------------------------------------------------
-def db_relate_observations(p_target_observation_id_int,
-	p_related_observations_ids_lst,
-	p_db_client):
-	assert(isinstance(p_target_observation_id_int, int))
-	assert(isinstance(p_related_observations_ids_lst, list))
-	for o in p_related_observations_ids_lst:
-		assert(isinstance(o, int))
-
-	cur = p_db_client.cursor()
-
-	query_str = f'''
-		UPDATE {table_name__extern_load_str}
-		SET related_observations = %s
-		WHERE id = %s
-	'''
-
-	cur.execute(query_str, 
-		(
-			p_related_observations_ids_lst,
-			p_target_observation_id_int
-		))
-	
-	p_db_client.commit()
-	cur.close()
-
-#---------------------------------------------------------------------------------
-# GET_LATEST_LOAD
-
-def db_get_latest_load(p_load_type_str,
-	p_part_key_str,
-	p_source_domain_str,
-	p_db_client):
-
-	cur = p_db_client.cursor()
-	query_str = f'''
-		SELECT
-			id,
-			url,
-			resp_cache_file_path,
-			meta_map
-		FROM {table_name__extern_load_str}
-		WHERE
-			
-			load_type = %s
-			AND
-			part_key = %s
-			AND
-			source_domain = %s
-		
-		ORDER BY fetch_datetime DESC
-		LIMIT 1;
-	'''
-
-	cur.execute(query_str,
-		(
-			p_load_type_str,
-			p_part_key_str,
-			p_source_domain_str
-		))
-	
-	result_tpl = cur.fetchone()
-
-	if result_tpl is None:
-		return None
-	else:
-		ic(result_tpl)
-		load_map = {
-			"id":                   result_tpl[0],
-			"url":                  result_tpl[1],
-			"resp_cache_file_path": result_tpl[2],
-			"meta_map":             result_tpl[3]
-		}
-		return load_map
-
-#---------------------------------------------------------------------------------
-# INSERT
-def db_insert(p_load_type_str,
-	p_part_key_str,
-	p_source_domain_str,
-	p_cache_s3_key_str,
-	p_db_client,
-	p_meta_map={},
-	p_url_str=None):
-	assert(isinstance(p_meta_map, dict))
-
-	cur = p_db_client.cursor()
-
-	query_str = f'''INSERT INTO {table_name__extern_load_str} (
-			load_type,
-			part_key,
-			url,
-			resp_cache_file_path,
-			meta_map,
-			source_domain
-		)
-		VALUES (%s, %s, %s, %s, %s, %s)
-		RETURNING id
-	'''
-
-	cur.execute(query_str, 
-		(
-			p_load_type_str,
-			p_part_key_str,
-			p_url_str,
-			p_cache_s3_key_str,
-			json.dumps(p_meta_map),
-			p_source_domain_str
-		))
-
-	id_int = cur.fetchone()[0]
-	p_db_client.commit()
-	cur.close()
-
-	return id_int
-
-#---------------------------------------------------------------------------------
-# INIT
-def db_init(p_db_client):
-
-	cur = p_db_client.cursor()
-	
-	if not gf.db_table_exists(table_name__extern_load_str, cur):
-		
-		# source_domain  - domain on which this ad was discovered
-		# fetch_datetime - time when the GF system stored this item
-
-		sql_str = f"""
-			CREATE TABLE {table_name__extern_load_str} (
-			
-				id SERIAL PRIMARY KEY,
-				
-				-- what type of extern loading is done
-				-- model, model_variant, etc.
-				load_type VARCHAR(255),
-
-				-- -----------------------
-				-- PARTITION_KEY
-				-- string representing partition key
-				part_key VARCHAR(255),
-
-				-- -----------------------
-				-- URL
-				-- for html data this is the URL of the page, for json
-				-- returns it might be the URL of the API endpoint.
-				-- for other types of data it might be None.
-
-				url VARCHAR(1000),
-				
-				-- -----------------------
-				-- RELATED_OBSERVATIONS
-				-- these are observations that this observations depends on or is related to.
-				-- there can be multiple observations that can be used by this observation.
-
-				related_observations INT[],
-
-				-- -----------------------
-				-- RESPONSE
-				resp_cache_file_path TEXT,
-
-				-- -----------------------
-				-- META
-				-- various metadata that can be attached to a load event.
-				meta_map JSONB,
-				
-				-- -----------------------
-
-				source_domain  VARCHAR(255),
-				fetch_datetime TIMESTAMP DEFAULT NOW()
-			);
-		"""
-		cur.execute(sql_str)
-		p_db_client.commit()
