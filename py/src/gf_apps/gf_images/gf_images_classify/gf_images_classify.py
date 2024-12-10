@@ -23,7 +23,7 @@ import os
 import json
 import argparse
 
-import sentry_sdk
+
 
 #----------------------------------------------
 def run():
@@ -45,6 +45,7 @@ def run():
 
     if not sentry_dsn_str == None:
         print("sentry enabled...")
+        import sentry_sdk
         sentry_sdk.init(
             dns=sentry_dsn_str,
             environment=sentry_env_str,

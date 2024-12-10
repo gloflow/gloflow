@@ -1,6 +1,7 @@
 from gf_core import gf_core_id, gf_core_sql_db
 from gf_apps.gf_images.gf_images_client import gf_images_client
 from gf_observe import gf_extern_load
+from gf_ml import gf_llm_core
 
 print("gloflow...")
 version = "0.1.18"
@@ -29,3 +30,7 @@ class observe():
     get_cached     = gf_extern_load.get_cached
     get_cached_group = gf_extern_load.get_cached_group
     relate           = gf_extern_load.relate
+
+# ML
+class ml():
+    run_llm = gf_llm_core.run_llm
