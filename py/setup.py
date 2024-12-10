@@ -12,7 +12,7 @@ authors_lst = [
 
 setup(
     name="gloflow",
-    version="0.1.18",
+    version="0.1.26",
     author=",".join(authors_lst),
     author_email="glofloworg@gmail.com",
     description="""
@@ -30,7 +30,7 @@ Py package for interacting with the gloflow platform API's.
         "Programming Language :: Python :: 3",
         "Operating System :: POSIX :: Linux",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.10",
 
     install_requires=required_packages,
     # install_requires=[
