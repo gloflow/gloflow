@@ -22,26 +22,8 @@ import psycopg2
 #---------------------------------------------------------------------------------
 def init_db_client(p_db_name_str,
 	p_env_str):
-
-	secrets_client = boto3.client('secretsmanager',
-		# aws_access_key_id=context.resource_config["AWS_ACCESS_KEY_ID"],
-		# aws_secret_access_key=context.resource_config["AWS_SECRET_ACCESS_KEY"],
-		region_name="us-east-1")
-
 	
-	'''
-	db_host_port_str = secrets_client.get_secret_value(SecretId=f"gf_rds_host_{p_env_str}")["SecretString"]
-	db_creds_str     = secrets_client.get_secret_value(SecretId=f"gf_rds_creds_{p_env_str}")["SecretString"]
-	print("db RDS creds fetched from aws secrets_manager...")
-
-	db_creds_map = json.loads(db_creds_str)
-	db_user_str = db_creds_map["username"]
-	db_pass_str = db_creds_map["password"]
-
-	db_host_str, db_port_str = db_host_port_str.split(":")
-	'''
-	
-	db_user_str, db_pass_str, db_host_str, db_port_str = gf_postgresql_db_creds(secrets_client, p_env_str)
+	db_user_str, db_pass_str, db_host_str, db_port_str = gf_postgresql_db_creds(p_env_str)
 
 	db_client = psycopg2.connect(
 		host     = db_host_str,
@@ -53,9 +35,13 @@ def init_db_client(p_db_name_str,
 	return db_client
 
 #---------------------------------------------------------------------------------
-def gf_postgresql_db_creds(p_secrets_client, p_db_env_str):
-	db_host_port_str = p_secrets_client.get_secret_value(SecretId=f"gf_rds_host_{p_db_env_str}")["SecretString"]
-	db_creds_str     = p_secrets_client.get_secret_value(SecretId=f"gf_rds_creds_{p_db_env_str}")["SecretString"]
+def gf_postgresql_db_creds(p_db_env_str):
+
+	secrets_client = boto3.client('secretsmanager',
+		region_name="us-east-1")
+	
+	db_host_port_str = secrets_client.get_secret_value(SecretId=f"gf_rds_host_{p_db_env_str}")["SecretString"]
+	db_creds_str     = secrets_client.get_secret_value(SecretId=f"gf_rds_creds_{p_db_env_str}")["SecretString"]
 	print("db RDS creds fetched from aws secrets_manager...")
 
 	db_creds_map = json.loads(db_creds_str)
