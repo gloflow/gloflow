@@ -21,11 +21,12 @@ package gf_images_core
 
 import (
 	"context"
+	"database/sql"
 	"github.com/gloflow/gloflow/go/gf_core"
-
 )
 
 //---------------------------------------------------
+// PUT_IMAGE
 
 func dbSQLputImage(pImage *GFimage,
 	pCtx        context.Context,
@@ -93,6 +94,84 @@ func dbSQLputImage(pImage *GFimage,
 
 	return nil
 }
+
+//---------------------------------------------------
+// GET_IMAGE
+
+func dbSQLGetImage(pImageIDstr GFimageID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFimage, *gf_core.GFerror) {
+
+	pRuntimeSys.LogNewFun("DEBUG", "retrieving image data...", map[string]interface{}{
+		"image_id": pImageIDstr,
+	})
+
+	// SELECT SQL statement
+	sqlStr := `
+		SELECT 
+			id,
+			user_id,
+			client_type,
+			title,
+			flows_names, 
+		    origin_url,
+			origin_page_url,
+			thumb_small_url,
+			thumb_medium_url, 
+		    thumb_large_url,
+			format,
+			width,
+			height,
+			meta_map,
+			tags_lst
+		FROM gf_images
+		WHERE id = $1 AND deleted = FALSE`
+
+	var image GFimage
+	row := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pImageIDstr)
+	err := row.Scan(
+		&image.IDstr,
+		&image.UserID,
+		&image.ClientTypeStr,
+		&image.TitleStr,
+		&image.FlowsNamesLst,
+		&image.Origin_url_str,
+		&image.Origin_page_url_str,
+		&image.ThumbnailSmallURLstr,
+		&image.ThumbnailMediumURLstr,
+		&image.ThumbnailLargeURLstr,
+		&image.Format_str,
+		&image.Width_int,
+		&image.Height_int,
+		&image.MetaMap,
+		&image.TagsLst,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			gfErr := gf_core.ErrorCreate(
+				"image does not exist in gf_images table",
+				"sql_not_found_error",
+				map[string]interface{}{
+					"image_id": pImageIDstr,
+				},
+				err, "gf_images_core", pRuntimeSys)
+			return nil, gfErr
+		}
+
+		gfErr := gf_core.ErrorCreate(
+			"failed to retrieve image data from gf_images table",
+			"sql_query_execute",
+			map[string]interface{}{
+				"image_id": pImageIDstr,
+			},
+			err, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	return &image, nil
+}
+
 
 //---------------------------------------------------
 // TABLES
