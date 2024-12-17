@@ -163,11 +163,19 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 
 	//----------------------------------
 	// DB PERSIST
+
+	// MONGO
 	gfErr := DBmongoPutImage(image, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
+	// SQL
+	gfErr = dbSQLputImage(image, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+	
 	//----------------------------------
 
 	return image,nil

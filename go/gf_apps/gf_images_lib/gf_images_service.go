@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
@@ -47,6 +48,14 @@ func InitService(pHTTPmux *http.ServeMux,
 	//-------------
 	// METRICS
 	metrics := gf_images_core.MetricsCreate("gf_images")
+	
+	//------------------------
+	// DB
+	ctx := context.Background()
+	gfErr := gf_images_core.DBsqlCreateTables(ctx, pRuntimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
 
 	//-------------
 	// DB_INDEXES
