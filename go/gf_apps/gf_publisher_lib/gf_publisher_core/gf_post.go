@@ -112,14 +112,14 @@ func CreateNewPost(pPostInfoMap map[string]interface{}, pRuntimeSys *gf_core.Run
 	}
 
 	// IMAGES_IDS
-	var images_ids_lst []gf_images_core.Gf_image_id
+	var images_ids_lst []gf_images_core.GFimageID
 	if _, ok := pPostInfoMap["images_ids_lst"]; !ok {
 
 		// "images_ids_lst" key was not present
-		images_ids_lst = []gf_images_core.Gf_image_id{}
-	} else if ids_lst,ok := pPostInfoMap["images_ids_lst"].([]gf_images_core.Gf_image_id); !ok {
+		images_ids_lst = []gf_images_core.GFimageID{}
+	} else if ids_lst,ok := pPostInfoMap["images_ids_lst"].([]gf_images_core.GFimageID); !ok {
 		// if pPostInfoMap is coming from mongodb, its of []interface{} type, so a "type conversion" is done)
-		images_ids_lst = []gf_images_core.Gf_image_id(ids_lst)
+		images_ids_lst = []gf_images_core.GFimageID(ids_lst)
 	} else {
 		images_ids_lst = ids_lst
 	}

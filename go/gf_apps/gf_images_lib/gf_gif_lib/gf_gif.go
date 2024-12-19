@@ -131,7 +131,7 @@ func ProcessAndUpload(pImageIDstr gf_images_core.GFimageID,
 
 //--------------------------------------------------
 
-func Process(pImageIDstr gf_images_core.Gf_image_id,   
+func Process(pImageIDstr gf_images_core.GFimageID,   
 	p_image_source_url_str                        string,   
 	p_image_origin_page_url_str                   string,
 	p_gif_download_and_frames__local_dir_path_str string,
@@ -260,7 +260,7 @@ func Process(pImageIDstr gf_images_core.Gf_image_id,
 			return nil, "", gfErr
 		}
 		//-----------------------
-		verified_gf_image_id_str := gf_images_core.Gf_image_id(verified_image_info_map["id_str"].(string)) //type-casting, gf_images_core.Gf_image_id is a type (not function)
+		verified_gf_image_id_str := gf_images_core.GFimageID(verified_image_info_map["id_str"].(string)) //type-casting, gf_images_core.Gf_image_id is a type (not function)
 		gf_image_info := &gf_images_core.GFimageNewInfo{
 			IDstr:                          verified_gf_image_id_str,                                           // image_id_str,
 			Title_str:                      verified_image_info_map["title_str"].(string),                      // image_title_str,

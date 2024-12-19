@@ -584,7 +584,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				// UPLOAD_GF_IMAGE_ID - gf_image ID that was assigned to this uploaded image. it is used here
 				//                      to know which ID to use for the new gf_image thats going to be constructed,
 				//                      and to know by which ID to query the DB for Gf_image_upload_info.
-				var uploadImageIDstr gf_images_core.GF_image_id
+				var uploadImageIDstr gf_images_core.GFimageID
 				if aLst, ok := qsMap["imgid"]; ok {
 					uploadImageIDstr = gf_images_core.GFimageID(aLst[0])
 				}

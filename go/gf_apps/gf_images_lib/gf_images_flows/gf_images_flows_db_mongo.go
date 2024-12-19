@@ -152,7 +152,7 @@ func DBmongoGetAll(pCtx context.Context,
 //---------------------------------------------------
 
 func DBmongoAddFlowNameToImage(p_flow_name_str string,
-	p_image_gf_id_str gf_images_core.Gf_image_id,
+	p_image_gf_id_str gf_images_core.GFimageID,
 	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	ctx := context.Background()

@@ -67,7 +67,7 @@ type GFpostElement struct {
 	//----------------------
 	// IMAGE - if type_str == "image"
 
-	ImageIDstr gf_images_core.Gf_image_id
+	ImageIDstr gf_images_core.GFimageID
 
 	// only thumbnail urls are tracked here in the Post_ADT, not the full-size (which is tracked
 	// in Image_ADT), since the fullsize internal url is never used (that would be copyright infringement).

@@ -65,15 +65,33 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 	pCtx                 context.Context,
 	pRuntimeSys          *gf_core.RuntimeSys) ([]*GFfeaturedImage, *gf_core.GFerror) {
 
-	imagesLst, err := gf_images_core.DBmongoGetRandomImagesRange(pElementsNumToGetInt,
+	//---------------------
+	// MONGO
+	mongoImagesLst, err := gf_images_core.DBmongoGetRandomImagesRange(pElementsNumToGetInt,
 		pMaxRandomCursorPositionInt,
 		pFlowNameStr,
 		pUserID,
 		pRuntimeSys)
-
 	if err != nil {
 		return nil, err
 	}
+	
+	//---------------------
+	// SQL
+	sqlImagesLst, err := gf_images_core.DBsqlGetRandomImagesRange(pElementsNumToGetInt,
+		pMaxRandomCursorPositionInt,
+		pFlowNameStr,
+		pUserID,
+		pCtx,
+		pRuntimeSys)
+	if err != nil {
+		return nil, err
+	}
+	
+	//---------------------
+
+	imagesLst := gf_images_core.MergeImagesLists(mongoImagesLst, sqlImagesLst)
+
 
 	featuredImagesLst := []*GFfeaturedImage{}
 	usernamesCacheMap := map[gf_core.GF_ID]gf_identity_core.GFuserName{}

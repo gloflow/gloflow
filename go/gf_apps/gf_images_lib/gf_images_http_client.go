@@ -182,7 +182,7 @@ func clientStartJob(pInputImagesURLsLst []string,
 
 	for _, o := range jobExpectedOutputsUntypedLst {
 		imageOutput := &ClientJobImageOutput{
-			Image_id_str:                      gf_images_core.Gf_image_id(o.(map[string]interface{})["image_id_str"].(string)),
+			Image_id_str:                      gf_images_core.GFimageID(o.(map[string]interface{})["image_id_str"].(string)),
 			Image_source_url_str:              o.(map[string]interface{})["image_source_url_str"].(string),
 			Thumbnail_small_relative_url_str:  o.(map[string]interface{})["thumbnail_small_relative_url_str"].(string),
 			Thumbnail_medium_relative_url_str: o.(map[string]interface{})["thumbnail_medium_relative_url_str"].(string),

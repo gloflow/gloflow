@@ -20,7 +20,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_core
 
 import (
+	"fmt"
 	"context"
+	"time"
+	"math/rand"
 	"database/sql"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -84,11 +87,11 @@ func dbSQLputImage(pImage *GFimage,
 	if err != nil {
 		gfErr := gf_core.ErrorCreate(
 			"failed to upsert image data in gf_images table",
-			"sql_upsert_execute",
+			"sql_query_execute",
 			map[string]interface{}{
 				"image_id_str": pImage.IDstr,
 			},
-			err, "gf_identity_core", pRuntimeSys)
+			err, "gf_images_core", pRuntimeSys)
 		return gfErr
 	}
 
@@ -114,11 +117,11 @@ func dbSQLGetImage(pImageIDstr GFimageID,
 			client_type,
 			title,
 			flows_names, 
-		    origin_url,
+			origin_url,
 			origin_page_url,
 			thumb_small_url,
 			thumb_medium_url, 
-		    thumb_large_url,
+			thumb_large_url,
 			format,
 			width,
 			height,
@@ -151,7 +154,7 @@ func dbSQLGetImage(pImageIDstr GFimageID,
 		if err == sql.ErrNoRows {
 			gfErr := gf_core.ErrorCreate(
 				"image does not exist in gf_images table",
-				"sql_not_found_error",
+				"sql_query_execute",
 				map[string]interface{}{
 					"image_id": pImageIDstr,
 				},
@@ -170,6 +173,108 @@ func dbSQLGetImage(pImageIDstr GFimageID,
 	}
 
 	return &image, nil
+}
+
+//---------------------------------------------------
+// IMAGE_EXISTS
+
+func DBsqlImageExists(pImageIDstr GFimageID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+
+	query := "SELECT COUNT(*) FROM gf_images WHERE id = ?"
+
+	var count_int int
+	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, query, pImageIDstr).Scan(&count_int)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to check if image exists in the DB",
+			"sql_query_execute",
+			map[string]interface{}{"image_id_str": pImageIDstr},
+			err, "gf_images_core", pRuntimeSys)
+		return false, gfErr
+	}
+
+	return count_int > 0, nil
+}
+
+//---------------------------------------------------
+// GET_RANDOM_IMAGES_RANGE
+
+func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
+	pMaxRandomCursorPositionInt int, // 2000
+	pFlowNameStr                string,
+	pUserID                     gf_core.GF_ID,
+	pCtx                        context.Context,
+	pRuntimeSys                 *gf_core.RuntimeSys) ([]*GFimage, *gf_core.GFerror) {
+
+	// Reseed the random number source
+	rand.Seed(time.Now().UnixNano())
+	randomCursorPositionInt := rand.Intn(pMaxRandomCursorPositionInt)
+
+	pRuntimeSys.LogNewFun("DEBUG", "imgs_num_to_get_int        - "+fmt.Sprint(pImgsNumToGetInt), nil)
+	pRuntimeSys.LogNewFun("DEBUG", "random_cursor_position_int - "+fmt.Sprint(randomCursorPositionInt), nil)
+
+	query := `
+		SELECT * FROM gf_images 
+		WHERE creation_unix_time_f  IS NOT NULL 
+			AND flows_names_lst     LIKE ? 
+			AND origin_page_url_str IS NOT NULL 
+		LIMIT ? 
+		OFFSET ?`
+
+	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, query,
+		"%"+pFlowNameStr+"%",
+		pImgsNumToGetInt,
+		randomCursorPositionInt)
+
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to get random images range from the DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"imgs_num_to_get_int":            pImgsNumToGetInt,
+				"max_random_cursor_position_int": pMaxRandomCursorPositionInt,
+				"flow_name_str":                  pFlowNameStr,
+			},
+			err, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
+	}
+	defer rows.Close()
+
+	var imgsLst []*GFimage
+	for rows.Next() {
+		var img GFimage
+
+		if err := rows.Scan(&img.IDstr,
+			&img.Creation_unix_time_f,
+			&img.FlowsNamesLst,
+			&img.Origin_page_url_str); err != nil {
+			
+			gfErr := gf_core.ErrorCreate("failed to scan row for random images",
+				"sql_row_scan",
+				map[string]interface{}{
+					"imgs_num_to_get_int":            pImgsNumToGetInt,
+					"max_random_cursor_position_int": pMaxRandomCursorPositionInt,
+					"flow_name_str":                  pFlowNameStr,
+				},
+				err, "gf_images_core", pRuntimeSys)
+			return nil, gfErr
+		}
+		imgsLst = append(imgsLst, &img)
+	}
+
+	if err := rows.Err(); err != nil {
+		gfErr := gf_core.ErrorCreate("error encountered during rows iteration",
+			"sql_row_scan",
+			map[string]interface{}{
+				"imgs_num_to_get_int":            pImgsNumToGetInt,
+				"max_random_cursor_position_int": pMaxRandomCursorPositionInt,
+				"flow_name_str":                  pFlowNameStr,
+			},
+			err, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	return imgsLst, nil
 }
 
 
@@ -251,7 +356,7 @@ func DBsqlCreateTables(pCtx context.Context,
 		gfErr := gf_core.ErrorCreate("failed to create gf_identity related tables in the DB",
 			"sql_table_creation",
 			map[string]interface{}{},
-			err, "gf_identity_core", pRuntimeSys)
+			err, "gf_images_core", pRuntimeSys)
 		return gfErr
 	}
 

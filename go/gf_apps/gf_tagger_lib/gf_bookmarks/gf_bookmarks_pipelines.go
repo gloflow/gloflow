@@ -46,8 +46,8 @@ type GFbookmark struct {
 	Tags_lst        []string `bson:"tags_lst"`
 
 	// SCREENSHOT
-	Screenshot_image_id_str            gf_images_core.GF_image_id `bson:"screenshot_image_id_str"`
-	Screenshot_image_thumbnail_url_str string                     `bson:"screenshot_image_thumbnail_url_str"`
+	Screenshot_image_id_str            gf_images_core.GFimageID `bson:"screenshot_image_id_str"`
+	Screenshot_image_thumbnail_url_str string                   `bson:"screenshot_image_thumbnail_url_str"`
 }
 
 type GFbookmarkExtern struct {

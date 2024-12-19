@@ -349,7 +349,7 @@ func AddExternImageWithPolicy(pImageExternURLstr string,
 	pUserIDstr             gf_core.GF_ID,
 	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
 	pCtx                   context.Context,
-	pRuntimeSys            *gf_core.RuntimeSys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GFerror) {
+	pRuntimeSys            *gf_core.RuntimeSys) (*string, *string, gf_images_core.GFimageID, *gf_core.GFerror) {
 
 	//-------------------------
 	// POLICY_VERIFY - raises error if policy rejects the op
