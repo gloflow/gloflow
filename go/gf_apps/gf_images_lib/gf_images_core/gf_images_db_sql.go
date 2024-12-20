@@ -239,14 +239,17 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 
 	query := `
 		SELECT * FROM gf_images 
-		WHERE creation_unix_time_f  IS NOT NULL 
-			AND flows_names_lst     LIKE ? 
-			AND origin_page_url_str IS NOT NULL 
-		LIMIT ? 
-		OFFSET ?`
+		WHERE 
+				creation_time IS NOT NULL 
+			AND 
+				$1 = ANY(flows_names)
+		LIMIT $2 
+		OFFSET $3`
 
 	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, query,
-		"%"+pFlowNameStr+"%",
+		// "%"+pFlowNameStr+"%",
+		pFlowNameStr,
+		
 		pImgsNumToGetInt,
 		randomCursorPositionInt)
 
