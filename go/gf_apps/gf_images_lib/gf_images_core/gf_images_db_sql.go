@@ -219,23 +219,23 @@ func DBsqlGetImage(pImageIDstr GFimageID,
 //---------------------------------------------------
 // IMAGE_EXISTS
 
-func DBsqlImageExists(pImageIDstr GFimageID,
+func DBsqlImageExists(pImageID GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
-	query := "SELECT COUNT(*) FROM gf_images WHERE id = $1 AND deleted = FALSE"
+	queryStr := "SELECT COUNT(*) FROM gf_images WHERE id = $1 AND deleted = FALSE"
 
-	var count_int int
-	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, query, pImageIDstr).Scan(&count_int)
+	var countInt int
+	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, queryStr, pImageID).Scan(&countInt)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to check if image exists in the DB",
 			"sql_query_execute",
-			map[string]interface{}{"image_id_str": pImageIDstr},
+			map[string]interface{}{"image_id_str": pImageID},
 			err, "gf_images_core", pRuntimeSys)
 		return false, gfErr
 	}
 
-	return count_int > 0, nil
+	return countInt > 0, nil
 }
 
 //---------------------------------------------------
@@ -255,7 +255,7 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 	pRuntimeSys.LogNewFun("DEBUG", "imgs_num_to_get_int        - "+fmt.Sprint(pImgsNumToGetInt), nil)
 	pRuntimeSys.LogNewFun("DEBUG", "random_cursor_position_int - "+fmt.Sprint(randomCursorPositionInt), nil)
 
-	query := `
+	queryStr := `
 		SELECT * FROM gf_images 
 		WHERE 
 				creation_time IS NOT NULL 
@@ -264,7 +264,7 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 		LIMIT $2 
 		OFFSET $3`
 
-	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, query,
+	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, queryStr,
 		// "%"+pFlowNameStr+"%",
 		pFlowNameStr,
 		
@@ -321,6 +321,38 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 	return imgsLst, nil
 }
 
+//---------------------------------------------------
+
+func DBsqlAddTagsToImage(pImageID GFimageID,
+	pTagsLst    []string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	//--------------------
+	// PUSH_TAGS
+	// Extend `tags_lst` with the new tags
+	queryStr := `
+		UPDATE gf_images
+		SET tags_lst = array_cat(tags_lst, $2::text[])
+		WHERE id = $1;`
+
+	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, queryStr, string(pImageID),
+		pq.Array(pTagsLst))
+	
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to update a gf_image with new tags in DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"image_id_str": string(pImageID),
+				"tags_lst":     pTagsLst,
+			},
+			err, "gf_images_core", pRuntimeSys)
+		return gfErr
+	}
+
+	//--------------------
+	return nil
+}
 
 //---------------------------------------------------
 // TABLES

@@ -28,6 +28,38 @@ import (
 
 //---------------------------------------------------
 
+func DBaddTagToImage(pImageIDstr GFimageID,
+	pTagsLst  []string,
+	pCtx      context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	// SQL
+	existsBool, gfErr := DBsqlImageExists(pImageIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	if existsBool {
+		
+		// SQL
+		gfErr = DBsqlAddTagsToImage(pImageIDstr, pTagsLst, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+	} else {
+
+		// MONGO
+		gfErr = DBmongoAddTagsToImage(pImageIDstr, pTagsLst, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+
 func DBimageExists(pImageIDstr GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {

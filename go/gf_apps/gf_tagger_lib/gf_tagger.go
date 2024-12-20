@@ -273,10 +273,18 @@ func addTagsToObject(pTagsStr string,
 			*/
 
 			if existsBool {
+
+				gfErr := gf_images_core.DBaddTagToImage(imageID, tagsLst, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return gfErr
+				}
+
+				/*
 				gfErr := dbMongoAddTagsToImage(imageIDstr, tagsLst, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return gfErr
 				}
+				*/
 			}
 
 		//---------------

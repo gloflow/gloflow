@@ -21,7 +21,7 @@ package gf_tagger_lib
 
 import (
 	"os"
-	// "fmt"
+	"fmt"
 	"testing"
 	"context"
 	"github.com/stretchr/testify/assert"
@@ -142,9 +142,10 @@ func TestCreate(pTest *testing.T) {
 
 	image, gfErr := gf_images_core.DBgetImage(testImage.IDstr, ctx, runtimeSys)
 	if gfErr != nil {
-		return "", gfErr
+		pTest.FailNow()
 	}
 
+	fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 	/*
 	image, gfErr := gf_images_core.DBmongoGetImage(testImage.IDstr, ctx, runtimeSys)
 	if gfErr != nil {
