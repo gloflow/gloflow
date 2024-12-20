@@ -31,6 +31,7 @@ import (
 	"io/ioutil"
 	// "github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/davecgh/go-spew/spew"
 )
@@ -54,18 +55,27 @@ func TestMain(m *testing.M) {
 
 func TestBasicImageOps(pTest *testing.T) {
 
+	serviceNameStr := "gf_images_ops_tests"
+
+	/*
 	runtimeSys := &gf_core.RuntimeSys{
-		ServiceNameStr: "gf_images_ops_tests",
+		ServiceNameStr: serviceNameStr,
 		LogFun:         logFun,
 		LogNewFun:      logNewFun,
 	}
+	*/
 	ctx := context.Background()
 
 	// MONGODB
 	test__mongodb_host_str    := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
-	test__mongodb_url_str     := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
-	test__mongodb_db_name_str := "gf_tests"
+	// test__mongodb_url_str     := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
+	// test__mongodb_db_name_str := "gf_tests"
 	
+	// SQL
+	sqlHostStr := cliArgsMap["sql_host_str"].(string)
+
+
+	/*
 	mongodbDB, _, gfErr := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtimeSys)
 	if gfErr != nil {
 		fmt.Println(gfErr.Error)
@@ -74,7 +84,11 @@ func TestBasicImageOps(pTest *testing.T) {
 	mongodbColl := mongodbDB.Collection("data_symphony")
 	runtimeSys.Mongo_db   = mongodbDB
 	runtimeSys.Mongo_coll = mongodbColl
-	
+	*/
+
+
+	runtimeSys := gf_identity.Tinit(serviceNameStr, test__mongodb_host_str, sqlHostStr, logNewFun, logFun)
+
 	//------------------
 	// TEST_HTTP_PARSING
 	metaMap := map[string]interface{}{
