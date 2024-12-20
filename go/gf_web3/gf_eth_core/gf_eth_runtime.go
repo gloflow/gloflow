@@ -42,10 +42,12 @@ type GF_config struct {
 	Port_str         string `mapstructure:"port"`
 	Port_metrics_str string `mapstructure:"port_metrics"`
 
+	//-------------
 	// MONGODB - this is the dedicated mongodb DB
 	Mongodb_host_str    string `mapstructure:"mongodb_host"`
 	Mongodb_db_name_str string `mapstructure:"mongodb_db_name"`
 
+	//-------------
 	// AWS_SQS
 	AWS_SQS_queue_str string `mapstructure:"aws_sqs_queue"`
 
@@ -70,17 +72,12 @@ type GF_config struct {
 	// EXTERN_SERVICES
 	AlchemyAPIkeyStr string `mapstructure:"alchemy_api_key"`
 	OpenSeaAPIkeyStr string `mapstructure:"opensea_api_key"`
-
-	// // INFLUXDB
-	// Influxdb_host_str    string `mapstructure:"influxdb_host"`
-	// Influxdb_db_name_str string `mapstructure:"influxdb_db_name"`
 }
 
 //-------------------------------------------------
 
 func SentryInit(pSentryEndpointURIstr string) {
 
-	//-------------
 	// SENTRY
 	sentrySampleRateDefaultF := 0.5
 	sentryTracingRateForHandlersMap := map[string]float64{
@@ -123,11 +120,6 @@ func RuntimeGet(pConfig *GF_config,
 	fmt.Printf("mongodb connected...\n")
 
 	//--------------------
-	// // INFLUXDB
-	// influxdb_host_str := pConfig.Influxdb_host_str
-	// influxdb_client   := influxdb__init(influxdb_host_str)
-	// fmt.Printf("influxdb connected...\n")
-
 	// PY_PLUGINS
 	plugins_info := &GF_py_plugins{
 		Base_dir_path_str: pConfig.Py_plugins_dir_path_str,
@@ -139,7 +131,6 @@ func RuntimeGet(pConfig *GF_config,
 		Config:     pConfig,
 		Py_plugins: plugins_info,
 		RuntimeSys: pRuntimeSys,
-		// Influxdb_client: influxdb_client,
 	}
 
 	//--------------------
@@ -147,11 +138,3 @@ func RuntimeGet(pConfig *GF_config,
 }
 
 //-------------------------------------------------
-
-/*// INFLUXDB
-func influxdb__init(p_influxdb_host_str string) *influxdb2.Client {
-
-	fmt.Println("influxdb get client...")
-	client := influxdb2.NewClient(p_influxdb_host_str, "my-token")
-	return &client
-}*/

@@ -53,7 +53,7 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 	}
 
 	//-----------------------
-	// MONGODB_HOST
+	// SQL_HOST
 	var sqlHostStr string
 	envSQLhostStr := os.Getenv("GF_TEST_SQL_HOST_PORT")
 	if envSQLhostStr != "" {
@@ -98,7 +98,6 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 		return nil, nil, err
 	}
 	
-
 	//--------------------
 	// SQL
 
@@ -119,7 +118,6 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 	runtimeSys.SQLdb = sqlDB
 
 	//--------------------
-
 	// SENTRY
 	
 	// FIX!! - load this from ENV var
@@ -127,6 +125,6 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 
 	SentryInit(sentryEndpointURIstr)
 
-
+	//--------------------
 	return runtime, nil, nil
 }

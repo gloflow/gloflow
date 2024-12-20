@@ -102,7 +102,17 @@ func TestBasicImageOps(pTest *testing.T) {
 		T_str:  "img",
 		FlowsNamesLst: []string{"flow_0"},
 	}
+
+
+	// MONGO
 	gfErr = gf_images_core.DBmongoPutImage(test_img_0, ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+
+	// SQL
+	gfErr = gf_images_core.DBsqlPutImage(test_img_0, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}

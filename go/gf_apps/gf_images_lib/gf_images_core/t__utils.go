@@ -62,6 +62,10 @@ func CreateTestImages(pUserID gf_core.GF_ID,
 		FlowsNamesLst:  []string{"flow_1", "flow_2"},
 		Origin_url_str: "https://gloflow.com/some_url3",
 	}
+
+	//----------------------------
+	// DB
+	
 	gfErr := DBmongoPutImage(testImg0, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
@@ -78,6 +82,8 @@ func CreateTestImages(pUserID gf_core.GF_ID,
 	if gfErr != nil {
 		pTest.FailNow()
 	}
+
+	//----------------------------
 
 	return testImg0
 }

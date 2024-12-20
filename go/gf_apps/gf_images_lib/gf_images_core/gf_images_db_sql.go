@@ -23,15 +23,17 @@ import (
 	"fmt"
 	"context"
 	"time"
+	"encoding/json"
 	"math/rand"
 	"database/sql"
+	"github.com/lib/pq"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
 // PUT_IMAGE
 
-func dbSQLputImage(pImage *GFimage,
+func DBsqlPutImage(pImage *GFimage,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -39,6 +41,23 @@ func dbSQLputImage(pImage *GFimage,
 		"image_id_str": pImage.IDstr,
 	})
 
+	//----------------------
+	// META_MAP - convert to JSON; meta_map column is of type JSONB
+	jsonMetaBytesLst, err := json.Marshal(pImage.MetaMap)
+	if err != nil {
+		
+		gfErr := gf_core.ErrorCreate(
+			"failed to json-encode image meta_map, to persist it",
+			"json_encode_error",
+			map[string]interface{}{
+				"image_id_str": pImage.IDstr,
+			},
+			err, "gf_images_core", pRuntimeSys)
+		return gfErr
+	}
+	jsonMetaStr := string(jsonMetaBytesLst)
+
+	//----------------------
 	sqlStr := `
 		INSERT INTO gf_images (
 			id,
@@ -64,14 +83,14 @@ func dbSQLputImage(pImage *GFimage,
 		);
 	`
 
-	_, err := pRuntimeSys.SQLdb.ExecContext(
+	_, err = pRuntimeSys.SQLdb.ExecContext(
 		pCtx,
 		sqlStr,
 		pImage.IDstr,                 // id
 		pImage.UserID,                // user_id
 		pImage.ClientTypeStr,         // client_type
 		pImage.TitleStr,              // title
-		pImage.FlowsNamesLst,         // flows_names
+		pq.Array(pImage.FlowsNamesLst),         // flows_names
 		pImage.Origin_url_str,        // origin_url
 		pImage.Origin_page_url_str,   // origin_page_url
 		pImage.ThumbnailSmallURLstr,  // thumb_small_url
@@ -80,8 +99,8 @@ func dbSQLputImage(pImage *GFimage,
 		pImage.Format_str,            // format
 		pImage.Width_int,             // width
 		pImage.Height_int,            // height
-		pImage.MetaMap,               // meta_map
-		pImage.TagsLst,               // tags_lst
+		jsonMetaStr,                  // meta_map
+		pq.Array(pImage.TagsLst),               // tags_lst
 	)
 
 	if err != nil {

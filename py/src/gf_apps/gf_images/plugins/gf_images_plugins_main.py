@@ -25,9 +25,9 @@ import time
 def main():
 
 
-    print("GF_IMAGES PLUGINS >>>>")
+	print("GF_IMAGES PLUGINS >>>>")
 
-    time.sleep(1)
+	time.sleep(1)
 
 
 
@@ -35,4 +35,5 @@ def main():
 
 
 #----------------------------------------------
-main()
+if __name__ == "__main__":
+    main()

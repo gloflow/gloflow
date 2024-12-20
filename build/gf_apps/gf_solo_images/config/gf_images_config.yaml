@@ -28,5 +28,5 @@ images_flow_to_s3_bucket:
 #----------------------------
 # PY
 
-plugins_py_dir_path: ./py/gf_apps/gf_images/plugins
-images_classify_py_dir_path: ./py/gf_apps/gf_images/gf_images_classify
+plugins_py_dir_path: ./py/src/gf_apps/gf_images/plugins
+images_classify_py_dir_path: ./py/src/gf_apps/gf_images/gf_images_classify

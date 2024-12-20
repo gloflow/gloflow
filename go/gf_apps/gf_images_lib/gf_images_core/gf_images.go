@@ -171,7 +171,7 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 	}
 
 	// SQL
-	gfErr = dbSQLputImage(image, pCtx, pRuntimeSys)
+	gfErr = DBsqlPutImage(image, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

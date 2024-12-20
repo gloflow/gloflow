@@ -28,14 +28,24 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	"github.com/gloflow/gloflow/go/gf_identity"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_nft"
 )
 
 //---------------------------------------------------
 func TestNFT(pTest *testing.T) {
 
+	ctx := context.Background()
+
 	runtime, _, err := gf_eth_core.TgetRuntime()
 	if err != nil {
+		pTest.FailNow()
+	}
+
+
+
+	gfErr := gf_images_core.DBsqlCreateTables(ctx, runtime.RuntimeSys)
+	if gfErr != nil {
 		pTest.FailNow()
 	}
 
@@ -46,7 +56,7 @@ func TestNFT(pTest *testing.T) {
 	chainStr := "eth"
 	
 	HTTPagent := gorequest.New()
-	ctx       := context.Background()
+	
 
 	testUserInfo := &gf_identity.GFtestUserInfo{
 		NameStr:  fmt.Sprintf("ivan_t_web3_%s", gf_core.StrRandom()),

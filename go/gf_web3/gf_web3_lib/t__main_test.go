@@ -37,8 +37,8 @@ func TestMain(m *testing.M) {
 	testImagesThumbnailsStoreLocalDirPathStr := "./../tests_data/images_thumbnails"
 	testVideosStoreLocalDirPathStr           := "./../tests_data/videos"
 	testMediaDomainStr                       := ""
-	pluginsPyDirPathStr                      := "./../../../py/gf_apps/gf_images/plugins"
-	imagesClassifyPyDirPathStr := "./../../../py/gf_apps/gf_images/gf_images_classify"
+	pluginsPyDirPathStr                      := "./../../../py/src/gf_apps/gf_images/plugins"
+	imagesClassifyPyDirPathStr := "./../../../py/src/gf_apps/gf_images/gf_images_classify"
 
 	runtime, _, err := gf_eth_core.TgetRuntime()
 	if err != nil {
