@@ -146,10 +146,17 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr GFcrawlerPageImageID,
 
 		fmt.Printf("\n%s - %s -> %s\n\n", green("COPYING IMAGE between S3 BUCKETS"), cyan(sourceCrawlS3bucketStr), cyan(pImagesS3bucketNameStr))
 
+		image, gfError := gf_images_core.DBgetImage(imageIDstr, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+
+		/*
 		gfImage, gfErr := gf_images_core.DBmongoGetImage(imageIDstr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
+		*/
 
 		/*S3__get_image_original_file_s3_filepath is wrong!! FIXX!!!
 		the path of the originl_file that its returning is of a file named by its gf_img ID, which is wrong. 
@@ -158,8 +165,8 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr GFcrawlerPageImageID,
 		figure out if fixing this is going to break already added images (images added to a flow here from crawled images), 
 		since they're all named by ID now (which is a bug)*/
 
-		originalFileS3pathStr                              := gf_images_core.S3getImageOriginalFileS3filepath(gfImage, pRuntimeSys)
-		tSmallS3pathStr, tMediumS3pathStr, tLargeS3pathStr := gf_images_core.S3getImageThumbsS3filepaths(gfImage, pRuntimeSys)
+		originalFileS3pathStr                              := gf_images_core.S3getImageOriginalFileS3filepath(image, pRuntimeSys)
+		tSmallS3pathStr, tMediumS3pathStr, tLargeS3pathStr := gf_images_core.S3getImageThumbsS3filepaths(image, pRuntimeSys)
 
 		fmt.Printf("original_file_s3_path_str - %s\n", originalFileS3pathStr)
 		fmt.Printf("t_small_s3_path_str       - %s\n", tSmallS3pathStr)

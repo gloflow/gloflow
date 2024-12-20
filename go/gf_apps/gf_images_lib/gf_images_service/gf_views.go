@@ -39,11 +39,19 @@ func renderImageViewPage(pImageID gf_images_core.GFimageID,
 	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 
+	// DB_GET
+	image, gfErr := gf_images_core.DBgetImage(pImageID, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
+	}
+
+	/*
 	image, gfErr := gf_images_core.DBmongoGetImage(pImageID, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}
-	
+	*/
+
 	// META
 	// plugin
 	var filteredMetaJSONstr string

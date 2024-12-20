@@ -66,11 +66,22 @@ func SharePipeline(pInput *GFshareInput,
 		return gfErr
 	}
 	
+	//------------------------
 	// IMAGE
+
+	image, gfErr := DBgetImage(pInput.ImageID, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+	
+	/*
 	image, gfErr := DBmongoGetImage(pInput.ImageID, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
+	*/
+
+	//------------------------
 
 	imageURLstr := fmt.Sprintf("https://%s%s", pServiceInfo.DomainBaseStr, image.ThumbnailMediumURLstr)
 

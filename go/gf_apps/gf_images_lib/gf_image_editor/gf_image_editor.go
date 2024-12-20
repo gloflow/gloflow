@@ -88,13 +88,13 @@ func saveEditedImagePipeline(p_handler_url_path_str string,
 		return gfErr
 	}
 
-	new_title_str       := input.Title_str
-	source_image_id_str := input.Source_image_id_str
+	newTitleStr      := input.Title_str
+	sourceImageIDstr := input.Source_image_id_str
 
 	//--------------------------
 	// SAVE_BASE64_DATA_TO_FILE
 	// IMPORTANT!! - save first, and then create a GFimages
-	processingInfo, gfErr := saveEditedImage(source_image_id_str,
+	processingInfo, gfErr := saveEditedImage(sourceImageIDstr,
 		input.Image_base64_data_str,
 		pRuntimeSys)
 	if err != nil {
@@ -103,15 +103,22 @@ func saveEditedImagePipeline(p_handler_url_path_str string,
 
 	//--------------------------
 
-	sourceImage, gfErr := gf_images_core.DBmongoGetImage(source_image_id_str, pCtx, pRuntimeSys)
+	sourceImage, gfErr := gf_images_core.DBgetImage(sourceImageIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
+	
+	/*
+	sourceImage, gfErr := gf_images_core.DBmongoGetImage(sourceImageIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+	*/
 
 	processingInfo.image_origin_url_str      = sourceImage.Origin_url_str
 	processingInfo.image_origin_page_url_str = sourceImage.Origin_page_url_str
 
-	gfErr = createImage(new_title_str,
+	gfErr = createImage(newTitleStr,
 		[]string{input.Target_flow_name_str,},
 		processingInfo,
 		pCtx,

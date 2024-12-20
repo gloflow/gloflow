@@ -258,10 +258,20 @@ func addTagsToObject(pTagsStr string,
 
 			imageIDstr := pObjectExternIDstr
 			imageID    := gf_images_core.GFimageID(imageIDstr)
+
+			// DB_EXISTS
+			existsBool, gfErr := gf_images_core.DBimageExists(imageID, pCtx, pRuntimeSys)
+			if gfErr != nil {
+				return gfErr
+			}
+			
+			/*
 			existsBool, gfErr := gf_images_core.DBmongoImageExists(imageID, pCtx, pRuntimeSys)
 			if gfErr != nil {
 				return gfErr
 			}
+			*/
+
 			if existsBool {
 				gfErr := dbMongoAddTagsToImage(imageIDstr, tagsLst, pCtx, pRuntimeSys)
 				if gfErr != nil {

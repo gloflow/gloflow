@@ -140,10 +140,17 @@ func TestCreate(pTest *testing.T) {
 	//--------------------
 	// DB_GET_IMAGE
 
+	image, gfErr := gf_images_core.DBgetImage(testImage.IDstr, ctx, runtimeSys)
+	if gfErr != nil {
+		return "", gfErr
+	}
+
+	/*
 	image, gfErr := gf_images_core.DBmongoGetImage(testImage.IDstr, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
+	*/
 
 	spew.Dump(image)
 	assert.True(pTest, len(image.TagsLst) == 3, "image should have 3 tags added to it")

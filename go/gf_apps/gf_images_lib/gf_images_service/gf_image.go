@@ -32,20 +32,35 @@ func ImageGet(pImageIDstr gf_images_core.GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*gf_images_core.GFimageExport, bool, *gf_core.GFerror) {
 
+
 	// DB_EXISTS
-	existsBool, gfErr := gf_images_core.DBmongoImageExists(pImageIDstr, pCtx, pRuntimeSys)
+	existsBool, gfErr := gf_images_core.DBimageExists(pImageIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, false, gfErr
 	}
 
+	/*
+	existsBool, gfErr := gf_images_core.DBmongoImageExists(pImageIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, false, gfErr
+	}
+	*/
+
 	if existsBool {
 
 		// DB_GET
+		image, gfErr := gf_images_core.DBgetImage(pImageIDstr, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return nil, false, gfErr
+		}
+		
+		/*
 		image, gfErr := gf_images_core.DBmongoGetImage(pImageIDstr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return nil, false, gfErr
 		}
-
+		*/
+		
 		resolvedUserNameStr := gf_identity_core.ResolveUserName(image.UserID, pCtx, pRuntimeSys)
 
 		imageExport := &gf_images_core.GFimageExport{

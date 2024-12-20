@@ -20,9 +20,64 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_core
 
 import (
+	"context"
 	"math/rand"
 	"time"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
+
+//---------------------------------------------------
+
+func DBimageExists(pImageIDstr GFimageID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+
+	// SQL
+	existsBool, gfErr := DBsqlImageExists(pImageIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return false, gfErr
+	}
+
+	// if there is no image found with desired ID in SQL, try to get it from MongoDB
+	if !existsBool {
+
+		// MONGODB
+		existsBool, gfErr = DBmongoImageExists(pImageIDstr, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return false, gfErr
+		}
+	}
+
+	return existsBool, nil
+}
+
+//---------------------------------------------------
+
+func DBgetImage(pImageIDstr GFimageID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFimage, *gf_core.GFerror) {
+
+	var image *GFimage
+	var gfErr *gf_core.GFerror
+
+	// SQL
+	image, gfErr = DBsqlGetImage(pImageIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	// if there is no image found with desired ID in SQL, try to get it from MongoDB
+	if image == nil {
+
+		// MONGODB
+		image, gfErr = DBmongoGetImage(pImageIDstr, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+	}
+
+	return image, nil
+}
 
 //---------------------------------------------------
 

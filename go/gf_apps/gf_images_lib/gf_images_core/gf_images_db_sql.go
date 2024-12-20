@@ -124,7 +124,7 @@ func DBsqlPutImage(pImage *GFimage,
 //---------------------------------------------------
 // GET_IMAGE
 
-func dbSQLGetImage(pImageIDstr GFimageID,
+func DBsqlGetImage(pImageIDstr GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFimage, *gf_core.GFerror) {
 
@@ -154,13 +154,15 @@ func dbSQLGetImage(pImageIDstr GFimageID,
 		WHERE id = $1 AND deleted = FALSE`
 
 	var image GFimage
+	var metaMapBytesLst []byte
+
 	row := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pImageIDstr)
 	err := row.Scan(
 		&image.IDstr,
 		&image.UserID,
 		&image.ClientTypeStr,
 		&image.TitleStr,
-		&image.FlowsNamesLst,
+		pq.Array(&image.FlowsNamesLst),
 		&image.Origin_url_str,
 		&image.Origin_page_url_str,
 		&image.ThumbnailSmallURLstr,
@@ -169,12 +171,13 @@ func dbSQLGetImage(pImageIDstr GFimageID,
 		&image.Format_str,
 		&image.Width_int,
 		&image.Height_int,
-		&image.MetaMap,
-		&image.TagsLst,
+		&metaMapBytesLst,
+		pq.Array(&image.TagsLst),
 	)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
+			/*
 			gfErr := gf_core.ErrorCreate(
 				"image does not exist in gf_images table",
 				"sql_query_execute",
@@ -183,11 +186,26 @@ func dbSQLGetImage(pImageIDstr GFimageID,
 				},
 				err, "gf_images_core", pRuntimeSys)
 			return nil, gfErr
+			*/
+
+			// if there's no record found, its not an error, just return nil for image
+			return nil, nil
 		}
 
 		gfErr := gf_core.ErrorCreate(
 			"failed to retrieve image data from gf_images table",
 			"sql_query_execute",
+			map[string]interface{}{
+				"image_id": pImageIDstr,
+			},
+			err, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	if err := json.Unmarshal(metaMapBytesLst, &image.MetaMap); err != nil {
+		gfErr := gf_core.ErrorCreate(
+			"failed to unmarshal meta_map JSONB image data from gf_images table",
+			"json_decode_error",
 			map[string]interface{}{
 				"image_id": pImageIDstr,
 			},
@@ -205,7 +223,7 @@ func DBsqlImageExists(pImageIDstr GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
-	query := "SELECT COUNT(*) FROM gf_images WHERE id = ?"
+	query := "SELECT COUNT(*) FROM gf_images WHERE id = $1 AND deleted = FALSE"
 
 	var count_int int
 	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, query, pImageIDstr).Scan(&count_int)
