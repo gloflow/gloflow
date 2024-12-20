@@ -27,6 +27,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 	"net/http/httptest"
 	"io/ioutil"
 	// "github.com/stretchr/testify/assert"
@@ -67,7 +68,7 @@ func TestBasicImageOps(pTest *testing.T) {
 	ctx := context.Background()
 
 	// MONGODB
-	test__mongodb_host_str    := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	test__mongodb_host_str := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	// test__mongodb_url_str     := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
 	// test__mongodb_db_name_str := "gf_tests"
 	
@@ -88,6 +89,14 @@ func TestBasicImageOps(pTest *testing.T) {
 
 
 	runtimeSys := gf_identity.Tinit(serviceNameStr, test__mongodb_host_str, sqlHostStr, logNewFun, logFun)
+
+
+	gfErr := gf_images_core.DBsqlCreateTables(ctx, runtimeSys)
+	if gfErr != nil {
+		fmt.Println(gfErr.Error)
+		pTest.Fail()
+
+	}
 
 	//------------------
 	// TEST_HTTP_PARSING
@@ -112,8 +121,8 @@ func TestBasicImageOps(pTest *testing.T) {
 	// CREATE_TEST_IMAGES
 	
 	test_img_0 := &gf_images_core.GFimage{
-		IDstr: "test_img_0",
-		T_str:  "img",
+		IDstr: gf_images_core.GFimageID(fmt.Sprintf("test_img_%d", time.Now().UnixNano())),
+		T_str: "img",
 		FlowsNamesLst: []string{"flow_0"},
 	}
 

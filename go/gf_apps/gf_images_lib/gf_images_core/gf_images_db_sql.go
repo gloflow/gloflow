@@ -359,12 +359,12 @@ func DBsqlCreateTables(pCtx context.Context,
 		
 		-- ---------------
 		-- META
-		meta_map JSONB, -- metadata external users might assign to an image
+		meta_map JSONB,  -- metadata external users might assign to an image
 		tags_lst TEXT[], -- human facing tags assigned to an image
 
 		-- ---------------
 
-		PRIMARY KEY(id),
+		PRIMARY KEY(id)
 
 		-- for some of the tests to pass right now, we need to have a user_id column that
 		-- accepts non-registered user-id''s. for ease of dev and testing.
