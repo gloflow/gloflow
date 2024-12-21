@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_core
 
 import (
+	"fmt"
+	"time"
 	"context"
 	"testing"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -35,28 +37,28 @@ func CreateTestImages(pUserID gf_core.GF_ID,
 	pRuntimeSys.LogNewFun("DEBUG", "creating test images...", nil)
 
 	testImg0 := &GFimage{
-		IDstr: "test_img_0",
+		IDstr: GFimageID(fmt.Sprintf("test_img_%d", time.Now().UnixNano())),
 		T_str: "img",
 		UserID:         pUserID,
 		FlowsNamesLst:  []string{"flow_0"},
 		Origin_url_str: "https://gloflow.com/some_url0",
 	}
 	testImg1 := &GFimage{
-		IDstr: "test_img_1",
+		IDstr: GFimageID(fmt.Sprintf("test_img_%d", time.Now().UnixNano())),
 		T_str: "img",
 		UserID:         pUserID,
 		FlowsNamesLst:  []string{"flow_0"},
 		Origin_url_str: "https://gloflow.com/some_url1",
 	}
 	testImg2 := &GFimage{
-		IDstr: "test_img_2",
+		IDstr: GFimageID(fmt.Sprintf("test_img_%d", time.Now().UnixNano())),
 		T_str: "img",
 		UserID:         pUserID,
 		FlowsNamesLst:  []string{"flow_0", "flow_1"},
 		Origin_url_str: "https://gloflow.com/some_url2",
 	}
 	testImg3 := &GFimage{
-		IDstr: "test_img_3",
+		IDstr: GFimageID(fmt.Sprintf("test_img_%d", time.Now().UnixNano())),
 		T_str: "img",
 		UserID:         pUserID,
 		FlowsNamesLst:  []string{"flow_1", "flow_2"},
@@ -66,19 +68,19 @@ func CreateTestImages(pUserID gf_core.GF_ID,
 	//----------------------------
 	// DB
 	
-	gfErr := DBmongoPutImage(testImg0, pCtx, pRuntimeSys)
+	gfErr := DBsqlPutImage(testImg0, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
-	gfErr = DBmongoPutImage(testImg1, pCtx, pRuntimeSys)
+	gfErr = DBsqlPutImage(testImg1, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
-	gfErr = DBmongoPutImage(testImg2, pCtx, pRuntimeSys)
+	gfErr = DBsqlPutImage(testImg2, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
-	gfErr = DBmongoPutImage(testImg3, pCtx, pRuntimeSys)
+	gfErr = DBsqlPutImage(testImg3, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}

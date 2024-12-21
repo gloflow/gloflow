@@ -25,6 +25,75 @@ import (
 )
 
 //---------------------------------------------------
+
+func DBsqlGetAll(pCtx context.Context, pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+	sqlStr := `
+		WITH UnwoundFlows AS (
+			SELECT
+				UNNEST(flows_names_lst) AS flow_name
+			FROM
+				images_flows
+			WHERE
+				t = 'img'
+		),
+		FlowCounts AS (
+			SELECT
+				flow_name AS _id,
+				COUNT(*) AS count_int
+			FROM
+				UnwoundFlows
+			GROUP BY
+				flow_name
+		)
+		SELECT
+			_id AS flow_name,
+			count_int
+		FROM
+			FlowCounts
+		ORDER BY
+			count_int DESC;
+	`
+
+	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, sqlStr)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to execute SQL query to get all flow names",
+			"sql_query_execute",
+			map[string]interface{}{},
+			err, "gf_images_flows", pRuntimeSys)
+		return nil, gfErr
+	}
+	defer rows.Close()
+
+	var result []map[string]interface{}
+	for rows.Next() {
+		var flowName string
+		var count int
+		if err := rows.Scan(&flowName, &count); err != nil {
+			gfErr := gf_core.ErrorCreate("failed to scan row for flow names and counts",
+				"sql_row_scan",
+				map[string]interface{}{},
+				err, "gf_images_flows", pRuntimeSys)
+			return nil, gfErr
+		}
+		result = append(result, map[string]interface{}{
+			"flow_name": flowName,
+			"count":     count,
+		})
+	}
+
+	if err := rows.Err(); err != nil {
+		gfErr := gf_core.ErrorCreate("error encountered while iterating over query results",
+			"sql_query_iteration",
+			map[string]interface{}{},
+			err, "gf_images_flows", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	return result, nil
+}
+
+
+//---------------------------------------------------
 // GET_FLOWS_IDS
 
 func DBsqlGetFlowsIDs(pFlowsNamesLst []string,

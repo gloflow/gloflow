@@ -163,10 +163,13 @@ func CreateIfMissing(pFlowsNamesLst []string,
 func pipelineGetAll(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
+	// MONGO
 	resultsLst, gfErr := DBmongoGetAll(pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
+
+	
 
 	allFlowsLst := []map[string]interface{}{}
 	for _, flowInfoMap := range resultsLst {
