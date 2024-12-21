@@ -28,19 +28,19 @@ import (
 
 //---------------------------------------------------
 
-func ImageGet(pImageIDstr gf_images_core.GFimageID,
+func ImageGet(pImageID gf_images_core.GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*gf_images_core.GFimageExport, bool, *gf_core.GFerror) {
 
 
 	// DB_EXISTS
-	existsBool, gfErr := gf_images_core.DBimageExists(pImageIDstr, pCtx, pRuntimeSys)
+	existsBool, gfErr := gf_images_core.DBimageExistsByID(pImageID, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, false, gfErr
 	}
 
 	/*
-	existsBool, gfErr := gf_images_core.DBmongoImageExists(pImageIDstr, pCtx, pRuntimeSys)
+	existsBool, gfErr := gf_images_core.DBmongoImageExists(pImageID, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, false, gfErr
 	}
@@ -49,13 +49,13 @@ func ImageGet(pImageIDstr gf_images_core.GFimageID,
 	if existsBool {
 
 		// DB_GET
-		image, gfErr := gf_images_core.DBgetImage(pImageIDstr, pCtx, pRuntimeSys)
+		image, gfErr := gf_images_core.DBgetImage(pImageID, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return nil, false, gfErr
 		}
 		
 		/*
-		image, gfErr := gf_images_core.DBmongoGetImage(pImageIDstr, pCtx, pRuntimeSys)
+		image, gfErr := gf_images_core.DBmongoGetImage(pImageID, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return nil, false, gfErr
 		}

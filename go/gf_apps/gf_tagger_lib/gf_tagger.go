@@ -95,10 +95,14 @@ func CreateIfMissing(pTagsLst []string,
 
 	for _, tagStr := range pTagsLst {
 
+		//----------------------
+		// DB - SQL
 		existsBool, gfErr := DBsqlCheckTagExists(tagStr, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
+
+		//----------------------
 
 		// create tag if it doesnt exist
 		if !existsBool {
@@ -136,7 +140,7 @@ func Create(pTagStr string,
 	// ADD!! - provide a mechanism for users to specify that a tag is private
 	publicBool := true
 
-	// DB
+	// DB - SQL
 	gfErr := dbSQLcreateTag(tagID,
 		pTagStr,
 		pUserID,
@@ -204,7 +208,7 @@ func addTagsToObject(pTagsStr string,
 		
 		objID := gf_core.GF_ID(pObjectExternIDstr)
 
-		gfErr = Create(tagStr,
+		gfErr = CreateIfMissing([]string{tagStr, },
 			objID,
 			pObjectTypeStr,
 			pUserID,
@@ -218,41 +222,6 @@ func addTagsToObject(pTagsStr string,
 	//---------------
 	switch pObjectTypeStr {
 		//---------------
-		// POST
-		case "post":
-			
-			//---------------
-			// FIX!! - post ID should not be its Title!!!!!
-			postTitleStr := pObjectExternIDstr
-
-			//---------------
-
-			existsBool, gfErr := gf_publisher_core.DBmongoCheckPostExists(postTitleStr,
-				pRuntimeSys)
-			if gfErr != nil {
-				return gfErr
-			}
-			
-			if existsBool {
-				pRuntimeSys.LogNewFun("DEBUG", "POST EXISTS", nil)
-
-				gfErr := dbMongoAddTagsToPost(postTitleStr, tagsLst, pRuntimeSys)
-				return gfErr
-
-			} else {
-				gfErr := gf_core.ErrorCreate(fmt.Sprintf("post with title (%s) doesnt exist, while adding a tags - %s", 
-					postTitleStr,
-					tagsLst),
-					"verify__invalid_value_error",
-					map[string]interface{}{
-						"post_title_str": postTitleStr,
-						"tags_lst":       tagsLst,
-					},
-					nil, "gf_tagger_lib", pRuntimeSys)
-				return gfErr
-			}
-
-		//---------------
 		// IMAGE
 		case "image":
 
@@ -260,12 +229,13 @@ func addTagsToObject(pTagsStr string,
 			imageID    := gf_images_core.GFimageID(imageIDstr)
 
 			// DB_EXISTS
-			existsBool, gfErr := gf_images_core.DBimageExists(imageID, pCtx, pRuntimeSys)
+			existsBool, gfErr := gf_images_core.DBimageExistsByID(imageID, pCtx, pRuntimeSys)
 			if gfErr != nil {
 				return gfErr
 			}
 			
 			/*
+			// MONGO
 			existsBool, gfErr := gf_images_core.DBmongoImageExists(imageID, pCtx, pRuntimeSys)
 			if gfErr != nil {
 				return gfErr
@@ -280,11 +250,50 @@ func addTagsToObject(pTagsStr string,
 				}
 
 				/*
+				// MONGO
 				gfErr := dbMongoAddTagsToImage(imageIDstr, tagsLst, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return gfErr
 				}
 				*/
+			}
+
+		//---------------
+		// POST
+		case "post":
+			
+			//---------------
+			// FIX!! - post ID should not be its Title!!!!!
+			postTitleStr := pObjectExternIDstr
+
+			//---------------
+
+			// MONGO
+			existsBool, gfErr := gf_publisher_core.DBmongoCheckPostExists(postTitleStr,
+				pRuntimeSys)
+			if gfErr != nil {
+				return gfErr
+			}
+			
+			if existsBool {
+				pRuntimeSys.LogNewFun("DEBUG", "POST EXISTS", nil)
+
+
+				// MONGO
+				gfErr := dbMongoAddTagsToPost(postTitleStr, tagsLst, pRuntimeSys)
+				return gfErr
+
+			} else {
+				gfErr := gf_core.ErrorCreate(fmt.Sprintf("post with title (%s) doesnt exist, while adding a tags - %s", 
+					postTitleStr,
+					tagsLst),
+					"verify__invalid_value_error",
+					map[string]interface{}{
+						"post_title_str": postTitleStr,
+						"tags_lst":       tagsLst,
+					},
+					nil, "gf_tagger_lib", pRuntimeSys)
+				return gfErr
 			}
 
 		//---------------
@@ -303,6 +312,8 @@ func addTagsToObject(pTagsStr string,
 			}
 
 			if existsBool {
+
+				// MONGO
 				gfErr := gf_address.DBmongoAddTag(tagsLst,
 					addressStr,
 					chainStr,

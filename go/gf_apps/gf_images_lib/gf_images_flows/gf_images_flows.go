@@ -298,16 +298,22 @@ func imagesExistCheck(pImagesExternURLsLst []string,
 	pFlowNameStr   string,
 	pClientTypeStr string,
 	pUserID        gf_core.GF_ID,
+	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
-	existingImagesLst, gfErr := dbMongoImagesExist(pImagesExternURLsLst,
+	//-------------------------
+	// IMAGES_EXIST_CHECK
+
+	existingImagesLst, gfErr := gf_images_core.DBimageExistsByURLs(pImagesExternURLsLst,
 		pFlowNameStr,
 		pClientTypeStr,
 		pUserID,
+		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
+
 
 	//-------------------------
 	// PERSIST IMAGE_EXISTS_CHECK
@@ -323,9 +329,12 @@ func imagesExistCheck(pImagesExternURLsLst []string,
 			ImagesExternURLsLst: pImagesExternURLsLst,
 		}
 
-		ctx         := context.Background()
+		ctx := context.Background()
+
+		//-------------------------
+		// MONGO
 		collNameStr := "gf_flows_img_exists_check" // pRuntimeSys.Mongo_coll.Name()
-		_            = gf_core.MongoInsert(check,
+		_ = gf_core.MongoInsert(check,
 			collNameStr,
 			map[string]interface{}{
 				"images_extern_urls_lst": pImagesExternURLsLst,
@@ -335,6 +344,8 @@ func imagesExistCheck(pImagesExternURLsLst []string,
 			},
 			ctx,
 			pRuntimeSys)
+
+		//-------------------------
 	}()
 
 	//-------------------------

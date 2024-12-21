@@ -57,14 +57,6 @@ func TestMain(m *testing.M) {
 func TestBasicImageOps(pTest *testing.T) {
 
 	serviceNameStr := "gf_images_ops_tests"
-
-	/*
-	runtimeSys := &gf_core.RuntimeSys{
-		ServiceNameStr: serviceNameStr,
-		LogFun:         logFun,
-		LogNewFun:      logNewFun,
-	}
-	*/
 	ctx := context.Background()
 
 	// MONGODB
@@ -74,9 +66,15 @@ func TestBasicImageOps(pTest *testing.T) {
 	
 	// SQL
 	sqlHostStr := cliArgsMap["sql_host_str"].(string)
-
-
+	
+	runtimeSys := gf_identity.Tinit(serviceNameStr, test__mongodb_host_str, sqlHostStr, logNewFun, logFun)
 	/*
+	runtimeSys := &gf_core.RuntimeSys{
+		ServiceNameStr: serviceNameStr,
+		LogFun:         logFun,
+		LogNewFun:      logNewFun,
+	}
+
 	mongodbDB, _, gfErr := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtimeSys)
 	if gfErr != nil {
 		fmt.Println(gfErr.Error)
@@ -87,15 +85,12 @@ func TestBasicImageOps(pTest *testing.T) {
 	runtimeSys.Mongo_coll = mongodbColl
 	*/
 
-
-	runtimeSys := gf_identity.Tinit(serviceNameStr, test__mongodb_host_str, sqlHostStr, logNewFun, logFun)
-
-
+	//------------------
+	// INIT_TABLES
 	gfErr := gf_images_core.DBsqlCreateTables(ctx, runtimeSys)
 	if gfErr != nil {
 		fmt.Println(gfErr.Error)
 		pTest.Fail()
-
 	}
 
 	//------------------

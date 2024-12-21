@@ -27,63 +27,7 @@ import (
 )
 
 //---------------------------------------------------
-
-func DBaddTagToImage(pImageIDstr GFimageID,
-	pTagsLst  []string,
-	pCtx      context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-
-	// SQL
-	existsBool, gfErr := DBsqlImageExists(pImageIDstr, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
-
-	if existsBool {
-		
-		// SQL
-		gfErr = DBsqlAddTagsToImage(pImageIDstr, pTagsLst, pCtx, pRuntimeSys)
-		if gfErr != nil {
-			return gfErr
-		}
-	} else {
-
-		// MONGO
-		gfErr = DBmongoAddTagsToImage(pImageIDstr, pTagsLst, pCtx, pRuntimeSys)
-		if gfErr != nil {
-			return gfErr
-		}
-	}
-
-	return nil
-}
-
-//---------------------------------------------------
-
-func DBimageExists(pImageIDstr GFimageID,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
-
-	// SQL
-	existsBool, gfErr := DBsqlImageExists(pImageIDstr, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return false, gfErr
-	}
-
-	// if there is no image found with desired ID in SQL, try to get it from MongoDB
-	if !existsBool {
-
-		// MONGODB
-		existsBool, gfErr = DBmongoImageExists(pImageIDstr, pCtx, pRuntimeSys)
-		if gfErr != nil {
-			return false, gfErr
-		}
-	}
-
-	return existsBool, nil
-}
-
-//---------------------------------------------------
+// GET_IMAGE
 
 func DBgetImage(pImageIDstr GFimageID,
 	pCtx        context.Context,
@@ -113,6 +57,109 @@ func DBgetImage(pImageIDstr GFimageID,
 
 //---------------------------------------------------
 
+func DBaddTagToImage(pImageIDstr GFimageID,
+	pTagsLst  []string,
+	pCtx      context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	// SQL
+	existsBool, gfErr := DBsqlImageExistsByID(pImageIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	if existsBool {
+		
+		// SQL
+		gfErr = DBsqlAddTagsToImage(pImageIDstr, pTagsLst, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+	} else {
+
+		// MONGO
+		gfErr = DBmongoAddTagsToImage(pImageIDstr, pTagsLst, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+// IMAGE_EXISTS
+//---------------------------------------------------
+// IMAGE_EXISTS_BY_ID
+
+func DBimageExistsByID(pImageIDstr GFimageID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+
+	// SQL
+	existsBool, gfErr := DBsqlImageExistsByID(pImageIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return false, gfErr
+	}
+
+	// if there is no image found with desired ID in SQL, try to get it from MongoDB
+	if !existsBool {
+
+		// MONGODB
+		existsBool, gfErr = DBmongoImageExistsByID(pImageIDstr, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return false, gfErr
+		}
+	}
+
+	return existsBool, nil
+}
+
+//---------------------------------------------------
+// IMAGE_EXISTS_BY_URLS
+
+func DBimageExistsByURLs(pImagesExternURLsLst []string,
+	pFlowNameStr   string,
+	pClientTypeStr string,
+	pUserID        gf_core.GF_ID,
+	pCtx           context.Context,
+	pRuntimeSys    *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+
+	// SQL
+	sqlExistingImagesLst, gfErr := DBsqlImagesExistByURLs(pImagesExternURLsLst,
+		pFlowNameStr,
+		pClientTypeStr,
+		pUserID,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+	
+	// MONGO
+	mongoExistingImagesLst, gfErr := DBmongoImagesExistByURLs(pImagesExternURLsLst,
+		pFlowNameStr,
+		pClientTypeStr,
+		pUserID,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	imagesLst := MergeImageMapsLists(mongoExistingImagesLst, sqlExistingImagesLst)
+
+
+
+
+
+	return imagesLst, nil
+
+}
+
+//---------------------------------------------------
+// MERGE
+//---------------------------------------------------
+
 func MergeImagesLists(pMongoImagesLst, pSQLimagesLst []*GFimage) []*GFimage {
 	
 	imageMap := make(map[string]*GFimage)
@@ -139,6 +186,38 @@ func MergeImagesLists(pMongoImagesLst, pSQLimagesLst []*GFimage) []*GFimage {
 	rand.Shuffle(len(imagesLst), func(i, j int) {
 		imagesLst[i], imagesLst[j] = imagesLst[j], imagesLst[i]
 	})
+
+	return imagesLst
+}
+
+//---------------------------------------------------
+
+func MergeImageMapsLists(pMongoImagesLst, pSQLimagesLst []map[string]interface{}) []map[string]interface{} {
+	
+	imageMap := make(map[string]map[string]interface{})
+
+	// add SQL images to the map (SQL takes precedence)
+	for _, img := range pSQLimagesLst {
+		id, ok := img["id_str"].(string)
+		if ok {
+			imageMap[id] = img
+		}
+	}
+
+	// add MongoDB images to the map if they don't already exist
+	for _, img := range pMongoImagesLst {
+		id, ok := img["id_str"].(string)
+		if ok {
+			if _, exists := imageMap[id]; !exists {
+				imageMap[id] = img
+			}
+		}
+	}
+
+	imagesLst := make([]map[string]interface{}, 0, len(imageMap))
+	for _, img := range imageMap {
+		imagesLst = append(imagesLst, img)
+	}
 
 	return imagesLst
 }

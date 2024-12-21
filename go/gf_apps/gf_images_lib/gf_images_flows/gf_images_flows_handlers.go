@@ -198,6 +198,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					flowNameStr,
 					clientTypeStr,
 					userID,
+					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr

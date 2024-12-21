@@ -217,9 +217,9 @@ func DBsqlGetImage(pImageIDstr GFimageID,
 }
 
 //---------------------------------------------------
-// IMAGE_EXISTS
+// IMAGE_EXISTS_BY_ID
 
-func DBsqlImageExists(pImageID GFimageID,
+func DBsqlImageExistsByID(pImageID GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
@@ -236,6 +236,109 @@ func DBsqlImageExists(pImageID GFimageID,
 	}
 
 	return countInt > 0, nil
+}
+
+//---------------------------------------------------
+// IMAGES_EXIST_BY_URLS
+
+func DBsqlImagesExistByURLs(pImagesExternURLsLst []string,
+	pFlowNameStr   string,
+	pClientTypeStr string,
+	pUserID        gf_core.GF_ID,
+	pCtx           context.Context,
+	pRuntimeSys    *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+	
+	sqlStr := `
+		SELECT
+			creation_unix_time_f,
+			id_str,
+			origin_url_str,
+			origin_page_url_str,
+			flows_names_lst,
+			tags_lst
+		FROM
+			gf_images
+		WHERE
+			(
+				(
+					$1 = 'all' AND
+					(user_id_str = $4 OR user_id_str = 'anon') AND
+					origin_url_str = ANY($2)
+				)
+				OR
+				(
+					$1 != 'all'
+					AND
+					(	
+						user_id_str = $4 OR user_id_str = 'anon'
+					)
+					AND
+					origin_url_str = ANY($2)
+					AND
+					$1 = ANY(flows_names)
+				)
+			);
+	  `
+  
+	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, sqlStr,
+		pFlowNameStr,                   // $1
+		pq.Array(pImagesExternURLsLst), // $2
+		pClientTypeStr,                 // $3
+		pUserID)                        // $4
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to execute SQL query to check if images exist",
+			"sql_query_execute",
+			map[string]interface{}{
+				"images_extern_urls_lst": pImagesExternURLsLst,
+				"flow_name_str":          pFlowNameStr,
+				"client_type_str":        pClientTypeStr,
+			},
+			err, "gf_images_flows", pRuntimeSys)
+		return nil, gfErr
+	}
+	defer rows.Close()
+
+	var existingImagesLst []map[string]interface{}
+	for rows.Next() {
+		var creationUnixTime float64
+		var idStr, originURLStr, originPageURLStr string
+		var flowsNamesLst, tagsLst []string
+
+		if err := rows.Scan(&creationUnixTime, &idStr, &originURLStr, &originPageURLStr, pq.Array(&flowsNamesLst), pq.Array(&tagsLst)); err != nil {
+			gfErr := gf_core.ErrorCreate("failed to scan row for images exist check",
+				"sql_row_scan",
+				map[string]interface{}{
+					"images_extern_urls_lst": pImagesExternURLsLst,
+					"flow_name_str":          pFlowNameStr,
+					"client_type_str":        pClientTypeStr,
+				},
+				err, "gf_images_flows", pRuntimeSys)
+			return nil, gfErr
+		}
+
+		existingImagesLst = append(existingImagesLst, map[string]interface{}{
+			"creation_unix_time_f": creationUnixTime,
+			"id_str":               idStr,
+			"origin_url_str":       originURLStr,
+			"origin_page_url_str":  originPageURLStr,
+			"flows_names_lst":      flowsNamesLst,
+			"tags_lst":             tagsLst,
+		})
+	}
+
+	if err := rows.Err(); err != nil {
+		gfErr := gf_core.ErrorCreate("error encountered while iterating over query results",
+			"sql_row_scan",
+			map[string]interface{}{
+				"images_extern_urls_lst": pImagesExternURLsLst,
+				"flow_name_str":          pFlowNameStr,
+				"client_type_str":        pClientTypeStr,
+			},
+			err, "gf_images_flows", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	return existingImagesLst, nil
 }
 
 //---------------------------------------------------
@@ -322,6 +425,7 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 }
 
 //---------------------------------------------------
+// ADD_TAGS_TO_IMAGE
 
 func DBsqlAddTagsToImage(pImageID GFimageID,
 	pTagsLst    []string,

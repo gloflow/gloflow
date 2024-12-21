@@ -21,6 +21,7 @@ package gf_images_flows
 
 import (
 	"os"
+	"fmt"
 	"testing"
 	"context"
 	"github.com/stretchr/testify/assert"
@@ -139,6 +140,16 @@ func TestGetAll(pTest *testing.T) {
 	runtimeSys     := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
 
 	userID := gf_core.GF_ID("test_user")
+
+	//------------------
+	// INIT_TABLES
+	gfErr := gf_images_core.DBsqlCreateTables(ctx, runtimeSys)
+	if gfErr != nil {
+		fmt.Println(gfErr.Error)
+		pTest.Fail()
+	}
+
+	//------------------
 
 	//------------------
 	// CREATE_TEST_IMAGES
