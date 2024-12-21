@@ -43,16 +43,16 @@ func DBgetAll(pCtx context.Context, pRuntimeSys *gf_core.RuntimeSys) ([]map[stri
 	//-------------------
 	// MERGE
 	mergedMap := make(map[string]int)
-	for _, result := range sqlResultsLst {
-		flowName := result["flow_name"].(string)
-		count := result["count"].(int)
-		mergedMap[flowName] = count
+	for _, resultMap := range sqlResultsLst {
+		flowNameStr := resultMap["name_str"].(string)
+		countInt    := resultMap["count_int"].(int)
+		mergedMap[flowNameStr] = countInt
 	}
 
-	for _, result := range mongoResultsLst {
+	for _, resultMap := range mongoResultsLst {
 		
-		flowNameStr := result["_id"].(string) // result["flow_name"].(string)
-		countInt := result["count"].(int)
+		flowNameStr := resultMap["_id"].(string) // result["flow_name"].(string)
+		countInt := resultMap["count_int"].(int)
 
 		if existingCount, exists := mergedMap[flowNameStr]; exists {
 			if countInt > existingCount {
@@ -66,9 +66,9 @@ func DBgetAll(pCtx context.Context, pRuntimeSys *gf_core.RuntimeSys) ([]map[stri
 	//-------------------
 	// convert to list
 
-	finalResultsLst := make([]map[string]interface{}, 0, len(mergedMap))
+	flowsCountsLst := make([]map[string]interface{}, 0, len(mergedMap))
 	for flowNameStr, countInt := range mergedMap {
-		finalResultsLst = append(finalResultsLst, map[string]interface{}{
+		flowsCountsLst = append(flowsCountsLst, map[string]interface{}{
 			"name_str":  flowNameStr,
 			"count_int": countInt,
 		})
@@ -76,5 +76,5 @@ func DBgetAll(pCtx context.Context, pRuntimeSys *gf_core.RuntimeSys) ([]map[stri
 
 	//-------------------
 
-	return finalResultsLst, nil
+	return flowsCountsLst, nil
 }

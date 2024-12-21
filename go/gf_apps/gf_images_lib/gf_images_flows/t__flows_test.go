@@ -59,9 +59,25 @@ func TestImagesExist(pTest *testing.T) {
 	userID := gf_core.GF_ID("test")
 	clientTypeStr := "test"
 
+	imagesExternURLsLst := []string{
+		"https://gloflow.com/some_url0",
+		"https://gloflow.com/some_url1",
+	}
+
 	//--------------------
 	// INIT
 	gfErr := Init(runtimeSys)
+	if gfErr != nil {
+		pTest.FailNow()
+	}
+
+	//------------------
+	initExistingImagesLst, gfErr := gf_images_core.DBimageExistsByURLs(imagesExternURLsLst,
+		flowNameStr,
+		clientTypeStr,
+		userID,
+		ctx,
+		runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
@@ -71,11 +87,6 @@ func TestImagesExist(pTest *testing.T) {
 	
 	gf_images_core.CreateTestImages(userID, pTest, ctx, runtimeSys)
 	//------------------
-
-	imagesExternURLsLst := []string{
-		"https://gloflow.com/some_url0",
-		"https://gloflow.com/some_url1",
-	}
 
 	existingImagesLst, gfErr := gf_images_core.DBimageExistsByURLs(imagesExternURLsLst,
 		flowNameStr,
@@ -89,7 +100,7 @@ func TestImagesExist(pTest *testing.T) {
 	
 	spew.Dump(existingImagesLst)
 
-	assert.True(pTest, len(existingImagesLst) == 2, "2 images should be found to exist in target flow")
+	assert.True(pTest, len(existingImagesLst) == len(initExistingImagesLst) + 2, "2 images should be found to exist in target flow")
 }
 
 //---------------------------------------------------
@@ -151,6 +162,16 @@ func TestGetAll(pTest *testing.T) {
 	}
 
 	//------------------
+	// INITIAL_COUNTS - to compare against
+
+	initAllFlowsCountsLst, gfErr := pipelineGetAll(ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.FailNow()
+	}
+
+	initCountAint := initAllFlowsCountsLst[0]["flow_imgs_count_int"].(int)
+	initCountBint := initAllFlowsCountsLst[1]["flow_imgs_count_int"].(int)
+	initCountCint := initAllFlowsCountsLst[2]["flow_imgs_count_int"].(int)
 
 	//------------------
 	// CREATE_TEST_IMAGES
@@ -159,19 +180,20 @@ func TestGetAll(pTest *testing.T) {
 	//------------------
 
 
-	allFlowsNamesLst, gfErr := pipelineGetAll(ctx, runtimeSys)
+	allFlowsCountsLst, gfErr := pipelineGetAll(ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
 
-	spew.Dump(allFlowsNamesLst)
+	spew.Dump(allFlowsCountsLst)
 
-	assert.True(pTest, len(allFlowsNamesLst) == 3, "3 flows in total should have been discovered")
-	assert.True(pTest, allFlowsNamesLst[0]["flow_name_str"].(string) == "flow_0", "first flow should be flow_0")
-	assert.True(pTest, allFlowsNamesLst[1]["flow_name_str"].(string) == "flow_1", "first flow should be flow_1")
-	assert.True(pTest, allFlowsNamesLst[2]["flow_name_str"].(string) == "flow_2", "first flow should be flow_2")
+	assert.True(pTest, len(allFlowsCountsLst) == 3, "3 flows in total should have been discovered")
+	assert.True(pTest, allFlowsCountsLst[0]["flow_name_str"].(string) == "flow_0", "first flow should be flow_0")
+	assert.True(pTest, allFlowsCountsLst[1]["flow_name_str"].(string) == "flow_1", "first flow should be flow_1")
+	assert.True(pTest, allFlowsCountsLst[2]["flow_name_str"].(string) == "flow_2", "first flow should be flow_2")
 
-	assert.True(pTest, allFlowsNamesLst[0]["flow_imgs_count_int"].(int32) == 3, "first flow should have a count of 3")
-	assert.True(pTest, allFlowsNamesLst[1]["flow_imgs_count_int"].(int32) == 2, "second flow should have a count of 2")
-	assert.True(pTest, allFlowsNamesLst[2]["flow_imgs_count_int"].(int32) == 1, "third flow should have a count of 1")
+	// check new counts after image creation
+	assert.True(pTest, allFlowsCountsLst[0]["flow_imgs_count_int"].(int) == initCountAint+3, "first flow should have a count of 3")
+	assert.True(pTest, allFlowsCountsLst[1]["flow_imgs_count_int"].(int) == initCountBint+2, "second flow should have a count of 2")
+	assert.True(pTest, allFlowsCountsLst[2]["flow_imgs_count_int"].(int) == initCountCint+1, "third flow should have a count of 1")
 }

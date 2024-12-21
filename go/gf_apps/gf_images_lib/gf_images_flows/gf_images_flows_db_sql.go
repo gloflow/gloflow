@@ -76,8 +76,8 @@ func DBsqlGetAll(pCtx context.Context, pRuntimeSys *gf_core.RuntimeSys) ([]map[s
 			return nil, gfErr
 		}
 		resultsLst = append(resultsLst, map[string]interface{}{
-			"flow_name": flowNameStr,
-			"count":     countInt,
+			"name_str":  flowNameStr,
+			"count_int": countInt,
 		})
 	}
 

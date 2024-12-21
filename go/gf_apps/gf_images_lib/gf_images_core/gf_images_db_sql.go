@@ -289,11 +289,11 @@ func DBsqlImagesExistByURLs(pImagesExternURLsLst []string,
 
 	var existingImagesLst []map[string]interface{}
 	for rows.Next() {
-		var creationUnixTime float64
+		var creationTime time.Time
 		var idStr, originURLStr, originPageURLStr string
 		var flowsNamesLst, tagsLst []string
 
-		if err := rows.Scan(&creationUnixTime, &idStr, &originURLStr, &originPageURLStr, pq.Array(&flowsNamesLst), pq.Array(&tagsLst)); err != nil {
+		if err := rows.Scan(&creationTime, &idStr, &originURLStr, &originPageURLStr, pq.Array(&flowsNamesLst), pq.Array(&tagsLst)); err != nil {
 			gfErr := gf_core.ErrorCreate("failed to scan row for images exist check",
 				"sql_row_scan",
 				map[string]interface{}{
@@ -305,8 +305,9 @@ func DBsqlImagesExistByURLs(pImagesExternURLsLst []string,
 			return nil, gfErr
 		}
 
+		var creationUNIXtimeF = float64(creationTime.Unix()) + float64(creationTime.Nanosecond())/1e9
 		existingImagesLst = append(existingImagesLst, map[string]interface{}{
-			"creation_unix_time_f": creationUnixTime,
+			"creation_unix_time_f": creationUNIXtimeF,
 			"id_str":               idStr,
 			"origin_url_str":       originURLStr,
 			"origin_page_url_str":  originPageURLStr,
