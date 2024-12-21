@@ -77,10 +77,11 @@ func TestImagesExist(pTest *testing.T) {
 		"https://gloflow.com/some_url1",
 	}
 
-	existingImagesLst, gfErr := imagesExistCheck(imagesExternURLsLst,
+	existingImagesLst, gfErr := gf_images_core.DBimageExistsByURLs(imagesExternURLsLst,
 		flowNameStr,
 		clientTypeStr,
 		userID,
+		ctx,
 		runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()

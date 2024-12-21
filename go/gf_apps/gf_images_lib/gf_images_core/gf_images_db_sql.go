@@ -177,16 +177,6 @@ func DBsqlGetImage(pImageIDstr GFimageID,
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			/*
-			gfErr := gf_core.ErrorCreate(
-				"image does not exist in gf_images table",
-				"sql_query_execute",
-				map[string]interface{}{
-					"image_id": pImageIDstr,
-				},
-				err, "gf_images_core", pRuntimeSys)
-			return nil, gfErr
-			*/
 
 			// if there's no record found, its not an error, just return nil for image
 			return nil, nil
@@ -243,18 +233,18 @@ func DBsqlImageExistsByID(pImageID GFimageID,
 
 func DBsqlImagesExistByURLs(pImagesExternURLsLst []string,
 	pFlowNameStr   string,
-	pClientTypeStr string,
+	// pClientTypeStr string,
 	pUserID        gf_core.GF_ID,
 	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
 	sqlStr := `
 		SELECT
-			creation_unix_time_f,
-			id_str,
-			origin_url_str,
-			origin_page_url_str,
-			flows_names_lst,
+			creation_time,
+			id,
+			origin_url,
+			origin_page_url,
+			flows_names,
 			tags_lst
 		FROM
 			gf_images
@@ -262,18 +252,18 @@ func DBsqlImagesExistByURLs(pImagesExternURLsLst []string,
 			(
 				(
 					$1 = 'all' AND
-					(user_id_str = $4 OR user_id_str = 'anon') AND
-					origin_url_str = ANY($2)
+					(user_id = $3 OR user_id = 'anon') AND
+					origin_url = ANY($2)
 				)
 				OR
 				(
 					$1 != 'all'
 					AND
 					(	
-						user_id_str = $4 OR user_id_str = 'anon'
+						user_id = $3 OR user_id = 'anon'
 					)
 					AND
-					origin_url_str = ANY($2)
+					origin_url = ANY($2)
 					AND
 					$1 = ANY(flows_names)
 				)
@@ -283,15 +273,14 @@ func DBsqlImagesExistByURLs(pImagesExternURLsLst []string,
 	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, sqlStr,
 		pFlowNameStr,                   // $1
 		pq.Array(pImagesExternURLsLst), // $2
-		pClientTypeStr,                 // $3
-		pUserID)                        // $4
+		pUserID)                        // $3
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to execute SQL query to check if images exist",
 			"sql_query_execute",
 			map[string]interface{}{
 				"images_extern_urls_lst": pImagesExternURLsLst,
 				"flow_name_str":          pFlowNameStr,
-				"client_type_str":        pClientTypeStr,
+				// "client_type_str":        pClientTypeStr,
 			},
 			err, "gf_images_flows", pRuntimeSys)
 		return nil, gfErr
@@ -310,7 +299,7 @@ func DBsqlImagesExistByURLs(pImagesExternURLsLst []string,
 				map[string]interface{}{
 					"images_extern_urls_lst": pImagesExternURLsLst,
 					"flow_name_str":          pFlowNameStr,
-					"client_type_str":        pClientTypeStr,
+					// "client_type_str":        pClientTypeStr,
 				},
 				err, "gf_images_flows", pRuntimeSys)
 			return nil, gfErr
@@ -332,7 +321,7 @@ func DBsqlImagesExistByURLs(pImagesExternURLsLst []string,
 			map[string]interface{}{
 				"images_extern_urls_lst": pImagesExternURLsLst,
 				"flow_name_str":          pFlowNameStr,
-				"client_type_str":        pClientTypeStr,
+				// "client_type_str":        pClientTypeStr,
 			},
 			err, "gf_images_flows", pRuntimeSys)
 		return nil, gfErr

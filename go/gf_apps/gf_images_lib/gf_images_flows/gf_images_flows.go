@@ -163,18 +163,19 @@ func CreateIfMissing(pFlowsNamesLst []string,
 func pipelineGetAll(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
-	// MONGO
-	resultsLst, gfErr := DBmongoGetAll(pCtx, pRuntimeSys)
+	//-----------------------------
+	// DB
+	resultsLst, gfErr := DBgetAll(pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
-
 	
+	//-----------------------------
 
 	allFlowsLst := []map[string]interface{}{}
 	for _, flowInfoMap := range resultsLst {
-		flowNameStr      := flowInfoMap["_id"].(string)
-		flowImgsCountInt := flowInfoMap["count_int"].(int32)
+		flowNameStr      := flowInfoMap["name_str"].(string)
+		flowImgsCountInt := flowInfoMap["count_int"].(int)
 
 		allFlowsLst = append(allFlowsLst, map[string]interface{}{
 			"flow_name_str":       flowNameStr,

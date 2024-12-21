@@ -128,7 +128,7 @@ func DBimageExistsByURLs(pImagesExternURLsLst []string,
 	// SQL
 	sqlExistingImagesLst, gfErr := DBsqlImagesExistByURLs(pImagesExternURLsLst,
 		pFlowNameStr,
-		pClientTypeStr,
+		// pClientTypeStr,
 		pUserID,
 		pCtx,
 		pRuntimeSys)
@@ -147,13 +147,7 @@ func DBimageExistsByURLs(pImagesExternURLsLst []string,
 	}
 
 	imagesLst := MergeImageMapsLists(mongoExistingImagesLst, sqlExistingImagesLst)
-
-
-
-
-
 	return imagesLst, nil
-
 }
 
 //---------------------------------------------------

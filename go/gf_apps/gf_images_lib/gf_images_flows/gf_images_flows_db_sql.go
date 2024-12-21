@@ -23,10 +23,6 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
-
-//---------------------------------------------------
-
-
   
 //---------------------------------------------------
 
@@ -34,11 +30,9 @@ func DBsqlGetAll(pCtx context.Context, pRuntimeSys *gf_core.RuntimeSys) ([]map[s
 	sqlStr := `
 		WITH UnwoundFlows AS (
 			SELECT
-				UNNEST(flows_names_lst) AS flow_name
+				UNNEST(flows_names) AS flow_name
 			FROM
-				images_flows
-			WHERE
-				t = 'img'
+				gf_images
 		),
 		FlowCounts AS (
 			SELECT
@@ -68,34 +62,35 @@ func DBsqlGetAll(pCtx context.Context, pRuntimeSys *gf_core.RuntimeSys) ([]map[s
 	}
 	defer rows.Close()
 
-	var result []map[string]interface{}
+	var resultsLst []map[string]interface{}
 	for rows.Next() {
-		var flowName string
-		var count int
-		if err := rows.Scan(&flowName, &count); err != nil {
+		
+		var flowNameStr string
+		var countInt int
+
+		if err := rows.Scan(&flowNameStr, &countInt); err != nil {
 			gfErr := gf_core.ErrorCreate("failed to scan row for flow names and counts",
 				"sql_row_scan",
 				map[string]interface{}{},
 				err, "gf_images_flows", pRuntimeSys)
 			return nil, gfErr
 		}
-		result = append(result, map[string]interface{}{
-			"flow_name": flowName,
-			"count":     count,
+		resultsLst = append(resultsLst, map[string]interface{}{
+			"flow_name": flowNameStr,
+			"count":     countInt,
 		})
 	}
 
 	if err := rows.Err(); err != nil {
 		gfErr := gf_core.ErrorCreate("error encountered while iterating over query results",
-			"sql_query_iteration",
+			"sql_row_scan",
 			map[string]interface{}{},
 			err, "gf_images_flows", pRuntimeSys)
 		return nil, gfErr
 	}
 
-	return result, nil
+	return resultsLst, nil
 }
-
 
 //---------------------------------------------------
 // GET_FLOWS_IDS
