@@ -178,7 +178,7 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 	
 	//----------------------------------
 
-	return image,nil
+	return image, nil
 }
 
 //---------------------------------------------------

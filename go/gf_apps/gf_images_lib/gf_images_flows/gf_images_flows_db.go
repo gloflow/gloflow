@@ -52,7 +52,7 @@ func DBgetAll(pCtx context.Context, pRuntimeSys *gf_core.RuntimeSys) ([]map[stri
 	for _, resultMap := range mongoResultsLst {
 		
 		flowNameStr := resultMap["_id"].(string) // result["flow_name"].(string)
-		countInt := resultMap["count_int"].(int)
+		countInt := int(resultMap["count_int"].(int32))
 
 		if existingCount, exists := mergedMap[flowNameStr]; exists {
 			if countInt > existingCount {

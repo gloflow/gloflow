@@ -72,6 +72,14 @@ func TestImagesExist(pTest *testing.T) {
 	}
 
 	//------------------
+	// INIT_TABLES
+	gfErr = gf_images_core.DBsqlCreateTables(ctx, runtimeSys)
+	if gfErr != nil {
+		fmt.Println(gfErr.Error)
+		pTest.Fail()
+	}
+
+	//------------------
 	initExistingImagesLst, gfErr := gf_images_core.DBimageExistsByURLs(imagesExternURLsLst,
 		flowNameStr,
 		clientTypeStr,
@@ -180,20 +188,24 @@ func TestGetAll(pTest *testing.T) {
 	//------------------
 
 
-	allFlowsCountsLst, gfErr := pipelineGetAll(ctx, runtimeSys)
+	newFlowsCountsLst, gfErr := pipelineGetAll(ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
 
-	spew.Dump(allFlowsCountsLst)
+	spew.Dump(newFlowsCountsLst)
 
-	assert.True(pTest, len(allFlowsCountsLst) == 3, "3 flows in total should have been discovered")
-	assert.True(pTest, allFlowsCountsLst[0]["flow_name_str"].(string) == "flow_0", "first flow should be flow_0")
-	assert.True(pTest, allFlowsCountsLst[1]["flow_name_str"].(string) == "flow_1", "first flow should be flow_1")
-	assert.True(pTest, allFlowsCountsLst[2]["flow_name_str"].(string) == "flow_2", "first flow should be flow_2")
+	newCountAint := newFlowsCountsLst[0]["flow_imgs_count_int"].(int)
+	newCountBint := newFlowsCountsLst[1]["flow_imgs_count_int"].(int)
+	newCountCint := newFlowsCountsLst[2]["flow_imgs_count_int"].(int)
+
+	assert.True(pTest, len(newFlowsCountsLst) == 3, "3 flows in total should have been discovered")
+	assert.True(pTest, newFlowsCountsLst[0]["flow_name_str"].(string) == "flow_0", "first flow should be flow_0")
+	assert.True(pTest, newFlowsCountsLst[1]["flow_name_str"].(string) == "flow_1", "first flow should be flow_1")
+	assert.True(pTest, newFlowsCountsLst[2]["flow_name_str"].(string) == "flow_2", "first flow should be flow_2")
 
 	// check new counts after image creation
-	assert.True(pTest, allFlowsCountsLst[0]["flow_imgs_count_int"].(int) == initCountAint+3, "first flow should have a count of 3")
-	assert.True(pTest, allFlowsCountsLst[1]["flow_imgs_count_int"].(int) == initCountBint+2, "second flow should have a count of 2")
-	assert.True(pTest, allFlowsCountsLst[2]["flow_imgs_count_int"].(int) == initCountCint+1, "third flow should have a count of 1")
+	assert.True(pTest, newCountAint == initCountAint+3, "first flow should have a count of 3")
+	assert.True(pTest, newCountBint == initCountBint+2, "second flow should have a count of 2")
+	assert.True(pTest, newCountCint == initCountCint+1, "third flow should have a count of 1")
 }
