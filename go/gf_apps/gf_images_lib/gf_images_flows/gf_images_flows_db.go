@@ -21,6 +21,7 @@ package gf_images_flows
 
 import (
 	"context"
+	"sort"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -75,6 +76,11 @@ func DBgetAll(pCtx context.Context, pRuntimeSys *gf_core.RuntimeSys) ([]map[stri
 	}
 
 	//-------------------
+	// sort by name
+	sort.Slice(flowsCountsLst, func(i, j int) bool {
+
+		return flowsCountsLst[i]["name_str"].(string) < flowsCountsLst[j]["name_str"].(string)
+	})
 
 	return flowsCountsLst, nil
 }

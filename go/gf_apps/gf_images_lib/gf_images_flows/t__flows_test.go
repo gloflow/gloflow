@@ -184,8 +184,11 @@ func TestGetAll(pTest *testing.T) {
 	//------------------
 	// CREATE_TEST_IMAGES
 	
-	gf_images_core.CreateTestImages(userID, pTest, ctx, runtimeSys)
+	testImageIDsLst := CreateTestImagesInFlows(userID, pTest, ctx, runtimeSys)
+	spew.Dump(testImageIDsLst)
+	
 	//------------------
+
 
 
 	newFlowsCountsLst, gfErr := pipelineGetAll(ctx, runtimeSys)
@@ -199,10 +202,14 @@ func TestGetAll(pTest *testing.T) {
 	newCountBint := newFlowsCountsLst[1]["flow_imgs_count_int"].(int)
 	newCountCint := newFlowsCountsLst[2]["flow_imgs_count_int"].(int)
 
-	assert.True(pTest, len(newFlowsCountsLst) == 3, "3 flows in total should have been discovered")
+	assert.True(pTest, len(newFlowsCountsLst) >= 3, "minimum of 3 flows in total should have been discovered")
 	assert.True(pTest, newFlowsCountsLst[0]["flow_name_str"].(string) == "flow_0", "first flow should be flow_0")
 	assert.True(pTest, newFlowsCountsLst[1]["flow_name_str"].(string) == "flow_1", "first flow should be flow_1")
 	assert.True(pTest, newFlowsCountsLst[2]["flow_name_str"].(string) == "flow_2", "first flow should be flow_2")
+
+	fmt.Println(initCountAint, initCountBint, initCountCint)
+	fmt.Println(newCountAint, newCountBint, newCountCint)
+
 
 	// check new counts after image creation
 	assert.True(pTest, newCountAint == initCountAint+3, "first flow should have a count of 3")

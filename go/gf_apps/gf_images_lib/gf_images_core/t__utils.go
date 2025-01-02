@@ -32,7 +32,7 @@ import (
 func CreateTestImages(pUserID gf_core.GF_ID,
 	pTest       *testing.T,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *GFimage {
+	pRuntimeSys *gf_core.RuntimeSys) []GFimageID {
 
 	pRuntimeSys.LogNewFun("DEBUG", "creating test images...", nil)
 
@@ -87,5 +87,12 @@ func CreateTestImages(pUserID gf_core.GF_ID,
 
 	//----------------------------
 
-	return testImg0
+	testImageIDsLst := []GFimageID{
+		testImg0.IDstr,
+		testImg1.IDstr,
+		testImg2.IDstr,
+		testImg3.IDstr,
+	}
+
+	return testImageIDsLst
 }

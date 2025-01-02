@@ -380,6 +380,26 @@ func NormalizeImageFormat(pFormatStr string) string {
 }
 
 //---------------------------------------------------
+
+func GetUniqueFlowNames(pFlowsByImageIDmap map[GFimageID][]string) []string {
+	
+	uniqueFlowsMap := make(map[string]struct{})
+
+	for _, flowsLst := range pFlowsByImageIDmap {
+		for _, flowStr := range flowsLst {
+			uniqueFlowsMap[flowStr] = struct{}{}
+		}
+	}
+
+	result := []string{}
+	for flowStr := range uniqueFlowsMap {
+		result = append(result, flowStr)
+	}
+
+	return result
+}
+
+//---------------------------------------------------
 //IMPORTANT!! - look at JS library, for content-aware image cropping
 //              https://github.com/jwagner/smartcrop.js/
 //---------------------------------------------------

@@ -32,6 +32,62 @@ import (
 )
 
 //---------------------------------------------------
+
+func DBsqlGetImagesFlows(pImagesIDsLst []GFimageID,
+	pCtx		context.Context,
+	pRuntimeSys	*gf_core.RuntimeSys) (map[GFimageID][]string, *gf_core.GFerror) {
+
+	imagesIDsLst := []string{}
+	for _, id := range pImagesIDsLst {
+		idStr := string(id)
+		imagesIDsLst = append(imagesIDsLst, idStr)
+	}
+
+	// SQL query to retrieve flows_names grouped by image ID
+	sqlStr := `
+		SELECT id, flows_names
+		FROM gf_images
+		WHERE id = ANY($1)
+	`
+
+	// Execute the query and collect results
+	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, sqlStr, pq.Array(imagesIDsLst))
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to execute SQL query",
+			"sql_query_execute",
+			map[string]interface{}{"images_ids_lst": imagesIDsLst},
+			err, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
+	}
+	defer rows.Close()
+
+	flowsByImageMap := make(map[GFimageID][]string)
+	for rows.Next() {
+		var idStr string
+		var flowsNamesLst []string
+		if err := rows.Scan(&idStr, pq.Array(&flowsNamesLst)); err != nil {
+			gfErr := gf_core.ErrorCreate("failed to scan row for query to get flows_names for images",
+				"sql_row_scan",
+				map[string]interface{}{"images_ids_lst": imagesIDsLst},
+				err, "gf_images_core", pRuntimeSys)
+			return nil, gfErr
+		}
+		id := GFimageID(idStr)
+		flowsByImageMap[id] = append(flowsByImageMap[id], flowsNamesLst...)
+	}
+
+	if err := rows.Err(); err != nil {
+		gfErr := gf_core.ErrorCreate("rows iteration error",
+			"sql_query_execute",
+			map[string]interface{}{"images_ids_lst": imagesIDsLst},
+			err, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	return flowsByImageMap, nil
+}
+
+//---------------------------------------------------
 // PUT_IMAGE
 
 func DBsqlPutImage(pImage *GFimage,
@@ -90,11 +146,11 @@ func DBsqlPutImage(pImage *GFimage,
 	_, err = pRuntimeSys.SQLdb.ExecContext(
 		pCtx,
 		sqlStr,
-		pImage.IDstr,                 // id
-		pImage.UserID,                // user_id
-		pImage.ClientTypeStr,         // client_type
-		pImage.TitleStr,              // title
-		pq.Array(pImage.FlowsNamesLst),         // flows_names
+		pImage.IDstr,                   // id
+		pImage.UserID,                  // user_id
+		pImage.ClientTypeStr,           // client_type
+		pImage.TitleStr,                // title
+		pq.Array(pImage.FlowsNamesLst), // flows_names
 		pImage.Origin_url_str,        // origin_url
 		pImage.Origin_page_url_str,   // origin_page_url
 		pImage.ThumbnailSmallURLstr,  // thumb_small_url
@@ -104,7 +160,7 @@ func DBsqlPutImage(pImage *GFimage,
 		pImage.Width_int,             // width
 		pImage.Height_int,            // height
 		jsonMetaStr,                  // meta_map
-		pq.Array(pImage.TagsLst),               // tags_lst
+		pq.Array(pImage.TagsLst),     // tags_lst
 	)
 
 	if err != nil {

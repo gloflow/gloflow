@@ -45,6 +45,8 @@ type GFflow struct {
 	NameStr           string
 	OwnerUserID       gf_core.GF_ID
 	EditorUserIDs     []gf_core.GF_ID
+	PublicBool        bool
+	DescriptionStr    string
 }
 
 type GFimageExistsCheck struct {

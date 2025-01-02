@@ -21,9 +21,74 @@ package gf_images_flows
 
 import (
 	"context"
+	"database/sql"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
-  
+
+//---------------------------------------------------
+
+func DBgetFlowByName(pFlowNameStr string,
+	pCtx		context.Context,
+	pRuntimeSys	*gf_core.RuntimeSys) (*GFflow, *gf_core.GFerror) {
+
+
+	sqlStr := `
+		SELECT
+			v,
+			id,
+			EXTRACT(EPOCH FROM creation_time) AS creation_unix_time,
+			name,
+			creator_user_id,
+			public,
+			description
+		FROM gf_images_flows
+		WHERE name = $1 AND deleted = FALSE
+		LIMIT 1;
+	`
+	var flow GFflow
+	var v sql.NullString
+	var public sql.NullBool
+	var description sql.NullString
+
+	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pFlowNameStr).Scan(
+		&v,
+		&flow.IDstr,
+		&flow.CreationUNIXtimeF,
+		&flow.NameStr,
+		&flow.OwnerUserID,
+		&public,
+		&description)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to get flow from SQL DB...",
+			"sql_query_execute",
+			map[string]interface{}{
+				"flow_name_str": pFlowNameStr,
+			},
+			err, "gf_images_flows", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	if v.Valid {
+		flow.Vstr = v.String
+	} else {
+		flow.Vstr = "" // Default value for NULL
+	}
+
+	if public.Valid {
+		flow.PublicBool = public.Bool
+	} else {
+		flow.PublicBool = false // Default value for NULL
+	}
+
+	if description.Valid {
+		flow.DescriptionStr = description.String
+	} else {
+		flow.DescriptionStr = "" // Default value for NULL
+	}
+
+	return &flow, nil
+}
+
 //---------------------------------------------------
 
 func DBsqlGetAll(pCtx context.Context, pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
@@ -117,11 +182,10 @@ func DBsqlGetID(pFlowNameStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
 
-	db := pRuntimeSys.SQLdb
 	const sqlStr = `SELECT id FROM gf_images_flows WHERE name = $1 LIMIT 1`
 
 	var flowIDstr string
-	err := db.QueryRowContext(pCtx, sqlStr, pFlowNameStr).Scan(&flowIDstr)
+	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pFlowNameStr).Scan(&flowIDstr)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to check if flow exists in SQL DB, might not exist...",
 			"sql_query_execute",
