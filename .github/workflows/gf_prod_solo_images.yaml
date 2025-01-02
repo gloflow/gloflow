@@ -182,24 +182,11 @@ jobs:
       - name: upload Go build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: go_build_artifacts
+          name: go_images_build_artifacts
           path: |
             /home/gf/build/gf_apps/gf_solo_images/gf_solo_images
           retention-days: 30
 
       #-------------------------------
   
-  #--------------------------------------------------------------------
-  # NOTIFY_COMPLETION - run containers build workflow
-
-  notify_completion:
-    needs: build-go
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: trigger container build workflow
-        env:
-          GITHUB_TOKEN: ${{ secrets.GF_OS_WORKFLOWS_PAT }}
-        run: gh workflow run gf_prod_containers.yaml --repo ${{ github.repository }} --ref master
-
   #--------------------------------------------------------------------
