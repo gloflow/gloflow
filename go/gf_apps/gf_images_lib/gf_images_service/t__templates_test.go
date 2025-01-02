@@ -45,7 +45,8 @@ func TestTemplates(pTest *testing.T) {
 
 	//-------------------
 
-	firstTestImage := gf_images_core.CreateTestImages(userID, pTest, ctx, runtimeSys)
+	testImagesIDsLst := gf_images_core.CreateTestImages(userID, pTest, ctx, runtimeSys)
+	firstTestImageID := testImagesIDsLst[0]
 
 	// TEMPLATES
 	templatesPathsMap := map[string]string{
@@ -57,8 +58,7 @@ func TestTemplates(pTest *testing.T) {
 		pTest.FailNow()
 	}
 
-	imageID := firstTestImage.IDstr
-	templateRenderedStr, gfErr := renderImageViewPage(imageID,
+	templateRenderedStr, gfErr := renderImageViewPage(firstTestImageID,
 		gfTemplates.imagesViewTmpl,
 		gfTemplates.imagesViewSubtemplatesNamesLst,
 		userID,
