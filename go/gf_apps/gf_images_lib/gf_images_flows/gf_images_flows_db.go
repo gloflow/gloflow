@@ -76,11 +76,13 @@ func DBgetAll(pCtx context.Context, pRuntimeSys *gf_core.RuntimeSys) ([]map[stri
 	}
 
 	//-------------------
-	// sort by name
+	// sort by count
+	// needed because after sql/mongo merge, the order is lost in a map
 	sort.Slice(flowsCountsLst, func(i, j int) bool {
 
-		return flowsCountsLst[i]["name_str"].(string) < flowsCountsLst[j]["name_str"].(string)
+		return flowsCountsLst[i]["count_int"].(int) > flowsCountsLst[j]["count_int"].(int)
 	})
 
+	//-------------------
 	return flowsCountsLst, nil
 }
