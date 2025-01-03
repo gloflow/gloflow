@@ -385,6 +385,22 @@ func DBsqlCreateFlow(pFlowID gf_core.GF_ID,
 			err, "gf_images_flows", pRuntimeSys)
 		return gfErr
 	}
+	
+	// TX_COMMIT
+	err = tx.Commit()
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to commit the SQL transaction to create a flow",
+			"sql_transaction_commit",
+			map[string]interface{}{
+				"flow_id_str":       string(pFlowID),
+				"flow_name_str":     pFlowNameStr,
+				"owner_user_id_str": pOwnerUserID,
+			},
+			err, "gf_images_flows", pRuntimeSys)
+		return gfErr
+	}
+	
+	return nil
 
 	/*
 	// EDITORS
@@ -407,22 +423,6 @@ func DBsqlCreateFlow(pFlowID gf_core.GF_ID,
 		}
 	}
 	*/
-	
-	// TX_COMMIT
-	err = tx.Commit()
-	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to commit the SQL transaction to create a flow",
-			"sql_transaction_commit",
-			map[string]interface{}{
-				"flow_id_str":       string(pFlowID),
-				"flow_name_str":     pFlowNameStr,
-				"owner_user_id_str": pOwnerUserID,
-			},
-			err, "gf_images_flows", pRuntimeSys)
-		return gfErr
-	}
-	
-	return nil
 }
 
 //---------------------------------------------------
@@ -478,6 +478,10 @@ func DBsqlCheckFlowExists(pFlowNameStr string,
 	err := db.QueryRow(sqlStr, pFlowNameStr).Scan(&existsBool)
 
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil // No record found, flow does not exist
+		}
+		
 		gfErr := gf_core.ErrorCreate("failed to check if a flow exists in the DB",
 			"sql_query_execute",
 			map[string]interface{}{},
