@@ -31,6 +31,123 @@ import (
 )
 
 //---------------------------------------------------
+// UPDATE
+//---------------------------------------------------
+
+func DBsqlUpdatePolicyWithNewTargetFlow(pPolicyID gf_core.GF_ID,
+	pFlowsIDsLst []gf_core.GF_ID,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	// array_cat - combines the existing target_resource_ids with the new pFlowsIDsLst
+	// unnest    - flatten the combined array into individual elements
+	// DISTINCT  - ensures that duplicates are removed after combining the arrays
+	// array_agg - reconstructs the filtered elements back into an array
+	sqlStr := `
+		UPDATE gf_policy
+		SET target_resource_ids = (
+			SELECT array_agg(DISTINCT unnest(array_cat(target_resource_ids, $1)))
+		)
+		WHERE id = $2 
+			AND deleted = false
+			AND target_resource_type = 'flow';
+	`
+
+	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pq.Array(pFlowsIDsLst), pPolicyID)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to update policy in DB with new flow ID",
+			"sql_query_execute",
+			map[string]interface{}{
+				"policy_id_str": pPolicyID,
+				"flows_ids_lst": pFlowsIDsLst,
+			},
+			err, "gf_policy", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+
+func DBsqlUpdatePolicy(pPolicyID gf_core.GF_ID,
+	pUpdateOp   *GFpolicyUpdateOp, 
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	updates := []string{}
+	args := []interface{}{}
+
+	index := 1 // SQL parameter numbering
+
+	// public_view update
+	if pUpdateOp.PublicViewBool != nil {
+		updates = append(updates, fmt.Sprintf("public_view = $%d", index))
+		args = append(args, *pUpdateOp.PublicViewBool)
+		index++
+	}
+
+	if len(updates) == 0 {
+
+		// no fields to update
+		return nil
+	}
+
+	sqlStr := fmt.Sprintf(`
+		UPDATE gf_policy
+		SET %s
+		WHERE
+			id=%s AND deleted=false`,
+		
+			strings.Join(updates, ", "), pPolicyID)
+
+	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, args...)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to update policy in DB",
+			"sql_query_execute",
+			map[string]interface{}{},
+			err, "gf_policy", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+// VAR
+//---------------------------------------------------
+
+func DBsqlGetFlowPolicyIDforUser(pUserID gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
+
+	sqlStr := `
+		SELECT id
+		FROM gf_policy
+		WHERE
+			owner_user_id = $1 AND
+			target_resource_type = 'flow' AND
+			deleted = false
+		LIMIT 1;
+	`
+	
+	var idStr string
+	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, string(pUserID)).Scan(
+		&idStr)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to get flow policy ID for user in the DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"user_id": string(pUserID),
+			},
+			err, "gf_policy", pRuntimeSys)
+		return gf_core.GF_ID(""), gfErr
+	}
+
+	return gf_core.GF_ID(idStr), nil
+}
+
+//---------------------------------------------------
 // CREATE_TABLES
 
 func DBsqlCreateTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -280,52 +397,6 @@ func DBsqlCreatePolicy(pPolicy *GFpolicy,
 			map[string]interface{}{
 				"policy": pPolicy,
 			},
-			err, "gf_policy", pRuntimeSys)
-		return gfErr
-	}
-
-	return nil
-}
-
-//---------------------------------------------------
-// UPDATE
-
-func DBsqlUpdatePolicy(pPolicyID gf_core.GF_ID,
-	pUpdateOp   *GFpolicyUpdateOp, 
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-
-	updates := []string{}
-	args := []interface{}{}
-
-	index := 1 // SQL parameter numbering
-
-	// public_view update
-	if pUpdateOp.PublicViewBool != nil {
-		updates = append(updates, fmt.Sprintf("public_view = $%d", index))
-		args = append(args, *pUpdateOp.PublicViewBool)
-		index++
-	}
-
-	if len(updates) == 0 {
-
-		// no fields to update
-		return nil
-	}
-
-	sqlStr := fmt.Sprintf(`
-		UPDATE gf_policy
-		SET %s
-		WHERE
-			id=%s AND deleted=false`,
-		
-			strings.Join(updates, ", "), pPolicyID)
-
-	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, args...)
-	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to update policy in DB",
-			"sql_query_execute",
-			map[string]interface{}{},
 			err, "gf_policy", pRuntimeSys)
 		return gfErr
 	}

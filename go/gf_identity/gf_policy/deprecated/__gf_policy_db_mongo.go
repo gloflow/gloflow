@@ -29,12 +29,6 @@ import (
 )
 
 //---------------------------------------------------
-
-type GFpolicyUpdateOp struct {
-	PublicViewBool *bool
-}
-
-//---------------------------------------------------
 // GET_BY_ID
 
 func DBgetPolicyByID(pPolicyIDstr gf_core.GF_ID,

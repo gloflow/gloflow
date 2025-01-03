@@ -126,6 +126,41 @@ func pipelineCreateDiscoveredFlows(pCtx context.Context,
 }
 
 //-------------------------------------------------
+
+func CreateIfMissingWithPolicy(pFlowsNamesLst []string,
+	pUserID     gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	//----------------------
+	// CREATE_FLOW
+	gfErr := CreateIfMissing(pFlowsNamesLst,
+		pUserID,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//----------------------
+	// POLICY_UPDATE
+
+	flowsIDsLst, gfErr := DBsqlGetFlowsIDs(pFlowsNamesLst, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	gfErr = gf_policy.UpdateWithNewFlows(flowsIDsLst, pUserID, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//----------------------
+
+	return nil
+}
+
+//-------------------------------------------------
 // CREATE_IF_MISSING
 
 func CreateIfMissing(pFlowsNamesLst []string,
@@ -364,17 +399,34 @@ func AddExternImageWithPolicy(pImageExternURLstr string,
 	pImageOriginPageURLstr string,
 	pFlowsNamesLst         []string,
 	pClientTypeStr         string,
-	pUserIDstr             gf_core.GF_ID,
+	pUserID                gf_core.GF_ID,
 	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
 	pCtx                   context.Context,
 	pRuntimeSys            *gf_core.RuntimeSys) (*string, *string, gf_images_core.GFimageID, *gf_core.GFerror) {
 
+	//------------------
+	/*
+	CREATE_FLOWS - check if flows to which this image is being added exist,
+		and create if its missing.
+		if flow doesnt exist it is assigned to this user. if it does exist
+		nothing happens, and subsequent policy verification will check if
+		user is allowed to add images to the flow.
+	*/
+
+	gfErr := CreateIfMissingWithPolicy(pFlowsNamesLst,
+		pUserID,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, nil, gf_images_core.GFimageID(""), gfErr
+	}
+
 	//-------------------------
 	// POLICY_VERIFY - raises error if policy rejects the op
 	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
-	gfErr := VerifyPolicy(opStr,
+	gfErr = VerifyPolicy(opStr,
 		pFlowsNamesLst,
-		pUserIDstr, pCtx, pRuntimeSys)
+		pUserID, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gf_images_core.GFimageID(""), gfErr
 	}
@@ -385,7 +437,7 @@ func AddExternImageWithPolicy(pImageExternURLstr string,
 		pImageOriginPageURLstr,
 		pFlowsNamesLst,
 		pClientTypeStr,
-		pUserIDstr,
+		pUserID,
 		pJobsMngrCh,
 		pCtx,
 		pRuntimeSys)

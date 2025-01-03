@@ -66,6 +66,41 @@ type GFpolicyUpdateOutput struct {
 	PolicyExistsBool bool
 }
 
+type GFpolicyUpdateOp struct {
+	PublicViewBool *bool
+}
+
+//-------------------------------------------------
+// UPDATE_WITH_NEW_FLOW
+
+func UpdateWithNewFlows(pFlowsIDsLst []gf_core.GF_ID,
+	pUserID		gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+
+
+	// GET_POLICY_ID
+	policyID, gfErr := DBsqlGetFlowPolicyIDforUser(pUserID, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+
+
+	
+
+	gfErr = DBsqlUpdatePolicyWithNewTargetFlow(policyID, pFlowsIDsLst, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+
+	return nil
+
+
+}
+
 //-------------------------------------------------
 // VERIFY
 
@@ -219,7 +254,7 @@ func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
 	output := &GFpolicyUpdateOutput{}
 
 	//------------------------
-	// EXISTS
+	// EXISTS - check policy exists
 	existsBool, gfErr := DBsqlExistsByID(pPolicyID, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr

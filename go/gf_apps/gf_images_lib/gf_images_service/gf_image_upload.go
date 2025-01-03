@@ -85,11 +85,28 @@ func UploadInit(pImageNameStr string,
 	pRuntimeSys     *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GFerror) {
 	
 	//------------------
+	/*
+	CREATE_FLOWS - check if flows to which this image is being added exist,
+		and create if its missing.
+		if flow doesnt exist it is assigned to this user. if it does exist
+		nothing happens, and subsequent policy verification will check if
+		user is allowed to add images to the flow.
+	*/
+
+	gfErr := gf_images_flows.CreateIfMissingWithPolicy(pFlowsNamesLst,
+		pUserID,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	//------------------
 	// POLICY_VERIFY - verify user is allowed to upload an image into the specified flows.
 	//                 raises error if policy rejects the op.
 	
 	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
-	gfErr := gf_images_flows.VerifyPolicy(opStr,
+	gfErr = gf_images_flows.VerifyPolicy(opStr,
 		pFlowsNamesLst,
 		pUserID, pCtx, pRuntimeSys)
 	if gfErr != nil {
@@ -186,20 +203,6 @@ func UploadInit(pImageNameStr string,
 	//------------------
 	// DB
 	gfErr = dbPutUploadInfo(uploadInfo, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
-
-	//------------------
-	/*
-	CREATE_FLOWS - check if flows to which this image is being added exist,
-		and create if needed.
-	*/
-
-	gfErr = gf_images_flows.CreateIfMissing(pFlowsNamesLst,
-		pUserID,
-		pCtx,
-		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
