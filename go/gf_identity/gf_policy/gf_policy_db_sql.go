@@ -46,7 +46,7 @@ func DBsqlUpdatePolicyWithNewTargetFlow(pPolicyID gf_core.GF_ID,
 	sqlStr := `
 		UPDATE gf_policy
 		SET target_resource_ids = (
-			SELECT array_agg(DISTINCT unnest(array_cat(target_resource_ids, $1)))
+			SELECT DISTINCT unnest(array_cat(target_resource_ids, $1))
 		)
 		WHERE id = $2 
 			AND deleted = false
