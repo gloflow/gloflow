@@ -183,31 +183,28 @@ func DBmongoAddFlowNameToImage(p_flow_name_str string,
 
 //---------------------------------------------------
 
-func dbMongoGetPagesTotalNum(p_flow_name_str string,
-	p_page_size_int int,
-	p_ctx           context.Context,
-	pRuntimeSys   *gf_core.RuntimeSys) (int64, *gf_core.GFerror) {
+func dbMongoGetPagesTotalNum(pFlowNameStr string,
+	pPageSizeInt int,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) (int64, *gf_core.GFerror) {
 
-
-
-	imgs_in_flow__count_int, gfErr := gf_core.MongoCount(bson.M{
+	imagesCountInt, gfErr := gf_core.MongoCount(bson.M{
 			"t":             "img",
-			"flow_name_str": p_flow_name_str,
+			"flow_name_str": pFlowNameStr,
 		},
 		map[string]interface{}{
-			"flow_name_str":      p_flow_name_str,
+			"flow_name_str":      pFlowNameStr,
 			"caller_err_msg_str": "failed to count the number of images in a flow",
 		},
 		pRuntimeSys.Mongo_coll,
-		p_ctx,
+		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return 0, gfErr
 	}
 
-
-	flow_pages_num_int := int64(math.Ceil(float64(imgs_in_flow__count_int) / float64(p_page_size_int)))
-	return flow_pages_num_int, nil;
+	flowPagesNumInt := int64(math.Ceil(float64(imagesCountInt) / float64(pPageSizeInt)))
+	return flowPagesNumInt, nil;
 }
 
 //---------------------------------------------------

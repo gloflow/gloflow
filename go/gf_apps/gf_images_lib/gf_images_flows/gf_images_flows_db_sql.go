@@ -21,16 +21,151 @@ package gf_images_flows
 
 import (
 	"context"
+	"encoding/json"
 	"database/sql"
+	"github.com/lib/pq"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
+
+//---------------------------------------------------
+
+func dbSQLgetPage(pFlowNameStr string,
+	pCursorStartPositionInt int, // 0
+	pElementsNumInt int, // 50
+	pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) ([]*gf_images_core.GFimage, *gf_core.GFerror) {
+
+	query := `
+		SELECT
+			id,
+			EXTRACT(EPOCH FROM creation_time) AS creation_unix_time,
+			user_id,
+			client_type,
+			title, 
+		    flows_names,
+
+			origin_url,
+			origin_page_url,
+
+			thumb_small_url,
+			thumb_medium_url,
+			thumb_large_url,
+
+			format,
+			width,
+			height,
+
+		    dominant_color_hex,
+			palette_colors_hex,
+			meta_map,
+			tags_lst
+
+		FROM gf_images
+		WHERE NOT deleted
+		AND (
+			$1 = ANY(flows_names)
+		)
+		ORDER BY creation_time DESC
+		LIMIT $2 OFFSET $3
+	`
+
+	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, query, pFlowNameStr, pElementsNumInt, pCursorStartPositionInt)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to get a page of images from a flow",
+			"sql_query_execution",
+			map[string]interface{}{
+				"flow_name_str":             pFlowNameStr,
+				"cursor_start_position_int": pCursorStartPositionInt,
+				"elements_num_int":          pElementsNumInt,
+			},
+			err, "gf_images_flows", pRuntimeSys)
+		return nil, gfErr
+	}
+	defer rows.Close()
+
+	imagesLst := []*gf_images_core.GFimage{}
+	for rows.Next() {
+		img := &gf_images_core.GFimage{}
+
+		var DominantColorHexStr sql.NullString
+		var PalleteStr sql.NullString
+		var metaMapRaw []byte
+
+		if err := rows.Scan(
+				&img.IDstr,
+				&img.Creation_unix_time_f,
+				&img.UserID,
+
+				&img.ClientTypeStr,
+				&img.TitleStr,
+				pq.Array(&img.FlowsNamesLst),
+
+				&img.Origin_url_str,
+				&img.Origin_page_url_str,
+
+				&img.ThumbnailSmallURLstr,
+				&img.ThumbnailMediumURLstr,
+				&img.ThumbnailLargeURLstr,
+
+				&img.Format_str,
+				&img.Width_int,
+				&img.Height_int,
+
+				&DominantColorHexStr,
+				&PalleteStr,
+				&metaMapRaw,
+				pq.Array(&img.TagsLst)); err != nil {
+					
+			gfErr := gf_core.ErrorCreate("failed to scan a row of images",
+				"sql_row_scan",
+				map[string]interface{}{},
+				err, "gf_images_flows", pRuntimeSys)
+			return nil, gfErr
+		}
+
+		// DOMINANT_COLOR_HEX
+		if DominantColorHexStr.Valid {
+			img.DominantColorHexStr = DominantColorHexStr.String
+		} else {
+			img.DominantColorHexStr = "" // Default value for NULL
+		}
+
+		// PALLETE
+		if PalleteStr.Valid {
+			img.PalleteStr = PalleteStr.String
+		} else {
+			img.PalleteStr = "" // Default value for NULL
+		}
+
+		// META_MAP
+		if err := json.Unmarshal(metaMapRaw, &img.MetaMap); err != nil {
+			gfErr := gf_core.ErrorCreate("failed to unmarshal JSON meta_map",
+				"json_decode_error",
+				map[string]interface{}{},
+				err, "gf_images_flows", pRuntimeSys)
+			return nil, gfErr
+		}
+
+		imagesLst = append(imagesLst, img)
+	}
+
+	if err := rows.Err(); err != nil {
+		gfErr := gf_core.ErrorCreate("failed to iterate rows",
+			"sql_query_execute",
+			map[string]interface{}{},
+			err, "gf_images_flows", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	return imagesLst, nil
+}
 
 //---------------------------------------------------
 
 func DBgetFlowByName(pFlowNameStr string,
 	pCtx		context.Context,
 	pRuntimeSys	*gf_core.RuntimeSys) (*GFflow, *gf_core.GFerror) {
-
 
 	sqlStr := `
 		SELECT

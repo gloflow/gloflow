@@ -65,7 +65,7 @@ func ResolveUserName(pUserID gf_core.GF_ID,
 	LEGACY!! - old images dont have a user_id associated with them.
 		before the user system was fully integrated into gf_images, images were added anonimously
 		and did not have a user ID associated with them.
-		for those images it is not possible to associate user_names with them. 
+		for those images it is not possible to associate them with user_names. 
 	*/
 	if pUserID != "" {
 

@@ -23,7 +23,75 @@ import (
 	"context"
 	"sort"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
+
+//---------------------------------------------------
+
+func dbGetPage(pFlowNameStr string,
+	pCursorStartPositionInt int,
+	pElementsNumInt         int,
+	pCtx                    context.Context,
+	pRuntimeSys             *gf_core.RuntimeSys) ([]*gf_images_core.GFimage, *gf_core.GFerror) {
+
+	//-------------------
+	// SQL
+	sqlPageLst, gfErr := dbSQLgetPage(pFlowNameStr,
+		pCursorStartPositionInt,
+		pElementsNumInt,
+		pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	//-------------------
+	// MONGO
+	mongoPageLst, gfErr := dbMongoGetPage(pFlowNameStr,
+		pCursorStartPositionInt,
+		pElementsNumInt,
+		pCtx,
+		pRuntimeSys)
+
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	//-------------------
+	// MERGE
+
+	imageMap := make(map[string]*gf_images_core.GFimage)
+
+	// add mongo elements to the map first, so they can be overwritten if conflicting
+	for _, img := range mongoPageLst {
+		imageMap[string(img.IDstr)] = img
+	}
+
+	// add SQL elements second, they take precedence
+	for _, img := range sqlPageLst {
+		imageMap[string(img.IDstr)] = img
+	}
+
+	// serialize map into a list
+	mergedLst := make([]*gf_images_core.GFimage, 0, len(imageMap))
+	for _, img := range imageMap {
+		mergedLst = append(mergedLst, img)
+	}
+
+	// sort by creation unix time, so that the newest images are first
+	sort.Slice(mergedLst, func(i, j int) bool {
+		return mergedLst[i].Creation_unix_time_f > mergedLst[j].Creation_unix_time_f
+	})
+
+	// trim the list to the required number of elements, so that the page
+	// contains only the latest elements
+	if len(mergedLst) > pElementsNumInt {
+		mergedLst = mergedLst[:pElementsNumInt]
+	}
+
+	//-------------------
+
+	return mergedLst, nil
+}
 
 //---------------------------------------------------
 

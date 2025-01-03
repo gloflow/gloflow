@@ -40,7 +40,7 @@ func TestTemplatesWithDB(pTest *testing.T) {
 
 //---------------------------------------------------
 
-func getTemplateTestData(pTest *testing.T) ([][]*gf_images_core.GFimage, [][]gf_identity_core.GFuserName) {
+func getTemplateTestData(pTest *testing.T) ([][]*gf_images_core.GFimage, [][]gf_identity_core.GFuserName, gf_core.GF_ID) {
 
 	ctx := context.Background()
 
@@ -63,8 +63,10 @@ func getTemplateTestData(pTest *testing.T) ([][]*gf_images_core.GFimage, [][]gf_
 	initialPagesNumInt := 2
 	pageSizeInt        := 2
 	pagesLst, pagesUserNamesLst, flowPagesNumInt, gfErr := getTemplateData(flowNameStr,
-		initialPagesNumInt, pageSizeInt,
-		ctx, runtimeSys)
+		initialPagesNumInt,
+		pageSizeInt,
+		ctx,
+		runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
@@ -85,7 +87,7 @@ func getTemplateTestData(pTest *testing.T) ([][]*gf_images_core.GFimage, [][]gf_
 				"image user_id not resolved to the correct user_name")
 		}
 	}
-	return pagesLst, pagesUserNamesLst
+	return pagesLst, pagesUserNamesLst, userID
 }
 
 //---------------------------------------------------
@@ -97,8 +99,6 @@ func TestTemplates(pTest *testing.T) {
 		LogFun:         logFun,
 		LogNewFun:      logNewFun,
 	}
-
-	userID := gf_core.GF_ID("test_user")
 
 	// TEMPLATES
 	templatesPathsMap := map[string]string{
@@ -133,7 +133,7 @@ func TestTemplates(pTest *testing.T) {
 	}
 	*/
 
-	imagesPagesLst, pagesUserNamesLst := getTemplateTestData(pTest)
+	imagesPagesLst, pagesUserNamesLst, userID := getTemplateTestData(pTest)
 
 	flowNameStr     := "test_flow" 
 	flowPagesNumInt := int64(6)

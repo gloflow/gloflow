@@ -31,9 +31,9 @@ import (
 //---------------------------------------------------
 
 type GFimage struct {
-	Id                   primitive.ObjectID `json:"-"               bson:"_id,omitempty"`
+	Id                   primitive.ObjectID `json:"-"               bson:"_id,omitempty"` // DEPRECATED!! - mongo specific
 	IDstr                GFimageID     `json:"id_str"               bson:"id_str"`
-	T_str                string        `json:"-"                    bson:"t"` // "img"
+	T_str                string        `json:"-"                    bson:"t"` // "img" // DEPRECATED!!
 	Creation_unix_time_f float64       `json:"creation_unix_time_f" bson:"creation_unix_time_f"`
 	UserID               gf_core.GF_ID `json:"user_id_str"          bson:"user_id_str"`
 

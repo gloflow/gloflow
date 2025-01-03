@@ -72,10 +72,10 @@ func renderInitialPage(pFlowNameStr string,
 //-------------------------------------------------
 
 func getTemplateData(pFlowNameStr string,
-	pInitialPagesNumInt   int,
-	pPageSizeInt          int,
-	pCtx                  context.Context,
-	pRuntimeSys           *gf_core.RuntimeSys) ([][]*gf_images_core.GFimage, [][]gf_identity_core.GFuserName, int64, *gf_core.GFerror) {
+	pInitialPagesNumInt int,
+	pPageSizeInt        int,
+	pCtx                context.Context,
+	pRuntimeSys         *gf_core.RuntimeSys) ([][]*gf_images_core.GFimage, [][]gf_identity_core.GFuserName, int64, *gf_core.GFerror) {
 
 	//---------------------
 	// GET_IMAGES
@@ -94,7 +94,20 @@ func getTemplateData(pFlowNameStr string,
 
 		//------------
 		// DB GET PAGE
+		
+		// initial page might be larger then subsequent pages, that are requested 
+		// dynamically by the front-end
+		pageLst, gfErr := dbGetPage(pFlowNameStr,
+			startPositionInt, // p_cursor_start_position_int
+			pPageSizeInt,     // p_elements_num_int
+			pCtx,
+			pRuntimeSys)
 
+		if gfErr != nil {
+			return nil, nil, 0, gfErr
+		}
+		
+		/*
 		// initial page might be larger then subsequent pages, that are requested 
 		// dynamically by the front-end
 		pageLst, gfErr := dbMongoGetPage(pFlowNameStr,
@@ -106,6 +119,7 @@ func getTemplateData(pFlowNameStr string,
 		if gfErr != nil {
 			return nil, nil, 0, gfErr
 		}
+		*/
 
 		//------------
 
@@ -115,7 +129,7 @@ func getTemplateData(pFlowNameStr string,
 	//---------------------
 	// RESOLVE_USER_IDS_TO_USERNAMES
 
-	pagesUserNamesLst := resolveUserIDStoUserNames(imagesPagesLst, pCtx, pRuntimeSys)
+	pagesUserNamesLst := resolveUserIDsToUserNames(imagesPagesLst, pCtx, pRuntimeSys)
 
 	//---------------------
 	// TOTAL_PAGES_NUM

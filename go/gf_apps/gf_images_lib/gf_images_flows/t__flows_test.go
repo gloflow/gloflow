@@ -159,7 +159,10 @@ func TestGetAll(pTest *testing.T) {
 	sqlHostStr     := cliArgsMap["sql_host_str"].(string)
 	runtimeSys     := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
 
-	userID := gf_core.GF_ID("test_user")
+	//-------------------
+	// CREATE USER
+
+	userID, _ := gf_identity.TestCreateUserInDB(pTest, ctx, runtimeSys)
 
 	//------------------
 	// INIT_TABLES

@@ -255,7 +255,7 @@ func pipelineGetPage(pReq *http.Request,
 	//------------------
 	
 	imagesPagesLst := [][]*gf_images_core.GFimage{imagesPageLst,}
-	pagesUserNamesLst := resolveUserIDStoUserNames(imagesPagesLst, pCtx, pRuntimeSys)
+	pagesUserNamesLst := resolveUserIDsToUserNames(imagesPagesLst, pCtx, pRuntimeSys)
 
 	return imagesPagesLst, pagesUserNamesLst, nil
 }
@@ -263,7 +263,7 @@ func pipelineGetPage(pReq *http.Request,
 //-------------------------------------------------
 // RESOLVE_USER_IDS_TO_USER_NAMES
 
-func resolveUserIDStoUserNames(pImagesPagesLst [][]*gf_images_core.GFimage,
+func resolveUserIDsToUserNames(pImagesPagesLst [][]*gf_images_core.GFimage,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) [][]gf_identity_core.GFuserName {
 
@@ -283,6 +283,7 @@ func resolveUserIDStoUserNames(pImagesPagesLst [][]*gf_images_core.GFimage,
 			if cachedUserNameStr, ok := usernamesCacheMap[userID]; ok {
 				userNameStr = cachedUserNameStr
 			} else {
+
 				resolvedUserNameStr := gf_identity_core.ResolveUserName(userID, pCtx, pRuntimeSys)
 				userNameStr               = resolvedUserNameStr
 				usernamesCacheMap[userID] = resolvedUserNameStr
