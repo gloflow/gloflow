@@ -130,14 +130,6 @@ def get():
                     # ("%s/../go/gf_stats/py/cli_stats.py"%(modd_str),             "%s/../build/gf_apps/gf_solo/gf_analytics/py"%(modd_str)),
                     # ("%s/../py/gf_stats/gf_errors__counts_by_day.py"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
 
-
-                    # # GF_CRAWL
-                    # ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_imgs__counts_by_day.py"%(modd_str),            "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
-                    # ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__counts_by_day.py"%(modd_str),  "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
-                    # ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__null_breakdown.py"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
-                    # ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__per_crawler.py"%(modd_str),    "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
-                    # ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_url_fetches__counts_by_day.py"%(modd_str),          "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
-
                     #------------------------
                     # ASSETS
 
@@ -268,56 +260,12 @@ def get():
             },
 
             #------------------------
-            # MAIN
-            # # GF_IMAGES
-            # "gf_images": {
-            #     "type_str":             "main_go",
-            #     "version_str":          "latest", # "0.8.0.10",
-            #     "go_path_str":          "%s/../go/gf_apps/gf_images"%(modd_str),
-            #     "go_output_path_str":   "%s/../build/gf_apps/gf_images/gf_images_service"%(modd_str),
-            #     "service_name_str":     "gf_images_service",
-            #     "service_base_dir_str": "%s/../build/gf_apps/gf_images"%(modd_str),
-            # },
-            
-            
-            # # LIB
-            # # GF_IMAGES_LIB
-            # "gf_images_lib": {
-            #     "type_str":                   "lib_go",
-            #     "go_path_str":                "%s/../go/gf_apps/gf_images_lib"%(modd_str),
-            #     "test_data_to_serve_dir_str": "%s/../go/gf_apps/gf_images_lib/tests_data"%(modd_str), #for tests serve data over http from this dir
-            # },
-            
-            
-
-            #------------------------
             # # GF_P2P_TESTER
             # "gf_p2p_tester": {
             #     "type_str":    "main_go",
             #     "version_str": "latest",
             # },
-
-            #------------------------
-            # # MAIN
-            # # GF_ANALYTICS
-            # "gf_analytics": {
-            #     "type_str":             "main_go",
-            #     "version_str":          "latest", # "0.8.0.7",
-            #     "go_path_str":          "%s/../go/gf_apps/gf_analytics"%(modd_str),
-            #     "go_output_path_str":   "%s/../build/gf_apps/gf_analytics/gf_analytics_service"%(modd_str),
-            #     "service_name_str":     "gf_analytics_service",
-            #     "service_base_dir_str": "%s/../build/gf_apps/gf_analytics"%(modd_str),
-            #     "copy_to_dir_lst": [
-            #         ("%s/../go/gf_stats/py/cli_stats.py"%(modd_str),                                                     "%s/../build/gf_apps/gf_analytics/py"%(modd_str)),
-            #         ("%s/../py/gf_stats/gf_errors__counts_by_day.py"%(modd_str),                                         "%s/../build/gf_apps/gf_analytics/py/stats"%(modd_str)),
-            #         ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_imgs__counts_by_day.py"%(modd_str),            "%s/../build/gf_apps/gf_analytics/py/stats"%(modd_str)),
-            #         ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__counts_by_day.py"%(modd_str),  "%s/../build/gf_apps/gf_analytics/py/stats"%(modd_str)),
-            #         ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__null_breakdown.py"%(modd_str), "%s/../build/gf_apps/gf_analytics/py/stats"%(modd_str)),
-            #         ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__per_crawler.py"%(modd_str),    "%s/../build/gf_apps/gf_analytics/py/stats"%(modd_str)),
-            #         ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_url_fetches__counts_by_day.py"%(modd_str),          "%s/../build/gf_apps/gf_analytics/py/stats"%(modd_str))
-            #     ]
-            # },
-
+            
             #------------------------
         }
     }

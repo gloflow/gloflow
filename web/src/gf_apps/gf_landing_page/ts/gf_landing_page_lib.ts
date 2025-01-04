@@ -28,10 +28,9 @@ import * as gf_flows_picker   from "./../../gf_images/ts/gf_images_flows_browser
 import * as gf_tags_picker    from "./../../gf_tagger/ts/gf_tags_picker/gf_tags_picker";
 import * as gf_events         from "./gf_events";
 import * as gf_images         from "./gf_images";
-import * as gf_posts          from "./gf_posts";
 import * as gf_procedural_art from "./procedural_art/gf_procedural_art";
 
-
+// import * as gf_posts          from "./deprecated/__gf_posts";
 // import * as gf_image_colors   from "./../../../gf_core/ts/gf_image_colors";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
@@ -102,7 +101,7 @@ export async function init(p_events_enabled_bool :boolean,
 
 	//---------------------
 	// POSTS_INIT
-	gf_posts.init(current_host_str, p_log_fun);
+	// gf_posts.init(current_host_str, p_log_fun);
 
 	//---------------------
 	// GF_IMAGES_INIT

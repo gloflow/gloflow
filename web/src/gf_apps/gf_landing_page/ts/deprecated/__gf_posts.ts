@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../d/jquery.d.ts" />
 ///<reference path="../../../d/jquery.timeago.d.ts" />
 
-import * as gf_post_control from "./../../gf_publisher/ts/gf_posts_core/gf_post_control";
+import * as gf_post_control from "../../../gf_publisher/ts/gf_posts_core/gf_post_control";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
 declare var gf_tagger__init_ui_v2;

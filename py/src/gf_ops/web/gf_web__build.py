@@ -30,7 +30,7 @@ import gf_core_cli
 def run_in_cont(p_app_str,
 	p_page_name_str=None):
 
-	repo_local_path_str = os.path.abspath(f'{modd_str}/../../../../gloflow').strip()
+	repo_local_path_str = os.path.abspath(f'{modd_str}/../../../../../gloflow').strip()
 
 	py_cmd_lst = [
 		"python3", "-u", "/home/gf/ops/cli__build.py", "-run=build_web", "-build_outof_cont",

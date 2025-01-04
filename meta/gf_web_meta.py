@@ -82,16 +82,15 @@ def get():
 		},
 
 		#-------------
-		# MAPS
-	
-		"gf_maps": {
-			"build_dir_str": images_base_build_dir_str,
-			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_maps/templates/gf_maps.html",
-			"url_base_str":       "/images/static"
-			# "files_to_copy_lst": [
-			# 	(f"{modd_str}/../web/src/gf_apps/gf_maps/templates/maps.html", images_base_build_dir_str),
-			# ]
-		},
+		# # MAPS
+		# "gf_maps": {
+		# 	"build_dir_str": images_base_build_dir_str,
+		# 	"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_maps/templates/gf_maps.html",
+		# 	"url_base_str":       "/images/static"
+		# 	# "files_to_copy_lst": [
+		# 	# 	(f"{modd_str}/../web/src/gf_apps/gf_maps/templates/maps.html", images_base_build_dir_str),
+		# 	# ]
+		# },
 
 		#-------------
 		# GF_LANG
@@ -105,25 +104,25 @@ def get():
 
 		#-------------
 	}
-	gf_publisher__pages_map = {
-		#-------------
-		# GF_POST
-		"gf_post": {
-			"build_dir_str":      "%s/../web/build/gf_apps/gf_publisher"%(modd_str),
-			"main_html_path_str": "%s/../web/src/gf_apps/gf_publisher/templates/gf_post/gf_post.html"%(modd_str),
-			"url_base_str":       "/posts/static",
-		},
-
-		#-------------
-		# GF_POSTS_BROWSER
-		"gf_posts_browser": {
-			"build_dir_str":      "%s/../web/build/gf_apps/gf_publisher"%(modd_str),
-			"main_html_path_str": "%s/../web/src/gf_apps/gf_publisher/templates/gf_posts_browser/gf_posts_browser.html"%(modd_str),
-			"url_base_str":       "/posts/static",
-		}
-
-		#-------------
-	}
+	# gf_publisher__pages_map = {
+	# 	#-------------
+	# 	# GF_POST
+	# 	"gf_post": {
+	# 		"build_dir_str":      "%s/../web/build/gf_apps/gf_publisher"%(modd_str),
+	# 		"main_html_path_str": "%s/../web/src/gf_apps/gf_publisher/templates/gf_post/gf_post.html"%(modd_str),
+	# 		"url_base_str":       "/posts/static",
+	# 	},
+	#
+	# 	#-------------
+	# 	# GF_POSTS_BROWSER
+	# 	"gf_posts_browser": {
+	# 		"build_dir_str":      "%s/../web/build/gf_apps/gf_publisher"%(modd_str),
+	# 		"main_html_path_str": "%s/../web/src/gf_apps/gf_publisher/templates/gf_posts_browser/gf_posts_browser.html"%(modd_str),
+	# 		"url_base_str":       "/posts/static",
+	# 	}
+	#
+	# 	#-------------
+	# }
 
 	gf_analytics__pages_map = {
 
@@ -218,10 +217,10 @@ def get():
 		},
 
 		#-----------------------------
-		# GF_PUBLISHER
-		"gf_publisher": {
-			"pages_map": gf_publisher__pages_map
-		},
+		# # GF_PUBLISHER
+		# "gf_publisher": {
+		# 	"pages_map": gf_publisher__pages_map
+		# },
 
 		#-----------------------------
 		# GF_ANALYTICS
@@ -246,7 +245,7 @@ def get():
 
 	gf_solo__pages_map.update(copy.deepcopy(gf_landing_page__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_images__pages_map))
-	gf_solo__pages_map.update(copy.deepcopy(gf_publisher__pages_map))
+	# gf_solo__pages_map.update(copy.deepcopy(gf_publisher__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_analytics__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_tagger__pages_map))
 
