@@ -30,7 +30,7 @@ type SysReleaseInfo struct {
 }
 
 var GitCommitSHAstr = "GF_COMMIT_SHA"
-var GitCommitSHAshortStr = "GF_COMMIT_SHA_SHORT"
+var GitCommitSHAshortStr = "GF_COMMIT_SHORT_SHA"
 
 //-------------------------------------------------
 
