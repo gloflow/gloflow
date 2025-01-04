@@ -27,6 +27,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_policy"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/davecgh/go-spew/spew"
 )
@@ -42,6 +43,76 @@ func TestMain(m *testing.M) {
 	cliArgsMap = gf_images_core.CLIparseArgs(logFun)
 	v := m.Run()
 	os.Exit(v)
+}
+
+//---------------------------------------------------
+
+func TestCreateIfMissing(pTest *testing.T) {
+
+	ctx := context.Background()
+	serviceNameStr := "gf_images_flows_test"
+	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	sqlHostStr     := cliArgsMap["sql_host_str"].(string)
+	runtimeSys     := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
+
+	initialFlowsNamesLst := []string{
+		"flow5",
+	}
+
+	secondFlowsNamesLst := []string{
+		"flow10",
+	}
+
+	//-------------------
+	// CREATE USER
+
+	userID, _ := gf_identity.TestCreateUserInDB(pTest, ctx, runtimeSys)
+
+	//------------------
+	// INIT_TABLES
+	gfErr := gf_images_core.DBsqlCreateTables(ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	gfErr = gf_policy.DBsqlCreateTables(runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	//------------------
+	// INIT FLOW AND POLICY
+	testFlowsIDsLst, gfErr := CreateIfMissing(initialFlowsNamesLst,
+		userID,
+		ctx,
+		runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	testFlowID := testFlowsIDsLst[0]
+
+	// CREATE
+	policyOwnerUserID := userID
+	targetResourceID := testFlowID
+	_, gfErr = gf_policy.CreateTestPolicy(targetResourceID, policyOwnerUserID, ctx, runtimeSys)
+	if gfErr != nil {
+		pTest.FailNow()
+	}
+
+	//------------------
+	// TEST
+	// test creating a flow and adding permission to the users policy to add images to that flow
+
+	gfErr = CreateIfMissingWithPolicy(secondFlowsNamesLst,
+		userID,
+		ctx,
+		runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	//------------------
 }
 
 //---------------------------------------------------

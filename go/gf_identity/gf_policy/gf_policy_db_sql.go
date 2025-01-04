@@ -39,14 +39,15 @@ func DBsqlUpdatePolicyWithNewTargetFlow(pPolicyID gf_core.GF_ID,
 	pCtx         context.Context,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	// array_cat - combines the existing target_resource_ids with the new pFlowsIDsLst
-	// unnest    - flatten the combined array into individual elements
-	// DISTINCT  - ensures that duplicates are removed after combining the arrays
 	// array_agg - reconstructs the filtered elements back into an array
+	// DISTINCT  - ensures that duplicates are removed after combining the arrays
+	// unnest    - flatten the combined array into individual elements
+	// array_cat - combines the existing target_resource_ids with the new pFlowsIDsLst
 	sqlStr := `
 		UPDATE gf_policy
 		SET target_resource_ids = (
-			SELECT DISTINCT unnest(array_cat(target_resource_ids, $1))
+			SELECT array_agg(DISTINCT ids)
+			FROM unnest(array_cat(target_resource_ids, $1)) AS ids
 		)
 		WHERE id = $2 
 			AND deleted = false

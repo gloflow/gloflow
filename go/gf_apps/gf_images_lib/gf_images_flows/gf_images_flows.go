@@ -113,7 +113,7 @@ func pipelineCreateDiscoveredFlows(pCtx context.Context,
 		nameStr := flowMap["_id"].(string)
 		pRuntimeSys.LogNewFun("DEBUG", "creating flow if missing...", map[string]interface{}{"flow_name": nameStr,})
 
-		gfErr := CreateIfMissing([]string{nameStr},
+		_, gfErr := CreateIfMissing([]string{nameStr,},
 			ownerUserID,
 			pCtx,
 			pRuntimeSys)
@@ -134,7 +134,7 @@ func CreateIfMissingWithPolicy(pFlowsNamesLst []string,
 
 	//----------------------
 	// CREATE_FLOW
-	gfErr := CreateIfMissing(pFlowsNamesLst,
+	_, gfErr := CreateIfMissing(pFlowsNamesLst,
 		pUserID,
 		pCtx,
 		pRuntimeSys)
@@ -166,13 +166,14 @@ func CreateIfMissingWithPolicy(pFlowsNamesLst []string,
 func CreateIfMissing(pFlowsNamesLst []string,
 	pUserID     gf_core.GF_ID,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-
+	pRuntimeSys *gf_core.RuntimeSys) ([]gf_core.GF_ID, *gf_core.GFerror) {
+	
+	flowsIDsLst := []gf_core.GF_ID{}
 	for _, flowNameStr := range pFlowsNamesLst {
 
-		existsBool, gfErr := DBsqlCheckFlowExists(flowNameStr, pRuntimeSys)
+		existsBool, existingFlowID, gfErr := DBsqlCheckFlowExists(flowNameStr, pRuntimeSys)
 		if gfErr != nil {
-			return gfErr
+			return nil, gfErr
 		}
 
 		// create flow if it doesnt exist
@@ -180,19 +181,23 @@ func CreateIfMissing(pFlowsNamesLst []string,
 
 			//----------------------
 			// CREATE_FLOW
-			_, gfErr := Create(flowNameStr,
+			flow, gfErr := Create(flowNameStr,
 				pUserID,
 				pCtx,
 				pRuntimeSys)
 
 			if gfErr != nil {
-				return gfErr
+				return nil, gfErr
 			}
 
+			flowsIDsLst = append(flowsIDsLst, flow.IDstr)
+
 			//----------------------
+		} else {
+			flowsIDsLst = append(flowsIDsLst, *existingFlowID)
 		}
 	}
-	return nil
+	return flowsIDsLst, nil
 }
 
 //-------------------------------------------------
@@ -522,7 +527,7 @@ func AddExternImage(pImageExternURLstr string,
 	for _, flowNameStr := range pFlowsNamesLst {
 		
 		// check flow exists
-		existsBool, gfErr := DBsqlCheckFlowExists(flowNameStr, pRuntimeSys)
+		existsBool, _, gfErr := DBsqlCheckFlowExists(flowNameStr, pRuntimeSys)
 		if gfErr != nil {
 			return nil, nil, gf_images_core.GFimageID(""), gfErr
 		}

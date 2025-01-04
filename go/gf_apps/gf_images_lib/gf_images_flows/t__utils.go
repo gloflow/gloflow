@@ -47,7 +47,7 @@ func CreateTestImagesInFlows(pUserID gf_core.GF_ID,
 	uniqueFlowsNamesLst := gf_images_core.GetUniqueFlowNames(imagesFlowsNamesMap)
 
 	// CREATE_TEST_FLOWS
-	gfErr = CreateIfMissing(uniqueFlowsNamesLst, pUserID, pCtx, pRuntimeSys)
+	_, gfErr = CreateIfMissing(uniqueFlowsNamesLst, pUserID, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}

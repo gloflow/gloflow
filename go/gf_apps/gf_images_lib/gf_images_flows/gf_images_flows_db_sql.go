@@ -469,24 +469,38 @@ func DBsqlCreateTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 // CHECK_FLOW_EXISTS
 
 func DBsqlCheckFlowExists(pFlowNameStr string,
-	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GF_ID, *gf_core.GFerror) {
 
 	db := pRuntimeSys.SQLdb
 
 	var existsBool bool
-	sqlStr := `SELECT exists(SELECT 1 FROM gf_images_flows WHERE name=$1)`
-	err := db.QueryRow(sqlStr, pFlowNameStr).Scan(&existsBool)
+	var flowID gf_core.GF_ID
+
+	// exists() - logical operator used to check whether a subquery returns any rows
+	// SELECT 1 - minimizes the workload for the database since it does not need to retrieve or evaluate any specific column values.
+	//            query is just to check for row existence.
+	sqlStr := `
+		SELECT
+			exists(SELECT 1 FROM gf_images_flows WHERE name=$1), 
+		    (SELECT id FROM gf_images_flows WHERE name=$1 LIMIT 1)`
+
+	err := db.QueryRow(sqlStr, pFlowNameStr).Scan(&existsBool, &flowID)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return false, nil // No record found, flow does not exist
+			return false, nil, nil // No record found, flow does not exist
 		}
-		
+
 		gfErr := gf_core.ErrorCreate("failed to check if a flow exists in the DB",
 			"sql_query_execute",
 			map[string]interface{}{},
 			err, "gf_images_flows", pRuntimeSys)
-		return false, gfErr
+		return false, nil, gfErr
 	}
-	return existsBool, nil
+
+	if !existsBool {
+		return false, nil, nil
+	}
+
+	return existsBool, &flowID, nil
 }

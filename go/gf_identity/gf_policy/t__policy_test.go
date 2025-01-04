@@ -25,8 +25,8 @@ import (
 	"context"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
-	// "github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/davecgh/go-spew/spew"
+	// "github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
 
 //-------------------------------------------------
@@ -35,38 +35,26 @@ func TestPolicy(pTest *testing.T) {
 
 	fmt.Println(" TEST__POLICY >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-
 	ctx := context.Background()
 	runtimeSys := Tinit("gf_policy", cliArgsMap)
-
 
 	gfErr := DBsqlCreateTables(runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
 
-
-	targetResourceID      := gf_core.GF_ID("test_resource")
-	targetResourceTypeStr := "flow"
-	ownerUserID           := gf_core.GF_ID("test_user")
-	thirdpartyUserID      := gf_core.GF_ID("other_user")
+	targetResourceID := gf_core.GF_ID("test_resource")
+	ownerUserID      := gf_core.GF_ID("test_user")
+	thirdpartyUserID := gf_core.GF_ID("other_user")
 
 	//----------------------
 	fmt.Println("create policy >>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 	// CREATE
-	policy, gfErr := PipelineCreate(targetResourceID,
-		targetResourceTypeStr,
-		ownerUserID,
-		ctx,
-		runtimeSys)
+	policy, gfErr := CreateTestPolicy(targetResourceID, ownerUserID, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
-
-	spew.Dump(policy)
-
-
 
 	gfErr = gf_core.DBsqlViewTableStructure("gf_policy", runtimeSys)
 	if gfErr != nil {

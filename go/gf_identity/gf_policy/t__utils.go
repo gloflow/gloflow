@@ -21,11 +21,10 @@ package gf_policy
 
 import (
 	// "fmt"
-	// "context"
+	"context"
 	// "strings"
-	// "go.mongodb.org/mongo-driver/bson"
-	// "go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -36,14 +35,31 @@ var cliArgsMap map[string]interface{}
 
 //-------------------------------------------------
 
+func CreateTestPolicy(pTargetResourceID gf_core.GF_ID,
+	pOwnerUserID gf_core.GF_ID,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) (*GFpolicy, *gf_core.GFerror) {
+
+	targetResourceTypeStr := "flow"
+
+	policy, gfErr := PipelineCreate(pTargetResourceID,
+		targetResourceTypeStr,
+		pOwnerUserID,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	spew.Dump(policy)
+
+	return policy, nil
+}
+
+//-------------------------------------------------
+
 func Tinit(pServiceNameStr string,
 	pCliArgsMap map[string]interface{}) *gf_core.RuntimeSys {
-
-	/*
-	testMongodbHostStr   := pMongoHostStr // cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
-	testMongodbDBnameStr := "gf_tests"
-	testMongodbURLstr    := fmt.Sprintf("mongodb://%s", testMongodbHostStr)
-	*/
 
 	runtimeSys := &gf_core.RuntimeSys{
 		ServiceNameStr: pServiceNameStr, // "gf_identity_tests",
@@ -51,20 +67,6 @@ func Tinit(pServiceNameStr string,
 		LogNewFun:      logNewFun,
 		Validator:      gf_core.ValidateInit(),
 	}
-
-	/*
-	mongoDB, _, gfErr := gf_core.MongoConnectNew(testMongodbURLstr,
-		testMongodbDBnameStr,
-		nil,
-		runtimeSys)
-	if gfErr != nil {
-		panic(-1)
-	}
-
-	mongoColl := mongoDB.Collection("data_symphony")
-	runtimeSys.Mongo_db   = mongoDB
-	runtimeSys.Mongo_coll = mongoColl
-	*/
 
 	//--------------------
 	// SQL

@@ -297,7 +297,6 @@ func PipelineCreate(pTargetResourceID gf_core.GF_ID,
 	policy := &GFpolicy{
 		ID:                    ID,     
 		CreationUNIXtimeF:     creationUNIXtimeF,
-		TargetResourceIDsLst:  []string{string(pTargetResourceID), },
 		TargetResourceTypeStr: pTargetResourceTypeStr,
 		OwnerUserID:           pOwnerUserID,
 		PublicViewBool:        true,
@@ -306,6 +305,10 @@ func PipelineCreate(pTargetResourceID gf_core.GF_ID,
 		TaggersUserIDsLst: []string{},
 		EditorsUserIDsLst: []string{},
 		AdminsUserIDsLst:  []string{},
+	}
+
+	if pTargetResourceID != "" {
+		policy.TargetResourceIDsLst = []string{string(pTargetResourceID), }
 	}
 
 	// DB
