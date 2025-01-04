@@ -66,9 +66,9 @@ body {
 #auth_me {
 	position: absolute;
 	top:    0px;
-	left:   806px;
+	left:   580px;
 	width:  54px;
-	height: 54px;
+	height: 55px;
 	text-align:       center;
 	background-color: rgb(198, 196, 195);
 	cursor:           pointer;
