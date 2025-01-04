@@ -28,7 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
+	// "github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_address"
 )
 
@@ -203,7 +203,6 @@ func addTagsToObject(pTagsStr string,
 	//---------------
 	// DB_SQL
 
-
 	for _, tagStr := range tagsLst {
 		
 		objID := gf_core.GF_ID(pObjectExternIDstr)
@@ -259,6 +258,7 @@ func addTagsToObject(pTagsStr string,
 			}
 
 		//---------------
+		/*
 		// POST
 		case "post":
 			
@@ -295,7 +295,7 @@ func addTagsToObject(pTagsStr string,
 					nil, "gf_tagger_lib", pRuntimeSys)
 				return gfErr
 			}
-
+		*/
 		//---------------
 		// WEB3
 		case "address":
@@ -432,6 +432,7 @@ func exportObjectsWithTag(pTagStr string,
 		objectsInfosLst = exportedImagesInfosLst
 	
 	//---------------------
+	/*
 	// POSTS
 	case "post":
 
@@ -459,6 +460,7 @@ func exportObjectsWithTag(pTagStr string,
 		}
 
 		objectsInfosLst = exportedPostsInfosLst
+	*/
 	}
 
 	//---------------------

@@ -28,7 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_address"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
+	// "github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -277,10 +277,13 @@ func dbMongoGetObjectsWithTag(pTagStr string,
 	case *[]*gf_images_core.GFimage:
 		err = cursor.All(pCtx, output)
 
+	/*
 	// POST
 	case *[]*gf_publisher_core.GFpost:
 		err = cursor.All(pCtx, output)
+	*/
 	}
+	
 
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to get objects with specified tag in DB",
@@ -298,6 +301,7 @@ func dbMongoGetObjectsWithTag(pTagStr string,
 	return nil
 }
 
+/*
 //---------------------------------------------------
 // POSTS
 //---------------------------------------------------
@@ -390,3 +394,4 @@ func dbMongoAddTagsToPost(pPostTitleStr string,
 	}
 	return nil
 }
+*/

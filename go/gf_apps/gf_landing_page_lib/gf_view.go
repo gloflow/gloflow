@@ -34,7 +34,7 @@ type gfTemplates struct {
 
 //------------------------------------------------
 
-func renderTemplate(pFeaturedPostsLst []*GFfeaturedPost,
+func renderTemplate(// pFeaturedPostsLst []*GFfeaturedPost,
 	pFeaturedImages0lst   []*GFfeaturedImage,
 	pFeaturedImages1lst   []*GFfeaturedImage,
 	pTemplate             *template.Template,
@@ -44,7 +44,7 @@ func renderTemplate(pFeaturedPostsLst []*GFfeaturedPost,
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 	
 	type tmplData struct {
-		FeaturedPostsLst   []*GFfeaturedPost
+		// FeaturedPostsLst   []*GFfeaturedPost
 		FeaturedImages0lst []*GFfeaturedImage
 		FeaturedImages1lst []*GFfeaturedImage
 		SysReleaseInfo     gf_core.SysReleaseInfo
@@ -53,7 +53,7 @@ func renderTemplate(pFeaturedPostsLst []*GFfeaturedPost,
 
 	buff := new(bytes.Buffer)
 	err := pTemplate.Execute(buff, tmplData{
-		FeaturedPostsLst:   pFeaturedPostsLst,
+		// FeaturedPostsLst:   pFeaturedPostsLst,
 		FeaturedImages0lst: pFeaturedImages0lst,
 		FeaturedImages1lst: pFeaturedImages1lst,
 		SysReleaseInfo:     sysReleaseInfo,

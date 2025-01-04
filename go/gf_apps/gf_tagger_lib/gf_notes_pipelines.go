@@ -20,8 +20,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_tagger_lib
 
 import (
-	"time"
-	"strconv"
+	"fmt"
+	// "time"
+	// "strconv"
 	"strings"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -68,12 +69,15 @@ func notesPipelineAdd(p_input_data_map map[string]interface{},
 		return gfErr
 	}
 
-	object_type_str      := strings.TrimSpace(p_input_data_map["otype"].(string))
+	objectTypeStr     := strings.TrimSpace(p_input_data_map["otype"].(string))
 	objectExternIDstr := strings.TrimSpace(p_input_data_map["o_id"].(string))
-	body_str             := strings.TrimSpace(p_input_data_map["body"].(string))
+	bodyStr           := strings.TrimSpace(p_input_data_map["body"].(string))
+
+	fmt.Println(objectTypeStr, objectExternIDstr, bodyStr)
 
 	//----------------
 
+	/*
 	if object_type_str == "post" {
 
 		post_title_str        := objectExternIDstr
@@ -92,6 +96,8 @@ func notesPipelineAdd(p_input_data_map map[string]interface{},
 			return gfErr
 		}
 	}
+	*/
+
 	return nil
 }
 
@@ -123,9 +129,13 @@ func notesPipelineGet(pReq *http.Request,
 	objectTypeStr     := strings.TrimSpace(qsMap["otype"][0])
 	objectExternIDstr := strings.TrimSpace(qsMap["o_id"][0])
 
+	fmt.Println(objectTypeStr, objectExternIDstr)
+
 	//-----------------
 
 	taggerNotesLst := []*GFnote{}
+
+	/*
 	if objectTypeStr == "post" {
 
 		postTitleStr    := objectExternIDstr
@@ -144,5 +154,7 @@ func notesPipelineGet(pReq *http.Request,
 			taggerNotesLst = append(taggerNotesLst, note)
 		}
 	}
+	*/
+	
 	return taggerNotesLst, nil
 }

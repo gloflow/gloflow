@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_landing_page_lib
 
 import (
-	"fmt"
+	// "fmt"
 	"context"
 	"strconv"
 	"strings"
@@ -28,17 +28,10 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
+	// "github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 )
 
 //------------------------------------------------
-
-type GFfeaturedPost struct {
-	TitleStr        string
-	ImageURLstr     string
-	URLstr          string
-	ImagesNumberInt int	
-}
 
 type GFfeaturedImage struct {
 	IDstr                      gf_images_core.GFimageID
@@ -53,6 +46,15 @@ type GFfeaturedImage struct {
 	OwnerUserNameStr           gf_identity_core.GFuserName
 	TagsLst                    []string
 }
+
+/*
+type GFfeaturedPost struct {
+	TitleStr        string
+	ImageURLstr     string
+	URLstr          string
+	ImagesNumberInt int	
+}
+*/
 
 //------------------------------------------
 // IMAGES
@@ -155,6 +157,7 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 	return featuredImagesLst, nil
 }
 
+/*
 //------------------------------------------
 // POSTS
 //------------------------------------------
@@ -219,3 +222,4 @@ func postToFeatured(pPost *gf_publisher_core.GFpost, pRuntimeSys *gf_core.Runtim
 	}
 	return featured
 }
+*/
