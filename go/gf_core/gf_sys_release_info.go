@@ -26,6 +26,7 @@ type SysReleaseInfo struct {
 	Version_str     string
     Description_str string
     Git_commit_str  string
+    GitCommitShortStr string
 }
 
 var GitCommitSHAstr = "GF_COMMIT_SHA"
