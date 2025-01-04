@@ -194,7 +194,7 @@ func CreateIfMissing(pFlowsNamesLst []string,
 
 			//----------------------
 		} else {
-			flowsIDsLst = append(flowsIDsLst, *existingFlowID)
+			flowsIDsLst = append(flowsIDsLst, existingFlowID)
 		}
 	}
 	return flowsIDsLst, nil

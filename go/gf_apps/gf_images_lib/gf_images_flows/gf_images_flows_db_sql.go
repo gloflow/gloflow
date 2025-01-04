@@ -32,9 +32,9 @@ import (
 
 func dbSQLgetPage(pFlowNameStr string,
 	pCursorStartPositionInt int, // 0
-	pElementsNumInt int, // 50
-	pCtx context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) ([]*gf_images_core.GFimage, *gf_core.GFerror) {
+	pElementsNumInt         int, // 50
+	pCtx                    context.Context,
+	pRuntimeSys             *gf_core.RuntimeSys) ([]*gf_images_core.GFimage, *gf_core.GFerror) {
 
 	query := `
 		SELECT
@@ -469,12 +469,12 @@ func DBsqlCreateTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 // CHECK_FLOW_EXISTS
 
 func DBsqlCheckFlowExists(pFlowNameStr string,
-	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GF_ID, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (bool, gf_core.GF_ID, *gf_core.GFerror) {
 
 	db := pRuntimeSys.SQLdb
 
 	var existsBool bool
-	var flowID gf_core.GF_ID
+	var flowIDstr sql.NullString
 
 	// exists() - logical operator used to check whether a subquery returns any rows
 	// SELECT 1 - minimizes the workload for the database since it does not need to retrieve or evaluate any specific column values.
@@ -484,23 +484,31 @@ func DBsqlCheckFlowExists(pFlowNameStr string,
 			exists(SELECT 1 FROM gf_images_flows WHERE name=$1), 
 		    (SELECT id FROM gf_images_flows WHERE name=$1 LIMIT 1)`
 
-	err := db.QueryRow(sqlStr, pFlowNameStr).Scan(&existsBool, &flowID)
+	err := db.QueryRow(sqlStr, pFlowNameStr).Scan(&existsBool, &flowIDstr)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return false, nil, nil // No record found, flow does not exist
+			return false, gf_core.GF_ID(""), nil // No record found, flow does not exist
 		}
 
 		gfErr := gf_core.ErrorCreate("failed to check if a flow exists in the DB",
 			"sql_query_execute",
 			map[string]interface{}{},
 			err, "gf_images_flows", pRuntimeSys)
-		return false, nil, gfErr
+		return false, gf_core.GF_ID(""), gfErr
 	}
 
 	if !existsBool {
-		return false, nil, nil
+		return false, gf_core.GF_ID(""), nil
 	}
 
-	return existsBool, &flowID, nil
+	var flowID gf_core.GF_ID
+	if flowIDstr.Valid {
+		flowID = gf_core.GF_ID(flowIDstr.String)
+	} else {
+		flowID = gf_core.GF_ID("")
+	}
+
+
+	return existsBool, flowID, nil
 }
