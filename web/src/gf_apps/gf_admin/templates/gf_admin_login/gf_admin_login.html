@@ -36,9 +36,8 @@
     {{- /*-----------------------------------------------------*/}}
     <div id='sys_release_info'>
 		<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>
-		<div id='name'>name <span>{{- .Sys_release_info.Name_str }}</span></div>
 		<div id='description'>description <span>{{- .Sys_release_info.Description_str }}</span></div>
-		<div id='git_commit'>Git commit <a target="_blank" href='https://github.com/gloflow/gloflow/commit/{{- .Sys_release_info.Git_commit_str }}'>{{- .Sys_release_info.Git_commit_str }}</a></div>
+		<div id='git_commit'><a target="_blank" href='https://github.com/gloflow/gloflow/commit/{{- .Sys_release_info.Git_commit_str }}'>...{{- .Sys_release_info.GitCommitShortStr }}</a></div>
 	</div>
 
     {{- /*-----------------------------------------------------*/}}

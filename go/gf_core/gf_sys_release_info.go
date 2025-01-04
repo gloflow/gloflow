@@ -25,10 +25,11 @@ type SysReleaseInfo struct {
 	Name_str        string
 	Version_str     string
     Description_str string
-    Git_commit_str  string // indicates this is usually pasted in by CI systems
+    Git_commit_str  string
 }
 
 var GitCommitSHAstr = "GF_COMMIT_SHA"
+var GitCommitSHAshortStr = "GF_COMMIT_SHA_SHORT"
 
 //-------------------------------------------------
 
@@ -94,6 +95,7 @@ func GetSysReleseInfo(pRuntimeSys *RuntimeSys) SysReleaseInfo {
                     
         // IMPORTANT!! - in CI systems this line is searched for and the git commit hash is pasted in.
         Git_commit_str: GitCommitSHAstr,
+        GitCommitShortStr: GitCommitSHAshortStr,
 	}
 
 	return r
