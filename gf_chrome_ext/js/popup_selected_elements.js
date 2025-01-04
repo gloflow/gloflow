@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //-------------------------------------------------
 function init_selected_elements_view(p_log_fun) {
-	p_log_fun('FUN_ENTER', 'popup_selected_elements.init_selected_elements_view()');
+	// p_log_fun('FUN_ENTER', 'popup_selected_elements.init_selected_elements_view()');
 
 	$(document).on('click','#view_selected_elements_card .symbol',(p_e)=>{
 		get_selected_elements___bckg_pg((p_selected_elements_map)=>{
@@ -31,7 +31,7 @@ function init_selected_elements_view(p_log_fun) {
 
 //-------------------------------------------------
 function get_selected_elements___bckg_pg(p_o_cComplete_fun, p_log_fun) {
-	p_log_fun('FUN_ENTER','popup_selected_elements.get_selected_elements___bckg_pg()');
+	// p_log_fun('FUN_ENTER', 'popup_selected_elements.get_selected_elements___bckg_pg()');
 
 	const msg_map = {
 		'source_str':'popup_selected_elements',
@@ -51,7 +51,7 @@ function get_selected_elements___bckg_pg(p_o_cComplete_fun, p_log_fun) {
 // DRAW
 //-------------------------------------------------
 function show_selected_elements(p_selected_elements_map, p_log_fun) {
-	p_log_fun('FUN_ENTER', 'popup_selected_elements.show_selected_elements()');
+	// p_log_fun('FUN_ENTER', 'popup_selected_elements.show_selected_elements()');
 
 	const selected_images_lst = p_selected_elements_map['images_lst'];
 	//const selected_videos_lst = p_selected_elements_map['videos_lst'];
@@ -71,7 +71,7 @@ function show_selected_elements(p_selected_elements_map, p_log_fun) {
 // SHOW SELECTED IMAGES
 
 function show_selected_images(p_img_infos_lst, p_log_fun) {
-	p_log_fun('FUN_ENTER','popup_selected_elements.show_selected_images()');
+	// p_log_fun('FUN_ENTER','popup_selected_elements.show_selected_images()');
 
 	const container = $(
 		'<div id="selected_images">'     +
@@ -122,15 +122,15 @@ function show_selected_images(p_img_infos_lst, p_log_fun) {
 }
 
 //-------------------------------------------------
-//SHOW SELECTED VIDEOS
+// SHOW SELECTED VIDEOS
 
 function show_selected_videos(p_videos_infos_lst, p_log_fun) {
-	p_log_fun('FUN_ENTER','popup_selected_elements.show_selected_videos()')
+	// p_log_fun('FUN_ENTER','popup_selected_elements.show_selected_videos()')
 	
 	for (var i=0;i<p_videos_infos_lst.length;i++) {
 
 		const video_info_map = p_videos_infos_lst[i];
-		p_log_fun('INFO','video_info_map:'+video_info_map);
+		p_log_fun('INFO', 'video_info_map:'+video_info_map);
 
 		//---------------------------------
 		//YOUTUBE

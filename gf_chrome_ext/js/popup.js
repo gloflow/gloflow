@@ -106,6 +106,7 @@ function init_buttons(p_log_fun) {
 	//-------------------------------------------------
 
 	//-----------------------
+	/*
 	// CREATE POST
 	
 	$(document).on('click', '#create_post_btn', ()=>{
@@ -150,6 +151,7 @@ function init_buttons(p_log_fun) {
 				}, p_log_fun);
 			}, p_log_fun);
 	});
+	*/
 
 	//-----------------------
 	// GET_IMAGES
@@ -307,6 +309,7 @@ function get_page_video_infos__from_content_scr(p_on_complete_fun, p_log_fun) {
 }
 
 //-------------------------------------------------
+/*
 function get__post_origin_page_url(p_on_complete_fun, p_log_fun) {
 	
 	chrome.tabs.query({active: true, currentWindow: true}, (p_tabs)=>{
@@ -323,6 +326,7 @@ function get__post_origin_page_url(p_on_complete_fun, p_log_fun) {
 			});
 	});
 }
+*/
 
 //-------------------------------------------------
 function display_page_info_in_content_scr(p_on_complete_fun, p_log_fun) {

@@ -333,6 +333,7 @@ function main(p_log_fun) {
 					break;
 					
 				//----------------
+				/*
 				// ADD_ELEMENT_TO_POST
 				case "add_element_to_post":
 					var element_info_map = p_request["element_info_map"];
@@ -354,7 +355,7 @@ function main(p_log_fun) {
 					var element_info_map = p_request["element_info_map"];
 					remove_element_from_post(element_info_map, ctx_map, p_log_fun);
 					break;
-
+				*/
 				//----------------
 			}
 		}

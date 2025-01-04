@@ -131,7 +131,7 @@ function get_images_info(p_log_fun) {
 
 // ->:List<:Dict(video_info_map)>
 function get_videos_info(p_log_fun) {
-	p_log_fun('FUN_ENTER','page_info_extraction.get_videos_info()')
+	// p_log_fun('FUN_ENTER', 'page_info_extraction.get_videos_info()')
 
 	const page_url_str    = window.location.toString();
 	const videos_info_lst = [];
