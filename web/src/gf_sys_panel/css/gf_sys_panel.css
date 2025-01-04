@@ -50,7 +50,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     /* IMPORTANT!! - centers the div horizontaly on the sys_panel */
     margin: auto;
 
-    width: 643px;
+    width: 462px;
     height: 44px;
 }
 
@@ -91,37 +91,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	color          : inherit; /*anchor tags have to explicitly inherit the color*/
 	text-decoration: none;
 }
-/*------------------------------------------------------------------*/
-/* PUBLISHER_APP_BTN */
-#sys_panel #publisher_app_btn {
-	position   : absolute;
-	top        : 0px;
-	left       : 271px;
-	width      : 115px;
-	padding-top     : 10px;
-	height          : 34px;
-	text-align      : center;
-	background-color: rgb(233, 122, 60);
-	color           : white;
-	cursor          : pointer;
-	font-size       : 20px;
-}
-#sys_panel #publisher_app_btn:hover {
-	background-color: white;
-	color           : black;
-}
-
-#sys_panel #publisher_app_btn a {
-	color          : inherit; /*anchor tags have to explicitly inherit the color*/
-	text-decoration: none;
-}
 
 /*------------------------------------------------------------------*/
 /* DOMAINS_APP_BTN */
 #sys_panel #domains_app_btn {
 	position   : absolute;
 	top        : 0px;
-	left       : 393px;
+	left       : 272px;
 	width      : 92px;
 	padding-top     : 13px;
 	height          : 31px;
@@ -146,7 +122,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #sys_panel #bookmarks_app_btn {
 	position   : absolute;
 	top        : 0px;
-	left       : 492px;
+	left       : 372px;
 	width      : 37px;
 	padding-top     : 13px;
 	height          : 31px;
@@ -170,7 +146,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #sys_panel #auth_me {
 	position: absolute;
 	top:    0px;
-	left:   536px;
+	left:   417px;
 	width:  44px;
 	height: 44px;
 	text-align:       center;
@@ -190,3 +166,30 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     position: relative;
     top: -14px;
 }
+
+/*------------------------------------------------------------------*/
+/* PUBLISHER_APP_BTN */
+/*
+#sys_panel #publisher_app_btn {
+	position   : absolute;
+	top        : 0px;
+	left       : 271px;
+	width      : 115px;
+	padding-top     : 10px;
+	height          : 34px;
+	text-align      : center;
+	background-color: rgb(233, 122, 60);
+	color           : white;
+	cursor          : pointer;
+	font-size       : 20px;
+}
+#sys_panel #publisher_app_btn:hover {
+	background-color: white;
+	color           : black;
+}
+
+#sys_panel #publisher_app_btn a {
+	color          : inherit;
+	text-decoration: none;
+}
+*/
