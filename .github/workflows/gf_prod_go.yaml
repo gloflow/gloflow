@@ -203,8 +203,11 @@ jobs:
       # "${{ github.sha: -4 }}" - only use the last 4 chars
       - name: add git commit hash
         run: |
-          sed -i 's/GF_COMMIT_SHA/${{ github.sha }}/g' /home/gf/go/gf_core/gf_sys_release_info.go
-          sed -i 's/GF_COMMIT_SHA_SHORT/${{ github.sha: -4 }}/g' /home/gf/go/gf_core/gf_sys_release_info.go
+          full_sha="${{ github.sha }}"
+          short_sha=${full_sha: -4}
+
+          sed -i 's/GF_COMMIT_SHA/${full_sha}/g' /home/gf/go/gf_core/gf_sys_release_info.go
+          sed -i 's/GF_COMMIT_SHA_SHORT/${short_sha}/g' /home/gf/go/gf_core/gf_sys_release_info.go
 
       #-------------------------------
       # DOWNLOAD_RUST_ARTIFACTS
