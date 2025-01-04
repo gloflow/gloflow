@@ -75,6 +75,11 @@ func TestCreateIfMissing(pTest *testing.T) {
 		pTest.Fail()
 	}
 
+	gfErr = DBsqlCreateTables(runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
 	gfErr = gf_policy.DBsqlCreateTables(runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
@@ -262,8 +267,6 @@ func TestGetAll(pTest *testing.T) {
 	spew.Dump(testImageIDsLst)
 	
 	//------------------
-
-
 
 	newFlowsCountsLst, gfErr := pipelineGetAll(ctx, runtimeSys)
 	if gfErr != nil {
