@@ -64,7 +64,7 @@ body {
 /*------------------------------------------------------------*/
 /* AUTH */
 #auth_me {
-	position: fixed;
+	position: absolute;
 	top:    0px;
 	left:   580px;
 	width:  54px;
