@@ -20,9 +20,26 @@ import logging
 import subprocess
 import signal
 import multiprocessing
+from urllib.parse import urlparse
 
 import json
 import delegator
+
+#---------------------------------------------------
+def is_valid_url(p_url_str):
+
+	# if the URL is invalid in terms of formatting, urlparse will still
+	# return a ParseResult where certain fields (like scheme or netloc)
+	# might be empty or contain unexpected values. It doesn't throw an error
+	# but rather returns a result that can be checked.
+    result = urlparse(p_url_str)
+    return all([result.scheme, result.netloc])
+
+#---------------------------------------------------
+def get_file_ext_from_url(p_url_str):
+    path = urlparse(p_url_str).path
+    _, ext_str = os.path.splitext(path)
+    return ext_str.strip(".")
 
 #---------------------------------------------------
 def run_cmd_in_os_proc(p_cmd_str, p_log_fun):
@@ -52,7 +69,7 @@ def run_cmd_in_os_proc(p_cmd_str, p_log_fun):
 		#---------------------------------------------------
 
 		bin_str = os.path.basename(p_cmd_str.split(" ")[0])
-		print(envoy.run("ps -e | grep %s"%(bin_str)).std_out)
+		print(delegator.run("ps -e | grep %s"%(bin_str)).std_out)
 
 		p.wait() # block this process and let the child run
 	#---------------------------------------------------
@@ -117,7 +134,6 @@ def get_self_ip():
 	#---------------------------------------------------
 	def discover_ip():
 
-
 		# IMPORTANT!! - in some networks in some countries many exit points are used dynamically for the same
 		#               access point (mobile router); and each of these methods determines a different IP.
 		#               so we're executing them all here and returning them all.
@@ -140,8 +156,6 @@ def get_self_ip():
 		return ips_no_dups_lst
 	
 	#---------------------------------------------------
-	
-
 
 	# CACHE
 	cache_path_str = "self_ip_cache.txt"
@@ -149,8 +163,6 @@ def get_self_ip():
 		f=open("self_ip_cache.txt", "r")
 		ips_str = f.read()
 		f.close()
-
-
 
 		ips_lst = []
 
@@ -170,7 +182,3 @@ def get_self_ip():
 		ips_lst = discover_ip()
 			
 		return ips_lst
-
-
-
-	

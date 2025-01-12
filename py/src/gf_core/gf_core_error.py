@@ -16,34 +16,37 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import traceback
+import pprint
+import sentry_sdk
+from colored import fg, attr
 
 #--------------------------------------------------------
-# p_surrounding_context_attribs_tpl - order matters
-
-def handle_exception(p_exception,
-	p_formated_msg_str,
-	p_surrounding_context_attribs_tpl,
-	p_log_fun):
+def create(p_msg_str,
+	p_type_str,
+	p_data_map,
+	p_exception,
+	p_sybsystem_name_str,
+	p_log_fun,
+	p_sentry_bool=True,
+	p_reraise_bool=False):
+	assert isinstance(p_msg_str, str)
+	assert isinstance(p_type_str, str)
+	assert isinstance(p_data_map, dict) or p_data_map == None
 	assert isinstance(p_exception, Exception)
+	assert isinstance(p_sybsystem_name_str, str)
+	
+	full_msg_str = f'''
+		{fg('green')}{p_msg_str}{attr('reset')}
+		type:           {fg('green')}{p_type_str}{attr('reset')}
+		subsys:         {fg('green')}{p_sybsystem_name_str}{attr('reset')}
+		exception args: {fg('green')}{p_exception.args}{attr('reset')}
+		data:           {fg('green')}{pprint.pformat(p_data_map)}{attr('reset')}
+		trace: {fg('green')}{traceback.format_exc()}{attr('reset')}
+	'''
+	p_log_fun('ERROR', full_msg_str)
 
-	if p_formated_msg_str                == None or \
-	   p_surrounding_context_attribs_tpl == None:
+	if p_sentry_bool:
+		sentry_sdk.capture_exception(p_exception)
 	
-		msg_str = ''
-	else:
-		assert isinstance(p_surrounding_context_attribs_tpl, tuple)
-		msg_str = p_formated_msg_str%(p_surrounding_context_attribs_tpl)
-	
-	p_log_fun('INFO', 'p_exception.message:%s'%(p_exception.message))
-	
-	
-	with_trace_msg_str = '''
-		%s
-		exception args:%s
-		exception msg :%s
-		trace         :%s'''%(msg_str,
-			p_exception.args,
-			p_exception.message,
-			traceback.format_exc())
-
-	p_log_fun('ERROR', with_trace_msg_str)
+	if p_reraise_bool:
+		raise p_exception

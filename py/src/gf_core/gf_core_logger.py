@@ -20,7 +20,7 @@ from colored import fg, attr
 import time
 
 #----------------------------------------------
-def get_log_fun(p_log_fun):
+def get_log_fun():
 
     def log_color_display_fun(p_group, p_msg):
         t = str(time.time())

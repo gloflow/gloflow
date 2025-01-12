@@ -1,5 +1,7 @@
-from gf_core import gf_core_id, gf_core_sql_db
+from gf_core import gf_core_db_sql, gf_core_id, gf_core_error, gf_core_logger
 from gf_apps.gf_images.gf_images_client import gf_images_client
+from gf_apps.gf_images.gf_images_core   import gf_image_db_sql, gf_image
+
 from gf_observe import gf_extern_load
 from gf_ml import gf_llm_core
 from gf_extern_services.gf_aws import gf_aws_ec2, gf_aws_s3, gf_aws_secrets, gf_aws_route53
@@ -13,16 +15,20 @@ version = "0.1.18"
 
 # DB
 class db():
-    init         = gf_core_sql_db.init_db_client
-    table_exists = gf_core_sql_db.table_exists
-
-# IMAGES
-class images():
-    add = gf_images_client.add_image
+    init         = gf_core_db_sql.init_db_client
+    table_exists = gf_core_db_sql.table_exists
 
 # CORE
 class core():
-    create_id = gf_core_id.create
+    create_id    = gf_core_id.create
+    create_error = gf_core_error.create
+    get_log_fun  = gf_core_logger.get_log_fun
+
+# IMAGES
+class images():
+    load_adt        = gf_image.load_adt
+    add             = gf_images_client.add_image
+    put_image_in_db = gf_image_db_sql.put_image
 
 # OBSERVE
 class observe():

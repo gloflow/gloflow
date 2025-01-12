@@ -18,17 +18,17 @@
 import os, sys
 modd_dir = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
 
-from gf_core import gf_core_error
+import pprint
+from gf_core import gf_core_error, gf_core_utils
 
 #---------------------------------------------------
-#->:Map(new_image_info_map)
-def verify_image_info(p_image_info_map,
-	p_db_context_map,
+def on_map(p_image_info_map,
 	p_log_fun):
-	p_log_fun('INFO', 'p_image_info_map:%s'%(p_image_info_map))
 	assert isinstance(p_image_info_map, dict)
 	
-	max_title_characters = 100
+	# pprint.pprint(p_image_info_map)
+
+	max_title_characters = 500
 	#-------------------
 	# 'id_str' - is None if image_info_dict comes from the outside of the system
 	#            and the ID has not yet been assigned. 
@@ -36,13 +36,16 @@ def verify_image_info(p_image_info_map,
 	#            else within the system
 	
 	id_str = p_image_info_map.get('id_str', None)
+	if id_str is not None:
+		assert isinstance(id_str, str)
+		assert id_str != ""
 
 	#-------------------
 	# TITLE
 	
 	title_str = None
 	try:
-		assert p_image_info_map.has_key('title_str')
+		assert 'title_str' in p_image_info_map.keys()
 		title_str = p_image_info_map['title_str']
 		
 		assert isinstance(p_image_info_map['title_str'], str)
@@ -50,14 +53,32 @@ def verify_image_info(p_image_info_map,
 
 	except Exception as e:
 		msg_str = '''title_str [%s] is missing, invalid, or has more then max_length [%s] characters'''%(title_str, max_title_characters)
-		gf_core_error.handle_exception(e,
-			msg_str, #p_formated_msg_str,
-			(),      #p_surrounding_context_attribs_tpl,
+		gf_core_error.create(msg_str,
+			"image_verification",
+			{"id_str": id_str}, e, "gf_images",
+			p_log_fun)
+		raise Exception(msg_str)
 
-			p_db_context_map,
-			p_log_fun,
-			p_app_name_str = 'gf_image')
-		
+	#-------------------
+	# FLOWS_NAMES
+
+	try:
+
+		assert 'flows_names_lst' in p_image_info_map.keys()
+		flows_names_lst = p_image_info_map['flows_names_lst']
+		assert isinstance(flows_names_lst, list)
+		assert len(flows_names_lst) > 0
+
+		for flow_name_str in flows_names_lst:
+			assert isinstance(flow_name_str, str)
+			assert flow_name_str != ""
+
+	except Exception as e:
+		msg_str = '''flows_names_lst [%s] is missing or is invalid'''
+		gf_core_error.create(msg_str,
+			"image_verification",
+			{"id_str": id_str}, e, "gf_images",
+			p_log_fun)
 		raise Exception(msg_str)
 	
 	#-------------------
@@ -65,99 +86,78 @@ def verify_image_info(p_image_info_map,
 	
 	format_str = None
 	try:
-		assert p_image_info_map.has_key('format_str')
+		assert "format_str" in p_image_info_map.keys()
+		assert isinstance(p_image_info_map['format_str'], str)
+
 		normalized_format_str = check_image_format(p_image_info_map['format_str'].lower(), p_log_fun)
 		format_str = normalized_format_str
 			
 	except Exception as e:
 		msg_str = '''format_str [%s] is missing or is invalid'''%(format_str)
-		
-		gf_core_error.handle_exception(e,
-			msg_str,
-			(), # p_surrounding_context_attribs_tpl,
-
-			p_db_context_map,
+		gf_core_error.create(msg_str,
+			"image_verification",
+			{"id_str": id_str}, e, "gf_images",
 			p_log_fun,
-			p_app_name_str = 'gf_image')
-		
-		raise Exception(msg_str)
+			p_reraise_bool=True)
 	
 	#-------------------
 	# WIDTH/HEIGHT
 	
-	width_str  = None
-	height_str = None
-	
 	try:
-		assert p_image_info_map.has_key('width_str')
-		width_str = p_image_info_map['width_str']
+		assert 'width_int' in p_image_info_map.keys()
+		width_int = p_image_info_map['width_int']
 		
-		assert p_image_info_map.has_key('height_str')
-		height_str = p_image_info_map['height_str']
+		assert 'height_int' in p_image_info_map.keys()
+		height_int = p_image_info_map['height_int']
 		
-		assert width_str.isdigit()
-		assert height_str.isdigit()
+		assert isinstance(width_int, int)
+		assert isinstance(height_int, int)
 		       
 	except Exception as e:
-		msg_str = '''width_str/height [%s/%s] is missing or is invalid'''%(width_str, height_str)
-		
-		gf_core_error.handle_exception(e,
-			msg_str,
-			(), # p_surrounding_context_attribs_tpl,
-
-			p_db_context_map,
+		msg_str = '''image width/height is missing or is invalid'''
+		gf_core_error.create(msg_str,
+			"image_verification",
+			{"id_str": id_str}, e, "gf_images",
 			p_log_fun,
-			p_app_name_str = 'gf_image')
-		raise Exception(msg_str)
+			p_reraise_bool=True)
 	
 	#-------------------
 	# ORIGIN URL
 	
 	origin_url_str = None
-	
 	try:
-		assert p_image_info_map.has_key('origin_url_str')
+		assert 'origin_url_str' in p_image_info_map.keys()
 		origin_url_str = p_image_info_map['origin_url_str']
+
+		gf_core_utils.is_valid_url(origin_url_str)
+
 	except Exception as e:
 		msg_str = '''origin_url_str [%s] is missing or is invalid'''%(origin_url_str)
-		
-		gf_core_error.handle_exception(e,
-			msg_str,
-			(), # p_surrounding_context_attribs_tpl
-
-			p_db_context_map,
+		gf_core_error.create(msg_str,
+			"image_verification",
+			{"id_str": id_str}, e, "gf_images",
 			p_log_fun,
-			p_app_name_str = 'gf_image')
-		
-		raise Exception(msg_str)
+			p_reraise_bool=True)
 	
 	#-------------------
-	original_file_internal_uri_str = p_image_info_map.get('original_file_internal_uri_str',None)
-	thumbnail_small_url_str        = p_image_info_map.get('thumbnail_small_url_str' ,None)
-	thumbnail_medium_url_str       = p_image_info_map.get('thumbnail_medium_url_str',None)
-	thumbnail_large_url_str        = p_image_info_map.get('thumbnail_large_url_str' ,None)
+	# THUMBS
+	thumbnail_small_url_str  = p_image_info_map.get('thumb_small_url_str',  None)
+	thumbnail_medium_url_str = p_image_info_map.get('thumb_medium_url_str', None)
+	thumbnail_large_url_str  = p_image_info_map.get('thumb_large_url_str',  None)
+
+	#---------------------------------------------------
+	def check_thumb(p_url_str):
+		if p_url_str is not None:
+			assert isinstance(p_url_str, str)
+			assert p_url_str != ""
+
+	#---------------------------------------------------
+	
+	check_thumb(thumbnail_small_url_str)
+	check_thumb(thumbnail_medium_url_str)
+	check_thumb(thumbnail_large_url_str)
 
 	#-------------------
-	
-	new_image_info_map = {
-		'id_str': id_str,
-		'title_str': title_str,
-		
-		'origin_url_str': origin_url_str,
-		'original_file_internal_uri_str': original_file_internal_uri_str,
-		
-		'thumbnail_small_url_str':  thumbnail_small_url_str,
-		'thumbnail_medium_url_str': thumbnail_medium_url_str,
-		'thumbnail_large_url_str':  thumbnail_large_url_str,
-		
-		'format_str': format_str,
-		'width_str':  width_str,
-		'height_str': height_str,
-		
-		'dominant_color_hex_str':p_image_info_map['dominant_color_hex_str']
-	}
-	
-	return new_image_info_map
 
 #---------------------------------------------------	
 #->:String(normalized_format_str)

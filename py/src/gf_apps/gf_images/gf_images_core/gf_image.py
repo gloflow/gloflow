@@ -17,33 +17,33 @@
 
 import os
 import hashlib
-import json
-import urlparse
-
-import gf_image_verify
+from . import gf_image_verify
 
 #---------------------------------------------------
 class GFimage():
 	def __init__(self, p_props_map):
 		
-		self.id_str    = p_props_map['id_str']
-		self.title_str = p_props_map['title_str']
-		
+		self.id_str               = p_props_map['id_str']
+		self.creation_unix_time_f = p_props_map.get('creation_unix_time_f', None)
+		self.user_id_str          = p_props_map.get('user_id_str', None)
+
+
+		self.client_type_str = p_props_map.get('client_type_str', None)
+		self.title_str       = p_props_map['title_str']
+		self.flows_names_lst = p_props_map.get('flows_names_lst', [])
+
 		#---------------
 		# when the image comes from an external url (as oppose to it being 
 		# created internally, or uploaded directly to the system)
 		self.origin_url_str = p_props_map.get('origin_url_str', None)
 
-		# actual path on the filesystem, of the fullsized image gotten from origin_url_str
-		self.original_file_internal_uri_str = p_props_map.get('original_file_internal_uri_str', None)
+		# if the image is extracted from a page, this holds the page_url
+		self.Origin_page_url_str = p_props_map.get('origin_page_url_str', None)
 		
 		#---------------
-		# relative url's
-		# '/images/image_name.*'
-		
-		self.thumbnail_small_url_str  = p_props_map.get('thumbnail_small_url_str',  None)
-		self.thumbnail_medium_url_str = p_props_map.get('thumbnail_medium_url_str', None)
-		self.thumbnail_large_url_str  = p_props_map.get('thumbnail_large_url_str',  None)
+		self.thumb_small_url_str  = p_props_map.get('thumb_small_url_str',  None)
+		self.thumb_medium_url_str = p_props_map.get('thumb_medium_url_str', None)
+		self.thumb_large_url_str  = p_props_map.get('thumb_large_url_str',  None)
 		
 		#---------------
 		self.format_str = p_props_map['format_str'] #"jpeg"|"png"|"gif"
@@ -52,27 +52,27 @@ class GFimage():
 		
 		#---------------
 		self.dominant_color_hex_str = p_props_map.get('dominant_color_hex_str', None)
-		
-		self.tags_lst = p_props_map.get('tags_lst', None)
+		self.pallete_str            = p_props_map.get('pallete_str', None)
+
+		self.meta_map = p_props_map.get('meta_map', {})
+		self.tags_lst = p_props_map.get('tags_lst', [])
 		
 #---------------------------------------------------
 #->:GFimage
 
-def create(p_image_info_map,
-	p_db_context_map,
+def load_adt(p_image_info_map,
 	p_log_fun):
 	
-	new_image_info_map = gf_image_verify.verify_image_info(p_image_info_map,
-		p_db_context_map,
+	gf_image_verify.on_map(p_image_info_map,
 		p_log_fun)
 
-	if not p_image_info_map.has_key('id_str'):
-		image_id_str = create_id(new_image_info_map['title_str'],
-			new_image_info_map['format_str'],
+	if not "id_str" in p_image_info_map.keys():
+		image_id_str = create_id(p_image_info_map['title_str'],
+			p_image_info_map['format_str'],
 			p_log_fun)
-		new_image_info_map['id_str'] = image_id_str
+		p_image_info_map['id_str'] = image_id_str
 		
-	gf_image = GFimage(new_image_info_map)
+	gf_image = GFimage(p_image_info_map)
 	return gf_image
 
 #---------------------------------------------------

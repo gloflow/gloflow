@@ -22,7 +22,6 @@ import gf_image
 #->:Bool
 def db_image_exists(p_image_id_str,
 	p_db_context_map,
-	p_log_fun,
 	p_db_type_str         = 'mongo',
 	p_mongo_db_name_str   = 'prod_db',
 	p_mongo_coll_name_str = 'images'):
@@ -67,7 +66,6 @@ def db_get(p_image_id_str,
 		#             investigate further
 		if db_image_exists(p_image_id_str,
 			p_db_context_map,
-			p_log_fun,
 			p_db_type_str = 'mongo'):
 
 			mongo_client       = p_db_context_map['mongodb_client']
@@ -94,11 +92,14 @@ def db_put(p_image,
 	p_mongo_coll_name_str = 'images'):
 	assert isinstance(p_image, gf_image.GFimage)
 	
-	image_info_map = gf_image.serialize(p_image,
-		p_log_fun)
+	
 	#---------------
-	# DB
+	# MONGO
 	if p_db_type_str == 'mongo':
+
+		image_info_map = gf_image.serialize(p_image,
+			p_log_fun)
+
 		mongo_client = p_db_context_map['mongodb_client']
 		data_coll    = mongo_client[p_mongo_db_name_str][p_mongo_coll_name_str]
 
