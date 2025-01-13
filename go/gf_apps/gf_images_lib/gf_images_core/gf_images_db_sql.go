@@ -449,6 +449,7 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 		var img GFimage
 		var creationTimestamp time.Time
 		var originPageURLstr sql.NullString
+		var thumbnailLargeURLstr sql.NullString
 
 		if err := rows.Scan(&img.IDstr,
 			&creationTimestamp,
@@ -458,7 +459,7 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 			&(originPageURLstr),
 			&img.ThumbnailSmallURLstr,
 			&img.ThumbnailMediumURLstr,
-			&img.ThumbnailLargeURLstr,
+			&(thumbnailLargeURLstr),
 			pq.Array(&img.TagsLst)); err != nil {
 			
 			gfErr := gf_core.ErrorCreate("failed to scan row for random images",
@@ -481,6 +482,13 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 			img.Origin_page_url_str = originPageURLstr.String
 		} else {
 			img.Origin_page_url_str = "" // Default value for NULL
+		}
+
+		// THUMBNAIL_LARGE_URL
+		if thumbnailLargeURLstr.Valid {
+			img.ThumbnailLargeURLstr = thumbnailLargeURLstr.String
+		} else {
+			img.ThumbnailLargeURLstr = "" // Default value for NULL
 		}
 
 		imgsLst = append(imgsLst, &img)
