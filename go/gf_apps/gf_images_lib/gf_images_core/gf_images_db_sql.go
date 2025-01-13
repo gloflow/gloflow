@@ -405,7 +405,19 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 	pRuntimeSys.LogNewFun("DEBUG", "random_cursor_position_int - "+fmt.Sprint(randomCursorPositionInt), nil)
 
 	queryStr := `
-		SELECT * FROM gf_images 
+		SELECT
+			id,
+			creation_time,
+			user_id,
+			title,
+			flows_names,
+			origin_page_url,
+			thumb_small_url,
+			thumb_medium_url,
+			thumb_large_url,
+			tags_lst
+			
+		FROM gf_images 
 		WHERE 
 				creation_time IS NOT NULL 
 			AND 
@@ -414,9 +426,7 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 		OFFSET $3`
 
 	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, queryStr,
-		// "%"+pFlowNameStr+"%",
 		pFlowNameStr,
-		
 		pImgsNumToGetInt,
 		randomCursorPositionInt)
 
@@ -435,12 +445,20 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 
 	var imgsLst []*GFimage
 	for rows.Next() {
+		
 		var img GFimage
+		var creationTimestamp time.Time
 
 		if err := rows.Scan(&img.IDstr,
-			&img.Creation_unix_time_f,
+			&creationTimestamp,
+			&img.UserID,
+			&img.TitleStr,
 			&img.FlowsNamesLst,
-			&img.Origin_page_url_str); err != nil {
+			&img.Origin_page_url_str,
+			&img.ThumbnailSmallURLstr,
+			&img.ThumbnailMediumURLstr,
+			&img.ThumbnailLargeURLstr,
+			pq.Array(&img.TagsLst)); err != nil {
 			
 			gfErr := gf_core.ErrorCreate("failed to scan row for random images",
 				"sql_row_scan",
@@ -452,6 +470,11 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 				err, "gf_images_core", pRuntimeSys)
 			return nil, gfErr
 		}
+
+		// CREATION_UNIX_TIME
+		unixTimeF := float64(creationTimestamp.Unix()) + float64(creationTimestamp.Nanosecond())/1e9
+		img.Creation_unix_time_f = unixTimeF
+
 		imgsLst = append(imgsLst, &img)
 	}
 
