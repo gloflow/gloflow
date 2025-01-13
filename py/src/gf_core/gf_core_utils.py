@@ -18,12 +18,23 @@
 import os
 import logging
 import subprocess
-import signal
+from datetime import datetime
 import multiprocessing
 from urllib.parse import urlparse
 
 import json
 import delegator
+
+#---------------------------------------------------
+def unix_to_sql_timestamp(p_unix_timestamp_f):
+	assert isinstance(p_unix_timestamp_f, float)
+
+	# covnert to datetime
+	dt = datetime.utcfromtimestamp(p_unix_timestamp_f)
+
+	# convert to string in SQL timestamp format (YYYY-MM-DD HH:MM:SS)
+	sql_timestamp_str = dt.strftime('%Y-%m-%d %H:%M:%S')
+	return sql_timestamp_str
 
 #---------------------------------------------------
 def is_valid_url(p_url_str):
@@ -32,14 +43,14 @@ def is_valid_url(p_url_str):
 	# return a ParseResult where certain fields (like scheme or netloc)
 	# might be empty or contain unexpected values. It doesn't throw an error
 	# but rather returns a result that can be checked.
-    result = urlparse(p_url_str)
-    return all([result.scheme, result.netloc])
+	result = urlparse(p_url_str)
+	return all([result.scheme, result.netloc])
 
 #---------------------------------------------------
 def get_file_ext_from_url(p_url_str):
-    path = urlparse(p_url_str).path
-    _, ext_str = os.path.splitext(path)
-    return ext_str.strip(".")
+	path = urlparse(p_url_str).path
+	_, ext_str = os.path.splitext(path)
+	return ext_str.strip(".")
 
 #---------------------------------------------------
 def run_cmd_in_os_proc(p_cmd_str, p_log_fun):

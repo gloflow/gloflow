@@ -26,9 +26,9 @@ class core():
 
 # IMAGES
 class images():
-    load_adt        = gf_image.load_adt
-    add             = gf_images_client.add_image
-    put_image_in_db = gf_image_db_sql.put_image
+    load_adt         = gf_image.load_adt
+    add              = gf_images_client.add_image
+    put_images_in_db = gf_image_db_sql.put_images
 
 # OBSERVE
 class observe():

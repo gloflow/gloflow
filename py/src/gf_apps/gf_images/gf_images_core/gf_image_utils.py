@@ -21,7 +21,7 @@ from pathlib import Path
 from PIL import Image
 import requests
 
-IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff']
+IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff']
 
 #--------------------------------------------
 def get_image_metadata(p_image_path_str):
@@ -68,11 +68,10 @@ def is_image_url(p_url_str):
 	path = urlparse(p_url_str).path
 	
 	# check if the URL ends with a valid image file extension
-	ext_str = Path(path).suffix.lower()
+	ext_str = Path(path).suffix.lower().strip(".")
 	if ext_str in IMAGE_EXTENSIONS:
 		
-		# return True and the format (without the dot)
-		format_str = ext_str[1:]
+		format_str = ext_str
 		return True, format_str
 	else:
 		return False, None

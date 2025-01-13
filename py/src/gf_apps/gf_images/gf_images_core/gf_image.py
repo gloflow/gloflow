@@ -25,12 +25,11 @@ class GFimage():
 		
 		self.id_str               = p_img_map['id_str']
 		self.creation_unix_time_f = p_img_map.get('creation_unix_time_f', None)
-		self.user_id_str          = p_img_map.get('user_id_str', None)
-
+		self.user_id_str          = p_img_map.get('user_id_str', "anon")
 
 		self.client_type_str = p_img_map.get('client_type_str', None)
 		self.title_str       = p_img_map['title_str']
-		self.flows_names_lst = p_img_map.get('flows_names_lst', [])
+		self.flows_names_lst = p_img_map.get('flows_names_lst')
 
 		#---------------
 		# when the image comes from an external url (as oppose to it being 
@@ -52,14 +51,16 @@ class GFimage():
 		self.thumb_large_url_str  = p_img_map.get('thumb_large_url_str',  None)
 		
 		#---------------
-		self.format_str = p_img_map['format_str'] #"jpeg"|"png"|"gif"
-		self.width_str  = p_img_map.get('width_str',  None)
-		self.height_str = p_img_map.get('height_str', None)
+		self.format_str = p_img_map['format_str'] # "jpeg" | "png" | "gif" | "webp" | etc.
+		self.width_int  = p_img_map.get('width_int',  None)
+		self.height_int = p_img_map.get('height_int', None)
 		
 		#---------------
+		# COLORS
 		self.dominant_color_hex_str = p_img_map.get('dominant_color_hex_str', None)
-		self.pallete_str            = p_img_map.get('pallete_str', None)
+		self.palette_colors_hex_lst = p_img_map.get('palette_colors_hex_lst', None)
 
+		#---------------
 		self.meta_map = p_img_map.get('meta_map', {})
 		self.tags_lst = p_img_map.get('tags_lst', [])
 		

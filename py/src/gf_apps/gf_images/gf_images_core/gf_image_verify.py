@@ -20,6 +20,7 @@ modd_dir = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
 
 import pprint
 from gf_core import gf_core_error, gf_core_utils
+from . import gf_image_utils
 
 #---------------------------------------------------
 def on_map(p_image_info_map,
@@ -40,6 +41,19 @@ def on_map(p_image_info_map,
 		assert isinstance(id_str, str)
 		assert id_str != ""
 
+	#-------------------
+	# CREATION TIME
+	try:
+		if 'creation_unix_time_f' in p_image_info_map.keys():
+			assert isinstance(p_image_info_map['creation_unix_time_f'], float)
+
+	except Exception as e:
+		msg_str = '''creation_unix_time_f is invalid (not a float)'''
+		gf_core_error.create(msg_str,
+			"image_verification",
+			{"id_str": id_str}, e, "gf_images",
+			p_log_fun)
+		raise Exception(msg_str)
 	#-------------------
 	# TITLE
 	
@@ -159,18 +173,13 @@ def on_map(p_image_info_map,
 
 	#-------------------
 
-#---------------------------------------------------	
-#->:String(normalized_format_str)
-
+#---------------------------------------------------
 def check_image_format(p_format_str, p_log_fun):
 	
 	normalized_format_str = None
 	
 	assert isinstance(p_format_str, str)
-	assert p_format_str == 'jpeg' or \
-		p_format_str == 'jpg'  or \
-		p_format_str == 'gif'  or \
-		p_format_str == 'png'
+	assert p_format_str in gf_image_utils.IMAGE_EXTENSIONS	
 				 
 	# normalize "jpg" (variation on jpeg) to "jpeg"
 	if p_format_str == 'jpg':
