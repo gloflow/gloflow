@@ -448,13 +448,14 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 		
 		var img GFimage
 		var creationTimestamp time.Time
+		var originPageURLstr sql.NullString
 
 		if err := rows.Scan(&img.IDstr,
 			&creationTimestamp,
 			&img.UserID,
 			&img.TitleStr,
 			pq.Array(&img.FlowsNamesLst),
-			&img.Origin_page_url_str,
+			&(originPageURLstr),
 			&img.ThumbnailSmallURLstr,
 			&img.ThumbnailMediumURLstr,
 			&img.ThumbnailLargeURLstr,
@@ -474,6 +475,13 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 		// CREATION_UNIX_TIME
 		unixTimeF := float64(creationTimestamp.Unix()) + float64(creationTimestamp.Nanosecond())/1e9
 		img.Creation_unix_time_f = unixTimeF
+
+		// ORIGIN_PAGE_URL
+		if originPageURLstr.Valid {
+			img.Origin_page_url_str = originPageURLstr.String
+		} else {
+			img.Origin_page_url_str = "" // Default value for NULL
+		}
 
 		imgsLst = append(imgsLst, &img)
 	}
