@@ -544,6 +544,12 @@ func DBsqlCreateTables(pCtx context.Context,
 		origin_page_url TEXT,
 		
 		-- ---------------
+		
+		-- internal url of the original image file (relative url), unprocessed in its original form.
+		-- this is the image that is stored in the system, and is used to generate thumbs;
+		-- never served directly to the user.
+		original_file_int_url TEXT,
+
 		-- THUMBS
 		-- relative url"s - "/images/image_name.*"
 		thumb_small_url  TEXT,
