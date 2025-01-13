@@ -21,41 +21,47 @@ from . import gf_image_verify
 
 #---------------------------------------------------
 class GFimage():
-	def __init__(self, p_props_map):
+	def __init__(self, p_img_map):
 		
-		self.id_str               = p_props_map['id_str']
-		self.creation_unix_time_f = p_props_map.get('creation_unix_time_f', None)
-		self.user_id_str          = p_props_map.get('user_id_str', None)
+		self.id_str               = p_img_map['id_str']
+		self.creation_unix_time_f = p_img_map.get('creation_unix_time_f', None)
+		self.user_id_str          = p_img_map.get('user_id_str', None)
 
 
-		self.client_type_str = p_props_map.get('client_type_str', None)
-		self.title_str       = p_props_map['title_str']
-		self.flows_names_lst = p_props_map.get('flows_names_lst', [])
+		self.client_type_str = p_img_map.get('client_type_str', None)
+		self.title_str       = p_img_map['title_str']
+		self.flows_names_lst = p_img_map.get('flows_names_lst', [])
 
 		#---------------
 		# when the image comes from an external url (as oppose to it being 
 		# created internally, or uploaded directly to the system)
-		self.origin_url_str = p_props_map.get('origin_url_str', None)
+		self.origin_url_str = p_img_map.get('origin_url_str', None)
 
 		# if the image is extracted from a page, this holds the page_url
-		self.Origin_page_url_str = p_props_map.get('origin_page_url_str', None)
+		self.origin_page_url_str = p_img_map.get('origin_page_url_str', None)
 		
 		#---------------
-		self.thumb_small_url_str  = p_props_map.get('thumb_small_url_str',  None)
-		self.thumb_medium_url_str = p_props_map.get('thumb_medium_url_str', None)
-		self.thumb_large_url_str  = p_props_map.get('thumb_large_url_str',  None)
-		
-		#---------------
-		self.format_str = p_props_map['format_str'] #"jpeg"|"png"|"gif"
-		self.width_str  = p_props_map.get('width_str',  None)
-		self.height_str = p_props_map.get('height_str', None)
-		
-		#---------------
-		self.dominant_color_hex_str = p_props_map.get('dominant_color_hex_str', None)
-		self.pallete_str            = p_props_map.get('pallete_str', None)
+		# internal URL (relative) of the original image, in its full size, unprocessed.
+		# this is the image that is stored in the system, and is used to generate thumbs;
+		# never served directly to the user.
+		self.original_file_int_url_str = p_img_map.get('original_file_int_url_str')
 
-		self.meta_map = p_props_map.get('meta_map', {})
-		self.tags_lst = p_props_map.get('tags_lst', [])
+		# THUMBS
+		self.thumb_small_url_str  = p_img_map.get('thumb_small_url_str',  None)
+		self.thumb_medium_url_str = p_img_map.get('thumb_medium_url_str', None)
+		self.thumb_large_url_str  = p_img_map.get('thumb_large_url_str',  None)
+		
+		#---------------
+		self.format_str = p_img_map['format_str'] #"jpeg"|"png"|"gif"
+		self.width_str  = p_img_map.get('width_str',  None)
+		self.height_str = p_img_map.get('height_str', None)
+		
+		#---------------
+		self.dominant_color_hex_str = p_img_map.get('dominant_color_hex_str', None)
+		self.pallete_str            = p_img_map.get('pallete_str', None)
+
+		self.meta_map = p_img_map.get('meta_map', {})
+		self.tags_lst = p_img_map.get('tags_lst', [])
 		
 #---------------------------------------------------
 #->:GFimage
