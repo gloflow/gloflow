@@ -453,7 +453,7 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 			&creationTimestamp,
 			&img.UserID,
 			&img.TitleStr,
-			&img.FlowsNamesLst,
+			pq.Array(&img.FlowsNamesLst),
 			&img.Origin_page_url_str,
 			&img.ThumbnailSmallURLstr,
 			&img.ThumbnailMediumURLstr,
