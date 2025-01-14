@@ -24,10 +24,6 @@
 			<div class='title'>images</div>
 			<div class='count'>{{ .ImagesWithTagCountInt }}</div>
 		</div>
-		<div id='posts_count'>
-			<div class='title'>posts</div>
-			<div class='count'>{{ .PostsWithTagCountInt }}</div>
-		</div>
 	</div>
 </div>
 
@@ -70,36 +66,6 @@
 			</div>
 		{{end}}
 	</div>
-
-	<div id="gap"></div>
-	
-	<div id='posts_container'>
-		{{range .PostsWithTagLst}}
-			<div class='gf_post gf_post_image_view'>
-				{{/*--------------------------------------------------------------*/}}
-				<div class='post_image'>
-					<a href ='{{ .post_url_str }}'>
-						<img src="{{ .post_thumbnail_url_str }}"></img>
-					</a>
-				</div>
-				{{/*--------------------------------------------------------------*/}}
-				{{/* one data-thumb_small_url attribute (for the <a> tag) per post_thumb_small_url_str */}}
-
-				<div class='post_title'>
-					{{ .post_title_str }}
-				</div>
-				{{/*--------------------------------------------------------------*/}}
-				<!-- TAGS -->
-				<div class='tags_container'>
-				{{range .post_tags_lst}}
-					<a class='gf_post_tag' target="_blank" href='/v1/tags/objects?tag={{ . }}&otype=post'>#{{ . }}</a>
-				{{end}}
-				</div>
-				{{/*--------------------------------------------------------------*/}}
-			</div>
-		{{end}}
-	</div>
-	
 	<div id="right_space"></div>
 </div>
 

@@ -27,7 +27,7 @@ import * as gf_tag_objects_lib from "./gf_tag_objects_lib";
 // other external code that controls initialization.
 $(document).ready(()=>{
 	//-------------------------------------------------
-	function log_fun(p_g,p_m) {
+	function log_fun(p_g, p_m) {
 		var msg_str = p_g+':'+p_m
 		switch (p_g) {
 			case "INFO":

@@ -76,9 +76,6 @@ export async function init(p_tag_str :string,
 		p_plugin_callbacks_map,
 		p_log_fun);
 
-	// POSTS
-	init_posts(p_plugin_callbacks_map, p_log_fun);
-
 	//------------------
 	// LOAD_PAGES_ON_SCROLL
 
@@ -211,24 +208,4 @@ function init_images(p_logged_in_bool :boolean,
 		//----------------
 		*/
 	});
-}
-
-//-------------------------------------------------
-function init_posts(p_plugin_callbacks_map :any,
-	p_log_fun :any) {
-
-	$('#posts_container').masonry({
-		itemSelector: '.gf_post',
-		columnWidth:  6
-	});
-	
-	$('.gf_post img').on('load', ()=>{
-		$('#posts_container').masonry();
-	});
-
-	$('#images_container .gf_image').each((p_i, p_e)=>{
-
-		const image_element = p_e;
-	});
-
 }
