@@ -61,62 +61,11 @@ func renderObjectsWithTag(pTagStr string,
 	}
 
 	//-----------------------------
-	// POSTS
-
-	/*
-	FIX!! - SCALABILITY!! - get tag info on "image" and "post" types is a very long
-		operation, and should be done in some more efficient way,
-		as in with a mongodb aggregation pipeline.
-	*/
-	postsInfosLst, gfErr := exportObjectsWithTag(pTagStr,
-		"post", // p_objectTypeStr
-		pPageIndexInt,
-		pPageSizeInt,
-		pCtx,
-		pRuntimeSys)
-	if gfErr != nil {
-		return "", gfErr
-	}
-
-	postsWithTagLst := []map[string]interface{}{}
-	for _, postInfoMap := range postsInfosLst {
-
-		//----------------
-		var postThumbnailURLstr string
-		thumbSmallStr := postInfoMap["thumbnail_small_url_str"].(string)
-
-		if thumbSmallStr == "" {
-			
-			// FIX!! - use some user-configurable value that is configured at startup
-			// IMPORTANT!! - some "thumbnail_small_url_str" are blank strings (""),
-			errorImageURLstr := "https://gloflow.com/images/d/gf_landing_page_logo.png"
-
-			postThumbnailURLstr = errorImageURLstr
-		} else {
-			postThumbnailURLstr = thumbSmallStr
-		}
-
-		//----------------
-		postWithTagMap := map[string]interface{}{
-			"post_title_str":         postInfoMap["title_str"].(string),
-			"post_tags_lst":          postInfoMap["tags_lst"].([]string),
-			"post_url_str":           postInfoMap["url_str"].(string),
-			"post_thumbnail_url_str": postThumbnailURLstr,
-		}
-
-		postsWithTagLst = append(postsWithTagLst, postWithTagMap)
-	}
-	
-	//-----------------------------
-
 
 	type templatesData struct {
 		TagStr                string
 		ImagesWithTagCountInt int64
-		PostsWithTagCountInt  int64
-		
 		ImagesWithTagLst      []map[string]interface{}
-		PostsWithTagLst       []map[string]interface{}
 		Sys_release_info      gf_core.SysReleaseInfo
 		Is_subtmpl_def        func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
@@ -125,11 +74,7 @@ func renderObjectsWithTag(pTagStr string,
 	if gfErr != nil {
 		return "", gfErr
 	}
-	postsWithTagCountInt, gfErr := dbMongoGetObjectsWithTagCount(pTagStr, "post", pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return "", gfErr
-	}
-	
+
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 
 	buff := new(bytes.Buffer)
@@ -137,9 +82,7 @@ func renderObjectsWithTag(pTagStr string,
 		templatesData{
 			TagStr:                pTagStr,
 			ImagesWithTagCountInt: imagesWithTagCountInt,
-			PostsWithTagCountInt:  postsWithTagCountInt,
 			ImagesWithTagLst:      imagesWithTagLst,
-			PostsWithTagLst:       postsWithTagLst,
 			Sys_release_info:      sysReleaseInfo,
 			
 			//-------------------------------------------------

@@ -212,26 +212,8 @@ func dbMongoGetObjectsWithTagCount(pTagStr string,
 			return 0, gfErr
 		}
 		countInt = imageCountInt
-
-	// POST
-	case "post":
-		countPostsInt, err := pRuntimeSys.Mongo_coll.CountDocuments(pCtx, bson.M{
-			"t":        "post",
-			"tags_lst": bson.M{"$in": []string{pTagStr,}},
-		})
-
-		if err != nil {
-			gfErr := gf_core.MongoHandleError(fmt.Sprintf("failed to count of posts with tag - %s in DB", pTagStr),
-				"mongodb_find_error",
-				map[string]interface{}{
-					"tag_str":         pTagStr,
-					"object_type_str": pObjectTypeStr,
-				},
-				err, "gf_tagger_lib", pRuntimeSys)
-			return 0, gfErr
-		}
-		countInt = countPostsInt
 	}
+	
 	return countInt, nil
 }
 
@@ -276,12 +258,6 @@ func dbMongoGetObjectsWithTag(pTagStr string,
 	// IMAGE
 	case *[]*gf_images_core.GFimage:
 		err = cursor.All(pCtx, output)
-
-	/*
-	// POST
-	case *[]*gf_publisher_core.GFpost:
-		err = cursor.All(pCtx, output)
-	*/
 	}
 	
 
