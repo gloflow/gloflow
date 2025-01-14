@@ -24,6 +24,7 @@ import * as gf_user_events from "./../../../../gf_events/ts/gf_user_events";
 
 //---------------------------------------------------
 export async function init(p_events_enabled_bool :boolean,
+    p_plugin_callbacks_map,
     p_host_str :string,
     p_log_fun :any) {
 
@@ -31,7 +32,7 @@ export async function init(p_events_enabled_bool :boolean,
 
 
     // <div id="flows_experimental_label">experimental:</div>
-    const all_flows_container = $(`
+    const flows_picker_element = $(`
         <div id="flows_picker">
             <div id="expand_btn"></div>
             <div id="flows">
@@ -41,7 +42,7 @@ export async function init(p_events_enabled_bool :boolean,
             <div id="flows_experimental">
             </div>
         </div>`);
-    $('body').append(all_flows_container);
+    $('body').append(flows_picker_element);
 
     //------------------
     // allow for the flow-picker to be toggled in visibility,
@@ -49,29 +50,29 @@ export async function init(p_events_enabled_bool :boolean,
 
     // flow-picker not initially visible
     var visible_bool = false;
-    $(all_flows_container).find("#flows").css("display", "none");
-    $(all_flows_container).find("#flows_experimental").css("display", "none");
+    $(flows_picker_element).find("#flows").css("display", "none");
+    $(flows_picker_element).find("#flows_experimental").css("display", "none");
 
     //------------------
 
-    $(all_flows_container).find("#expand_btn").click(()=>{
+    $(flows_picker_element).find("#expand_btn").click(()=>{
 
 
         if (visible_bool) {
 
             // hide
-            $(all_flows_container).find("#flows").css("display", "none");
-            $(all_flows_container).find("#flows_experimental").css("display", "none");
+            $(flows_picker_element).find("#flows").css("display", "none");
+            $(flows_picker_element).find("#flows_experimental").css("display", "none");
             visible_bool = false;
         }
         else {
 
             // show
-            $(all_flows_container).find("#flows").css("display", "block");
-            $(all_flows_container).find("#flows_experimental").css("display", "block");
+            $(flows_picker_element).find("#flows").css("display", "block");
+            $(flows_picker_element).find("#flows_experimental").css("display", "block");
             visible_bool = true;
 
-            //------------------
+            //--------------------------
             // EVENTS
             if (p_events_enabled_bool) {
                 
@@ -84,7 +85,15 @@ export async function init(p_events_enabled_bool :boolean,
                     p_host_str)
             }
 
-            //------------------
+            //--------------------------
+            // PLUGIN_CALLBACK
+
+            if ("flows_picker_open" in p_plugin_callbacks_map) {
+                p_plugin_callbacks_map["flows_picker_open"](flows_picker_element, all_flows_lst);
+            }
+
+            //--------------------------
+            
         }
     });
 
@@ -122,7 +131,7 @@ export async function init(p_events_enabled_bool :boolean,
             </div>
         `);
 
-        $(all_flows_container).find(`#${target_container_id_str}`).append(flow_element);
+        $(flows_picker_element).find(`#${target_container_id_str}`).append(flow_element);
 
 
         // emit an event on user click on the flow

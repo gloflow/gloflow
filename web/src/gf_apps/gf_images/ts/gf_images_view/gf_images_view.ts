@@ -27,9 +27,8 @@ import * as gf_images_view_lib from "./gf_images_view_lib";
 // other external code that controls initialization.
 $(document).ready(()=>{
 	//-------------------------------------------------
-	function log_fun(p_g,p_m) {
+	function log_fun(p_g, p_m) {
 		var msg_str = p_g+':'+p_m
-		// chrome.extension.getBackgroundPage().console.log(msg_str);
 		switch (p_g) {
 			case "INFO":
 				console.log("%cINFO"+":"+"%c"+p_m,"color:green; background-color:#ACCFAC;","background-color:#ACCFAC;");

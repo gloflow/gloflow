@@ -57,6 +57,7 @@ export async function init(p_tag_str :string,
 	if (logged_in_bool) {
 
 		gf_flows_picker.init(events_enabled_bool,
+			p_plugin_callbacks_map,
 			current_host_str,
 			p_log_fun)
 	}
