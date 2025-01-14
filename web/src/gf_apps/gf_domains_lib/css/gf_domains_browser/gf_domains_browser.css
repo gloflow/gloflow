@@ -65,31 +65,6 @@ body {
 }
 
 /*----------------------------------------------------------*/
-#viz_container {
-	position: fixed;
-    top: 50px;
-    right: 0px;
-    width: 40px;
-    padding-left: 21px;
-    padding-top: 16px;
-    padding-bottom: 16px;
-    background-color: #e8b9b9;
-    color: gray;
-    cursor: pointer;
-}
-#viz_container #viz_btn:hover {
-	cursor          : pointer;
-	background-color: lightgray;
-	color           : black;
-}
-#viz_container #viz_btn:active {
-	cursor          : pointer;
-	opacity         : 1.0;  
-	background-color: white;
-	color           : black;
-}
-
-/*----------------------------------------------------------*/
 #control {
 	top:40px;
 	left:40px;
@@ -190,41 +165,3 @@ body {
 }
 
 /*-------------------------------------------*/
-/*humble beginnings...*/
-#sys_release_info {
-	position        : fixed;
-	right           : 0px;
-	bottom          : 0px;
-	background-color: rgb(226, 226, 157);
-	padding-left    : 8px;
-	padding-top     : 6px;
-	padding-right   : 5px;
-	padding-bottom  : 3px;
-	z-index         : 5000;
-	width:   262px;
-	height:  34px;
-	opacity: 0.5;
-}
-#sys_release_info #version {
-	text-align: right;
-	font-size: 10px}
-
-#sys_release_info #name {
-	text-align: right;
-	font-size: 10px;
-}
-
-#sys_release_info #description {
-	visibility: hidden;
-}
-
-#sys_release_info #git_commit {
-	position:  fixed;
-	bottom:    0px;
-	width:     334px;
-	font-size: 10px;
-}
-
-#sys_release_info #git_commit a {
-	text-decoration: none;
-}
