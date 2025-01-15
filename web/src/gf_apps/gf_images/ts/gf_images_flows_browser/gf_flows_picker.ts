@@ -34,13 +34,15 @@ export async function init(p_events_enabled_bool :boolean,
     // <div id="flows_experimental_label">experimental:</div>
     const flows_picker_element = $(`
         <div id="flows_picker">
+
             <div id="expand_btn"></div>
+            
             <div id="flows">
             </div>
-
-            
+        
             <div id="flows_experimental">
             </div>
+            
         </div>`);
     $('body').append(flows_picker_element);
 
@@ -158,6 +160,15 @@ export async function init(p_events_enabled_bool :boolean,
             window.location.href = flow_url_str;
         });
     }
+
+    //--------------------------
+    // PLUGIN_CALLBACK
+
+    if ("flows_picker_init" in p_plugin_callbacks_map) {
+        p_plugin_callbacks_map["flows_picker_init"](flows_picker_element, all_flows_lst);
+    }
+
+    //--------------------------
 }
 
 //---------------------------------------------------
