@@ -109,13 +109,18 @@ func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
 		//---------------------
 		// RESOLVE_USER_ID_TO_USERNAME
 		var userNameStr gf_identity_core.GFuserName
-		if image.UserID != "" {
+
+		// IMPORTANT!! - pre-auth-system images are marked as owned by anonymous users.
+		if image.UserID != "" && image.UserID != "anon" {
+
 			userID := image.UserID
 
 			// check if there is a cached user_name, and use it if present; if not, resolve from DB
 			if cachedUserNameStr, ok := usernamesCacheMap[userID]; ok {
 				userNameStr = cachedUserNameStr
 			} else {
+
+				// DB
 				resolvedUserNameStr, gfErr := gf_identity_core.DBsqlGetUserNameByID(userID, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					/*
