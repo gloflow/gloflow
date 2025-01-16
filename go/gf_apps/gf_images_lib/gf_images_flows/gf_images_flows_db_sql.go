@@ -88,9 +88,12 @@ func dbSQLgetPage(pFlowNameStr string,
 	for rows.Next() {
 		img := &gf_images_core.GFimage{}
 
-		var DominantColorHexStr sql.NullString
-		var PalleteStr sql.NullString
+		
 		var metaMapRaw []byte
+
+		var originPageURLstr sql.NullString
+		var thumbSmallURLstr, thumbMediumURLstr, thumbLargeURLstr sql.NullString
+		var dominantColorHexStr, palleteStr sql.NullString
 
 		if err := rows.Scan(
 				&img.IDstr,
@@ -102,18 +105,18 @@ func dbSQLgetPage(pFlowNameStr string,
 				pq.Array(&img.FlowsNamesLst),
 
 				&img.Origin_url_str,
-				&img.Origin_page_url_str,
+				&originPageURLstr,
 
-				&img.ThumbnailSmallURLstr,
-				&img.ThumbnailMediumURLstr,
-				&img.ThumbnailLargeURLstr,
+				&thumbSmallURLstr,
+				&thumbMediumURLstr,
+				&thumbLargeURLstr,
 
 				&img.Format_str,
 				&img.Width_int,
 				&img.Height_int,
 
-				&DominantColorHexStr,
-				&PalleteStr,
+				&dominantColorHexStr,
+				&palleteStr,
 				&metaMapRaw,
 				pq.Array(&img.TagsLst)); err != nil {
 					
@@ -124,19 +127,16 @@ func dbSQLgetPage(pFlowNameStr string,
 			return nil, gfErr
 		}
 
-		// DOMINANT_COLOR_HEX
-		if DominantColorHexStr.Valid {
-			img.DominantColorHexStr = DominantColorHexStr.String
-		} else {
-			img.DominantColorHexStr = "" // Default value for NULL
-		}
+		img.Origin_page_url_str = gf_core.DBsqlGetNullStringOrDefault(originPageURLstr, "")
 
-		// PALLETE
-		if PalleteStr.Valid {
-			img.PalleteStr = PalleteStr.String
-		} else {
-			img.PalleteStr = "" // Default value for NULL
-		}
+		img.ThumbnailSmallURLstr  = gf_core.DBsqlGetNullStringOrDefault(thumbSmallURLstr, "")
+		img.ThumbnailMediumURLstr = gf_core.DBsqlGetNullStringOrDefault(thumbMediumURLstr, "")
+		img.ThumbnailLargeURLstr  = gf_core.DBsqlGetNullStringOrDefault(thumbLargeURLstr, "")
+
+		img.DominantColorHexStr = gf_core.DBsqlGetNullStringOrDefault(dominantColorHexStr, "")
+		img.PalleteStr = gf_core.DBsqlGetNullStringOrDefault(palleteStr, "")
+
+		
 
 		// META_MAP
 		if err := json.Unmarshal(metaMapRaw, &img.MetaMap); err != nil {

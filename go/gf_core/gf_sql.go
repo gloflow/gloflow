@@ -33,6 +33,15 @@ import (
 
 //-------------------------------------------------
 
+func DBsqlGetNullStringOrDefault(pNullableStr sql.NullString, pDefaultValStr string) string {
+    if pNullableStr.Valid {
+        return pNullableStr.String
+    }
+    return pDefaultValStr
+}
+
+//-------------------------------------------------
+
 func DBsqlConnect(pDBnameStr string,
 	pUserNameStr string,
 	pPassStr     string,
