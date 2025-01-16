@@ -7,7 +7,7 @@
 
 #flows_picker #expand_btn {
 	position: fixed;
-    top: 106px;
+    top: 50px;
     background-color: rgb(122, 122, 122);
     width: 60px;
     height: 60px;
@@ -20,7 +20,7 @@
 	display: block;
     right: 60px;
     position: fixed;
-    top: 106px;
+    top: 50px;
 }
 
 #flows_picker .flow_info {
