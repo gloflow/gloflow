@@ -21,9 +21,9 @@ package gf_images_flows
 
 import (
 	"context"
-	"encoding/json"
+	// "encoding/json"
 	"database/sql"
-	"github.com/lib/pq"
+	// "github.com/lib/pq"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
@@ -67,8 +67,7 @@ func dbSQLgetPage(pFlowNameStr string,
 			$1 = ANY(flows_names)
 		)
 		ORDER BY creation_time DESC
-		LIMIT $2 OFFSET $3
-	`
+		LIMIT $2 OFFSET $3`
 
 	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, query, pFlowNameStr, pElementsNumInt, pCursorStartPositionInt)
 	if err != nil {
@@ -86,14 +85,20 @@ func dbSQLgetPage(pFlowNameStr string,
 
 	imagesLst := []*gf_images_core.GFimage{}
 	for rows.Next() {
-		img := &gf_images_core.GFimage{}
 
-		
-		var metaMapRaw []byte
+
+		img, gfErr := gf_images_core.LoadImageFromResult(rows, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+
+		/*
+		img := &gf_images_core.GFimage{}
 
 		var originPageURLstr sql.NullString
 		var thumbSmallURLstr, thumbMediumURLstr, thumbLargeURLstr sql.NullString
 		var dominantColorHexStr, palleteStr sql.NullString
+		var metaMapRaw []byte
 
 		if err := rows.Scan(
 				&img.IDstr,
@@ -146,6 +151,7 @@ func dbSQLgetPage(pFlowNameStr string,
 				err, "gf_images_flows", pRuntimeSys)
 			return nil, gfErr
 		}
+		*/
 
 		imagesLst = append(imagesLst, img)
 	}

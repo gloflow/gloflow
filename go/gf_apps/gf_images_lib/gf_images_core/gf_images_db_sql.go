@@ -188,31 +188,61 @@ func DBsqlGetImage(pImageIDstr GFimageID,
 		"image_id": pImageIDstr,
 	})
 
-	// SELECT SQL statement
 	sqlStr := `
 		SELECT 
 			id,
+			EXTRACT(EPOCH FROM creation_time) AS creation_unix_time,
 			user_id,
 			client_type,
-			title,
-			flows_names, 
+			title, 
+			flows_names,
+
 			origin_url,
 			origin_page_url,
+
 			thumb_small_url,
-			thumb_medium_url, 
+			thumb_medium_url,
 			thumb_large_url,
+
 			format,
 			width,
 			height,
+
+			dominant_color_hex,
+			palette_colors_hex,
 			meta_map,
 			tags_lst
 		FROM gf_images
-		WHERE id = $1 AND deleted = FALSE`
+		WHERE id = $1 AND deleted = FALSE
+		LIMIT 1`
+	
+	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, sqlStr, pImageIDstr)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to get a single image from DB",
+			"sql_query_execution",
+			map[string]interface{}{
+				"image_id_str": pImageIDstr,
+			},
+			err, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
+	}
+	defer rows.Close()
 
+	for rows.Next() {
+		img, gfErr := LoadImageFromResult(rows, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+
+		// we're getting just a single image, so return right away
+		return img, nil
+	}
+
+	/*
 	var image GFimage
 	var metaMapBytesLst []byte
+	var clientTypeStr sql.NullString
 
-	row := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pImageIDstr)
 	err := row.Scan(
 		&image.IDstr,
 		&image.UserID,
@@ -248,6 +278,9 @@ func DBsqlGetImage(pImageIDstr GFimageID,
 		return nil, gfErr
 	}
 
+	img.ClientTypeStr = gf_core.DBsqlGetNullStringOrDefault(clientTypeStr, "")
+
+
 	if err := json.Unmarshal(metaMapBytesLst, &image.MetaMap); err != nil {
 		gfErr := gf_core.ErrorCreate(
 			"failed to unmarshal meta_map JSONB image data from gf_images table",
@@ -258,8 +291,80 @@ func DBsqlGetImage(pImageIDstr GFimageID,
 			err, "gf_images_core", pRuntimeSys)
 		return nil, gfErr
 	}
+	*/
 
-	return &image, nil
+	return nil, nil
+}
+
+//---------------------------------------------------
+
+func LoadImageFromResult(pRows *sql.Rows,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFimage, *gf_core.GFerror) {
+
+	img := &GFimage{}
+	
+	var clientTypeStr sql.NullString
+	var originPageURLstr sql.NullString
+	var thumbSmallURLstr, thumbMediumURLstr, thumbLargeURLstr sql.NullString
+	var dominantColorHexStr, palleteStr sql.NullString
+	var metaMapRaw []byte
+
+	if err := pRows.Scan(
+			&img.IDstr,
+			&img.Creation_unix_time_f,
+			&img.UserID,
+
+			&clientTypeStr,
+			&img.TitleStr,
+			pq.Array(&img.FlowsNamesLst),
+
+			&img.Origin_url_str,
+			&originPageURLstr,
+
+			&thumbSmallURLstr,
+			&thumbMediumURLstr,
+			&thumbLargeURLstr,
+
+			&img.Format_str,
+			&img.Width_int,
+			&img.Height_int,
+
+			&dominantColorHexStr,
+			&palleteStr,
+			&metaMapRaw,
+			pq.Array(&img.TagsLst)); err != nil {
+				
+		gfErr := gf_core.ErrorCreate("failed to scan a row of images",
+			"sql_row_scan",
+			map[string]interface{}{},
+			err, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
+	}
+	
+	img.ClientTypeStr       = gf_core.DBsqlGetNullStringOrDefault(clientTypeStr, "")
+	img.Origin_page_url_str = gf_core.DBsqlGetNullStringOrDefault(originPageURLstr, "")
+
+	img.ThumbnailSmallURLstr  = gf_core.DBsqlGetNullStringOrDefault(thumbSmallURLstr, "")
+	img.ThumbnailMediumURLstr = gf_core.DBsqlGetNullStringOrDefault(thumbMediumURLstr, "")
+	img.ThumbnailLargeURLstr  = gf_core.DBsqlGetNullStringOrDefault(thumbLargeURLstr, "")
+
+	img.DominantColorHexStr = gf_core.DBsqlGetNullStringOrDefault(dominantColorHexStr, "")
+	img.PalleteStr = gf_core.DBsqlGetNullStringOrDefault(palleteStr, "")
+
+	
+
+	// META_MAP
+	if err := json.Unmarshal(metaMapRaw, &img.MetaMap); err != nil {
+		gfErr := gf_core.ErrorCreate("failed to unmarshal JSON meta_map",
+			"json_decode_error",
+			map[string]interface{}{},
+			err, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
+	}
+
+
+	return img, nil
 }
 
 //---------------------------------------------------
@@ -407,7 +512,7 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 	queryStr := `
 		SELECT
 			id,
-			creation_time,
+			EXTRACT(EPOCH FROM creation_time) AS creation_unix_time,
 			user_id,
 			title,
 			flows_names,
@@ -447,12 +552,12 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 	for rows.Next() {
 		
 		var img GFimage
-		var creationTimestamp time.Time
+		// var creation time.Time
 		var originPageURLstr sql.NullString
 		var thumbSmallURLstr, thumbMediumURLstr, thumbLargeURLstr sql.NullString
 
 		if err := rows.Scan(&img.IDstr,
-			&creationTimestamp,
+			&img.Creation_unix_time_f,
 			&img.UserID,
 			&img.TitleStr,
 			pq.Array(&img.FlowsNamesLst),
@@ -473,9 +578,11 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 			return nil, gfErr
 		}
 
+		/*
 		// CREATION_UNIX_TIME
 		unixTimeF := float64(creationTimestamp.Unix()) + float64(creationTimestamp.Nanosecond())/1e9
 		img.Creation_unix_time_f = unixTimeF
+		*/
 
 		img.Origin_page_url_str = gf_core.DBsqlGetNullStringOrDefault(originPageURLstr, "")
 
