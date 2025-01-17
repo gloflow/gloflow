@@ -514,12 +514,24 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 			id,
 			EXTRACT(EPOCH FROM creation_time) AS creation_unix_time,
 			user_id,
-			title,
+			client_type,
+			title, 
 			flows_names,
+
+			origin_url,
 			origin_page_url,
+
 			thumb_small_url,
 			thumb_medium_url,
 			thumb_large_url,
+
+			format,
+			width,
+			height,
+
+			dominant_color_hex,
+			palette_colors_hex,
+			meta_map,
 			tags_lst
 			
 		FROM gf_images 
@@ -551,6 +563,12 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 	var imgsLst []*GFimage
 	for rows.Next() {
 		
+		img, gfErr := LoadImageFromResult(rows, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+
+		/*
 		var img GFimage
 		// var creation time.Time
 		var originPageURLstr sql.NullString
@@ -578,19 +596,18 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 			return nil, gfErr
 		}
 
-		/*
 		// CREATION_UNIX_TIME
-		unixTimeF := float64(creationTimestamp.Unix()) + float64(creationTimestamp.Nanosecond())/1e9
-		img.Creation_unix_time_f = unixTimeF
-		*/
+		// unixTimeF := float64(creationTimestamp.Unix()) + float64(creationTimestamp.Nanosecond())/1e9
+		// img.Creation_unix_time_f = unixTimeF
 
 		img.Origin_page_url_str = gf_core.DBsqlGetNullStringOrDefault(originPageURLstr, "")
 
 		img.ThumbnailSmallURLstr  = gf_core.DBsqlGetNullStringOrDefault(thumbSmallURLstr, "")
 		img.ThumbnailMediumURLstr = gf_core.DBsqlGetNullStringOrDefault(thumbMediumURLstr, "")
 		img.ThumbnailLargeURLstr  = gf_core.DBsqlGetNullStringOrDefault(thumbLargeURLstr, "")
-
-		imgsLst = append(imgsLst, &img)
+		*/
+		
+		imgsLst = append(imgsLst, img)
 	}
 
 	if err := rows.Err(); err != nil {
