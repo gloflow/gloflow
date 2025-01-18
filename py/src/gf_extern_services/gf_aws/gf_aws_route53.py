@@ -19,14 +19,11 @@ import boto3
 
 #--------------------------------------------------
 def hosted_zone__get_id(p_name_str,
-    p_aws_creds_map,
     p_region_str = "us-east-1"):
     assert isinstance(p_name_str, str)
 
     aws_client = boto3.client("route53",
-        aws_access_key_id     = p_aws_creds_map["AWS_ACCESS_KEY_ID"],
-        aws_secret_access_key = p_aws_creds_map["AWS_SECRET_ACCESS_KEY"],
-        region_name           = p_region_str)
+        region_name = p_region_str)
 
     r = aws_client.list_hosted_zones()
     

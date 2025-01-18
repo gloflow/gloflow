@@ -10,7 +10,7 @@ twine upload dist/*
 
 update local gloflow package from PyPi public repo:
 ```
-pip3 install --upgrade gloflow --break-system-packages
+pip3 install --upgrade gloflow
 ```
 
 

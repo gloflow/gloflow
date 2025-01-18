@@ -57,8 +57,7 @@ def main():
 	print('                   -------------  %sBUILD%s %sGLOFLOW%s  -------------'%(bg('dark_orange_3a'), attr(0), bg('cyan'), attr(0)))
 	print("")
 	
-	build_meta_map        = gf_meta.get()["build_info_map"]
-	# apps_changes_deps_map = gf_meta.get()["apps_changes_deps_map"]
+	build_meta_map = gf_meta.get()["build_info_map"]
 	args_map = parse_args()
 	run_str  = args_map["run"]
 
@@ -182,14 +181,11 @@ def main():
 	#-------------
 	# BUILD_WEB
 	elif run_str == "build_web":
-		apps_names_lst = [app_name_str]
-		web_meta_map   = gf_web_meta.get() 
-
-
-		page_name_str = args_map["page_name"]
-
-
+		apps_names_lst        = [app_name_str]
+		web_meta_map          = gf_web_meta.get() 
+		page_name_str         = args_map["page_name"]
 		build_outof_cont_bool = args_map["build_outof_cont"]
+
 		if build_outof_cont_bool:
 			gf_web__build.build(apps_names_lst, web_meta_map,
 				gf_log.log_fun,
@@ -429,7 +425,7 @@ deprecated:
 		"app":              args_namespace.app,
 		"test_name":        args_namespace.test_name,
 		"aws_creds":        args_namespace.aws_creds,
-		"dockerhub_user":   gf_dockerhub_user_str, # ,
+		"dockerhub_user":   gf_dockerhub_user_str,
 		"dockerhub_pass":   gf_dockerhub_pass_str,
 		"docker_sudo":      args_namespace.docker_sudo,
 		"build_outof_cont": args_namespace.build_outof_cont,
