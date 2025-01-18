@@ -238,61 +238,6 @@ func DBsqlGetImage(pImageIDstr GFimageID,
 		return img, nil
 	}
 
-	/*
-	var image GFimage
-	var metaMapBytesLst []byte
-	var clientTypeStr sql.NullString
-
-	err := row.Scan(
-		&image.IDstr,
-		&image.UserID,
-		&image.ClientTypeStr,
-		&image.TitleStr,
-		pq.Array(&image.FlowsNamesLst),
-		&image.Origin_url_str,
-		&image.Origin_page_url_str,
-		&image.ThumbnailSmallURLstr,
-		&image.ThumbnailMediumURLstr,
-		&image.ThumbnailLargeURLstr,
-		&image.Format_str,
-		&image.Width_int,
-		&image.Height_int,
-		&metaMapBytesLst,
-		pq.Array(&image.TagsLst),
-	)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-
-			// if there's no record found, its not an error, just return nil for image
-			return nil, nil
-		}
-
-		gfErr := gf_core.ErrorCreate(
-			"failed to retrieve image data from gf_images table",
-			"sql_query_execute",
-			map[string]interface{}{
-				"image_id": pImageIDstr,
-			},
-			err, "gf_images_core", pRuntimeSys)
-		return nil, gfErr
-	}
-
-	img.ClientTypeStr = gf_core.DBsqlGetNullStringOrDefault(clientTypeStr, "")
-
-
-	if err := json.Unmarshal(metaMapBytesLst, &image.MetaMap); err != nil {
-		gfErr := gf_core.ErrorCreate(
-			"failed to unmarshal meta_map JSONB image data from gf_images table",
-			"json_decode_error",
-			map[string]interface{}{
-				"image_id": pImageIDstr,
-			},
-			err, "gf_images_core", pRuntimeSys)
-		return nil, gfErr
-	}
-	*/
-
 	return nil, nil
 }
 
@@ -567,45 +512,6 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 		if gfErr != nil {
 			return nil, gfErr
 		}
-
-		/*
-		var img GFimage
-		// var creation time.Time
-		var originPageURLstr sql.NullString
-		var thumbSmallURLstr, thumbMediumURLstr, thumbLargeURLstr sql.NullString
-
-		if err := rows.Scan(&img.IDstr,
-			&img.Creation_unix_time_f,
-			&img.UserID,
-			&img.TitleStr,
-			pq.Array(&img.FlowsNamesLst),
-			&originPageURLstr,
-			&thumbSmallURLstr,
-			&thumbMediumURLstr,
-			&thumbLargeURLstr,
-			pq.Array(&img.TagsLst)); err != nil {
-			
-			gfErr := gf_core.ErrorCreate("failed to scan row for random images",
-				"sql_row_scan",
-				map[string]interface{}{
-					"imgs_num_to_get_int":            pImgsNumToGetInt,
-					"max_random_cursor_position_int": pMaxRandomCursorPositionInt,
-					"flow_name_str":                  pFlowNameStr,
-				},
-				err, "gf_images_core", pRuntimeSys)
-			return nil, gfErr
-		}
-
-		// CREATION_UNIX_TIME
-		// unixTimeF := float64(creationTimestamp.Unix()) + float64(creationTimestamp.Nanosecond())/1e9
-		// img.Creation_unix_time_f = unixTimeF
-
-		img.Origin_page_url_str = gf_core.DBsqlGetNullStringOrDefault(originPageURLstr, "")
-
-		img.ThumbnailSmallURLstr  = gf_core.DBsqlGetNullStringOrDefault(thumbSmallURLstr, "")
-		img.ThumbnailMediumURLstr = gf_core.DBsqlGetNullStringOrDefault(thumbMediumURLstr, "")
-		img.ThumbnailLargeURLstr  = gf_core.DBsqlGetNullStringOrDefault(thumbLargeURLstr, "")
-		*/
 		
 		imgsLst = append(imgsLst, img)
 	}

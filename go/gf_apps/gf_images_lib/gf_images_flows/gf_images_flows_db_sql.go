@@ -92,67 +92,6 @@ func dbSQLgetPage(pFlowNameStr string,
 			return nil, gfErr
 		}
 
-		/*
-		img := &gf_images_core.GFimage{}
-
-		var originPageURLstr sql.NullString
-		var thumbSmallURLstr, thumbMediumURLstr, thumbLargeURLstr sql.NullString
-		var dominantColorHexStr, palleteStr sql.NullString
-		var metaMapRaw []byte
-
-		if err := rows.Scan(
-				&img.IDstr,
-				&img.Creation_unix_time_f,
-				&img.UserID,
-
-				&img.ClientTypeStr,
-				&img.TitleStr,
-				pq.Array(&img.FlowsNamesLst),
-
-				&img.Origin_url_str,
-				&originPageURLstr,
-
-				&thumbSmallURLstr,
-				&thumbMediumURLstr,
-				&thumbLargeURLstr,
-
-				&img.Format_str,
-				&img.Width_int,
-				&img.Height_int,
-
-				&dominantColorHexStr,
-				&palleteStr,
-				&metaMapRaw,
-				pq.Array(&img.TagsLst)); err != nil {
-					
-			gfErr := gf_core.ErrorCreate("failed to scan a row of images",
-				"sql_row_scan",
-				map[string]interface{}{},
-				err, "gf_images_flows", pRuntimeSys)
-			return nil, gfErr
-		}
-
-		img.Origin_page_url_str = gf_core.DBsqlGetNullStringOrDefault(originPageURLstr, "")
-
-		img.ThumbnailSmallURLstr  = gf_core.DBsqlGetNullStringOrDefault(thumbSmallURLstr, "")
-		img.ThumbnailMediumURLstr = gf_core.DBsqlGetNullStringOrDefault(thumbMediumURLstr, "")
-		img.ThumbnailLargeURLstr  = gf_core.DBsqlGetNullStringOrDefault(thumbLargeURLstr, "")
-
-		img.DominantColorHexStr = gf_core.DBsqlGetNullStringOrDefault(dominantColorHexStr, "")
-		img.PalleteStr = gf_core.DBsqlGetNullStringOrDefault(palleteStr, "")
-
-		
-
-		// META_MAP
-		if err := json.Unmarshal(metaMapRaw, &img.MetaMap); err != nil {
-			gfErr := gf_core.ErrorCreate("failed to unmarshal JSON meta_map",
-				"json_decode_error",
-				map[string]interface{}{},
-				err, "gf_images_flows", pRuntimeSys)
-			return nil, gfErr
-		}
-		*/
-
 		imagesLst = append(imagesLst, img)
 	}
 
