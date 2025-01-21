@@ -100,8 +100,24 @@ func AWSsecretsMngrCreateSecret(pSecretNameStr string,
 
 func AWSsecretsMngrGetSecret(pSecretNameStr string,
 	pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
+	
 
-	svc   := secretsmanager.New(session.New())
+
+	sess, err := session.NewSessionWithOptions(session.Options{
+		Config: aws.Config{
+			CredentialsChainVerboseErrors: aws.Bool(true),
+		},
+		SharedConfigState: session.SharedConfigEnable,
+	})
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to create AWS session",
+			"aws_session_error",
+			map[string]interface{}{},
+			err, "gf_aws", pRuntimeSys)
+		return nil, gfErr
+	}
+	
+	svc   := secretsmanager.New(sess) // session.New())
 	input := &secretsmanager.GetSecretValueInput{
 		SecretId: aws.String(pSecretNameStr),
 		// VersionStage: aws.String("AWSPREVIOUS"),

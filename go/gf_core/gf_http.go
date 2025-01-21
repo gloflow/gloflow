@@ -56,6 +56,28 @@ type HTTPhandlerInfo struct {
 }
 
 //---------------------------------------------------
+
+func GetClientIP(pReq *http.Request) string {
+
+	// Check X-Forwarded-For header (comma-separated list of IPs)
+	xForwardedFor := pReq.Header.Get("X-Forwarded-For")
+	if xForwardedFor != "" {
+		ips := strings.Split(xForwardedFor, ",")
+		return strings.TrimSpace(ips[0]) // First IP in the list
+	}
+
+	// Check X-Real-IP header
+	xRealIP := pReq.Header.Get("X-Real-IP")
+	if xRealIP != "" {
+		return xRealIP
+	}
+
+	// Fallback to RemoteAddr
+	host, _, _ := strings.Cut(pReq.RemoteAddr, ":")
+	return host
+}
+
+//---------------------------------------------------
 // INPUT
 //---------------------------------------------------
 // GET
