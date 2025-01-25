@@ -15,15 +15,22 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import os
 import json
 import boto3
 import psycopg2
 
 #---------------------------------------------------------------------------------
 def init_db_client(p_db_name_str,
-	p_env_str):
+	p_env_str,
+	p_from_aws_secrets_bool=False):
 	
-	db_user_str, db_pass_str, db_host_str, db_port_str = gf_postgresql_db_creds(p_env_str)
+	if p_from_aws_secrets_bool:
+		# SECRETS
+		db_user_str, db_pass_str, db_host_str, db_port_str = get_meta_from_secrets(p_env_str)
+	else:
+		# ENV
+		db_user_str, db_pass_str, db_host_str, db_port_str = get_meta_from_env(p_env_str)
 
 	db_client = psycopg2.connect(
 		host     = db_host_str,
@@ -35,13 +42,30 @@ def init_db_client(p_db_name_str,
 	return db_client
 
 #---------------------------------------------------------------------------------
-def gf_postgresql_db_creds(p_db_env_str):
+def get_meta_from_env(p_db_env_str,
+	p_prefix_str="GF_DB"):
+
+	print("getting db meta from env...")
+
+	db_host_port_str = os.environ.get(f"{p_prefix_str}_HOST")
+	db_user_str = os.environ.get(f"{p_prefix_str}_CREDS_USER")
+	db_pass_str = os.environ.get(f"{p_prefix_str}_CREDS_PASS")
+
+	db_host_str, db_port_str = db_host_port_str.split(":")
+
+	return db_user_str, db_pass_str, db_host_str, db_port_str
+
+#---------------------------------------------------------------------------------
+def get_meta_from_secrets(p_db_env_str,
+	p_prefix_str="gf_rds"):
+
+	print("getting db meta from aws secrets_manager...")
 
 	secrets_client = boto3.client('secretsmanager',
 		region_name="us-east-1")
 	
-	db_host_port_str = secrets_client.get_secret_value(SecretId=f"gf_rds_host_{p_db_env_str}")["SecretString"]
-	db_creds_str     = secrets_client.get_secret_value(SecretId=f"gf_rds_creds_{p_db_env_str}")["SecretString"]
+	db_host_port_str = secrets_client.get_secret_value(SecretId=f"{p_prefix_str}_host_{p_db_env_str}")["SecretString"]
+	db_creds_str     = secrets_client.get_secret_value(SecretId=f"{p_prefix_str}_creds_{p_db_env_str}")["SecretString"]
 	print("db RDS creds fetched from aws secrets_manager...")
 
 	db_creds_map = json.loads(db_creds_str)

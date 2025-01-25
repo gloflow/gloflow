@@ -27,7 +27,8 @@ import delegator
 def run__view_realtime(p_cmd_lst,
 	p_env_map,
 	p_view__type_str,
-	p_view__color_str):
+	p_view__color_str,
+	p_cwd_str=os.path.abspath(os.getcwd())):
 
 	print(" ".join(p_cmd_lst))
 	
@@ -38,7 +39,8 @@ def run__view_realtime(p_cmd_lst,
 	# CMD also has to be a list here, since its not being passed in as a string
 	# to the child shell.
 	p = subprocess.Popen(p_cmd_lst, shell=False, stdout=subprocess.PIPE, bufsize=1,
-		env=p_env_map)
+		env=p_env_map,
+		cwd=p_cwd_str)
 
 	t = threading.Thread(target=read_process_std_stream, args=(p.stdout, p_view__type_str, p_view__color_str))
 	t.start()
