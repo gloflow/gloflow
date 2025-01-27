@@ -86,13 +86,12 @@ export async function init(p_events_enabled_bool :boolean,
 
 	//---------------------
 	// FLOWS_PICKER - display it if the user is logged in
-	if (logged_in_bool) {
 
-		gf_flows_picker.init(p_events_enabled_bool,
-			p_plugin_callbacks_map,
-			current_host_str,
-			p_log_fun)
-	}
+	gf_flows_picker.init(p_events_enabled_bool,
+		p_plugin_callbacks_map,
+		current_host_str,
+		p_log_fun)
+
 
 	// TAGS_PICKER - display it if the user is logged in
 	if (logged_in_bool) {
