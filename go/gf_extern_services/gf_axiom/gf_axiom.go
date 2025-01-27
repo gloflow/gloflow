@@ -31,8 +31,8 @@ import (
 
 func Emit(pEventMap map[string]interface{},
 	pDatasetNameStr string,
-	pCtx            context.Context,
 	pClient         *axiom.Client,
+	pCtx            context.Context,
 	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	pEventMap[ingest.TimestampField] = time.Now()
