@@ -35,7 +35,10 @@ RUN pip3 install \
     beautifulsoup4 \
     requests \
     boto3 \
-    sentry-sdk
+    sentry-sdk \
+    icecream \
+    click \
+    docker
 
 # RUST_DEPENDENCIES
 RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y \
@@ -44,8 +47,8 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y \
     
 #-----------------------------
 # GO
-RUN wget https://golang.org/dl/go1.19.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.19.linux-amd64.tar.gz
+RUN wget https://golang.org/dl/go1.23.5.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.5.linux-amd64.tar.gz
 
 # has to be added this way to PATH, to work in a Dockerfile
 ENV PATH=$PATH:/usr/local/go/bin
