@@ -70,9 +70,10 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		*/
 		"/images/d/",
 		"/images/v/",
-
+		
 		//-------------
 
+		"/v1/images/tester",
 		"/v1/images/classify",
 		"/v1/images/share",
 		"/v1/images/get",
@@ -94,6 +95,21 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		AuthLoginURLstr:      pAuthLoginURLstr,
 		AuthKeyServer:        pKeyServer,
 	}
+
+	//---------------------
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/images/tester",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+			if pReq.Method == "GET" {
+				dataMap := map[string]interface{}{
+					"test": "ok",
+				}
+				return dataMap, nil
+			}
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
 
 	//---------------------
 	// PERMANENT_URLS
