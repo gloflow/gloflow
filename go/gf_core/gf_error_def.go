@@ -329,6 +329,12 @@ func errorGetDefs() map[string]ErrorDef {
 		},
 		
 		//---------------
+		// REDIS
+		"redis_cmd": ErrorDef{
+			DescrStr:"failed to execute a Redis command on a redis server",
+		},
+
+		//---------------
 		// ELASTICSEARCH
 		"elasticsearch_get_client": ErrorDef{
 			DescrStr:"c.NewClient() failed to get elasticsearch client - package (elastic)",
