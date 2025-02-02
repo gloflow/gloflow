@@ -1,0 +1,135 @@
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	margin:      0;
+
+	/* turn off horizontal scroll */
+	max-width:  100%;
+    overflow-x: hidden;
+
+	background-color: #d7d7d7;
+}
+
+/*----------------------------------------------------------*/
+#gf_images_flow_container {
+	margin-left: 6px;
+	position:    relative;
+	top:         100px;
+	left:        18px;
+}
+
+#gf_images_flow_container #flow_info {
+	position: fixed;
+    top: 55px;
+    left: 0px;
+    background-color: #f7f7f7;
+    padding-left: 9px;
+    padding-top: 7px;
+    padding-bottom: 6px;
+    padding-right: 11px;
+    font-size: 21px;
+	z-index: 10;
+}
+
+/*----------------------------------------------------------*/
+/*TAGS*/
+
+.tags_container {
+	font-size: 10px;
+    color: white;
+    text-decoration: none;
+}
+
+/*----------------------------------------------------------*/
+/*VIEW_TYPE_PICKER*/
+
+#view_type_picker {
+	position: fixed;
+	right:    -21px;
+	top:      176px;
+	width:    50px;
+	height:   50px;
+}
+
+#view_type_picker #masonry_small_images {
+	position: absolute;
+	top: 0px;
+	width:            20px;
+	height:           20px;
+	background-color: rgb(225, 35, 35);
+	cursor:           pointer;
+}
+
+#view_type_picker #masonry_medium_images {
+	position: absolute;
+	top: 30px;
+	width:            20px;
+	height:           20px;
+	background-color: rgb(158, 73, 73);
+	cursor:           pointer;
+}
+
+#view_type_picker #viz_group_medium_images {
+	position: absolute;
+	top: 60px;
+	width:            20px;
+	height:           20px;
+	background-color: rgb(77, 36, 36);
+	cursor:           pointer;
+}
+
+/*----------------------------------------------------------*/
+/*CURRENT_PAGE_DISPLAY*/
+#current_pages_display {
+	position: fixed;
+    background-color: #f7f7f7;
+    right: 0px;
+    bottom: 90px;
+    font-size: 12px;
+    padding-top: 7px;
+    padding-left: 10px;
+    padding-bottom: 9px;
+    margin-top: 6px;
+}
+
+#current_pages_display #start_page {
+	font-size: 20px;
+    background-color: #cccccc;
+    padding-left: 7px;
+    padding-top: 5px;
+    padding-bottom: 4px;
+}
+
+#current_pages_display #end_page {
+	font-size: 20px;
+    background-color: #a4a4a4;
+    padding-left: 7px;
+    padding-top: 5px;
+    padding-bottom: 4px;
+}
+
+#current_pages_display #to {
+	left: 5px;
+    text-align: center;
+    padding-right: 5px;
+}
+
+/*-------------------------------------------*/
+/* CODE_EDITOR */
+
+#code_editor {
+	position: fixed;
+    bottom: 5px;
+    left: 0px;
+    width: 20px;
+    height: 16px;
+    background-color: gray;
+    z-index: 10;
+    font-size: 10px;
+    text-align: center;
+    padding-top: 4px;
+}
+#code_editor a {
+    text-decoration: none;
+}
+
+/*-------------------------------------------*/

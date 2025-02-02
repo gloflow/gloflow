@@ -1,0 +1,40 @@
+/*-------------------------------------------*/
+/*humble beginnings...*/
+#sys_release_info {
+	position        : fixed;
+	right           : 0px;
+	bottom          : 0px;
+	background-color: #a3a3a3;
+	padding-left    : 8px;
+	padding-top     : 6px;
+	padding-right   : 5px;
+	padding-bottom  : 3px;
+	z-index         : 10;
+	width:   45px;
+	height:  22px;
+	opacity: 0.5;
+
+	#version {
+		text-align: right;
+		font-size: 10px
+	}
+	#name {
+		text-align: right;
+		font-size: 10px;
+	}
+	#description {
+		visibility: hidden;
+	}
+	#git_commit {
+		position:  absolute;
+		bottom:    1px;
+		right:     10px;
+		width:     35px;
+		font-size: 10px;
+
+		a {
+			color: white;
+			text-decoration: none;
+		}
+	}
+}

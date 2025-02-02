@@ -1,0 +1,386 @@
+
+
+
+#identity {
+    position: fixed;
+    right: 8px;
+    bottom: 53px;
+
+    z-index: 10;
+}
+#identity #login {
+    position: absolute;
+    right: 0px;
+    background-color: white;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+/*------------------------------------------------------------*/
+/*AUTH_PICK_DIALOG*/
+#identity #auth_pick_dialog {
+    top: -35px;
+    position: absolute;
+    right: 0px;
+}
+
+/*------------------------------------------------------------*/
+/*AUTH0_PICK_DIALOG*/
+
+#identity #auth0_pick_dialog {
+    top: -2px;
+    right: 0px;
+    position: absolute;
+
+    width: 184px;
+    height: 14px;
+    padding-top: 9px;
+    padding: 7px;
+    background-color: white;
+    text-align: center;
+    font-size: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+#identity #auth0_pick_dialog:hover {
+    background-color: rgb(141, 141, 141);
+}
+
+/*------------------------------------------------------------*/
+/*WALLET_PICK_DIALOG*/
+#identity #wallet_pick_dialog {
+    position: absolute;
+    top: -57px;
+    right: 0px;
+    background-color: white;
+    width: 198px;
+}
+
+#identity #wallet_pick_dialog #metamask {
+    cursor: pointer;
+}
+#identity #wallet_pick_dialog #metamask:hover {
+    background-color: rgb(141, 141, 141);
+}
+#identity #wallet_pick_dialog #metamask #icon {
+    width: 50px;
+    height: 48px;
+}
+
+#identity #wallet_pick_dialog #metamask #descr {
+    position: absolute;
+    top: 18px;
+    left: 54px;
+    font-size: 10px;
+    user-select: none;
+}
+
+#identity #wallet_connect_failed {
+    position: absolute;
+    bottom: 94px;
+    width: 148px;
+    right: 0px;
+    background-color: #cf7777;
+    padding: 8px;
+    padding-right: 10px;
+    padding-left: 12px;
+    font-size: 13px;
+    color: black;
+}
+
+/*------------------------------------------------------------*/
+/*INTERNAL_USER_AND_PASS_PICK_DIALOG*/
+/*
+#identity #internal_username_and_pass_pick_dialog {
+    top: -2px;
+    right: 0px;
+    position: absolute;
+
+    width: 184px;
+    height: 14px;
+    padding-top: 9px;
+    padding: 7px;
+    background-color: white;
+    text-align: center;
+    font-size: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+#identity #internal_username_and_pass_pick_dialog:hover {
+    background-color: rgb(141, 141, 141);
+}
+*/
+
+/*------------------------------------------------------------*/
+/*USER_AND_PASS_DIALOG*/
+
+#identity #user_and_pass_dialog {
+    position: absolute;
+    top: -120px;
+    height: 110px;
+    right: 0px;
+    background-color: white;
+    font-size: 12px;
+}
+
+/*USERNAME_INPUT*/
+#user_and_pass_dialog #username_input {
+    margin-left: 6px;
+    margin-right: 6px;
+    margin-top: 6px;
+
+    outline-style: none;
+    font-size: 20px;
+    width: 197px;
+}
+#user_and_pass_dialog #username_input input {
+    margin: 0px;
+    border: 0px;
+    font-size: 14px;
+}
+
+/*PASS_INPUT*/
+#user_and_pass_dialog #pass_input {
+    margin-left: 6px;
+    margin-right: 6px;
+    
+    outline-style: none;
+    font-size: 20px;
+    width: 197px;
+}
+#user_and_pass_dialog #pass_input input {
+    margin: 0px;
+    border: 0px;
+    font-size: 14px;
+}
+
+/*EMAIL_INPUT*/
+#user_and_pass_dialog #email_input {
+    margin-left: 6px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+
+    outline-style: none;
+    font-size: 20px;
+    width: 197px;
+}
+#user_and_pass_dialog #email_input input {
+    margin: 0px;
+    border: 0px;
+    font-size: 14px;
+}
+
+/*LOGIN_BTN*/
+#user_and_pass_dialog #login_btn {
+    position: absolute;
+    background-color: #81c261;
+    width: 50%;
+    text-align: center;
+    padding-top: 9px;
+    padding-bottom: 8px;
+    cursor: pointer;
+}
+#user_and_pass_dialog #login_btn:hover {
+    background-color: gray;
+}
+
+/*CREATE_BTN*/
+#user_and_pass_dialog #create_btn {
+    position: absolute;
+    background-color: rgb(255, 228, 30);
+    width: 50%;
+    text-align: center;
+    padding-top: 9px;
+    padding-bottom: 8px;
+    right: 0px;
+    cursor: pointer;
+}
+#user_and_pass_dialog #create_btn:hover {
+    background-color: gray;
+}
+
+/*ERROR*/
+#user_and_pass_dialog #error_empty_field_dialog {
+    position: absolute;
+    top: -62px;
+    font-size: 14px;
+    background-color: #ff8181;
+    padding: 10px;
+    width: 189px;
+    text-align: center;
+    padding-top: 11px;
+}
+
+/*ERROR*/
+#user_and_pass_dialog #error_login_no_user_dialog {
+    position: absolute;
+    top: -44px;
+    font-size: 14px;
+    background-color: #ff8181;
+    padding: 10px;
+    width: 190px;
+    text-align: center;
+}
+
+/*ERROR*/
+#user_and_pass_dialog #error_login_pass_not_valid_dialog {
+    position: absolute;
+    top: -62px;
+    font-size: 14px;
+    background-color: #ff8181;
+    padding: 10px;
+}
+
+#user_and_pass_dialog #error_create_user_not_allowed_dialog {
+    position: absolute;
+    top: -78px;
+    font-size: 14px;
+    background-color: #ff8181;
+    padding: 10px;
+}
+
+/*NOTIFICATION*/
+#user_and_pass_dialog #notification_login_first_stage {
+    opacity: 1;
+    position: absolute;
+    top: -54px;
+    background-color: #81c261;
+    padding: 9px;
+}
+
+/*------------------------------------------------------------*/
+/*CREATE_USER_PROMPT_DIALOG*/
+
+#identity #create_user_prompt_dialog {
+    position: absolute;
+    top:      -56.3px;
+    left:     -162px;
+    width:    162px;
+    background-color: white;
+}
+
+#identity #create_user_prompt_dialog #descr {
+    text-align:  center;
+    padding-top: 3px;
+    font-size:   13px;
+}
+
+#identity #create_user_prompt_dialog #confirm_btn {
+    text-align:       center;
+    background-color: #bfbfbf;
+    padding-top:      8px;
+    padding-bottom:   5px;
+    cursor:           pointer;
+}
+#identity #create_user_prompt_dialog #confirm_btn:hover {
+    background-color: #cecece;
+}
+
+/*------------------------------------------------------------*/
+/*UPDATE_USER_DIALOG*/
+
+#identity #update_user_dialog {
+    position: absolute;
+    top: -211px;
+    right: 0px;
+
+    background-color: white;
+    height: 190px;
+    width: 230px;
+
+    padding-top: 5px;
+    
+    text-align: center;
+    /*border-radius: 10px;*/
+}
+
+#identity #update_user_dialog #dialog_label {
+    font-size: 10px;
+    color: gray;
+}
+
+#identity #update_user_dialog .label {
+    font-size: 12px;
+}
+
+#identity #update_user_dialog div#username {
+    margin-top: 4px;
+    margin-bottom: 1px;
+}
+
+#identity #update_user_dialog #email {
+    margin-bottom: 2px;
+}
+
+#identity #update_user_dialog #description {
+    margin-bottom: 8px;
+}
+#identity #update_user_dialog #description textarea#description_input {
+    height: 40px;
+    width: 200px;
+}
+
+#identity #update_user_dialog #confirm_btn {
+    background-color: gray;
+    height: 27px;
+    padding-top: 10px;
+
+    /*border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;*/
+
+    cursor: pointer;
+}
+
+#identity #update_user_dialog #confirm_btn:hover {
+    background-color: lightgray;
+}
+
+/*------------------------------------------------------------*/
+/*MFA_DIALOG*/
+
+#mfa_dialog #mfa_background {
+    width: 100%;
+    height: 100%;
+    background-color: gray;
+    position: absolute;
+    opacity: 0.6;
+}
+
+#mfa_dialog #mfa_confirm_code {
+    position: absolute;
+    left: 46%;
+    top: 42%;
+}
+#mfa_dialog #mfa_confirm_code #label {
+    background-color: gray;
+    text-align: center;
+    color: #e8e8e8;
+    font-size: 10px;
+    padding: 4px;
+    padding-top: 7px;
+}
+
+#mfa_dialog #mfa_confirm_code input {
+    margin: 0px;
+    border: 0px;
+    font-size: 22px;
+    width: 166px;
+    text-align: center;
+
+    /*WebKit desktop browsers add little up down arrows to number inputs called spinners.
+    this turns them off visually*/
+    -moz-appearance:textfield;
+}
+
+#mfa_dialog #mfa_confirm_code #confirm_btn {
+    background-color: gray;
+    height: 27px;
+    padding-top: 16px;
+    text-align: center;
+    font-size: 12px;
+    cursor: pointer;
+}
+#mfa_dialog #mfa_confirm_code #confirm_btn:hover {
+    background-color: lightgray;
+}

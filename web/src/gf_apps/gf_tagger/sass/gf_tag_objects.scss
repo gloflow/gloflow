@@ -1,0 +1,155 @@
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	margin:      0;
+
+	/*turn off horizontal scroll*/
+	max-width:  100%;
+    overflow-x: hidden;
+
+	background-color: #d7d7d7;
+}
+
+/*----------------------------------------------------------*/
+/* TAG INFO */
+#tag_info {
+    position: fixed;
+    top: 55px;
+    left: 0px;
+    display: flex;
+    z-index: 1;
+}
+
+#tag_name {
+    background-color: #f7f7f7;
+    padding-left: 9px;
+    padding-top: 7px;
+    padding-bottom: 6px;
+    padding-right: 11px;
+    font-size: 21px;
+	z-index: 10;
+
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+#tag_stats {
+    height: 31px;
+    width: 90px;
+    background-color: #b9b9b9;
+    font-size: 12px;
+    padding-left: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+
+    flex-grow: 1;
+}
+#tag_stats #images_count {
+    width: 80px;
+    position: absolute;
+    top: 3px;
+}
+#tag_stats #images_count .count {
+    position: absolute;
+    top: 1px;
+    left: 50px;
+}
+#tag_stats #posts_count {
+    width: 80px;
+    position: absolute;
+    top: 19px;
+}
+#tag_stats #posts_count .count {
+    position: absolute;
+    top: 0px;
+    left: 50px;
+}
+
+/*----------------------------------------------------------*/
+#objects_container {
+    display: grid;
+    grid-template-columns: 15% 1fr 10px 1fr 15%;
+    width: 100%;
+    position: absolute;
+    top: 55px;
+}
+
+#left_space, #right_space {
+    background: transparent; /* Empty space */
+}
+
+#gap {
+    grid-column: 3 / 4;
+}
+
+/*----------------------------------------------------------*/
+/* IMAGES */
+#images_container {
+    position: absolute;
+    background-color: #3b7c9c1c;
+    width: 100%;
+    grid-column: 2 / 3;
+}
+
+#images_container .gf_image {
+	position:         relative;
+	float:            left;
+	text-align:       center;
+	background-color: rgb(59, 124, 156);
+	width:            200px;
+	padding-bottom:   10px;
+	box-shadow:       1px 1px 10px grey;
+	
+	/*elements are not initially visible, but instead become visible
+	after masonry finishes their layout*/
+	visibility: false; 
+}
+
+#images_container .gf_image img {
+	width : 100%;
+    cursor: pointer;
+}
+
+#images_container .gf_image .owner_user_name {
+	font-size: 10px;
+    color: white;
+	text-align: center;
+	padding-top: 3px;
+}
+#images_container .gf_image .owner_user_name span {
+	font-weight: bold;
+    font-size: 12px;
+}
+
+#images_container .gf_image .origin_page_url {
+	padding-top:      6px;
+    padding-bottom:   6px;
+    text-align:       center;
+    background-color: #669ab3;
+    width:            180px;
+    padding-left:     9px;
+    padding-right:    11px;
+	margin-top:       -4px;
+}
+
+#images_container .gf_image .origin_page_url a {
+	font-size: 12px;
+    color: white;
+    text-decoration: none;
+    word-wrap: break-word;
+}
+#images_container .gf_image .creation_time {
+	font-size:        14px;
+	background-color: rgb(59, 124, 156);
+    color:            white;
+    padding-top:      5px;
+}
+
+#images_container .gf_image .creation_time .full_creation_date {
+	background-color: #3992bd;
+    color:            #1d3d4c;
+    padding-top:      3px;
+    padding-bottom:   3px;
+    margin-top:       4px;
+}
+
+/*----------------------------------------------------------*/

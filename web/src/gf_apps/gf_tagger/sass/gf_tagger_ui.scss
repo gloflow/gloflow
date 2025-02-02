@@ -1,0 +1,176 @@
+
+
+
+/*-------------------------------------------------------*/
+/* TAGGING CONTROLS */
+.tagging_controls {
+    width: 62px;
+    right: 0px;
+    top: 15px;
+    position: absolute;
+   
+    font-size: 12px;
+    cursor: pointer;
+}
+
+
+.tagging_controls .add_tags_button {
+    right: 0px;
+    width: 62px;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    padding-left: 7px;
+    background-color: gray;
+    position: absolute;
+    top: 0px;
+}
+.tagging_controls .add_tags_button:hover{
+    background-color: white;
+}
+
+.tagging_controls .add_notes_button {
+    right: 0px;
+    width: 62px;
+    position: absolute;
+    top: 30px;
+    background-color: gray;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    padding-left: 7px;
+}
+.tagging_controls .add_notes_button:hover{
+    background-color: white;
+}
+
+/*-------------------------------------------------------*/
+#tagging_input_container {
+	padding-top   : 0px;
+	padding-bottom: 0px;
+	width : 369px;
+	height: 101px;
+    z-index: 2;
+}
+#tagging_input_container #background {
+	background-color: rgba(0,0,0,0.7);
+    width: 340px;
+    height: 101px;
+    position: relative;
+    top: 0px;
+    left: 0px;
+}
+#tagging_input_container input {
+	
+	font-size: 14px;
+    position: absolute;
+    top: 35px;
+    left: 36px;
+    width: 200px;
+    height: 30px;
+    background-color: white;
+    padding: 0px;
+    
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+#tagging_input_container input:focus {
+    outline: none;
+}
+
+#tagging_input_container #submit_btn {
+	float: left;
+    /*
+    padding-left: 15px;
+    padding-right: 17px;
+    padding-top: 8px;
+    */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+    top: 35px;
+    left: 227px;
+    background-color: #e5e5e5;
+    color: rgb(160, 160, 160);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0 !important;
+    
+    width: 50px;
+    height: 30px;
+}
+#tagging_input_container #submit_btn:hover {
+	background-color: rgb(221, 221, 221);
+}
+
+#tagging_input_container #close_btn {
+	float: left;
+    background-color: #cfcfcf;
+
+    cursor: pointer;
+    position: absolute;
+    top: 35px;
+    left: 277px;
+
+    font-size: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 30px;
+
+    padding: 0 !important;
+}
+#tagging_input_container #close_btn:hover {
+	background-color: white;
+}
+
+/*-------------------------------------------------------*/
+.tag {
+    background-color: lightgray;
+    padding-left: 4px;
+    padding-right: 4px;
+    margin-top: 4px;
+    margin-right: 4px;
+    font-size: 12px;
+}
+/*needed for the tag element to have the width of the text in it, and from there
+to have proper animations that depend on its width being the same as its text*/
+.auto-width {
+    display: inline-block; /* or inline-flex */
+    white-space: nowrap;   /* prevents the text from breaking into the next line */
+}
+
+/*-------------------------------------------------*/
+/* ANIMATIONS */
+.bubble-in {
+    opacity: 0;
+    transform: scale(0);
+    transform-origin: 50% 50%;
+    animation: bounce 0.3s ease-out forwards;
+}
+
+.bubble-in.animate {
+    opacity: 1;
+    transform: scale(1);
+}
+
+@keyframes bounce {
+    0% {
+    transform: scale(0);
+    opacity: 0;
+    }
+    50% {
+    transform: scale(1.2);
+    opacity: 1;
+    }
+    100% {
+    transform: scale(1);
+    opacity: 1;
+    }
+}
+
+/*-------------------------------------------------*/

@@ -1,0 +1,56 @@
+body {
+	margin:      0px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+	/*turn off horizontal scroll*/
+	max-width:  100%;
+    overflow-x: hidden;
+
+	background-color: #d7d7d7;
+}
+
+#welcome {
+	position: absolute;
+    top: 120px;
+    left: 46%;
+    background-color: #c9c9c9;
+    padding: 21px;
+    color: #626262;
+    user-select: none;
+    font-size: 11px;
+}
+
+#welcome .gf_logo img {
+    width: 100%;
+}
+#welcome .label {
+    padding-top: 13px;
+    text-align: center;
+}
+
+/*------------------------------------------------------------*/
+/* AUTH */
+#auth_me {
+	position: relative;
+    top: 11px;
+    left: 29px;
+    width: 69px;
+}
+
+#auth_me #current_user img {
+	width: 100%;
+}
+
+/*----------------------------------------------------------*/
+#sys_debug_info {
+    position: absolute;
+    top: 284px;
+    left: 46%;
+    width: 128px;
+    background-color: #c9c9c9;
+    padding: 21px;
+    color: #626262;
+    user-select: none;
+    font-size: 11px;
+    text-align: center;
+}

@@ -1,0 +1,143 @@
+
+body {
+	margin:      0px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+	// turn off horizontal scroll
+	max-width:  100%;
+	overflow-x: hidden;
+
+	background-color: #d7d7d7;
+}
+
+/*------------------------------------------------------------*/
+#left_section {
+	position: fixed;
+	top:      100px;
+	width:    20%;
+
+	#gf_logo {
+		position      : relative;
+		left          : 10px;
+		padding-bottom: 8px;
+		width: 97%;
+
+		img {
+			width: 100%;
+		}
+	}
+
+	#randomized_art {
+		position: relative;
+		left:     10px;
+		background-color: lightgray;
+		width:97%;
+		height:400px;
+
+		canvas {
+			position: relative;
+		}
+	}
+}
+
+
+#right_section {
+	position: relative;
+	left:     25%;
+}
+
+@media (max-width: 600px) {
+	#right_section {
+		left: 10%;
+	}
+
+	#left_section #gf_logo {
+		visibility: hidden;
+	}
+
+	#left_section #randomized_art {
+		visibility: hidden;
+	}
+}
+
+#about_section #label:hover {
+	opacity: 0.8;
+}
+
+/*------------------------------------------------------------*/
+/* AUTH */
+#auth_me {
+	position: absolute;
+	top:    0px;
+	left:   580px;
+	width:  54px;
+	height: 55px;
+	text-align:       center;
+	background-color: rgb(198, 196, 195);
+	cursor:           pointer;
+	color:            gray;
+
+	#current_user {
+		position: fixed;
+		width: 54px;
+		height: 54px;
+		padding-top: 14px;
+		
+		img {
+			width:    100%;
+			position: relative;
+			top:      -14px;
+		}
+	}
+}
+
+/*-------------------------------------------*/
+/* CODE_EDITOR */
+
+#code_editor {
+	
+	background-color: #a3a3a3;
+
+	position: fixed;
+	bottom: 5px;
+	left: 0px;
+	width: 20px;
+	height: 16px;
+	z-index: 10;
+	font-size: 10px;
+	text-align: center;
+	padding-top: 4px;
+
+	a {
+		color: white;
+		text-decoration: none;
+	}
+}
+
+/*-------------------------------------------*/
+/* GF_LANG */
+
+#gf_lang {
+
+	background-color: #a3a3a3;
+
+	position: fixed;
+	bottom: 5px;
+	left: 26px;
+	width: 20px;
+	height: 16px;	
+	z-index: 10;
+	font-size: 10px;
+	text-align: center;
+	padding-top: 4px;
+	
+	a {
+		color: white;
+		text-decoration: none;
+	}
+}
+
+/*------------------------------------------------------------*/
+.randomized_canvas {
+	position: fixed;
+}

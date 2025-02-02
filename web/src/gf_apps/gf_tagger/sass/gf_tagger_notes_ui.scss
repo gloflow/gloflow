@@ -1,0 +1,133 @@
+/*-------------------------------------------*/
+/*NOTES*/
+
+/*NOTES_PANEL BUTTON*/
+#notes_panel_btn {
+	/* visibility      : hidden; */
+	position        : absolute;
+	top             : 15px;
+	right           : 0px;
+	background-color: orange;
+	padding-left    : 16px;
+	padding-right   : 16px; 
+	height          : 43px;
+	cursor          : pointer;
+	opacity         : 0.9;
+}
+#notes_panel_btn:hover {
+	opacity: 1.0;
+}
+
+#notes_panel_btn .icon {
+	padding-top: 12px;
+}
+
+#notes_panel {
+	position: absolute;
+	top: 100px;
+	left: 120px;
+	z-index: 2;
+
+	width: 480px;
+    height: 200px;
+	
+}
+
+/* BACKGROUND */
+#notes_panel #background {
+	position        : absolute;
+	background-color: black;
+	opacity         : 0.6;
+
+	height: 100%;
+    width: 100%;
+}
+
+#notes_panel #container {
+	position: absolute;
+    top: 37px;
+    left: 43px;
+}
+
+/* ADD_NOTE BUTTON */
+#notes_panel #add_note_btn {
+	background-color: rgb(255, 150, 54);	
+	left: 300px;
+    position: absolute;
+	width           : 90px;
+	height          : 103px;	
+	font-weight     : bold;
+	padding-top     : 21px;
+	margin-bottom   : 5px;
+	cursor          : pointer;
+	opacity         : 0.9;
+
+	
+}
+/*
+#notes_panel #add_note_btn:hover {
+	opacity:1.0;
+}
+*/
+#notes_panel #add_note_btn .icon {
+	text-align: center;
+	padding-top: 26px;
+	-webkit-user-select: none; /*prevent the text from being selected by accident*/
+	font-size: 25px;
+}
+#notes_panel #notes {
+
+}
+/* NOTE */
+#notes_panel #notes .note {
+	position: relative;
+	margin-bottom: 5px;
+}
+#notes_panel #notes .note .icon {
+	-webkit-user-select: none; /*prevent the text from being selected by accident*/
+
+	background-color: rgb(222, 133, 52);	
+	width           : 60px;
+	height          : 40px;
+	padding-top     : 20px;
+	cursor          : pointer;
+	opacity         : 0.9;
+}
+#notes_panel #notes .note .icon:hover {
+	opacity:1.0;
+}
+
+#notes_panel #notes .note .details {
+	width           : 200px;
+	height          : 60px;
+	position        : absolute;
+	left            : 60px;
+	top             : 0px;
+	background-color: rgb(213, 183, 131);
+}
+#notes_panel #notes .note .details .user {
+	background-color: rgb(237, 208, 100);
+	width       : 109px;
+	height      : 22px;
+	padding-top : 4px;
+	padding-left: 6px;
+	text-align  : left;
+}
+#notes_panel #notes .note .details .user .body {
+	padding-top : 7px;
+    text-align  : left;
+    padding-left: 10px;
+}
+
+#notes_panel .note_input_panel {
+	position: absolute;
+	height: 125px;
+    width: 300px;
+}
+#notes_panel .note_input_panel textarea {
+	position: absolute;
+	height: 56px;
+	left: 0px;
+	height: 100%;
+    width: 100%;
+}

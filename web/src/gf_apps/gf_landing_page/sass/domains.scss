@@ -1,0 +1,43 @@
+
+
+
+$domains_btn_height: 55px;
+
+#domains {
+	position: absolute;
+    top:      0px;
+    left:     417px;
+
+    //------------------------------------------------------------
+    // DOMAINS BUTTON
+
+    #domains_browser_button {
+        position: fixed;
+        top: 0px;
+        width: 110px;
+        height: $domains_btn_height;
+        // padding-top: 18px;
+        // text-align: center;
+        font-size: 12px;
+        color: white;
+        background-color: rgb(171, 60, 60);
+        z-index: 2;
+        // display: block;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+        cursor: pointer;
+    }
+    #domains_browser_button:hover {
+        cursor          : pointer;
+        background-color: gray;
+        color           : black;
+    }
+    #domains_browser_button:active {
+        cursor          : pointer;
+        opacity         : 1.0;  
+        background-color: white;
+        color           : black;
+    }
+
+    //------------------------------------------------------------
+}

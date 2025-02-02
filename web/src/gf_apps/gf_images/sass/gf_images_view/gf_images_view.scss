@@ -1,0 +1,55 @@
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	margin:      0;
+
+	/* turn off horizontal scroll */
+	max-width:  100%;
+    overflow-x: hidden;
+
+	background-color: #d7d7d7;
+}
+
+/*----------------------------------------------------------*/
+#main_container {
+    display: grid;
+    grid-template-columns: 20% 1fr 20%;
+    width: 100%;
+    position: absolute;
+    top: 55px;
+}
+
+#left_space, #right_space {
+    background: transparent; /* Empty space */
+}
+
+/*----------------------------------------------------------*/
+#gf_image {
+    position: absolute;
+    width: 100%;
+    grid-column: 2 / 3;
+    text-align: center;
+    margin-top: 30px;
+}
+
+#gf_image img {
+    width: auto;
+    max-height: 100vh;
+}
+#gf_image .tags_container {
+    text-align: center;
+    font-size: 10px;
+}
+#gf_image .creation_time {
+    text-align: center;
+    font-size: 10px;
+    margin-top: 3px;
+}
+#gf_image .owner_user_name {
+    font-size: 10px;
+	text-align: center;
+	padding-top: 3px;
+}
+#gf_image .owner_user_name span {
+	font-weight: bold;
+    font-size: 12px;
+}

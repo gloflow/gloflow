@@ -1,0 +1,12 @@
+
+
+
+.gf_center {
+
+    // This centers text based on its actual content area.
+    display: flex;
+    align-items: center;
+    
+    // center content vertically inside a flex container
+    justify-content: center;
+}

@@ -1,0 +1,124 @@
+
+
+/*---------------------------*/
+/*IMAGE_COLORS_INFO*/
+
+.colors_info {
+	top: -6px;
+    position: relative;
+	height: 25px;
+    background-color: inherit;
+}
+
+/*IMPORTANT!! - default background-color if not set is transparent,
+                so in order for the inherit background-color thats used in several elements
+                of the colors control here to have an actual color, we have to set inherit background-color
+                for all divs*/
+.colors_info div {
+    background-color: inherit;
+}
+
+/*---------------------------*/
+/* COLOR_PALETTE */
+
+.colors_info .color_pallete .colors {
+	display: flex;
+	height: 25px;
+	width: 100%;
+    position: absolute;
+}
+.colors_info .color_pallete .colors .color {
+	height: 25px;
+	width:  25px;
+	cursor: pointer;
+}
+
+.colors_info .color_pallete_label {
+	position: absolute;
+    left: -78px;
+    /* top: 25px; */
+    background-color: inherit;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 7px;
+    padding-bottom: 8px;
+    color: white;
+    font-size: 10px;
+    box-shadow: -9px 0px 11px #0000007a;
+}
+
+.colors_info .color_pallete #copy_to_clipboard_btn {
+    position: absolute;
+    /* top: 25px; */
+    right: -27px;
+    box-shadow: 9px 0px 11px #0000007a;
+}
+
+/*---------------------------*/
+/*COLOR_INSPECTOR*/
+.colors_info .color_inspect {
+	position: absolute;
+    top: -93px;
+	left: 65px;
+    width: 63px;
+	height: 83px;
+	width: 63px;
+    color: black;
+    text-align: center;
+	border-style: solid;
+    border-width: 1px;
+    border-color: black;
+}
+
+.colors_info .color_inspect .color_hex {
+	position: absolute;
+    font-size: 13px;
+	background-color: white;
+    width: 63px;
+    text-align: center;
+	padding-top: 3px;
+    padding-bottom: 3px;
+    top: 0px;
+}
+
+.colors_info .color_inspect .color_large {
+	width: 63px;
+    height: 63px;
+    top: 20px;
+    position: absolute;
+}
+
+/*---------------------------*/
+/*COPY_TO_CLIPBOARD_BTN*/
+
+.colors_info #copy_to_clipboard_btn {
+    width: 18px;
+    height: 24px;
+    color: #fff0c5;
+    padding-left: 9px;
+    padding-top: 1px;
+    cursor: pointer;
+    z-index: 1;
+    background-color: inherit;
+}
+
+.colors_info #copy_to_clipboard_btn img {
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    height: 50%;
+    width: 50%;
+}
+
+.colors_info #copy_to_clipboard_btn .color_to_clipboard_label {
+    position: absolute;
+    top: 0px;
+    left: 27px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    color: white;
+    font-size: 10px;
+    background-color: inherit;
+}
