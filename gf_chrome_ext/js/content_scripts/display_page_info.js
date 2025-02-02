@@ -30,7 +30,7 @@ function display_page_info(p_page_images_infos_lst,
 				<input id="gf_host" value="https://gloflow.com"></input>
 			</div>
 			<div class="flow_name_field">
-				<p class="flow_name_msg"># Add flow names</p>
+				<div class="flow_name_msg">flows to add to:</div>
 				<input type="text" class="flow_name" placeholder="general"></input>
 			</div>
 			<div id="collection_masonry">
@@ -49,7 +49,7 @@ function display_page_info(p_page_images_infos_lst,
 	// $(gf_container).css('height', $(document).height());
     var current_scroll_y = window.scrollY;
 
-	const window_height_int = window.innerHeight;
+	// const window_height_int = window.innerHeight;
 	$(gf_container).css({
 
 		/*
@@ -57,7 +57,7 @@ function display_page_info(p_page_images_infos_lst,
 			this solves a problem where on some sites scrolling wouldnt work properly with the
 			height of the container set to 100% (with intention to cover the whole page).
 		*/
-		"height": `${window_height_int}px`,
+		// "height": `${window_height_int}px`,
 		
 		"overflow-y": "visible",
 		"top": `${current_scroll_y}px`,

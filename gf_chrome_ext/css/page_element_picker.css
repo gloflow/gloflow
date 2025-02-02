@@ -51,6 +51,8 @@
 /*-----------------------------------------------------*/
 #page_info_container {
 	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+	height: 100vh;
+	
 	margin: 0;
 	padding: 0;
 	position:absolute;
@@ -180,7 +182,7 @@
 /*GF EXTENTION INPUT FIELD*/
 .flow_name_field{
 	position: fixed;
-	top: 8vh;
+	top: 20vh;
     right: -10px;
     z-index: 1000;
 	width: 350px;
@@ -188,12 +190,14 @@
 		
 }
 .flow_name_field .flow_name_msg{
-	font-size: 14px;
-    left: -17px;
-    position: absolute;
+	position: absolute;
+    left: 0px;
+    top: 19px;
+    width: 101px;
     color: black;
+	font-size: 12px;
 }
-.flow_name_field .flow_name{
+.flow_name_field .flow_name {
 	font-size: 20px;
 	text-transform: lowercase;
 	font-weight: 800;
@@ -201,7 +205,7 @@
 	color: #da4c1dff;
 	/* color: rgb(0, 35, 58); */
 	padding-left: 15px;
-	right: 20px;
+	right: 0px;
 	position: relative; 
 	filter: drop-shadow(0 0 0.25rem rgb(56, 54, 54));
 }
@@ -421,12 +425,13 @@
 
 #page_info_container #close_btn {
 
+	width: 55px;
+	height: 55px;
+
 	position: fixed;
 	top: 0px;
 	right: 0;
-	width: 55px;
 	margin-right: 16px;
-	height: 38px;
 	background-color: rgb(166, 166, 166);
 
 	/*this is specified programmatically in JS, because this 
@@ -435,9 +440,9 @@
 	  chrome.runtime.getURL(), so that the PACKAGE_ID can 
 	  be set by the runtime, to its correct value.
 	  background-image   : url('assets/icons.png');*/
-	background-position: -143px -423px;
+	background-position: -141px -422px;
 
-	padding-top: 14px;
+	/*padding-top: 14px;*/
 	font-weight: bold;
 	font-size  : 20px;
 	text-align : center;
