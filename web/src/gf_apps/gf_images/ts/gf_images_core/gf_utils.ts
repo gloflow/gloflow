@@ -20,11 +20,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // ///<reference path="../../../../d/jquery.d.ts" />
 
 // import * as gf_image_viewer from "./gf_image_viewer";
+import * as gf_tagger_http  from "../../../gf_tagger/ts/gf_tagger_client/gf_tagger_http";
+import * as gf_tagger_ui_v2 from "../../../gf_tagger/ts/gf_tagger_client/gf_tagger_ui_v2";
 import * as gf_gifs_viewer  from "../../../../gf_core/ts/gf_gifs_viewer";
 import * as gf_images_http  from "./gf_images_http";
 
-declare var gf_tagger__init_ui_v2;
-declare var gf_tagger__http_add_tags_to_obj;
+// declare var gf_tagger__init_ui_v2;
+// declare var gf_tagger__http_add_tags_to_obj;
 
 //---------------------------------------------------
 // TAGGING_UI
@@ -45,7 +47,7 @@ export function init_tagging(p_image_id_str,
 				p_log_fun)=>{
 				const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-					await gf_tagger__http_add_tags_to_obj(p_new_tags_lst,
+					await gf_tagger_http.add_tags_to_obj(p_new_tags_lst,
 						p_obj_id_str,
 						p_obj_type_str,
 						{}, // meta_map
@@ -128,7 +130,7 @@ export function init_tagging(p_image_id_str,
 		//---------------------------------------------------
 	}
 
-	gf_tagger__init_ui_v2(p_image_id_str,
+	gf_tagger_ui_v2.init(p_image_id_str,
 		obj_type_str,
 		p_image_container_element,
 		$("body"),

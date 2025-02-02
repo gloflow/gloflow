@@ -96,22 +96,22 @@ export function add_note_to_obj(p_body_str :string,
 // TAGS
 //-----------------------------------------------------
 export async function add_tags_to_obj(p_tags_lst :string[],  
-    p_object_id_str   :string,
-    p_object_type_str :string,
-    p_meta_map,
-    p_log_fun) {
-
+    p_object_system_id_str :string,
+    p_object_type_str      :string,
+    p_meta_map             :Object,
+    p_host_str             :string,
+    p_log_fun              :any) {
     return new Promise(async function(p_resolve_fun, p_reject_fun) {
 
+        const url_str  :string = `${p_host_str}/v1/tags/create`;
         const tags_str :string = p_tags_lst.join(' ');
-        const data_map         = {
+        const data_map = {
             "otype": p_object_type_str,
-            "o_id":  p_object_id_str,
+            "o_id":  p_object_system_id_str,
             "tags":  tags_str,
             "meta_map": p_meta_map,
         };
-
-        const url_str = '/v1/tags/create';
+        
         $.ajax({
             'url':         url_str,
             'type':        'POST',

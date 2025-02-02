@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../d/jquery.d.ts" />
 
 import * as gf_core_utils     from "./../../../gf_core/ts/gf_utils";
+import * as gf_image_upload   from "./../../../gf_core/ts/gf_image_upload";
 import * as gf_user_events    from "./../../../gf_events/ts/gf_user_events";
 import * as gf_identity       from "./../../../gf_identity/ts/gf_identity";
 import * as gf_identity_http  from "./../../../gf_identity/ts/gf_identity_http";
@@ -30,11 +31,10 @@ import * as gf_events         from "./gf_events";
 import * as gf_images         from "./gf_images";
 import * as gf_procedural_art from "./procedural_art/gf_procedural_art";
 
-// import * as gf_posts          from "./deprecated/__gf_posts";
 // import * as gf_image_colors   from "./../../../gf_core/ts/gf_image_colors";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
-declare var gf_upload__init :any;
+// declare var gf_upload__init :any;
 
 //--------------------------------------------------------
 // INIT
@@ -100,10 +100,6 @@ export async function init(p_events_enabled_bool :boolean,
 	}
 
 	//---------------------
-	// POSTS_INIT
-	// gf_posts.init(current_host_str, p_log_fun);
-
-	//---------------------
 	// GF_IMAGES_INIT
 	gf_images.init(logged_in_bool,
 		p_plugin_callbacks_map,
@@ -158,7 +154,7 @@ export async function init(p_events_enabled_bool :boolean,
 	// (forces usage of origin host that the page came from)
 	const target_full_host_str = "";
 
-	gf_upload__init(upload_flow_name_str,
+	gf_image_upload.init(upload_flow_name_str,
 		target_full_host_str,
 		(p_upload_gf_image_id_str :string)=>{
 

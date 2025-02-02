@@ -32,7 +32,7 @@ import * as gf_tags_picker   from "./../../../gf_tagger/ts/gf_tags_picker/gf_tag
 // import * as gf_utils         from "./../../../gf_images/ts/gf_images_core/gf_utils";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
-declare var gf_upload__init;
+// declare var gf_upload__init;
 
 //-------------------------------------------------
 export async function init(p_tag_str :string,

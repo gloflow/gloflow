@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_time             from "./../../../../gf_core/ts/gf_time";
 
 import * as gf_core_utils       from "./../../../../gf_core/ts/gf_utils";
+import * as gf_image_upload     from "./../../../../gf_core/ts/gf_image_upload";
 import * as gf_user_events      from "./../../../../gf_events/ts/gf_user_events";
 import * as gf_sys_panel        from "./../../../../gf_sys_panel/ts/gf_sys_panel";
 import * as gf_identity         from "./../../../../gf_identity/ts/gf_identity";
@@ -40,7 +41,7 @@ import * as gf_flows_picker     from "./gf_flows_picker";
 declare var URLSearchParams;
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
-declare var gf_upload__init;
+// declare var gf_upload__init;
 
 //-------------------------------------------------
 export async function init(p_plugin_callbacks_map :any,
@@ -234,7 +235,7 @@ function init_upload(p_flow_name_str :string,
 	// use "" so that no host is set in URL's for issued requests
 	// (forces usage of origin host that the page came from)
 	const target_full_host_str = "";
-	gf_upload__init(p_flow_name_str,
+	gf_image_upload.init(p_flow_name_str,
 		target_full_host_str,
 		
 		//-------------------------------------------------

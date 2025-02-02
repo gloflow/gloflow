@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2020 Ivan Trajkovic
+Copyright (C) 2025 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,77 +17,77 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-/*
-DEPRECATED!! - use gf_image_upload.ts going forward!!
-			   fix all references to gf_image_upload.js and convert to use .ts file.
-*/
-
 //-------------------------------------------------
-var gf_upload__init = gf_upload__init;
 
-function gf_upload__init(p_flow_name_str,
-	p_target_full_host_str,
-	p_on_upload_fun) {
+export function init(p_flow_name_str: string,
+	p_target_full_host_str: string,
+	p_on_upload_fun: any) {
 
 	// console.log("UPLOAD INITIALIZED")
 	document.onpaste = function(p_paste_event) {
 
-		const items = (p_paste_event.clipboardData || p_paste_event.originalEvent.clipboardData).items;
+		console.log("paste...");
 
-		console.log("paste");
-		// console.log(p_paste_event.clipboardData);
-		// console.log(p_paste_event.originalEvent.clipboardData);
-		console.log(JSON.stringify(items)); // will give you the mime types
+		// const items = (p_paste_event.clipboardData || p_paste_event.originalEvent.clipboardData).items;
+		const items = p_paste_event.clipboardData?.items;
+		if (items) {
 
-		for (index in items) {
-			const item = items[index];
-			if (item.kind === 'file') {
+		
+			// console.log(p_paste_event.clipboardData);
+			// console.log(p_paste_event.originalEvent.clipboardData);
+			console.log(JSON.stringify(items)); // will give you the mime types
 
-				const blob   = item.getAsFile();
-				const reader = new FileReader();
+			for (const item of items) {
+				if (item.kind === 'file') {
 
-				reader.onload = function(p_event) {
-					
-					console.log("data loaded");
-					
-					// result attribute contains the data as a data: URL representing
-					// the file's data as a base64 encoded string.
-					const img_data_str = p_event.target.result;
-					
-					
-					// the beginning of data URL strings example:
-					// "data:image/png;base64".
-					// IMPORTANT!! - it seems all images are of "png" format when pasted in.
-					const image_format_str = img_data_str.split(";")[0].replace("data:image/", "")
-					console.log(`image_format_str - ${image_format_str}`);
+					const blob   = item.getAsFile();
+					const reader = new FileReader();
 
-					// VIEW_IMAGE
-					gf_upload__view_img(img_data_str,
-						p_flow_name_str,
+					reader.onload = function(p_event) {
+						
+						console.log("data loaded");
+						
+						// result attribute contains the data as a data: URL representing
+						// the file's data as a base64 encoded string.
+						const img_data = p_event.target?.result;
+						const img_data_str: string = (img_data instanceof ArrayBuffer 
+                            ? new TextDecoder("utf-8").decode(img_data) 
+                            : img_data) || "";
+						
+						// the beginning of data URL strings example:
+						// "data:image/png;base64".
+						// IMPORTANT!! - it seems all images are of "png" format when pasted in.
+						const image_format_str = img_data_str.split(";")[0].replace("data:image/", "")
+						console.log(`image_format_str - ${image_format_str}`);
 
-						//-------------------------------------------------
-						// UPLOAD_ACTIVATE_FUN
-						(p_image_name_str,
-						p_flows_names_str,
-						p_on_upload_complete_fun)=>{
+						// VIEW_IMAGE
+						gf_upload__view_img(img_data_str,
+							p_flow_name_str,
 
-							// UPLOAD_IMAGE
-							gf_upload__run(p_image_name_str,
-								img_data_str,
-								image_format_str,
-								p_flows_names_str,
-								p_target_full_host_str,
-								(p_upload_gf_image_id_str)=>{
-									p_on_upload_complete_fun();
-									p_on_upload_fun(p_upload_gf_image_id_str);
-								});
-						});
+							//-------------------------------------------------
+							// UPLOAD_ACTIVATE_FUN
+							(p_image_name_str: string,
+							p_flows_names_str: string,
+							p_on_upload_complete_fun: any)=>{
 
-						//-------------------------------------------------
-				};
+								// UPLOAD_IMAGE
+								gf_upload__run(p_image_name_str,
+									img_data_str,
+									image_format_str,
+									p_flows_names_str,
+									p_target_full_host_str,
+									(p_upload_gf_image_id_str: string)=>{
+										p_on_upload_complete_fun();
+										p_on_upload_fun(p_upload_gf_image_id_str);
+									});
+							});
 
-				// reader.readAsBinaryString(blob);
-				reader.readAsDataURL(blob);
+							//-------------------------------------------------
+					};
+
+					// reader.readAsBinaryString(blob);
+					reader.readAsDataURL(blob);
+				}
 			}
 		}
 	}
