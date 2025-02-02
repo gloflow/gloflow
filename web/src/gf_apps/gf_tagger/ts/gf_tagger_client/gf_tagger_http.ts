@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //-----------------------------------------------------
 export function get_notes(p_object_id_str :string,
     p_object_type_str :string,
-    p_log_fun) {
+    p_log_fun: any) {
     
     return new Promise(async function(p_resolve_fun, p_reject_fun) {
         const data_map = {
@@ -65,7 +65,7 @@ export function get_notes(p_object_id_str :string,
 export function add_note_to_obj(p_body_str :string,
     p_object_id_str   :string,
     p_object_type_str :string,
-    p_log_fun) {
+    p_log_fun: any) {
     
     return new Promise(async function(p_resolve_fun, p_reject_fun) {
         const data_map = {
@@ -99,11 +99,11 @@ export async function add_tags_to_obj(p_tags_lst :string[],
     p_object_system_id_str :string,
     p_object_type_str      :string,
     p_meta_map             :Object,
-    p_host_str             :string,
+    p_origin_str           :string,
     p_log_fun              :any) {
     return new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-        const url_str  :string = `${p_host_str}/v1/tags/create`;
+        const url_str  :string = `${p_origin_str}/v1/tags/create`;
         const tags_str :string = p_tags_lst.join(' ');
         const data_map = {
             "otype": p_object_type_str,
@@ -138,7 +138,7 @@ export async function add_tags_to_obj(p_tags_lst :string[],
 //-----------------------------------------------------
 export function get_objs_with_tag(p_tag_str :string, 
     p_object_type_str :string,
-    p_log_fun) {
+    p_log_fun: any) {
     
     return new Promise(async function(p_resolve_fun, p_reject_fun) {
 

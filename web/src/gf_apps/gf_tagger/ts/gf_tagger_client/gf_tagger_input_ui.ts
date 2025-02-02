@@ -292,11 +292,13 @@ async function add_tags_to_obj(p_obj_id_str :string,
 
 		var data_map;
 		if (p_http_api_map == null) {
-
+			
+			const origin_str = window.location.origin;
 			data_map = await gf_tagger_http.add_tags_to_obj(new_tags_lst,
 				p_obj_id_str,
 				p_obj_type_str,
 				tags_meta_map,
+				origin_str,
 				p_log_fun);
 
 		} else {

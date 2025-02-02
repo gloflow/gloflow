@@ -33,13 +33,15 @@ export function get_http_api() {
             "add_tags_to_obj": async (p_tags_lst :string[],  
                 p_object_id_str   :string,
                 p_object_type_str :string,
-                p_meta_map,
-                p_log_fun)=>{
+                p_meta_map: Object,
+                p_log_fun: any)=>{
 
+                const origin_str = window.location.origin;
                 await gf_tagger_http.add_tags_to_obj(p_tags_lst,  
                     p_object_id_str,
                     p_object_type_str,
                     p_meta_map,
+                    origin_str,
                     p_log_fun);
             }
         },
