@@ -31,6 +31,7 @@ import (
 func renderObjectsWithTag(pTagStr string,
 	pTemplate             *template.Template,
 	pSubtemplatesNamesLst []string,
+	pInitialPagesNumInt   int, // 6
 	pPageIndexInt         int,
 	pPageSizeInt          int,
 	pCtx                  context.Context,
@@ -40,10 +41,41 @@ func renderObjectsWithTag(pTagStr string,
 	// IMAGES
 
 	/*
-	FIX!! - SCALABILITY!! - get tag info on "image" and "post" types is a very long
+	FIX!! - SCALABILITY!! - get tag info on "image" is a very long
 		operation, and should be done in some more efficient way,
 		as in with a mongodb aggregation pipeline.
 	*/
+
+	// runs exportObjectsWithTag initial pages num of times, accumulate the images with tags into a list
+
+	allPagesImagesWithTagLst := make([]map[string]interface{}, 0)
+	for i := 0; i < pInitialPagesNumInt; i++ {
+
+		pageIndexInt := i*pPageSizeInt
+
+		imagesWithTagLst, gfErr := exportObjectsWithTag(pTagStr,
+			"image", // p_objectTypeStr
+			pageIndexInt,
+			pPageSizeInt,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return "", gfErr
+		}
+
+		imagesUserNamesLst := resolveUserIDStoUserNames(imagesWithTagLst, pCtx, pRuntimeSys)
+
+		for i, imageMap := range imagesWithTagLst {
+			imageMap["owner_user_name_str"] = imagesUserNamesLst[i]
+		}
+
+		allPagesImagesWithTagLst = append(allPagesImagesWithTagLst, imagesWithTagLst...)
+
+	}
+
+
+
+	/*
 	imagesWithTagLst, gfErr := exportObjectsWithTag(pTagStr,
 		"image", // p_objectTypeStr
 		pPageIndexInt,
@@ -59,6 +91,7 @@ func renderObjectsWithTag(pTagStr string,
 	for i, imageMap := range imagesWithTagLst {
 		imageMap["owner_user_name_str"] = imagesUserNamesLst[i]
 	}
+	*/
 
 	//-----------------------------
 
@@ -82,7 +115,7 @@ func renderObjectsWithTag(pTagStr string,
 		templatesData{
 			TagStr:                pTagStr,
 			ImagesWithTagCountInt: imagesWithTagCountInt,
-			ImagesWithTagLst:      imagesWithTagLst,
+			ImagesWithTagLst:      allPagesImagesWithTagLst,
 			Sys_release_info:      sysReleaseInfo,
 			
 			//-------------------------------------------------

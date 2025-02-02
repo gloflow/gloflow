@@ -227,6 +227,8 @@ func tagsPipelineGetObjects(pReq *http.Request,
 		}
 	}
 
+	initialPagesNumInt := 10
+
 	//----------------
 
 	switch responseFormatStr {
@@ -238,6 +240,7 @@ func tagsPipelineGetObjects(pReq *http.Request,
 			templateRenderedStr, gfErr := renderObjectsWithTag(tagStr,
 				pTemplate,
 				pSubtemplatesNamesLst,
+				initialPagesNumInt,
 				pageIndexInt,
 				pageSizeInt,
 				pCtx,
