@@ -306,8 +306,6 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 	//-------------------------------------------------
 
-
-
 	if pAuthBool {
 
 		//-------------------------------------------------
@@ -320,7 +318,6 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 					"auth_subsystem_type_str": pHandlerRuntime.AuthSubsystemTypeStr,
 				})
 
-			
 			//-----------------------
 			// METRICS
 			if pHandlerRuntime.MetricsGlobal != nil {
@@ -368,10 +365,10 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			// get the origin domain of the request
 			originStr := pReq.Header.Get("Origin")
 
-
-
-			fmt.Println("request HEADERS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-			spew.Dump(pReq.Header)
+			pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> req headers...`,
+				map[string]interface{}{
+					"headers_str": spew.Sdump(pReq.Header),
+				})
 
 			if originStr != "" {
 
@@ -428,7 +425,6 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			}
 
 			appHandlerFun(pResp, pReq)
-
 		}
 
 		//-------------------------------------------------
