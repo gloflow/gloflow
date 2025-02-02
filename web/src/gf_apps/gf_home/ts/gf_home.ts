@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import * as gf_dragndrop          from "./../../../gf_core/ts/gf_dragndrop";
 import * as gf_color_picker       from "./../../../gf_core/ts/gf_color_picker";
-import * as gf_home_eth_addresses from "gf_home_eth_addresses";
-import * as gf_utils              from "gf_utils";
+import * as gf_home_eth_addresses from "./gf_home_eth_addresses";
+import * as gf_utils              from "./gf_utils";
 import * as gf_sys_panel          from "./../../../gf_sys_panel/ts/gf_sys_panel";
 
 declare var WebFont; 

@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import * as gf_dragndrop from "./../../../gf_core/ts/gf_dragndrop";
 import * as gf_tagger_input_ui from "./../../gf_tagger/ts/gf_tagger_client/gf_tagger_input_ui";
-import * as gf_utils from "gf_utils";
+import * as gf_utils from "./gf_utils";
 
 declare var Web3;
 
