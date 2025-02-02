@@ -89,12 +89,14 @@ func TestTemplates(pTest *testing.T) {
 
 	//--------------------
 
+	initialPagesNumInt := 1
 	pageIndexInt := 0
 	pageSizeInt := 5
 
 	templateRenderedStr, gfErr := renderObjectsWithTag("tag1",
 		gfTemplates.TagObjects,
 		gfTemplates.TagObjectsSubtemplatesNamesLst,
+		initialPagesNumInt,
 		pageIndexInt,
 		pageSizeInt,
 		ctx,
