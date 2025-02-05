@@ -65,7 +65,14 @@ type GFauth0inputAPItokenGenerate struct {
 	AppClientSecretStr string
 	AudienceStr        string
 	Auth0appDomainStr  string
-	
+}
+
+type GFauth0basicUserInfo struct {
+	SubjectTypeStr string
+	UserID         gf_core.GF_ID
+	UserNameStr    GFuserName
+	EmailStr       string
+	ProfileMap     map[string]interface{}
 }
 
 //---------------------------------------------------
@@ -230,6 +237,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		return nil, gfErr
 	}
 
+	// auth0accessTokenStr := oauth2bearerToken.AccessToken
 	pRuntimeSys.LogNewFun("DEBUG", "Auth0 received Oauth2 bearer token", nil)
 	if gf_core.LogsIsDebugEnabled() {
 		spew.Dump(oauth2bearerToken)
@@ -296,12 +304,37 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		spew.Dump(profileMap)
 	}
 
+	sentry.ConfigureScope(func(scope *sentry.Scope) {
+		scope.SetExtra("profile_map", profileMap)
+	})
+
+	subjectStr := profileMap["sub"].(string)
+	subjectTypeStr := strings.Split(subjectStr, "|")[0]
 	var userID      gf_core.GF_ID
 	var userNameStr GFuserName
+	var emailStr    string
 
+	switch subjectTypeStr {
+
+	//---------------------
+	// DATABASE - username/password
+	case "auth0":
+		userID = gf_core.GF_ID(subjectStr)
+		userNameStr = GFuserName(profileMap["nickname"].(string))
+		emailStr = profileMap["email"].(string)
+
+	//---------------------
+	// EMAIL - passwordless login
+	case "email":
+		userID = gf_core.GF_ID(subjectStr)
+		userNameStr = GFuserName(profileMap["nickname"].(string))
+
+		// for passwordless/email login, "name" is the email
+		emailStr = profileMap["name"].(string)
+
+	//---------------------
 	// GOOGLE
-	// check if the "subject" name starts with google prefix
-	if strings.HasPrefix(profileMap["sub"].(string), "google-oauth2") {
+	case "google-oauth2":
 
 		//---------------------------------------------------
 		loadGoogleProfileFun := func() {
@@ -310,7 +343,8 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 			googleNicknameStr := profileMap["nickname"].(string)
 			userID      = gf_core.GF_ID(googleUserIDstr)
 			userNameStr = GFuserName(googleNicknameStr)
-			
+			emailStr    = profileMap["email"].(string)
+
 			googleProfile := &GFgoogleUserProfile {
 				NameStr:       profileMap["name"].(string),
 				GivenNameStr:  profileMap["given_name"].(string),
@@ -320,6 +354,8 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 				UpdatedAtStr:  profileMap["updated_at"].(string),
 				PictureURLstr: profileMap["picture"].(string),
 			}
+
+
 
 			// LOCAL
 			// check if locale is in profile map, or if its nil, and if its an actual string, assign it to the property of googleProfile
@@ -351,13 +387,27 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 
 			loadGoogleProfileFun()
 		})
-	}
 
 	//---------------------
+	}
 	
-	auth0accessTokenStr := oauth2bearerToken.AccessToken
+	basicUserInfo := &GFauth0basicUserInfo{
+		SubjectTypeStr: subjectTypeStr,
+		UserID:         userID,
+		UserNameStr:    userNameStr,
+		EmailStr:       emailStr,
+		ProfileMap:     profileMap,
+	}
 
-	gfErr = Auth0createGFuserIfNone(auth0accessTokenStr,
+	pRuntimeSys.LogNewFun("DEBUG", "basic user info", map[string]interface{}{
+		"subject_type": basicUserInfo.SubjectTypeStr,
+		"user_id":      basicUserInfo.UserID,
+		"user_name":    basicUserInfo.UserNameStr,
+		"email":        basicUserInfo.EmailStr,
+		"profile_map":  basicUserInfo.ProfileMap,
+	})
+
+	gfErr = Auth0createGFuserIfNone(basicUserInfo,
 		pInput.Auth0appDomainStr,
 		pCtx,
 		pRuntimeSys)
@@ -419,13 +469,13 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 
 // check if the Auth0 user exists in the DB, and if not create it.
 // a user would not exist in the DB if it signed-up/logged-in for the first time.
-func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
+func Auth0createGFuserIfNone(pBasicUserInfo *GFauth0basicUserInfo,
 	pAuth0appDomainStr string,
 	pCtx               context.Context,
 	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
-
-	// GET_USER_INFO - from Auth0
+	//---------------------
+	// USER_INFO - from Auth0
 	/*
 	map[
 		family_name: Trajkovic
@@ -438,6 +488,7 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 		updated_at:  2023-08-16T22:13:10.084Z
 	]
 	*/
+	/*
 	auth0userInfoMap, gfErr := gf_auth0.GetUserInfo(pAuth0accessTokenStr,
 		pAuth0appDomainStr,
 		pRuntimeSys)
@@ -445,15 +496,18 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 	if gfErr != nil {
 		return gfErr
 	}
+	*/
 
 	pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> Auth0 /userinfo response recieved...`,
 		map[string]interface{}{
-			"auth0_user_info_map": auth0userInfoMap,
+			"auth0_user_info_map": pBasicUserInfo.ProfileMap,
 		})
+
+	//---------------------
 
 	// the user_info returned by Auth0 contains the "sub" claim
 	// which is the user_id assigned to the user in the Auth0 system
-	auth0userID := gf_core.GF_ID(auth0userInfoMap["sub"].(string))
+	auth0userID := pBasicUserInfo.UserID // gf_core.GF_ID(pUserProfileMap["sub"].(string))
 
 	//---------------------
 	// DB
@@ -466,30 +520,30 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 
 	//---------------------
 
-	userNameStr   := GFuserName(auth0userInfoMap["name"].(string))
-	screenNameStr := auth0userInfoMap["nickname"].(string)
-	
-	profileImageURLstr := auth0userInfoMap["picture"].(string)
+	profileImageURLstr := pBasicUserInfo.ProfileMap["picture"].(string)
+	screenNameStr := string(pBasicUserInfo.UserNameStr)
+	// screenNameStr := pBasicUserInfo.ProfileMap["nickname"].(string)
+	// userNameStr := GFuserName(pUserProfileMap["name"].(string))
 
 	// user doesnt exist in the GF DB
 	if !existsBool {
 
 		creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
-		//---------------------		
+		//---------------------
+		// EMAIL
 		// only read the email param if a new user is created in the GF DB
-		email := auth0userInfoMap["email"]
+		emailStr := pBasicUserInfo.EmailStr // pUserProfileMap["email"]
 
 		// check if the email field is present in the user_info map. sometimes
 		// its not returned, and the user would be created without an email.
-		if email == nil {
+		if emailStr == "" {
 			gfErr := gf_core.ErrorCreate("Auth0 user_info does not contain the expected/required 'email' field",
 				"library_error",
 				map[string]interface{}{},
 				nil, "gf_identity_core", pRuntimeSys)
 			return gfErr
 		}
-		emailStr := email.(string)
 
 		//---------------------
 
@@ -499,8 +553,8 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 			ID:                 auth0userID,
 			CreationUNIXtimeF:  creationUNIXtimeF,
 			UserTypeStr:        "standard",
-			UserNameStr:        userNameStr,
-			ScreenNameStr:      screenNameStr,
+			UserNameStr:        pBasicUserInfo.UserNameStr, // userNameStr,
+			ScreenNameStr:      screenNameStr,              // screenNameStr,
 			EmailStr:           emailStr,
 			ProfileImageURLstr: profileImageURLstr,
 		}
@@ -517,8 +571,8 @@ func Auth0createGFuserIfNone(pAuth0accessTokenStr string,
 	} else {
 
 		update := &GFuserUpdateOp {
-			UserNameStr:        &userNameStr,
-			ScreenNameStr:      &screenNameStr,
+			UserNameStr:        &pBasicUserInfo.UserNameStr, // &userNameStr,
+			ScreenNameStr:      &screenNameStr,              // &screenNameStr,
 			ProfileImageURLstr: &profileImageURLstr,
 		}
 

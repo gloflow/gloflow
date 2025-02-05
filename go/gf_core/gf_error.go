@@ -307,15 +307,23 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 
 		sentry.WithScope(func(pScope *sentry.Scope) {
 
+			//--------------------
+			// TAGS
 			pScope.SetTag(fmt.Sprintf("%s_error.service_name",   namesPrefixStr), gfErr.ServiceNameStr)
 			pScope.SetTag(fmt.Sprintf("%s_error.subsystem_name", namesPrefixStr), gfErr.Subsystem_name_str)
 			pScope.SetTag(fmt.Sprintf("%s_error.type",           namesPrefixStr), gfErr.Type_str)
 
+			// DATA
+			pScope.SetExtra("data_map", gfErr.Data_map)
+			/*
 			for k, v := range gfErr.Data_map {
-				pScope.SetTag(fmt.Sprintf("%s_error.%s", namesPrefixStr, k),
-					fmt.Sprint(v))
+				tagKstr := fmt.Sprintf("%s_error.%s", namesPrefixStr, k)
+				tagVstr := fmt.Sprint(v)
+				pScope.SetTag(tagKstr, tagVstr)
 			}
+			*/
 
+			//--------------------
 			// scope.SetLevel(sentry.LevelWarning);
 
 			if pError != nil {
