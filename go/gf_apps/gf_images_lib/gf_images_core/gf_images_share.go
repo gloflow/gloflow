@@ -126,9 +126,7 @@ func SharePipeline(pInput *GFshareInput,
 	}
 
 	//------------------------
-	// PLUGIN
-	//------------------------
-	// EMAIL_PLUGIN
+	// PLUGIN - email sending
 
 	emailGFtypeStr := "image_sharing"
 	

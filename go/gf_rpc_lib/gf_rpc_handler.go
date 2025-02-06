@@ -551,6 +551,20 @@ func getHandler(pAuthBool bool,
 
 		ctxRoot := spanRoot.Context()
 
+
+		//------------------
+		// PLUGIN - run request pre-process callback
+		if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.RPCreqPreProcessCallback != nil {
+
+			gfErr := pRuntimeSys.ExternalPlugins.RPCreqPreProcessCallback(pReq, pResp, ctxRoot, pRuntimeSys)
+			if gfErr != nil {
+				ErrorInHandler(pPathStr,
+					fmt.Sprintf("handler %s failed", pPathStr),
+					gfErr, pResp, pRuntimeSys)
+				return
+			}
+		}
+
 		//------------------
 		// HANDLER
 		outputDataMap, gfErr := pHandlerFun(ctxRoot, pResp, pReq)

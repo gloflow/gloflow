@@ -397,7 +397,7 @@ func exportObjectsWithTag(pTagStr string,
 			return nil, gfErr
 		}
 
-		// plugin
+		// PLUGIN
 		metadataFilterDefinedBool := false
 		if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback != nil {
 			metadataFilterDefinedBool = true

@@ -45,15 +45,7 @@ func renderImageViewPage(pImageID gf_images_core.GFimageID,
 		return "", gfErr
 	}
 
-	/*
-	image, gfErr := gf_images_core.DBmongoGetImage(pImageID, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return "", gfErr
-	}
-	*/
-
-	// META
-	// plugin
+	// PLUGIN - filter image metadata for display/rendering in a template
 	var filteredMetaJSONstr string
 	if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback != nil {
 		filteredMetaMap := pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback(image.MetaMap)

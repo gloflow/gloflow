@@ -25,6 +25,8 @@ SOFTWARE.
 package gf_core
 
 import (
+	"context"
+	"net/http"
 	"database/sql"
 	"go.mongodb.org/mongo-driver/mongo"
 	"github.com/go-playground/validator"
@@ -79,6 +81,7 @@ type ExternalPlugins struct {
 	//---------------------------
 	// RPC_HANDLERS
 	RPChandlersGetCallback func(*RuntimeSys) ([]HTTPhandlerInfo, *GFerror)
+	RPCreqPreProcessCallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) *GFerror
 
 	// CORS_DOMAINS - domains that are allowed to access the API, beyond the domain
 	// 			  	  that the API is hosted on.
@@ -104,12 +107,13 @@ type ExternalPlugins struct {
 	EmailSendingCallback func(string, string, string, string, *RuntimeSys) *GFerror
 
 	//---------------------------
+	/*
 	// NFT
 	// get metadata on defined fetchers
 	NFTgetFetchersMetaCallback func() map[string]map[string]interface{}
 
 	// fetch NFTs for a particular owner account using a particular fetcher (with name)
 	NFTfetchForOwnerAddressCallback func(string, string, *RuntimeSys) *GFerror
-
+	*/
 	//---------------------------
 }

@@ -353,7 +353,7 @@ func Run(pConfig *GFconfig,
 	pRuntimeSys.Metrics = coreMetrics
 	
 	//-------------
-	// REGISTER_EXTERN_HTTP_HANDLERS
+	// PLUGIN - register extern http handlers
 
 	if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.RPChandlersGetCallback != nil {
 
