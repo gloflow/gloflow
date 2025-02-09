@@ -556,11 +556,19 @@ func getHandler(pAuthBool bool,
 		// PLUGIN - run request pre-process callback
 		if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.RPCreqPreProcessCallback != nil {
 
-			gfErr := pRuntimeSys.ExternalPlugins.RPCreqPreProcessCallback(pReq, pResp, ctxRoot, pRuntimeSys)
+			continueBool, gfErr := pRuntimeSys.ExternalPlugins.RPCreqPreProcessCallback(pReq, pResp, ctxRoot, pRuntimeSys)
 			if gfErr != nil {
 				ErrorInHandler(pPathStr,
 					fmt.Sprintf("handler %s failed", pPathStr),
 					gfErr, pResp, pRuntimeSys)
+				return
+			}
+
+			if !continueBool {
+				
+				// FINALIZE
+				endTimeUNIXf := float64(time.Now().UnixNano())/1000000000.0
+				finalizeHandler(pPathStr, spanRoot, startTimeUNIXf, endTimeUNIXf, pStoreRunBool, pRuntimeSys)
 				return
 			}
 		}
@@ -570,8 +578,9 @@ func getHandler(pAuthBool bool,
 		outputDataMap, gfErr := pHandlerFun(ctxRoot, pResp, pReq)
 
 		//------------------
-		// TRACE
-		spanRoot.Finish()
+		// FINALIZE
+		endTimeUNIXf := float64(time.Now().UnixNano())/1000000000.0
+		finalizeHandler(pPathStr, spanRoot, startTimeUNIXf, endTimeUNIXf, pStoreRunBool, pRuntimeSys)
 
 		//------------------
 		// ERROR
@@ -591,16 +600,27 @@ func getHandler(pAuthBool bool,
 		}
 
 		//------------------
-
-		endTimeUNIXf := float64(time.Now().UnixNano())/1000000000.0
-
-		if pStoreRunBool {
-			go func() {
-				StoreRPChandlerRun(pPathStr, startTimeUNIXf, endTimeUNIXf, pRuntimeSys)
-			}()
-		}
 	}
 	return handlerFun
+}
+
+//-------------------------------------------------
+
+func finalizeHandler(pPathStr string,
+	pSpanRoot *sentry.Span,
+	pStartTimeUNIXf float64,
+	pEndTimeUNIXf   float64,
+	pStoreRunBool   bool,
+	pRuntimeSys     *gf_core.RuntimeSys) {
+
+	// TRACE
+	pSpanRoot.Finish()
+
+	if pStoreRunBool {
+		go func() {
+			StoreRPChandlerRun(pPathStr, pStartTimeUNIXf, pEndTimeUNIXf, pRuntimeSys)
+		}()
+	}
 }
 
 //-------------------------------------------------

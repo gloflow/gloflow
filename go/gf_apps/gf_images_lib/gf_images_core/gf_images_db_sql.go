@@ -485,7 +485,7 @@ func DBsqlGetRandomImagesRange(pImgsNumToGetInt int, // 5
 			AND 
 				$1 = ANY(flows_names)
 		LIMIT $2 
-		OFFSET $3`
+		OFFSET $3;`
 
 	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, queryStr,
 		pFlowNameStr,
