@@ -75,7 +75,8 @@ function init(p_log_fun) {
 
 			setTimeout(function() {
 
-				const url_str = "/v1/home/view";				
+				// redirect to root page
+				const url_str = "/";				
 				window.location.href = url_str;
 			}, 3000);
 		}
