@@ -30,17 +30,17 @@ sentry_endpoint: "" # or ENV var
 templates_paths:
   gf_login:                "./templates/gf_login/gf_login.html"
   gf_admin_login:          "./templates/gf_admin_login/gf_admin_login.html"
-  gf_admin_dashboard:      "./templates/gf_admin_dashboard/gf_admin_dashboard.html"
   gf_domains_browser:      "./templates/gf_domains_browser/gf_domains_browser.html"
   gf_home_main:            "./templates/gf_home_main/gf_home_main.html"
   gf_images_view:          "./templates/gf_images_view/gf_images_view.html"
   gf_images_flows_browser: "./templates/gf_images_flows_browser/gf_images_flows_browser.html"
   gf_landing_page:         "./templates/gf_landing_page/gf_landing_page.html"
-  gf_post:                 "./templates/gf_post/gf_post.html"
-  gf_posts_browser:        "./templates/gf_posts_browser/gf_posts_browser.html"
   gf_tag_objects:          "./templates/gf_tag_objects/gf_tag_objects.html"
   gf_bookmarks:            "./templates/gf_bookmarks/gf_bookmarks.html"
-  gf_maps:                 "./templates/gf_maps/gf_maps.html"
+  # gf_admin_dashboard:      "./templates/gf_admin_dashboard/gf_admin_dashboard.html"
+  # gf_post:                 "./templates/gf_post/gf_post.html"
+  # gf_posts_browser:        "./templates/gf_posts_browser/gf_posts_browser.html"
+  # gf_maps:                 "./templates/gf_maps/gf_maps.html"
 
 #--------------------
 # GF_IMAGES
