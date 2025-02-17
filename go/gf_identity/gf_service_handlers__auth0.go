@@ -329,7 +329,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				}
 
 				// unset all session cookies
-				gf_identity_core.DeleteCookies(pResp)
+				gf_identity_core.DeleteCookies(*pServiceInfo.DomainForAuthCookiesStr, pResp)
 
 				afterLogoutURLstr := "/landing/main"
 

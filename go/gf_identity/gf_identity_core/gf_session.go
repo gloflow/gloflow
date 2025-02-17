@@ -168,13 +168,14 @@ func CreateSessionIDcookie(pSessionIDstr string,
 
 //---------------------------------------------------
 
-func DeleteCookies(pResp http.ResponseWriter) {
+func DeleteCookies(pDomainForAuthCookiesStr string,
+	pResp http.ResponseWriter) {
 
 	sessCookieNameStr := "gf_sess"
-	gf_core.HTTPdeleteCookieOnResp(sessCookieNameStr, pResp)
+	gf_core.HTTPdeleteCookieOnResp(sessCookieNameStr, pDomainForAuthCookiesStr, pResp)
 
 	jwtCookieNameStr := "Authorization"
-	gf_core.HTTPdeleteCookieOnResp(jwtCookieNameStr, pResp)
+	gf_core.HTTPdeleteCookieOnResp(jwtCookieNameStr, pDomainForAuthCookiesStr, pResp)
 }
 
 //---------------------------------------------------

@@ -255,6 +255,7 @@ func Init(pRuntimeSys *gf_core.RuntimeSys) (*GFauthenticator, *GFconfig, *gf_cor
 			
 			// app_specific scopes
 			"profile",
+			"email",
 		},
 	}
 

@@ -225,6 +225,7 @@ func HTTPsetCookieOnReq(pCookieNameStr string,
 //---------------------------------------------------
 
 func HTTPdeleteCookieOnResp(pCookieNameStr string,
+	pDomainForCookiesStr string,
 	pResp http.ResponseWriter) {
 
 	expiredCookie := http.Cookie{
@@ -232,6 +233,7 @@ func HTTPdeleteCookieOnResp(pCookieNameStr string,
 		Value:    "", // empty value
 		Expires:  time.Unix(0, 0), // set expiration in the past
 		Path:     "/",
+		Domain:   pDomainForCookiesStr,
 		Secure:   true,
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,

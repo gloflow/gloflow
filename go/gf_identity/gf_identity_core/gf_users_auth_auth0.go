@@ -328,9 +328,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	case "email":
 		userID = gf_core.GF_ID(subjectStr)
 		userNameStr = GFuserName(profileMap["nickname"].(string))
-
-		// for passwordless/email login, "name" is the email
-		emailStr = profileMap["name"].(string)
+		emailStr = profileMap["email"].(string)
 
 	//---------------------
 	// GOOGLE
