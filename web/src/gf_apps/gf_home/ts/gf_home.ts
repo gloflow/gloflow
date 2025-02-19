@@ -72,8 +72,8 @@ export async function init(p_http_api_map,
 	const home_container          = $("#home_container");
 	const names_container         = init_names_view(screen_name_str, home_container, p_http_api_map, p_assets_paths_map);
 	const profile_image_container = await init_profile_image(profile_image_url_str, p_http_api_map, p_assets_paths_map);
-	const my_eth_addresses_container        = await gf_home_eth_addresses.init_my(home_container, p_http_api_map, p_assets_paths_map);
-	const observed_eth_addresses_container  = await gf_home_eth_addresses.init_observed(home_container, p_http_api_map, p_assets_paths_map);
+	// const my_eth_addresses_container        = await gf_home_eth_addresses.init_my(home_container, p_http_api_map, p_assets_paths_map);
+	// const observed_eth_addresses_container  = await gf_home_eth_addresses.init_observed(home_container, p_http_api_map, p_assets_paths_map);
 	const background_color_picker_container = await init_color_picker(home_container, p_http_api_map, p_assets_paths_map);
 
 	//-----------------------------
@@ -114,6 +114,7 @@ export async function init(p_http_api_map,
 	$(names_container).css("top", `${names_y_int}px`);
 
 	//-----------------------------
+	/*
 	// MY_ETH_ADDRESSES
 	var eth_addr_x_int;
 	var eth_addr_y_int;
@@ -129,8 +130,9 @@ export async function init(p_http_api_map,
 
 	$(my_eth_addresses_container).css("left", `${eth_addr_x_int}px`);
 	$(my_eth_addresses_container).css("top",  `${eth_addr_y_int}px`);
-	
+	*/
 	//-----------------------------
+	/*
 	// OBSERVED_ETH_ADDRESSES
 	var obs_eth_addr_x_int;
 	var obs_eth_addr_y_int;
@@ -146,7 +148,7 @@ export async function init(p_http_api_map,
 
 	$(observed_eth_addresses_container).css("left", `${obs_eth_addr_x_int}px`);
 	$(observed_eth_addresses_container).css("top",  `${obs_eth_addr_y_int}px`);
-	
+	*/
 	//-----------------------------
 	// COLOR_PICKER
 	var background_color_picker_x_int;
