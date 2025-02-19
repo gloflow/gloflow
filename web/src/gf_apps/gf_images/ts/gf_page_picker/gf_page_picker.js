@@ -38,7 +38,7 @@ function gf_picker__create_ui(p_api_host_str) {
     
     div#gf_page_picker {
         
-        position: absolute;
+        position: fixed;
         width: 100%;
         height: 100%;
         top: 0px;
@@ -65,13 +65,15 @@ function gf_picker__create_ui(p_api_host_str) {
     }
 
     div#gf_bookmark {
-        top:              30px;
-        left:             19%;
+        top: 20%;
+        left: 20%;
         position:         relative;
-        background-color: yellow;
-        width:            800px;
+        background-color: #ffcd3f;
+        width:            600px;
         padding:          10px;
-        padding-bottom:   7px;
+        padding-bottom:   10px;
+
+        border-radius: 10px 0px 0px 10px;
     }
 
     div#gf_bookmark #url {
@@ -84,6 +86,8 @@ function gf_picker__create_ui(p_api_host_str) {
 
     div#gf_bookmark div#description {
         width: 100%;
+        height: 60px;
+        overflow: hidden;
     }
     div#gf_bookmark div#description input {
         height:       60px;
@@ -101,9 +105,11 @@ function gf_picker__create_ui(p_api_host_str) {
 
     div#gf_bookmark div#tags {
         width: 100%;
+        overflow: hidden;
     }
     div#gf_bookmark div#tags input {
         width:   100%;
+        height: 30px;
         padding: 0px;
         padding-left: 6px;
         background-color: white;
@@ -114,14 +120,17 @@ function gf_picker__create_ui(p_api_host_str) {
     div#gf_bookmark div#close_btn {
         position:         absolute;
         top:              0px;
-        right:            -49px;
-        width:            50px;
-        height:           50px;
+        right: -190px;
+        width: 190px;
+        height: 190px;
         background-color: #fcfd30;
         text-align:       center;
-        color:            #7d5d20;
+        color:          #7d5d20;
 
         cursor: pointer;
+
+        border-radius: 0px 10px 10px 0px;
+        overflow: hidden;
     }
 
     div#gf_bookmark div#close_btn:hover {
@@ -144,6 +153,9 @@ function gf_picker__create_ui(p_api_host_str) {
         cursor:           pointer;
         color:            white;
         opacity:          1;
+        border-radius: 0px 0px 10px 10px;
+        font-size: 20px;
+        font-weight: bold;
     }
 
     </style>`);

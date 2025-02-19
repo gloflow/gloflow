@@ -2,91 +2,93 @@ body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	margin:      0;
 
-	/* turn off horizontal scroll */
+	// turn off horizontal scroll
 	max-width:  100%;
     overflow-x: hidden;
 
 	background-color: #d7d7d7;
 }
 
-/*----------------------------------------------------------*/
+//----------------------------------------------------------
 #main_container {
     display: grid;
     grid-template-columns: 15% 70% 15%;
     position: relative;
     top: 55px;
+
+    #left_space {
+        // grid-column: 1 / 2;
+        background: transparent; // Empty space
+    }
+
+    #right_space {
+        // grid-column: 3 / 4;
+        background: transparent; // Empty space
+    }
 }
 
-#main_container #left_space {
-    /* grid-column: 1 / 2; */
-}
-#main_container #right_space {
-    /* grid-column: 3 / 4; */
-}
+//----------------------------------------------------------
+// BOOKMARK
 
-#main_container #left_space, #right_space {
-    background: transparent; /* Empty space */
-}
+#bookmarks {
+    
+    .bookmark {
+        background-color: #fffeda;
+        padding-left: 6px;
+        font-weight: bold;
+        padding-top: 6px;
+        padding-bottom: 3px;
+        position: relative;
+        margin-bottom: 9px;
 
-/*----------------------------------------------------------*/
-/* BOOKMARK */
+        .url {
+            padding-left: 5px;
+            font-weight: bold;
 
-#main_container #bookmarks {
-    /* grid-column: 2 / 3; */
-}
+            a {
+                word-wrap: break-word;
+                text-decoration: none;
+            }
+        }
+        .description {
+            font-size: 14px;
+            padding-left: 6px;
+        }
+        .creation_time {
+            font-size: 12px;
+            font-weight: normal;
+            padding-left: 5px;
+            padding-bottom: 4px;
+        }
+        .tags {
+            position: absolute;
+            width: 30%;
+            height: 21px;
+            right: 0px;
 
-.bookmark {
-	background-color: #fffeda;
-	padding-left: 6px;
-    font-weight: bold;
-    padding-top: 6px;
-    padding-bottom: 3px;
-	position: relative;
-    margin-bottom: 9px;
-}
+            .label {
+                font-size: 12px;
+                padding-left: 0px;
+                position: absolute;
+                font-weight: normal;
+            }
 
-.bookmark .url {
-	padding-left: 5px;
-    font-weight: bold;
-}
-.bookmark .url a {
-    word-wrap: break-word;
-    text-decoration: none;
-}
+            .tags_list {
+                padding-left: 4px;
+                left: 28px;
+                position: absolute;
 
-.bookmark .description {
-	font-size: 14px;
-	padding-left: 6px;
-}
-.bookmark .creation_time {
-	font-size: 12px;
-    font-weight: normal;
-    padding-left: 5px;
-    padding-bottom: 4px;
-}
-.bookmark .tags {
-	position: absolute;
-    width: 30%;
-    height: 21px;
-    right: 0px;
-}
-.bookmark .tags .label {
-	font-size: 12px;
-    padding-left: 0px;
-    position: absolute;
-    font-weight: normal;
-}
-.bookmark .tags .tags_list {
-	padding-left: 4px;
-    left: 28px;
-    position: absolute;
-}
-.bookmark .tags .tags_list .tag {
-    background-color: #ede9a8;
-    padding-bottom: 3px;
-    padding-top: 2px;
-    text-decoration: none;
-}
-.tag a {
-    text-decoration: none;
+                .tag {
+                    background-color: #ede9a8;
+                    padding-bottom: 3px;
+                    padding-top: 2px;
+                    text-decoration: none;
+
+                    a {
+                        text-decoration: none;
+                    }
+                }
+            }
+        }
+    }
 }
