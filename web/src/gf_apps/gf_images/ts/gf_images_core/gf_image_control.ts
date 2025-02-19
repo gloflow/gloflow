@@ -259,6 +259,14 @@ export function init_existing_dom(p_image_element :any,
 	const origin_page_url_link = $(p_image_element).find(".origin_page_url a")[0];
 
 	//----------------
+	// TITLE
+	// CLEANUP - if the title is empty, remove the title element
+	const title_element = $(p_image_element).find(".image_title");
+	if ($(title_element).text().trim() == "") {
+		$(title_element).remove();
+	}
+
+	//----------------
 	// CLEANUP - for images that dont come from some origin page (direct uploads, or generated images)
 	//           this origin_page_url is set to empty string. check for that and remove it.
 	// FIX!! - potentially on the server/template-generation side this div node shouldnt get included
