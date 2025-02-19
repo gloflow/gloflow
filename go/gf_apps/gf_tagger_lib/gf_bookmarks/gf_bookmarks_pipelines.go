@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_bookmarks
 
 import (
-	"fmt"
+	// "fmt"
 	"time"
 	"context"
 	"text/template"
@@ -28,7 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_client"
+	// "github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_client"
 )
 
 //---------------------------------------------------
@@ -84,16 +84,16 @@ func PipelineGet(p_input *GFbookmarkInputGet,
 	p_ctx                    context.Context,
 	pRuntimeSys              *gf_core.RuntimeSys) (*GFbookmarkOutputGet, *gf_core.GFerror) {
 
-
-
+	//------------------------
 	// DB
-	bookmarks_lst, gfErr := dbMongoGetAllBookmarks(p_input.User_id_str,
+	bookmarksLst, gfErr := dbMongoGetAllBookmarks(p_input.User_id_str,
 		p_ctx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
+	//------------------------
 
 	var output *GFbookmarkOutputGet
 
@@ -102,7 +102,7 @@ func PipelineGet(p_input *GFbookmarkInputGet,
 	if p_input.Response_format_str == "html" {
 		
 		// RENDER_TEMPLATE
-		templateRenderedStr, gfErr := renderBookmarks(bookmarks_lst,
+		templateRenderedStr, gfErr := renderBookmarks(bookmarksLst,
 			p_tmpl,
 			p_subtemplates_names_lst,
 			pRuntimeSys)
@@ -118,8 +118,8 @@ func PipelineGet(p_input *GFbookmarkInputGet,
 	//------------------------
 	// JSON
 	} else if p_input.Response_format_str == "json" {
-		bookmarks_small_lst := []*GFbookmarkExtern{}
-		for _, b := range bookmarks_lst {
+		bookmarksSmallLst := []*GFbookmarkExtern{}
+		for _, b := range bookmarksLst {
 
 			bookmark_small := &GFbookmarkExtern{
 				Id_str:               b.Id_str,
@@ -128,11 +128,11 @@ func PipelineGet(p_input *GFbookmarkInputGet,
 				Description_str:      b.Description_str,
 				Tags_lst:             b.Tags_lst,
 			}
-			bookmarks_small_lst = append(bookmarks_small_lst, bookmark_small)
+			bookmarksSmallLst = append(bookmarksSmallLst, bookmark_small)
 		}
 
 		output = &GFbookmarkOutputGet{
-			Bookmarks_lst: bookmarks_small_lst,
+			Bookmarks_lst: bookmarksSmallLst,
 		}
 	}
 
@@ -188,6 +188,7 @@ func PipelineCreate(p_input *GFbookmarkInputCreate,
 		return gfErr
 	}
 
+	/*
 	//------------------------
 	// SCREENSHOT
 
@@ -211,13 +212,15 @@ func PipelineCreate(p_input *GFbookmarkInputCreate,
 	}
 
 	//------------------------
+	*/
+
 	return nil
 }
 
 //---------------------------------------------------
 // SCREENSHOTS
 //---------------------------------------------------
-
+/*
 func pipelineScreenshot(pURLstr string,
 	pBookmarkIDstr  gf_core.GF_ID,
 	pUserID         gf_core.GF_ID,
@@ -329,3 +332,4 @@ func screenshotCreate(pURLstr string,
 
 	return nil
 }
+	*/

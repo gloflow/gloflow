@@ -82,6 +82,18 @@ func initHandlers(pAuthSubsystemTypeStr string,
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/bookmarks/create",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
+			if pReq.Method == http.MethodOptions {
+
+				// CORS headers
+				// bookmarks created from bookmarklet, from arbitrary domains, so we need to allow CORS
+				pResp.Header().Set("Access-Control-Allow-Origin", "*")
+				pResp.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+				pResp.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+				pResp.WriteHeader(http.StatusNoContent)
+				return nil, nil
+			}
+
 			if pReq.Method == "POST" {
 
 				//------------------
@@ -118,6 +130,15 @@ func initHandlers(pAuthSubsystemTypeStr string,
 				if gfErr != nil {
 					return nil, gfErr
 				}
+
+				// CORS headers
+				// bookmarks created from bookmarklet, from arbitrary domains, so we need to allow CORS
+				pResp.Header().Set("Access-Control-Allow-Origin", "*")
+				pResp.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+				pResp.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+				dataMap := map[string]interface{}{}
+				return dataMap, nil
 			}
 
 			return nil, nil
@@ -160,10 +181,10 @@ func initHandlers(pAuthSubsystemTypeStr string,
 
 			switch response_format_str { 
 			case "json":
-				data_map := map[string]interface{}{
+				dataMap := map[string]interface{}{
 					"bookmarks_lst": output.Bookmarks_lst,
 				}
-				return data_map, nil
+				return dataMap, nil
 		
 			case "html":
 
