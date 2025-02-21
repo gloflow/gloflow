@@ -72,7 +72,7 @@ export async function init(p_plugin_callbacks_map :any,
 	
 	//-------------------------------------------------
 
-	//-----------------
+	//---------------------
 	gf_sys_panel.init_with_auth(p_log_fun);
 
 
@@ -129,7 +129,7 @@ export async function init(p_plugin_callbacks_map :any,
 	$('#gf_images_flow_container #items').masonry({
 		// options...
 		itemSelector: '.item',
-		columnWidth:  6
+		gutter:  10
 	});
 
 	/*
@@ -201,6 +201,7 @@ export async function init(p_plugin_callbacks_map :any,
 				const page_source_ref_str  = flow_name_str;
 				const page_source_type_str = "flow"
 
+
 				await gf_images_paging.load_new_page(page_source_ref_str,
 					page_source_type_str,
 					current_page_int,
@@ -209,7 +210,7 @@ export async function init(p_plugin_callbacks_map :any,
 					events_enabled_bool,
 					p_plugin_callbacks_map,
 					p_log_fun);
-
+				
 				current_page_int += 1;
 				$("#gf_images_flow_container").data("current_page", current_page_int);
 

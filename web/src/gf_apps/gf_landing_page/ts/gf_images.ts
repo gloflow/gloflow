@@ -44,22 +44,20 @@ export function init(p_logged_in_bool :boolean,
 	p_events_enabled_bool  :boolean,
 	p_log_fun :any) {
 
-	$('#featured_images_0').find('.image_info').each((p_i, p_image_info_element :any)=>{
-		
-		init_img(p_image_info_element);
+	$('#featured_images_0').find('.gf_image').each((p_i, p_image_element :any)=>{
+		init_img(p_image_element);
 	});
-	$('#featured_images_1').find('.image_info').each((p_i, p_image_info_element :any)=>{
-		
-		init_img(p_image_info_element);
+	$('#featured_images_1').find('.gf_image').each((p_i, p_image_element :any)=>{
+		init_img(p_image_element);
 	});
 
 	//-------------------------------------------------
-	function init_img(p_image_info_element :HTMLElement) {
+	function init_img(p_image_element :HTMLElement) {
 
-		const flows_names_lst = $(p_image_info_element).data("img_flows_names").split(",")
+		const flows_names_lst = $(p_image_element).data("img_flows_names").split(",")
 
 		// IMAGE_CONTROL
-		gf_image_control.init_existing_dom(p_image_info_element,
+		gf_image_control.init_existing_dom(p_image_element,
 			flows_names_lst,
 
 			p_gf_host_str,
@@ -246,7 +244,7 @@ function init_tagging(p_image_id_str :string,
 		},
 		
 		//---------------------------------------------------
-		"tags_created_fun": (p_tags_lst)=>{
+		"tags_created_fun": (p_tags_lst :string[])=>{
 
 			console.log("added tags >>>>>>>>>>>", p_tags_lst);
 
@@ -259,7 +257,7 @@ function init_tagging(p_image_id_str :string,
 		//---------------------------------------------------
 		// NOTES
 		//---------------------------------------------------
-		"notes_pre_create_fun": (p_notes_lst)=>{
+		"notes_pre_create_fun": (p_notes_lst :string[])=>{
 			const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 				// passing the image_id to the gf_tagger control via this callback allows for
@@ -271,7 +269,7 @@ function init_tagging(p_image_id_str :string,
 		},
 
 		//---------------------------------------------------
-		"notes_created_fun": (p_notes_lst)=>{
+		"notes_created_fun": (p_notes_lst :string[])=>{
 
 			console.log("added notes >>>>>>>>>>>", p_notes_lst)
 		}
@@ -288,11 +286,11 @@ function init_tagging(p_image_id_str :string,
 		p_log_fun);
 
 	//-------------------------------------------------
-	function tag_display(p_tag_str) {
+	function tag_display(p_tag_str :string) {
 
 		$(p_image_container_element)
-			.find(".tags_container")
-			.append(`<a class='gf_image_tag' href='/v1/tags/objects?tag=${p_tag_str}&otype=image'>#${p_tag_str}</a>`)
+			.find(".tags")
+			.append(`<a class='tag' href='/v1/tags/objects?tag=${p_tag_str}&otype=image'>#${p_tag_str}</a>`)
 	}
 
 	//-------------------------------------------------

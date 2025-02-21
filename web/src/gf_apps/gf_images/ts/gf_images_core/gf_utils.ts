@@ -139,7 +139,7 @@ export function init_tagging(p_image_id_str,
 		p_log_fun);
 
 	//-------------------------------------------------
-	function tag_display(p_tag_str) {
+	function tag_display(p_tag_str :string) {
 
 		/*
 		check if the tags_container div exists, if not create it.
@@ -167,12 +167,12 @@ export function masonry_layout_after_img_load(p_image_container) {
 	});
 	
 	// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
-	$('#gf_images_flow_container #items').masonry();
-	$('#gf_images_flow_container #items').masonry(<any>"reloadItems");
+	$('#gf_images_flow_container #items').masonry?.();
+	$('#gf_images_flow_container #items').masonry?.(<any>"reloadItems");
 }
 
 //-------------------------------------------------
-export function init_image_date(p_image_element, p_log_fun) {
+export function init_image_date(p_image_element :HTMLElement, p_log_fun) {
 
 	const creation_time_element = $(p_image_element).find('.creation_time');
 	const creation_time_f       = parseFloat($(creation_time_element).text());
@@ -189,8 +189,8 @@ export function init_image_date(p_image_element, p_log_fun) {
 
 		// IMPORTANT!! - image size changed, so recalculate the Masonry layout.
 		// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
-		$('#gf_images_flow_container #items').masonry();
-		$('#gf_images_flow_container #items').masonry(<any>'reloadItems');
+		$('#gf_images_flow_container #items').masonry?.();
+		$('#gf_images_flow_container #items').masonry?.(<any>'reloadItems');
 	});
 
 	$(creation_time_element).mouseout((p_e)=>{
@@ -198,8 +198,8 @@ export function init_image_date(p_image_element, p_log_fun) {
 
 		// IMPORTANT!! - image size changed, so recalculate the Masonry layout.
 		// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
-		$('#gf_images_flow_container #items').masonry();
-		$('#gf_images_flow_container #items').masonry(<any>'reloadItems');
+		$('#gf_images_flow_container #items').masonry?.();
+		$('#gf_images_flow_container #items').masonry?.(<any>'reloadItems');
 		
 	});
 }

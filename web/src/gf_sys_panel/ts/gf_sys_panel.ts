@@ -40,10 +40,11 @@ export async function init(p_auth_http_api_map,
 	p_urls_map,
 	p_log_fun) {
 
+	const handle_img_url_str = "https://assetspub.gloflow.com/assets/gf_sys/gf_sys_panel_view_handle.svg";
 	const sys_panel_element = $(
 		`<div id="sys_panel">
-			<div id="view_handle">
-				<img src="/images/d/gf_sys_panel_view_handle.png"></img>
+			<div id="view_handle" class="gf_center">
+				<img src="${handle_img_url_str}"></img>
 			</div>
 			
 			<div id="background">
@@ -53,9 +54,9 @@ export async function init(p_auth_http_api_map,
 					</div>
 
 					<div class="apps">
-						<div id="images_app_btn"><a href="/images/flows/browser">Images</a></div>
-						<div id="domains_app_btn"><a href="/a/domains/browser">Domains</a></div>
-						<div id="bookmarks_app_btn"><a href="/v1/bookmarks/get">B</a></div>
+						<div id="images_app_btn"    class="gf_center"><a href="/images/flows/browser">Images</a></div>
+						<div id="domains_app_btn"   class="gf_center"><a href="/a/domains/browser">Domains</a></div>
+						<div id="bookmarks_app_btn" class="gf_center"><a href="/v1/bookmarks/get">B</a></div>
 					</div>
 				</div>
 			</div>
@@ -93,6 +94,4 @@ export async function init(p_auth_http_api_map,
 	}
 
 	//--------------------------
-
-
 }

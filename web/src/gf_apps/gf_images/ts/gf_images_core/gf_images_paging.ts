@@ -38,58 +38,58 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 	p_plugin_callbacks_map :any,
 	p_log_fun :any) {
 
+	const gf_host_str = gf_core_utils.get_current_host();
+
 	return new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 		//---------------------------------------------------
-		async function fetch_pages() {
-			switch (p_page_source_type_str) {
+		async function fetch_pages() :Promise<Object> {
+			return new Promise(async function(p_resolve_fun, p_reject_fun) {
+				switch (p_page_source_type_str) {
 
-				// FLOWS
-				case "flow":
+					// FLOWS
+					case "flow":
 
-					const flow_name_str = p_page_source_ref_str;
-					const resp_pg_map = await gf_images_http.get_page(flow_name_str,
-						p_current_page_int,
-						p_log_fun);
+						const flow_name_str = p_page_source_ref_str;
+						const resp_pg_map = await gf_images_http.get_page(flow_name_str,
+							p_current_page_int,
+							p_log_fun);
 
-					const pages_lst            = resp_pg_map["pages_lst"];
-					const pages_user_names_lst = resp_pg_map["pages_user_names_lst"];
-					
-					return [pages_lst, pages_user_names_lst];
-					break;
+						const page_lst            = resp_pg_map["pages_lst"][0];
+						const page_user_names_lst = resp_pg_map["pages_user_names_lst"][0];
+						
+						p_resolve_fun({page_lst, page_user_names_lst});
+						break;
 
-				// TAGS
-				case "tag":
+					// TAGS
+					case "tag":
 
-					const tag_name_str = p_page_source_ref_str;
-					const object_type_str = "image";
+						const tag_name_str = p_page_source_ref_str;
+						const object_type_str = "image";
 
-					const resp_objs_with_tag_map = await gf_tagger_http.get_objs_with_tag(tag_name_str,
-						object_type_str,
-						p_log_fun);
-
-
-					const objects_with_tag_lst = resp_objs_with_tag_map["objects_with_tag_lst"];
+						const resp_objs_with_tag_map = await gf_tagger_http.get_objs_with_tag(tag_name_str,
+							object_type_str,
+							p_log_fun);
 
 
+						const objects_with_tag_lst = resp_objs_with_tag_map["objects_with_tag_lst"];
+						p_resolve_fun({objects_with_tag_lst});
 
-					break;
-			}
+						break;
+				}
+			});
 		}
 		
 		//---------------------------------------------------
 		
-		let pages_lst, pages_user_names_lst = fetch_pages();
+		const page_map = await fetch_pages() as { page_lst: Object[]; page_user_names_lst: string[] };
+		const page_lst = page_map.page_lst;
+		const page_user_names_lst = page_map.page_user_names_lst;
 		
-		
-		
-		view_page(pages_lst, pages_user_names_lst);
+		view_page([page_lst], [page_user_names_lst]);
 
-
-		const gf_host_str = gf_core_utils.get_current_host();
-		
 		//---------------------------------------------------
-		function view_page(p_pages_lst :any, p_pages_user_names_lst) {
+		function view_page(p_pages_lst :any[][], p_pages_user_names_lst: string[][]) {
 
 			var img_i_int = 0;
 			$.each(p_pages_lst, (p_i, p_page_lst)=>{
@@ -155,7 +155,6 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 							}
 
 							//----------------
-
 
 							// IMPORTANT!! - only declare load_new_page() as complete after all its
 							//               images complete loading

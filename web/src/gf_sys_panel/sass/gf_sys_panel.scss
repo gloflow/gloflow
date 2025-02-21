@@ -3,174 +3,161 @@
 	top             : -44px;
 	width           : 100%;
 	height          : 44px;
-	background-color: #d7d7d7;
+	// background-color: #b5b5b5;
+
+	#view_handle {
+		position: absolute;
+		top:      43px;
+		left:     49%;
+		width:    50px;
+		height:   50px;
+		background-color: #606060;
+		border-radius: 0px 0px 6px 6px;
+    	overflow: hidden;
+
+		img {
+			width: 60%;
+    		height: 60%;
+		}
+	}
+	#background {
+		width: 100%;
+	}
+	#controls {
+		position: relative;
+	
+		// IMPORTANT!! - centers the div horizontaly on the sys_panel
+		margin: auto;
+	
+		width: 462px;
+		height: 44px;
+
+		// LANDING_PAGE_BTN
+		#landing_page_btn {
+			position: fixed;
+			width:    71px;
+			height:   44px;
+			cursor:   pointer;
+
+			overflow: hidden;
+    		border-radius: 0px 0px 6px 6px;
+
+			img {
+				height: 100%;
+			}
+		}
+
+		// IMAGES_APP_BTN
+		#images_app_btn {
+			position: absolute;
+			top:      0px;
+			left:     79px;
+			width:    185px;
+			height:   44px;
+
+			background-color: rgb(57, 158, 208);
+			color:            white;
+			cursor:           pointer;
+			font-size:        18px;
+
+			filter: saturate(1.5);
+			border-radius: 0px 0px 6px 6px;
+
+			a {
+				color:           inherit; // anchor tags have to explicitly inherit the color
+				text-decoration: none;
+				letter-spacing:  1px;
+			}
+
+			&:hover {
+				background-color: white;
+				color           : black;
+			}
+		}
+
+		// DOMAINS_APP_BTN
+		#domains_app_btn {
+			position:         absolute;
+			top:              0px;
+			left:             272px;
+			width:            92px;
+			height:           44px;
+			background-color: rgb(171, 60, 60);
+			color:            white;
+			cursor:           pointer;
+			font-size:        14px;
+
+			filter: saturate(0.5);
+			border-radius: 0px 0px 6px 6px;
+
+			a {
+				color:           inherit; // anchor tags have to explicitly inherit the color
+				text-decoration: none;
+				letter-spacing: 1px;
+			}
+
+			&:hover {
+				background-color: white;
+				color:            black;
+			}
+		}
+
+		// BOOKMARKS_APP_BTN
+		#bookmarks_app_btn {
+			position: absolute;
+			top:      0px;
+			left:     372px;
+			width:    37px;
+			height:   44px;
+
+			background-color: rgb(37, 172, 48);
+			color:     white;
+			cursor:    pointer;
+			font-size: 14px;
+
+			filter: saturate(0.5);
+			border-radius: 0px 0px 6px 6px;
+
+			a {
+				color:           inherit; // anchor tags have to explicitly inherit the color
+				text-decoration: none;
+				letter-spacing:  1px;
+			}
+
+			&:hover {
+				background-color: white;
+				color:            black;
+			}
+		}
+	}
+
+	#auth_me {
+		position: absolute;
+		top:    0px;
+		left:   417px;
+		width:  44px;
+		height: 44px;
+		text-align:       center;
+		background-color: rgb(198, 196, 195);
+		cursor:           pointer;
+		color:            gray;
+
+		#current_user {
+			width: 44px;
+			height: 40px;
+			padding-top: 14px;
+
+			img {
+				width: 100%;
+				position: relative;
+				top: -14px;
+			}
+		}
+
+		overflow: hidden;
+		border-radius: 0px 0px 6px 6px;
+
+	}
 }
 
-#sys_panel #view_handle {
-	position: absolute;
-	top:      43px;
-	left:     49%;
-	width:    50px;
-	height:   50px;
-	background-color: rgb(255, 203, 203);
-	/* right: 16px; */
-}
-
-#sys_panel #view_handle img {
-	height: 100%;
-}
-
-/*------------------------------------------------------------------*/
-#sys_panel #background {
-    width: 100%;
-}
-
-#sys_panel #controls {
-    position: relative;
-
-    /* IMPORTANT!! - centers the div horizontaly on the sys_panel */
-    margin: auto;
-
-    width: 462px;
-    height: 44px;
-}
-
-/*------------------------------------------------------------------*/
-/* LANDING_PAGE_BTN */
-#sys_panel #controls #landing_page_btn {
-	position: fixed;
-	width:    71px;
-	height:   44px;
-	cursor:   pointer;
-}
-
-#sys_panel #controls #landing_page_btn img {
-	height: 100%;
-}
-
-/*------------------------------------------------------------------*/
-/* IMAGES_APP_BTN */
-#sys_panel #images_app_btn {
-	position   : absolute;
-	top        : 0px;
-	left       : 79px;
-	width      : 185px;
-	padding-top: 7px;
-	height          : 37px;
-	text-align      : center;
-	background-color: rgb(57, 158, 208);
-	color           : white;
-	cursor          : pointer;
-	font-size       : 25px;
-}
-#sys_panel #images_app_btn:hover {
-	background-color: white;
-	color           : black;
-}
-
-#sys_panel #images_app_btn a {
-	color          : inherit; /*anchor tags have to explicitly inherit the color*/
-	text-decoration: none;
-}
-
-/*------------------------------------------------------------------*/
-/* DOMAINS_APP_BTN */
-#sys_panel #domains_app_btn {
-	position   : absolute;
-	top        : 0px;
-	left       : 272px;
-	width      : 92px;
-	padding-top     : 13px;
-	height          : 31px;
-	text-align      : center;
-	background-color: rgb(171, 60, 60);
-	color           : white;
-	cursor          : pointer;
-	font-size       : 16px;
-}
-#sys_panel #domains_app_btn:hover {
-	background-color: white;
-	color           : black;
-}
-
-#sys_panel #domains_app_btn a {
-	color          : inherit; /*anchor tags have to explicitly inherit the color*/
-	text-decoration: none;
-}
-
-/*------------------------------------------------------------------*/
-/* BOOKMARKS_APP_BTN */
-#sys_panel #bookmarks_app_btn {
-	position   : absolute;
-	top        : 0px;
-	left       : 372px;
-	width      : 37px;
-	padding-top     : 13px;
-	height          : 31px;
-	text-align      : center;
-	background-color: rgb(37, 172, 48);
-	color           : white;
-	cursor          : pointer;
-	font-size       : 18px;
-}
-#sys_panel #bookmarks_app_btn:hover {
-	background-color: white;
-	color           : black;
-}
-
-#sys_panel #bookmarks_app_btn a {
-	color          : inherit; /*anchor tags have to explicitly inherit the color*/
-	text-decoration: none;
-}
-
-/*------------------------------------------------------------------*/
-#sys_panel #auth_me {
-	position: absolute;
-	top:    0px;
-	left:   417px;
-	width:  44px;
-	height: 44px;
-	text-align:       center;
-	background-color: rgb(198, 196, 195);
-	cursor:           pointer;
-	color:            gray;
-}
-
-#sys_panel #auth_me #current_user {
-	width: 44px;
-	height: 40px;
-	padding-top: 14px;
-}
-
-#sys_panel #auth_me #current_user img {
-	width: 100%;
-    position: relative;
-    top: -14px;
-}
-
-/*------------------------------------------------------------------*/
-/* PUBLISHER_APP_BTN */
-/*
-#sys_panel #publisher_app_btn {
-	position   : absolute;
-	top        : 0px;
-	left       : 271px;
-	width      : 115px;
-	padding-top     : 10px;
-	height          : 34px;
-	text-align      : center;
-	background-color: rgb(233, 122, 60);
-	color           : white;
-	cursor          : pointer;
-	font-size       : 20px;
-}
-#sys_panel #publisher_app_btn:hover {
-	background-color: white;
-	color           : black;
-}
-
-#sys_panel #publisher_app_btn a {
-	color          : inherit;
-	text-decoration: none;
-}
-*/
+//------------------------------------------------------------------

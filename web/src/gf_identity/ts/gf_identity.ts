@@ -107,6 +107,12 @@ export async function init(p_notifications_meta_map :any,
 
     const logged_in_bool = await p_http_api_map["general"]["logged_in"]();
 
+    $("#identity #login").append(`
+        <div id="login_icon" class="gf_center">
+            <img src="https://assetspub.gloflow.com/assets/gf_sys/gf_user_icon.svg"></img>
+        </div>    
+    `);
+
     $("#identity #login").on("click", async function(p_e) {
         
         const opened_bool = $("#identity").has("#auth_pick_dialog").length > 0;
@@ -152,7 +158,7 @@ async function auth_method_pick(p_logged_in_bool :boolean) {
         const container = $(`
         <div id="auth_pick_dialog">
 
-            <div id="auth0_pick_dialog">
+            <div id="auth0_pick_dialog" class="gf_center">
                 <div id="label">classic</div>
             </div>
 
@@ -161,7 +167,7 @@ async function auth_method_pick(p_logged_in_bool :boolean) {
                     <div id="icon">
                         <img src="https://gloflow.com/images/static/assets/gf_metamask_icon.svg"></img>
                     </div>
-                    <div id="descr">metamask browser wallet</div>
+                    <div id="descr">metamask wallet</div>
                 </div>
             </div>
 

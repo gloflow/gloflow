@@ -101,6 +101,7 @@ export async function init(p_events_enabled_bool :boolean,
 
 	//---------------------
 	// GF_IMAGES_INIT
+
 	gf_images.init(logged_in_bool,
 		p_plugin_callbacks_map,
 		current_host_str,

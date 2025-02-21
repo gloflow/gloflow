@@ -2,7 +2,7 @@
 
 $images_background_color: #3b7c9c1c; // #3b7c9c1c;
 $images_color:            rgb(59, 124, 156);
-$images_btn_height: 55px;
+$images_btn_height: 44px;
 
 #images {
 	position: absolute;
@@ -10,8 +10,8 @@ $images_btn_height: 55px;
     left: 0px;
 
 	width:  409px;
-    height: 10000px;
-    background-color: $images_background_color;
+    // height: 10000px;
+    // background-color: $images_background_color;
 
 	//------------------------------------------------------------
 	// IMAGES BUTTON
@@ -20,50 +20,53 @@ $images_btn_height: 55px;
 		top:              0px;
 		width:            409px;
 		height:           $images_btn_height;
-		// padding-top:      17px;
-		// text-align:       center;
 		font-size:        16px;
+		
 		color:            white;
 		background-color: $images_color; // rgb(59, 124, 156);
 	
 		z-index:         2;
-		// display:         block;
 		text-decoration: none;
 		transition:      background-color 0.2s ease;
 		cursor:          pointer;
-	}
-	#images_flows_button:hover {
-		cursor:           pointer;
-		background-color: gray;
-		color:            black;
-	}
-	#images_flows_button:active {
-		background-color: white;
-		color:            black;
+
+		filter: saturate(1.5);
+		// box-shadow: 1px 1px 10px grey;
+		border-radius: 0px 0px 6px 6px;
+
+		&:hover {
+			cursor:           pointer;
+			background-color: gray;
+			color:            black;
+		}
+		&:active {
+			background-color: white;
+			color:            black;
+		}
 	}
 
 	//------------------------------------------------------------
 	// FEATURED_IMAGES
 	#featured_images_0 {
 		position: absolute;
-		top:      65px;
-		left: 9px;
+		top:      52px;
 	}
 
 	#featured_images_1 {
 		position: absolute;
-		top:      65px;
-		left:     209px; /*200px;*/
+		top:      52px;
+		left:     209px;
 	}
 
 	//------------------------------------------------------------
 }
 
 //------------------------------------------------------------
+/*
 // IMAGE_INFO
 
 #images {
-
+	
 	.image_info {
 		width: 190px;
 		background-color: $images_color; // rgb(59, 124, 156);
@@ -73,11 +76,13 @@ $images_btn_height: 55px;
 
 		box-shadow: 1px 1px 10px grey;
 
+		border-radius: 6px 6px 6px 6px;
+    	overflow: hidden;
+
 		.image {
 			width:    190px;
 			position: relative;
 			background-color: inherit;
-			/*padding-bottom: 4px;*/
 
 			.image_resource {
 				width:  100%;
@@ -95,8 +100,12 @@ $images_btn_height: 55px;
 		
 			font-size:  10px;
 			text-align: center;
-			word-wrap:  break-word; /*make all text display even if really long string*/
+			word-wrap:  break-word; // make all text display even if really long string
 			color:      rgb(255,255,255);
+		}
+
+		.tags_container:emtpy {
+			height: 0px;
 		}
 
 		.origin_page_url {
@@ -107,14 +116,14 @@ $images_btn_height: 55px;
 			width           : 171px;
 			padding-left    : 9px;
 			padding-right   : 10px;
-		}
 
-		.origin_page_url a {
-			font-size      : 12px;
-			font-weight    : bold;
-			color          : white;
-			text-decoration: none;
-			word-wrap      : break-word;
+			a {
+				font-size      : 12px;
+				font-weight    : bold;
+				color          : white;
+				text-decoration: none;
+				word-wrap      : break-word;
+			}
 		}
 
 		.owner_user_name {
@@ -135,9 +144,11 @@ $images_btn_height: 55px;
 			color:       white;
 			cursor:      pointer;
 			// padding-top: 5px;
-		}
-		.creation_time:hover {
-			font-weight: bold;
+
+			&:hover {
+				font-weight: bold;
+			}
 		}
 	}
 }
+*/

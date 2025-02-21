@@ -1,7 +1,7 @@
 
 
 
-$domains_btn_height: 55px;
+$domains_btn_height: 44px;
 
 #domains {
 	position: absolute;
@@ -26,17 +26,23 @@ $domains_btn_height: 55px;
         text-decoration: none;
         transition: background-color 0.2s ease;
         cursor: pointer;
-    }
-    #domains_browser_button:hover {
-        cursor          : pointer;
-        background-color: gray;
-        color           : black;
-    }
-    #domains_browser_button:active {
-        cursor          : pointer;
-        opacity         : 1.0;  
-        background-color: white;
-        color           : black;
+
+        filter: saturate(0.5);
+        // box-shadow: 1px 1px 10px grey;
+        border-radius: 0px 0px 6px 6px;
+
+        &:hover {
+            cursor          : pointer;
+            background-color: gray;
+            color           : black;
+        }
+
+        &:active {
+            cursor          : pointer;
+            opacity         : 1.0;  
+            background-color: white;
+            color           : black;
+        }
     }
 
     //------------------------------------------------------------

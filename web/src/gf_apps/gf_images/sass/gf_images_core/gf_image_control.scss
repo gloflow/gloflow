@@ -1,131 +1,191 @@
-// small_view
-.gf_image.small_view {
-	position:         relative;
-	float:            left;
-	text-align:       center;
-	background-color: rgb(59, 124, 156);
-	margin:           6px;
-	width:            200px;
-	box-shadow:       1px 1px 10px grey;
+
+$images_color: #393939; // rgb(59, 124, 156);
+
+//------------------------------------------------------------
+.gf_image {
+	position: relative;
+	width: 200px;
+	background-color: $images_color;
+	padding-bottom:   5px;
+	margin-bottom:    10px;
+
+	box-shadow: 1px 1px 10px grey;
+
+	border-radius: 6px 6px 6px 6px;
+	overflow: hidden;
 	
-	padding-bottom: 10px;
-
-	/*
-	elements are not initially visible, but instead become visible
-	after masonry finishes their layout
-	*/
-	visibility: false; 
-}
-
-// medium_view
-.gf_image.medium_view {
-	position:         relative;
-	float:            left;
-	text-align:       center;
-	background-color: rgb(59, 124, 156);
-	margin:           6px;
-	width:            400px;
-	box-shadow:       1px 1px 10px grey;
 	
-	/*
-	elements are not initially visible, but instead become visible
-	after masonry finishes their layout
-	*/
-	visibility: false; 
-}
 
-.gf_image .image_title {
-	background-color: rgb(59, 124, 156);
-
-	padding-left:   5px;
-	padding-top:    6px;
-	padding-bottom: 6px;
-	padding-right:  4px;
-
-	font-size:  10px;
-	text-align: center;
-	word-wrap:  break-word; // make all text display even if really long string
-	color:      rgb(255,255,255);
-}
-
-.gf_image img {
-	width : 100%;
-    cursor: pointer;
-}
-
-/* --------------------------------------- */
-/* TAGS_CONTAINER */
-.gf_image .tags_container {
-	height: 20px;
-	font-size: 12px;
-    padding-left: 5px;
-
-	.gf_image_tag {
-		margin-left: 4px;
+	.image_title {
+		background-color: $images_color;
+	
+		padding-left:   5px;
+		padding-top:    6px;
+		padding-bottom: 6px;
+		padding-right:  4px;
+	
+		font-size:  10px;
+		text-align: center;
+		word-wrap:  break-word; // make all text display even if really long string
+		color:      rgb(255,255,255);
 	}
 
-	a {
-		text-decoration: none;
+	.image_container {
+		position: relative;
+
+		img {
+			width : 100%;
+			cursor: pointer;
+		}
+
+		// TAGS
+		.tags {
+
+			font-size: 12px;
+			padding-left: 5px;
+			
+			position: absolute;
+			bottom: 9px;
+			right: 2px;
+			
+			display: flex;
+			flex-direction: column;
+			gap: 3px;
+			
+			.tag {
+
+				// fit the tag div to the text
+				display: inline-block;
+  				width: auto;
+
+				margin-left: 4px;
+
+				background-color: #343434;
+				border-radius: 6px;
+				padding:2px 5px 2px 5px;
+
+				text-decoration: none;
+				color: white;
+			}
+
+			&:empty {
+				height: 0px;
+			}
+		}
+	}
+
+	.owner_user_name {
+		font-size: 10px;
 		color: white;
+		text-align: center;
+		padding-top: 3px;
+	
+		span {
+			font-weight: bold;
+			font-size: 12px;
+		}
+	}
+
+	.origin_page_url {
+		padding-top     : 1px;
+		padding-bottom  : 6px;
+		text-align      : center;
+		background-color: $images_color;
+		width           : 171px;
+		padding-left    : 9px;
+		padding-right   : 10px;
+		
+		a {
+			font-size: 12px;
+			color: white;
+			text-decoration: none;
+
+
+			word-wrap: break-word;
+
+			/*
+			width: 30px;           // Set desired width
+			overflow: hidden;       // Hide overflow
+			white-space: nowrap;    // Prevent wrapping
+			text-overflow: ellipsis; // Add ellipsis (...)
+			*/
+		}
+	}
+
+	.creation_time {
+		text-align:  center;
+		font-size:        12px;
+		background-color: $images_color;
+		color:            white;
+		padding-top:      5px;
+		cursor: pointer;
+
+		.full_creation_date {
+			background-color: $images_color;
+			color:            white;
+			padding-top:      3px;
+			padding-bottom:   3px;
+			margin-top:       4px;
+		}
+	}
+
+	.small_view {
+		position:         relative;
+		float:            left;
+		text-align:       center;
+		background-color: $images_color;
+		margin:           6px;
+		width:            200px;
+		box-shadow:       1px 1px 10px grey;
+		
+		padding-bottom: 10px;
+	
+		/*
+		elements are not initially visible, but instead become visible
+		after masonry finishes their layout
+		*/
+		visibility: false;
+
+		.origin_page_url {
+			padding-top:      6px;
+			padding-bottom:   6px;
+			text-align:       center;
+			background-color: $images_color;
+			width:            180px;
+			padding-left:     9px;
+			padding-right:    11px;
+			margin-top:       -4px;
+		}
+	}
+
+	.medium_view {
+		position:         relative;
+		float:            left;
+		text-align:       center;
+		background-color: rgb(59, 124, 156);
+		margin:           6px;
+		width:            400px;
+		box-shadow:       1px 1px 10px grey;
+		
+		/*
+		elements are not initially visible, but instead become visible
+		after masonry finishes their layout
+		*/
+		visibility: false;
+
+		.origin_page_url {
+			padding-top:      6px;
+			padding-bottom:   6px;
+			text-align:       center;
+			background-color: #669ab3;
+			width:            380px;
+			padding-left:     9px;
+			padding-right:    11px;
+			margin-top:       4px;
+		
+			padding-bottom: 10px;
+		}
 	}
 }
 
-/* --------------------------------------- */
-.gf_image .owner_user_name {
-	font-size: 10px;
-    color: white;
-	text-align: center;
-	padding-top: 3px;
-}
-.gf_image .owner_user_name span {
-	font-weight: bold;
-    font-size: 12px;
-}
-
-// small_view
-.gf_image.small_view .origin_page_url {
-	padding-top:      6px;
-    padding-bottom:   6px;
-    text-align:       center;
-    background-color: #669ab3;
-    width:            180px;
-    padding-left:     9px;
-    padding-right:    11px;
-	margin-top:       -4px;
-}
-
-// medium_view
-.gf_image.medium_view .origin_page_url {
-	padding-top:      6px;
-    padding-bottom:   6px;
-    text-align:       center;
-    background-color: #669ab3;
-    width:            380px;
-    padding-left:     9px;
-    padding-right:    11px;
-	margin-top:       4px;
-
-	padding-bottom: 10px;
-}
-
-.gf_image .origin_page_url a {
-	font-size: 12px;
-    color: white;
-    text-decoration: none;
-    word-wrap: break-word;
-}
-.gf_image .creation_time {
-	font-size:        10px;
-	background-color: rgb(59, 124, 156);
-    color:            white;
-    padding-top:      5px;
-	cursor: pointer;
-}
-
-.gf_image .creation_time .full_creation_date {
-	background-color: #3992bd;
-    color:            #1d3d4c;
-    padding-top:      3px;
-    padding-bottom:   3px;
-    margin-top:       4px;
-}
+//------------------------------------------------------------
