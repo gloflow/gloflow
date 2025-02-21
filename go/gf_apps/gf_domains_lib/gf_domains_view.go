@@ -27,13 +27,13 @@ import (
 
 //--------------------------------------------------
 
-func domainsBrowserRenderTemplate(p_domains_lst []GFdomain,
-	p_tmpl                   *template.Template,
-	p_subtemplates_names_lst []string,
-	p_resp                   io.Writer,
-	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
+func domainsBrowserRenderTemplate(pDomainsLst []GFdomain,
+	pTmpl                 *template.Template,
+	pSubtemplatesNamesLst []string,
+	pResp                 io.Writer,
+	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	sys_release_info := gf_core.GetSysReleseInfo(pRuntimeSys)
+	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 
 	type tmpl_data struct {
 		Domains_lst      []GFdomain
@@ -41,14 +41,14 @@ func domainsBrowserRenderTemplate(p_domains_lst []GFdomain,
 		Is_subtmpl_def   func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 
-	err := p_tmpl.Execute(p_resp,tmpl_data{
-		Domains_lst:      p_domains_lst,
-		Sys_release_info: sys_release_info,
+	err := pTmpl.Execute(pResp, tmpl_data{
+		Domains_lst:      pDomainsLst,
+		Sys_release_info: sysReleaseInfo,
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
-		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
-			for _, n := range p_subtemplates_names_lst {
-				if n == p_subtemplate_name_str {
+		Is_subtmpl_def: func(pSubtemplateNameStr string) bool {
+			for _, n := range pSubtemplatesNamesLst {
+				if n == pSubtemplateNameStr {
 					return true
 				}
 			}
@@ -59,11 +59,11 @@ func domainsBrowserRenderTemplate(p_domains_lst []GFdomain,
 	})
 
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to render the domains_browser template",
+		gfErr := gf_core.ErrorCreate("failed to render the domains_browser template",
             "template_render_error",
-            map[string]interface{}{"domains_lst": p_domains_lst,},
+            map[string]interface{}{"domains_lst": pDomainsLst,},
             err, "gf_domains_lib", pRuntimeSys)
-		return gf_err
+		return gfErr
 	}
 
 	return nil
