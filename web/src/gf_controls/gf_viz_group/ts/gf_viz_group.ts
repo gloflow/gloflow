@@ -160,12 +160,7 @@ export function init(p_elements_lst,
         
         //-------------------------------------------------
     
-    //------------------------
-    // CSS
-    // position seeker on the far right
-    $(seeker__container_element).css("position", "absolute");
-    $(seeker__container_element).css("right",    "0px");
-    $(seeker__container_element).css("z-index",  "10");
+
     $(container).append(seeker__container_element);
 
     //------------------------
@@ -212,9 +207,7 @@ async function reset_with_new_start_pages(p_container,
     p_element_create_fun,
     p_elements_page_get_fun) {
 
-
     console.log("RESET", p_packery_instance)
-
 
     //------------------------
     // REMOVE_ALL - items currently displayed by viz_group, 
@@ -242,25 +235,19 @@ async function load_new_pages(p_page_index_int :number,
     p_elements_page_get_fun,
     p_pages_to_load_int :number=1) {
 
-
     // fetch page
     const elements_lst = await p_elements_page_get_fun(p_page_index_int, p_pages_to_load_int);
     
-
-
     console.log("AAPPPPENDING NEW...", `elements #${elements_lst.length}`)
-
 
     // create elements
     for (let element_map of elements_lst) {
-
 
         const element = p_element_create_fun(element_map);
         $(element).addClass("item");
         $(element).css("visibility", "hidden"); // initially elements are not visible until they load
 
         $(p_pages_container).append(element);
-
 
         $(element).find('img').on('load', ()=>{
 

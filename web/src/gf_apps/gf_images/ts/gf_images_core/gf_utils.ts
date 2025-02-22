@@ -146,13 +146,13 @@ export function init_tagging(p_image_id_str,
 		the backend template has a div with class "tags_container" in the image container only if the image
 		has tags. if it does not, the .tags_container div is not created
 		*/
-		if ($(p_image_container_element).find(".tags_container").length == 0) {
-			$(p_image_container_element).append("<div class='tags_container'></div>");
+		if ($(p_image_container_element).find(".tags").length == 0) {
+			$(p_image_container_element).append("<div class='tags'></div>");
 		}
 
 		$(p_image_container_element)
-			.find(".tags_container")
-			.append(`<a class='gf_image_tag' href='/v1/tags/objects?tag=${p_tag_str}&otype=image'>#${p_tag_str}</a>`)
+			.find(".tags")
+			.append(`<a class='tag' href='/v1/tags/objects?tag=${p_tag_str}&otype=image'>#${p_tag_str}</a>`)
 	}
 
 	//-------------------------------------------------

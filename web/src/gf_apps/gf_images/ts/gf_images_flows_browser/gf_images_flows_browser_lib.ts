@@ -157,6 +157,9 @@ export async function init(p_plugin_callbacks_map :any,
 			logged_in_bool,
 			events_enabled_bool,
 			p_plugin_callbacks_map,
+
+			// p_on_viz_change_fun
+			()=>$('#gf_images_flow_container #items').masonry(),
 			p_log_fun);
 	});
 
@@ -335,6 +338,9 @@ function init_upload(p_flow_name_str :string,
 
 					//---------------------------------------------------
 					p_plugin_callbacks_map,
+
+					// p_on_viz_change_fun
+					()=>$(`#gf_images_flow_container #items`).masonry(),
 					p_log_fun);
 
 				//------------------

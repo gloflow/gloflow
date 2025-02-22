@@ -1,120 +1,208 @@
+
+$small_view_view_type_background:  #505050;
+$medium_view_view_type_background: #707070;
+$seek_view_type_background:        #9b9b9b;
+
+//----------------------------------------------------------
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	margin:      0;
 
-	/* turn off horizontal scroll */
+	// turn off horizontal scroll
 	max-width:  100%;
     overflow-x: hidden;
 
 	background-color: #d7d7d7;
 }
 
-/*----------------------------------------------------------*/
+//----------------------------------------------------------
 #gf_images_flow_container {
 	margin-left: 6px;
 	position:    relative;
 	top:         100px;
 	left:        18px;
+
+	#flow_info {
+		position: fixed;
+		top: 55px;
+		left: 24px;
+		background-color: #f7f7f7;
+		padding-left: 9px;
+		padding-top: 4px;
+		padding-bottom: 6px;
+		padding-right: 11px;
+		font-size: 21px;
+		z-index: 10;
+
+		border-radius: 8px;
+	}
 }
 
-#gf_images_flow_container #flow_info {
-	position: fixed;
-    top: 55px;
-    left: 0px;
-    background-color: #f7f7f7;
-    padding-left: 9px;
-    padding-top: 7px;
-    padding-bottom: 6px;
-    padding-right: 11px;
-    font-size: 21px;
-	z-index: 10;
-}
-
-/*----------------------------------------------------------*/
-/*TAGS*/
-
-.tags_container {
-	font-size: 10px;
-    color: white;
-    text-decoration: none;
-}
-
-/*----------------------------------------------------------*/
-/*VIEW_TYPE_PICKER*/
+//----------------------------------------------------------
+// VIEW_TYPE_PICKER
 
 #view_type_picker {
 	position: fixed;
 	right:    -21px;
-	top:      176px;
+	top:      120px;
 	width:    50px;
 	height:   50px;
+
+	#masonry_small_images {
+		position:         absolute;
+		top:              0px;
+		right:            21px;
+		width:            40px;
+		height:           40px;
+		background-color: $small_view_view_type_background;
+		cursor:           pointer;
+
+		border-radius: 6px 0px 0px 6px;
+
+		img {
+			width:    65%;
+			position: absolute;
+			top:      9px;
+			left:     7px;
+			user-select: none;
+		}
+
+		&:hover {
+			background-color: white;
+		}
+
+		#tooltip {
+			position: absolute;
+			width: 72px;
+			font-size: 10px;
+			background-color: $small_view_view_type_background;
+			left: -92px;
+			top: 10px;
+			border-radius: 6px;
+			padding: 5px 3px 5px 8px;
+			color: white;
+
+			opacity: 0.0; // initially hidden
+		}
+	}
+
+	#masonry_medium_images {
+		position:         absolute;
+		top:              45px;
+		right:            21px;
+		width:            40px;
+		height:           40px;
+		background-color: $medium_view_view_type_background;
+		cursor:           pointer;
+
+		border-radius: 6px 0px 0px 6px;
+
+		img {
+			width:    65%;
+			position: absolute;
+			top:      4px;
+			left:     6px;
+			user-select: none;
+		}
+
+		&:hover {
+			background-color: white;
+		}
+
+		#tooltip {
+			position: absolute;
+			width: 82px;
+			font-size: 10px;
+			background-color: $medium_view_view_type_background;
+			left: -101px;
+			top: 10px;
+			border-radius: 6px;
+			padding: 5px 3px 5px 8px;
+			color: white;
+
+			opacity: 0.0; // initially hidden
+		}
+	}
+
+	#viz_group_medium_images {
+		position:         absolute;
+		top:              90px;
+		right:            21px;
+		width:            40px;
+		height:           40px;
+		background-color: $seek_view_type_background;
+		cursor:           pointer;
+
+		border-radius: 6px 0px 0px 6px;
+
+		img {
+			width:    83%;
+			position: absolute;
+			top:      10px;
+			left:     6px;
+			user-select: none;
+		}
+
+		&:hover {
+			background-color: white;
+		}
+
+		#tooltip {
+			position: absolute;
+			width: 51px;
+			font-size: 10px;
+			background-color: $seek_view_type_background;
+			left: -70px;
+			top: 10px;
+			border-radius: 6px;
+			padding: 5px 3px 5px 8px;
+			color: white;
+
+			opacity: 0.0; // initially hidden
+		}
+	}
 }
 
-#view_type_picker #masonry_small_images {
-	position: absolute;
-	top: 0px;
-	width:            20px;
-	height:           20px;
-	background-color: rgb(225, 35, 35);
-	cursor:           pointer;
-}
+//----------------------------------------------------------
+// CURRENT_PAGE_DISPLAY
 
-#view_type_picker #masonry_medium_images {
-	position: absolute;
-	top: 30px;
-	width:            20px;
-	height:           20px;
-	background-color: rgb(158, 73, 73);
-	cursor:           pointer;
-}
-
-#view_type_picker #viz_group_medium_images {
-	position: absolute;
-	top: 60px;
-	width:            20px;
-	height:           20px;
-	background-color: rgb(77, 36, 36);
-	cursor:           pointer;
-}
-
-/*----------------------------------------------------------*/
-/*CURRENT_PAGE_DISPLAY*/
 #current_pages_display {
 	position: fixed;
-    background-color: #f7f7f7;
     right: 0px;
-    bottom: 90px;
+    top: 250px;
     font-size: 12px;
     padding-top: 7px;
-    padding-left: 10px;
     padding-bottom: 9px;
     margin-top: 6px;
+
+	#title {
+		font-size: 10px;
+	}
+	#start_page {
+		font-size: 12px;
+		background-color: #a4a4a4;
+		padding-top: 5px;
+		padding-bottom: 4px;
+		text-align: center;
+		border-radius: 6px 0px 0px 6px;
+	}
+	#end_page {
+		font-size: 12px;
+		background-color: #a4a4a4;
+		padding-top: 5px;
+		padding-bottom: 4px;
+		text-align: center;
+		border-radius: 6px 0px 0px 6px;
+	}
+	#to {
+		font-size: 10px;
+		left: 5px;
+		text-align: center;
+	}
 }
 
-#current_pages_display #start_page {
-	font-size: 20px;
-    background-color: #cccccc;
-    padding-left: 7px;
-    padding-top: 5px;
-    padding-bottom: 4px;
-}
-
-#current_pages_display #end_page {
-	font-size: 20px;
-    background-color: #a4a4a4;
-    padding-left: 7px;
-    padding-top: 5px;
-    padding-bottom: 4px;
-}
-
-#current_pages_display #to {
-	left: 5px;
-    text-align: center;
-    padding-right: 5px;
-}
-
-/*-------------------------------------------*/
-/* CODE_EDITOR */
+//----------------------------------------------------------
+// CODE_EDITOR
 
 #code_editor {
 	position: fixed;
@@ -127,9 +215,11 @@ body {
     font-size: 10px;
     text-align: center;
     padding-top: 4px;
-}
-#code_editor a {
-    text-decoration: none;
+
+	a {
+		text-decoration: none;
+	}
+	
 }
 
-/*-------------------------------------------*/
+//----------------------------------------------------------

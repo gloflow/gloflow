@@ -47,12 +47,13 @@ export function create(p_image_id_str :string,
 	p_flows_names_lst               :string[],
 	p_current_image_view_type_str   :string,
 
-	p_events_enabled_bool	   :boolean,
-	p_host_str				   :string,
-	p_on_img_load_fun :any,
-	p_on_img_load_error_fun :any,
+	p_events_enabled_bool	:boolean,
+	p_host_str				:string,
+	p_on_img_load_fun       :Function,
+	p_on_img_load_error_fun :Function,
 	p_plugin_callbacks_map  :any,
-	p_log_fun               :any) {
+	p_on_viz_change_fun     :Function, // called on any visual change of the image control
+	p_log_fun               :Function) {
 
 	var img_url_str;
 	switch (p_current_image_view_type_str) {
@@ -66,7 +67,7 @@ export function create(p_image_id_str :string,
 
 	// IMPORTANT!! - '.gf_image' is initially invisible, and is faded into view when its image is fully loaded
 	//               and its positioned appropriatelly in the Masonry grid
-	const image_container = $(`
+	const image_element = $(`
 		<div class="gf_image item ${p_current_image_view_type_str}"
 			data-img_id="${p_image_id_str}"
 			data-img_format="${p_img__format_str}"
@@ -74,18 +75,17 @@ export function create(p_image_id_str :string,
 			style='visibility:hidden;'>
 
 			<div class="image_title">${p_img__title_str}</div>
-
 			<div class="image_container">
 				<img src="${img_url_str}" data-img_thumb_medium_url="${p_img__thumbnail_medium_url_str}"></img>
-				
 				<div class="tags"></div>
 			</div>
-			
-			<div class="origin_page_url">
-				<a href="${p_img__origin_page_url_str}" target="_blank">${p_img__origin_page_url_str}</a>
+			<div class="extra_info">
+				<div class="origin_page_url">
+					<a href="${p_img__origin_page_url_str}" target="_blank">${p_img__origin_page_url_str}</a>
+				</div>
+				<div class="creation_time">${p_img__creation_unix_time_f}</div>
+				<div class="owner_user_name">by <span>${p_img__owner_user_name_str}</span></div>
 			</div>
-			<div class="creation_time">${p_img__creation_unix_time_f}</div>
-			<div class="owner_user_name">by <span>${p_img__owner_user_name_str}</span></div>
 		</div>`)[0];
 
 	//------------------
@@ -95,13 +95,13 @@ export function create(p_image_id_str :string,
 	//         the image hasnt been added yet.
 	//         move it to be after $("#gf_images_flow_container").append(image);
 
-	$(image_container).find('img').on('load', ()=>{
+	$(image_element).find('img').on('load', ()=>{
 
 		//------------------
 		// MASONRY_RELOAD
 		// var masonry = $('#gf_images_flow_container #items').data('masonry');
 		// masonry.once('layoutComplete', (p_event, p_laid_out_items)=>{
-		// 	$(image_container).css('visibility', 'visible');
+		// 	$(image_element).css('visibility', 'visible');
 		// });
 		
 		
@@ -115,18 +115,18 @@ export function create(p_image_id_str :string,
 		//           this origin_page_url is set to empty string. check for that and remove it.
 		// FIX!! - potentially on the server/template-generation side this div node shouldnt get included
 		//         at all for images that dont have an origin_page_url.
-		if ($(image_container).find(".origin_page_url a").text().trim() == "") {
-			$(image_container).find(".origin_page_url").remove();
+		if ($(image_element).find(".origin_page_url a").text().trim() == "") {
+			$(image_element).find(".origin_page_url").remove();
 		}
 		
 		//------------------
 		// VIEWER_INIT
 
 		if (p_img__format_str == 'gif') {
-			gf_gifs_viewer.init(image_container, p_image_id_str, p_flows_names_lst, p_log_fun);
+			gf_gifs_viewer.init(image_element, p_image_id_str, p_flows_names_lst, p_log_fun);
 		} else {
 			
-			gf_image_viewer.init(image_container,
+			gf_image_viewer.init(image_element,
 				p_image_id_str,
 				p_img__thumbnail_medium_url_str,
 				p_img__thumbnail_large_url_str,
@@ -141,33 +141,43 @@ export function create(p_image_id_str :string,
 		//------------------
 		// IMAGE_PALLETE
 
-		init_pallete(image_container);
+		init_pallete(image_element);
 
 		//------------------
 		
-		p_on_img_load_fun(image_container);
+		p_on_img_load_fun(image_element);
 	});
 
 	// IMAGE_FAILED_TO_LOAD
-	$(image_container).find('img').on('error', function() {
+	$(image_element).find('img').on('error', function() {
 
 		p_log_fun("ERROR", "IMAGE_FAILED_TO_LOAD ----------");
 		p_on_img_load_error_fun();
 	});
 
 	//------------------
-	gf_utils.init_image_date(image_container, p_log_fun);
+	const title_element = $(image_element).find(".image_title")[0];
+	shorten_title(title_element);
 
+	gf_utils.init_image_date(image_element, p_log_fun);
+
+	//------------------
+	const origin_page_url_link = $(image_element).find(".origin_page_url a")[0];
+	shorten_origin_page_url(origin_page_url_link);
+
+	init_extra_info(image_element, ()=>p_on_viz_change_fun());
+
+	
 	//------------------
 	// TAGS
 	if (p_img__tags_lst != null && p_img__tags_lst.length > 0) {
 		$.each(p_img__tags_lst, function(p_i, p_tag_str) {
 			const tag = $(
 				`<a class='tag' href='/v1/tags/objects?tag=${p_tag_str}&otype=image'>
-					${p_tag_str}
+					#${p_tag_str}
 				</a>`);
 
-			$(image_container).find('.tags').append(tag);
+			$(image_element).find('.tags').append(tag);
 		});
 	}
 
@@ -228,7 +238,7 @@ export function create(p_image_id_str :string,
 	}
 
 	//---------------------------------------------------
-	return image_container;
+	return image_element;
 }
 
 //---------------------------------------------------
@@ -244,9 +254,10 @@ export function init_existing_dom(p_image_element :any,
 	p_gf_host_str     :string,
 	p_logged_in_bool  :boolean,
 
-	p_events_enabled_bool :boolean,
+	p_events_enabled_bool  :boolean,
 	p_plugin_callbacks_map :any,
-	p_log_fun :any) {
+	p_on_viz_change_fun    :Function, // called on any visual change of the image control
+	p_log_fun              :Function) {
 
     gf_utils.init_image_date(p_image_element, p_log_fun);
 
@@ -261,10 +272,11 @@ export function init_existing_dom(p_image_element :any,
 	//----------------
 	// TITLE
 	// CLEANUP - if the title is empty, remove the title element
-	const title_element = $(p_image_element).find(".image_title");
+	const title_element = $(p_image_element).find(".image_title")[0];
 	if ($(title_element).text().trim() == "") {
 		$(title_element).remove();
 	}
+	shorten_title(title_element);
 
 	//----------------
 	// CLEANUP - for images that dont come from some origin page (direct uploads, or generated images)
@@ -276,15 +288,10 @@ export function init_existing_dom(p_image_element :any,
 	}
 
 	//----------------
-	// LINK_TEXT_SHORTEN - if the link text (not its href) is too long, dont display it completely in the UI
-	//                     because it clutters the UI too much.
-	//                     instead shorten it at its cutoff length and append "..."
-	const link_text_cutoff_threshold_int = 50;
-	if ($(origin_page_url_link).text().length > link_text_cutoff_threshold_int) {
-		const old_link_text_str = $(origin_page_url_link).text();
-		const new_link_text_str = `${old_link_text_str.slice(0, link_text_cutoff_threshold_int)}...`;
-		$(origin_page_url_link).text(new_link_text_str);
-	}
+	shorten_origin_page_url(origin_page_url_link);
+
+
+	init_extra_info(p_image_element, ()=>p_on_viz_change_fun());
 
 	//----------------
 	// GIFS
@@ -325,4 +332,55 @@ export function init_existing_dom(p_image_element :any,
 	}
 
 	//----------------
+}
+
+//---------------------------------------------------
+function init_extra_info(p_image_element :HTMLElement,
+	p_on_visibility_change_fun :Function) {
+
+	const btn = $(`
+		<div class="extra_info_btn gf_center">+</div>	
+	`);
+
+	$(p_image_element).find(".image_container").append(btn);
+
+
+	$(btn).on('click', ()=>{
+		$(p_image_element).find('.extra_info').toggle();
+		$(btn).text($(btn).text() == '+' ? '-' : '+');
+
+		p_on_visibility_change_fun();
+	});
+
+	$(p_image_element).on('mouseenter', ()=>{
+		$(btn).css("visibility", "visible");
+	});
+	$(p_image_element).on('mouseleave', ()=>{
+		$(btn).css("visibility", "hidden");
+	});
+}
+
+//---------------------------------------------------
+function shorten_title(p_title :HTMLElement) {
+	const cutoff_threshold_int = 25;
+	if ($(p_title).text().length > cutoff_threshold_int) {
+		const old_text_str = $(p_title).text();
+		const new_text_str = `${old_text_str.slice(0, cutoff_threshold_int)}...`;
+		$(p_title).text(new_text_str);
+	}
+}
+
+//---------------------------------------------------
+function shorten_origin_page_url(p_origin_page_url_link :HTMLElement) {
+
+	//----------------
+	// LINK_TEXT_SHORTEN - if the link text (not its href) is too long, dont display it completely in the UI
+	//                     because it clutters the UI too much.
+	//                     instead shorten it at its cutoff length and append "..."
+	const cutoff_threshold_int = 40;
+	if ($(p_origin_page_url_link).text().length > cutoff_threshold_int) {
+		const old_text_str = $(p_origin_page_url_link).text();
+		const new_text_str = `${old_text_str.slice(0, cutoff_threshold_int)}...`;
+		$(p_origin_page_url_link).text(new_text_str);
+	}
 }

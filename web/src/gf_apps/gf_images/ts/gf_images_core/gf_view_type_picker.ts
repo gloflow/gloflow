@@ -35,6 +35,20 @@ export function get_current_view_type() {
 	return image_view_type_str;
 }
 
+function init_tooltip(p_view_type_btn_element :HTMLElement) {
+
+	$(p_view_type_btn_element).on('mouseenter', function() {
+		$(p_view_type_btn_element).find('#tooltip').animate({
+			opacity: 1
+		}, 200);
+	});
+	$(p_view_type_btn_element).on('mouseleave', function() {
+		$(p_view_type_btn_element).find('#tooltip').animate({
+			opacity: 0
+		}, 200);
+	});
+}
+
 //---------------------------------------------------
 // view_type_picker - picks the type of view that is used to display images in a flow.
 //                    default is masonry with 6 columns.
@@ -48,17 +62,32 @@ export function init(p_flow_name_str :string,
 	const container = $(`
 		<div id='view_type_picker'>
 			<div id='masonry_small_images'>
+				<img src="https://gf-phoenix.s3.amazonaws.com/assets/gf_images_flows_browser/gf_small_view_icon.svg"></img>
+				<div id="tooltip">small size view</div>
 			</div>
 			<div id='masonry_medium_images'>
+				<img src="https://gf-phoenix.s3.amazonaws.com/assets/gf_images_flows_browser/gf_medium_view_icon.svg"></img>
+				<div id="tooltip">medium size view</div>
 			</div>
 
 			<div id='viz_group_medium_images'>
+				<img src="https://gf-phoenix.s3.amazonaws.com/assets/gf_images_flows_browser/gf_seek_view_icon.svg"></img>
+				<div id="tooltip">seek view</div>
 			</div>
 		</div>`);
 	$('body').append(container);
 
-	// MASONRY_SMALL_IMAGES
-	$(container).find('#masonry_small_images').on('click', function() {
+	const small_view_btn  = $(container).find('#masonry_small_images')[0];
+	const medium_view_btn = $(container).find('#masonry_medium_images')[0];
+	const seek_view_btn   = $(container).find('#viz_group_medium_images')[0];
+
+	init_tooltip(small_view_btn);
+	init_tooltip(medium_view_btn);
+	init_tooltip(seek_view_btn);
+	
+
+	// SMALL_VIEW
+	$(small_view_btn).on('click', function() {
 
 		// FIX!! - global var. handle this differently;
 		image_view_type_str = "small_view";
@@ -96,8 +125,8 @@ export function init(p_flow_name_str :string,
 		//---------------------
 	});
 
-	// MASONRY_MEDIUM_IMAGES
-	$(container).find('#masonry_medium_images').on('click', function() {
+	// MEDIUM_VIEW
+	$(medium_view_btn).on('click', function() {
 
 		// FIX!! - global var. handle this differently;
 		image_view_type_str = "medium_view";
@@ -106,6 +135,7 @@ export function init(p_flow_name_str :string,
 
 			const img_e                    = $(p_e).find('img');
 			const img_thumb_medium_url_str = $(img_e).data('img_thumb_medium_url');
+
 			$(img_e).attr("src", img_thumb_medium_url_str);
 
 			// switch gf_image class to "medium_view"
@@ -134,8 +164,8 @@ export function init(p_flow_name_str :string,
 		//---------------------
 	});
 
-	// VIZ_GROUP
-	$(container).find('#viz_group_medium_images').on('click', function() {
+	// SEEK_VIEW
+	$(seek_view_btn).on('click', function() {
 
 		// FIX!! - global var. handle this differently;
 		image_view_type_str = "viz_group_medium_view";

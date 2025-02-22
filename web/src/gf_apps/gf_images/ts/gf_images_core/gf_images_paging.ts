@@ -177,6 +177,9 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 
 						//---------------------------------------------------
 						p_plugin_callbacks_map,
+
+						// p_on_viz_change_fun
+						()=>$("#gf_images_flow_container #items").masonry(),
 						p_log_fun);
 				});
 			});
@@ -191,7 +194,7 @@ export function init__current_pages_display(p_log_fun) {
 
 	const container = $(`
 		<div id="current_pages_display"'>
-			<div id="title">pages:</div>
+			<div id="title">pages</div>
 			<div id="start_page">1</div>
 			<div id="to">to</div>
 			<div id="end_page">6</div>

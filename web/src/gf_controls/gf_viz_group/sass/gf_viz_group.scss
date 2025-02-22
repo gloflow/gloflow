@@ -1,0 +1,95 @@
+
+
+#seeker_container {
+
+    position:    fixed;
+    top:         100px;
+    right:       74px;
+    user-select: none;
+    height:      658px;
+    width:       100px;
+    
+    z-index:     10;
+    
+    #seeker_bar {
+        position: absolute;
+        right: 0px;
+
+        #seek_range_bar {
+            position: absolute;
+            right: 0px;
+            background-color: #b5b5b5;
+
+            canvas {
+
+            }
+        }
+
+        #seek_range_bar_button {
+
+            position: absolute;
+            top:      0px;
+            right:    0px;
+            width:    160px;
+
+            #button {
+                position: absolute;
+                top:   0px;
+                right: 0px;
+                background-color: gray;
+                cursor: pointer;
+
+                width:  60px;
+                height: 200px;
+
+                border-radius: 6px;
+                user-select: none;
+                opacity: 0.7;
+
+                #button_symbol {
+                    position: absolute;
+                    width:  37px;
+                    height: 18px;
+                    left:   12px;
+                    user-select: none;
+
+                    img {
+                        width:100%;
+                        user-select: none;
+                    }
+                }
+            }
+
+            #button_seek_info {
+                position: absolute;
+                width:    50px;
+                height:   50px;
+                top:      75px;
+                
+                background-color: orange;
+                pointer-events:   none;
+                text-align:       center;
+                
+                font-size: 14px;
+                border-radius: 6px 0px 0px 6px;
+
+                #seek_page_index {
+                    position: relative;
+                    // top:      12px;
+                    height:   14px;
+                }
+            }
+
+            #page_preview {
+
+            }
+        }
+    }
+
+    #conn {
+        position: absolute;
+        height: 1px;
+        background-color: black;
+        top: 0px;
+    }
+}

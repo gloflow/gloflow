@@ -6,7 +6,7 @@ $images_color: #393939; // rgb(59, 124, 156);
 	position: relative;
 	width: 200px;
 	background-color: $images_color;
-	padding-bottom:   5px;
+	// padding-bottom:   5px;
 	margin-bottom:    10px;
 
 	box-shadow: 1px 1px 10px grey;
@@ -14,7 +14,61 @@ $images_color: #393939; // rgb(59, 124, 156);
 	border-radius: 6px 6px 6px 6px;
 	overflow: hidden;
 	
+	.extra_info_btn {
+		color: white;
+		background-color: #555555;
+    	width: 25px;
+    	height: 25px;
+		border-radius: 6px;
+
+		position: absolute;
+		bottom: 5px;
+		left: 45%;
+		user-select: none;
+
+		cursor: pointer;
+
+		// initially the button is hidden
+		visibility: hidden;
+
+		&:hover {
+			background-color: gray;
+		}
+	}
+
+	.extra_info {
+		display: none; // initially extra info is hidden
+
+		.owner_user_name {
+			font-size: 10px;
+			color: white;
+			text-align: center;
+			padding-top: 3px;
+			padding-bottom: 4px;
+		
+			span {
+				font-weight: bold;
+				font-size: 12px;
+			}
+		}
+
+		.creation_time {
+			text-align:  center;
+			font-size:        12px;
+			background-color: $images_color;
+			color:            white;
+			padding-top:      5px;
+			cursor: pointer;
 	
+			.full_creation_date {
+				background-color: $images_color;
+				color:            white;
+				padding-top:      3px;
+				padding-bottom:   3px;
+				margin-top:       4px;
+			}
+		}
+	}
 
 	.image_title {
 		background-color: $images_color;
@@ -28,6 +82,12 @@ $images_color: #393939; // rgb(59, 124, 156);
 		text-align: center;
 		word-wrap:  break-word; // make all text display even if really long string
 		color:      rgb(255,255,255);
+
+		&:empty {
+			height: 0px;
+			padding-top:    0px;
+			padding-bottom: 0px;
+		}
 	}
 
 	.image_container {
@@ -36,6 +96,11 @@ $images_color: #393939; // rgb(59, 124, 156);
 		img {
 			width : 100%;
 			cursor: pointer;
+
+			// IMPORTANT!! - Removes extra space below the image,
+			//		caused by default inline display behavior of images,
+			//		which aligns them with the baseline of surrounding text.
+			display: block;
 		}
 
 		// TAGS
@@ -45,8 +110,8 @@ $images_color: #393939; // rgb(59, 124, 156);
 			padding-left: 5px;
 			
 			position: absolute;
-			bottom: 9px;
-			right: 2px;
+			bottom: 5px;
+			right: 5px;
 			
 			display: flex;
 			flex-direction: column;
@@ -57,6 +122,7 @@ $images_color: #393939; // rgb(59, 124, 156);
 				// fit the tag div to the text
 				display: inline-block;
   				width: auto;
+				align-self: flex-start; // Prevent flex parent from stretching child
 
 				margin-left: 4px;
 
@@ -64,6 +130,7 @@ $images_color: #393939; // rgb(59, 124, 156);
 				border-radius: 6px;
 				padding:2px 5px 2px 5px;
 
+				text-align: center;
 				text-decoration: none;
 				color: white;
 			}
@@ -74,17 +141,7 @@ $images_color: #393939; // rgb(59, 124, 156);
 		}
 	}
 
-	.owner_user_name {
-		font-size: 10px;
-		color: white;
-		text-align: center;
-		padding-top: 3px;
 	
-		span {
-			font-weight: bold;
-			font-size: 12px;
-		}
-	}
 
 	.origin_page_url {
 		padding-top     : 1px;
@@ -102,90 +159,70 @@ $images_color: #393939; // rgb(59, 124, 156);
 
 
 			word-wrap: break-word;
-
-			/*
-			width: 30px;           // Set desired width
-			overflow: hidden;       // Hide overflow
-			white-space: nowrap;    // Prevent wrapping
-			text-overflow: ellipsis; // Add ellipsis (...)
-			*/
 		}
 	}
 
-	.creation_time {
-		text-align:  center;
-		font-size:        12px;
-		background-color: $images_color;
-		color:            white;
-		padding-top:      5px;
-		cursor: pointer;
-
-		.full_creation_date {
-			background-color: $images_color;
-			color:            white;
-			padding-top:      3px;
-			padding-bottom:   3px;
-			margin-top:       4px;
-		}
-	}
-
-	.small_view {
-		position:         relative;
-		float:            left;
-		text-align:       center;
-		background-color: $images_color;
-		margin:           6px;
-		width:            200px;
-		box-shadow:       1px 1px 10px grey;
-		
-		padding-bottom: 10px;
 	
-		/*
-		elements are not initially visible, but instead become visible
-		after masonry finishes their layout
-		*/
-		visibility: false;
 
-		.origin_page_url {
-			padding-top:      6px;
-			padding-bottom:   6px;
-			text-align:       center;
-			background-color: $images_color;
-			width:            180px;
-			padding-left:     9px;
-			padding-right:    11px;
-			margin-top:       -4px;
-		}
-	}
+	
+}
 
-	.medium_view {
-		position:         relative;
-		float:            left;
+.gf_image.medium_view {
+	position:         relative;
+	float:            left;
+	text-align:       center;
+	background-color: rgb(59, 124, 156);
+	margin:           6px;
+	width:            400px;
+	box-shadow:       1px 1px 10px grey;
+	
+	/*
+	elements are not initially visible, but instead become visible
+	after masonry finishes their layout
+	*/
+	visibility: false;
+
+	.origin_page_url {
+		padding-top:      6px;
+		padding-bottom:   6px;
 		text-align:       center;
-		background-color: rgb(59, 124, 156);
-		margin:           6px;
-		width:            400px;
-		box-shadow:       1px 1px 10px grey;
-		
-		/*
-		elements are not initially visible, but instead become visible
-		after masonry finishes their layout
-		*/
-		visibility: false;
-
-		.origin_page_url {
-			padding-top:      6px;
-			padding-bottom:   6px;
-			text-align:       center;
-			background-color: #669ab3;
-			width:            380px;
-			padding-left:     9px;
-			padding-right:    11px;
-			margin-top:       4px;
-		
-			padding-bottom: 10px;
-		}
+		background-color: #669ab3;
+		width:            380px;
+		padding-left:     9px;
+		padding-right:    11px;
+		margin-top:       4px;
+	
+		padding-bottom: 10px;
 	}
 }
+
+/*
+.small_view {
+	position:         relative;
+	float:            left;
+	text-align:       center;
+	background-color: $images_color;
+	margin:           6px;
+	width:            200px;
+	box-shadow:       1px 1px 10px grey;
+	
+	// padding-bottom: 10px;
+
+	// elements are not initially visible, but instead become visible
+	// after masonry finishes their layout	
+	visibility: false;
+
+	.origin_page_url {
+		padding-top:      6px;
+		padding-bottom:   6px;
+		text-align:       center;
+		background-color: $images_color;
+		width:            180px;
+		padding-left:     9px;
+		padding-right:    11px;
+		margin-top:       -4px;
+	}
+}
+*/
 
 //------------------------------------------------------------
