@@ -29,6 +29,54 @@ import * as gf_images_share  from "./gf_images_share";
 import * as gf_tagger_http   from "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_http";
 
 //---------------------------------------------------
+export function init(p_initial_page_int :number,
+	p_flow_name_str        :string,
+	p_view_type_str        :string,
+	p_logged_in_bool	   :boolean,
+	p_events_enabled_bool  :boolean,
+	p_plugin_callbacks_map :any,
+	p_on_page_load_fun     :Function,
+	p_log_fun              :Function) {
+
+	var current_page_int = p_initial_page_int;
+	var page_is_loading_bool = false;
+	
+	window.onscroll = async ()=>{
+
+		// $(document).height() - height of the HTML document
+		// window.innerHeight   - Height (in pixels) of the browser window viewport including, if rendered, the horizontal scrollbar
+		if (window.scrollY >= $(document).height() - (window.innerHeight+50)) {
+			
+			// IMPORTANT!! - only load 1 page at a time
+			if (!page_is_loading_bool) {
+				
+				page_is_loading_bool = true;
+				p_log_fun("INFO", `current_page_int - ${current_page_int}`);
+
+				const page_source_ref_str  = p_flow_name_str;
+				const page_source_type_str = "flow"
+
+
+				await load_new_page(page_source_ref_str,
+					page_source_type_str,
+					current_page_int,
+					p_view_type_str,
+					p_logged_in_bool,
+					p_events_enabled_bool,
+					p_plugin_callbacks_map,
+					p_log_fun);
+				
+				current_page_int += 1;
+				page_is_loading_bool = false;
+
+				// callback
+				p_on_page_load_fun(current_page_int);
+			}
+		}
+	};
+}
+
+//---------------------------------------------------
 export async function load_new_page(p_page_source_ref_str :string, // p_flow_name_str :string,
 	p_page_source_type_str        :string,
 	p_current_page_int            :number,
@@ -187,18 +235,4 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 
 		//---------------------------------------------------
 	});
-}
-
-//---------------------------------------------------
-export function init__current_pages_display(p_log_fun) {
-
-	const container = $(`
-		<div id="current_pages_display"'>
-			<div id="title">pages</div>
-			<div id="start_page">1</div>
-			<div id="to">to</div>
-			<div id="end_page">6</div>
-		</div>`);
-
-	return container;
 }

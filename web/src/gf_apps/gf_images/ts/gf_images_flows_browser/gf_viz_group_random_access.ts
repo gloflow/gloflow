@@ -17,34 +17,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../../d/jquery.d.ts" />
+///<reference path="../../../../d/jquery.d.ts" />
 
 import * as gf_viz_group from "./gf_viz_group";
 
 //-------------------------------------------------
-export function init(p_first_page_int :number,
-	p_last_page_int :number,
-	p_viz_props     :gf_viz_group.GF_viz_props,
-	p_viz_group_reset_fun) {
-
-
-
-	const container_element = init_seeker_bar(p_first_page_int,
-		p_last_page_int,
-		p_viz_props,
-		p_viz_group_reset_fun);
-	return container_element;
-
-
+interface GF_viz_props {
+	readonly seeker_container_height_px :number;
+	readonly seeker_container_width_px  :number;
+	readonly seeker_range_bar_height    :number;
+	readonly bar_canvas_ctx :CanvasRenderingContext2D;
 }
 
 //-------------------------------------------------
-function init_seeker_bar(p_first_page_int :number,
-	p_last_page_int :number,
-	p_viz_props     :gf_viz_group.GF_viz_props,
-	p_viz_group_reset_fun) {
+export function init(p_parent_container :HTMLElement,
+	p_first_page_int      :number,
+	p_last_page_int       :number,
+	p_viz_group_reset_fun :Function) {
 
-	const asset_uri__gf_bar_handle_btn_str = p_viz_props.assets_uris_map["gf_bar_handle_btn"];
+	const asset_uri__gf_bar_handle_btn_str = "https://gf-phoenix.s3.amazonaws.com/assets/gf_images_flows_browser/gf_bar_handle_btn.svg"
 
 	const container_element = $(`
 		<div id='seeker_container'>
@@ -73,131 +64,56 @@ function init_seeker_bar(p_first_page_int :number,
 				</div>
 			</div>
 			<div id='conn'></div>
-		</div>`);
-
-	const seeker_bar_element              = $(container_element).find('#seeker_bar');
-	const seeker_range_bar_element        = $(container_element).find('#seek_range_bar');
-	// const seeker_range_bar_button_element = $(container_element).find('#seek_range_bar_button');
-	const seek_page_index                 = $(container_element).find('#seek_page_index');
-	const page_preview_element = $(container_element).find('#page_preview');
-
-
-	$(seeker_bar_element).on('mouseenter', (p_event)=>{
-		// $(seeker_range_bar_button_element).css('visibility', 'visible');
-	});
-	$(seeker_bar_element).on('mouseleave', (p_event)=>{
-		// $(seeker_range_bar_button_element).css('visibility', 'hidden');
-	});
-
-
-	//------------
-	// CSS
-	//------------
-
-	// SEEKER CONTAINER
-	$(container_element).css('height',   `${p_viz_props.seeker_container_height_px}px`);
-	$(container_element).css('width',    `${p_viz_props.seeker_container_width_px}px`);	
-	$(seeker_bar_element).css("width",    `${p_viz_props.seeker_bar_width_px}px`);
-	$(seeker_bar_element).css("height",   `${p_viz_props.seeker_container_height_px}px`);
+		</div>`)[0];
+	$(p_parent_container).append(container_element);
 	
-	//------------
-	// SEEKER RANGER BAR
+	const seeker_bar_container_element = $(container_element).find("#seek_range_bar")[0];
+	const seeker_bar_button_element    = $(container_element).find("#seek_range_bar_button")[0];
 
-	// DIMENSIONS
-	$(seeker_range_bar_element).css("width", `${p_viz_props.seeker_range_bar_width}px`);
-	$(seeker_range_bar_element).css("height", `${p_viz_props.seeker_range_bar_height}px`);
-	
-	//------------
-	// seek_page_index
-	$(seek_page_index).css("left", `${($(seek_page_index).width() - $(seek_page_index).width())/2}px`);
+	const bar_canvas_ctx = init_range_bar_canvas(seeker_bar_container_element);
 
-	//------------
+	const viz_props :GF_viz_props = {
+		seeker_container_height_px: container_element.getBoundingClientRect().height,
+		seeker_container_width_px:  container_element.getBoundingClientRect().width,
+		seeker_range_bar_height:    seeker_bar_container_element.getBoundingClientRect().height,         
+		bar_canvas_ctx:             bar_canvas_ctx,
+	}
 
-	const seeker_bar_container_element = $(container_element).find("#seek_range_bar");
-	init_range_bar_background_canvas(p_first_page_int,
-		p_last_page_int,
-		seeker_bar_container_element);
-
-	const seeker_bar_button_element = $(container_element).find("#seek_range_bar_button");
 	init_seeking(seeker_bar_button_element,
 		container_element,
 		p_first_page_int,
 		p_last_page_int,
 		p_viz_group_reset_fun,
-		p_viz_props);
-
-	//------------
+		viz_props);
 
 	return container_element;
 }
 
 //-------------------------------------------------
-function init_seeking(p_seeker_bar_button_element,
-	p_container_root,
+function init_seeking(p_seeker_bar_button_element :HTMLElement,
+	p_container_root      :HTMLElement,
 	p_seek_start_page_int :number,
 	p_seek_end_page_int   :number,
-	p_viz_group_reset_fun,
-	p_viz_props           :gf_viz_group.GF_viz_props) {
-
-	//------------
-	// DIMENSIONS
-
-	const button_width_px_int      = 60;
-	// const button_height_px_int     = 149;
-	const button_conn_width_px_int = 40;
-	// const button_info_width_px     = 60;
-	// const button_info_height_px    = 60;
-	const button_conn_right_px_int = 0;
-	// const button_seek_info_y_offset_int = 15;
-
-	//------------
+	p_viz_group_reset_fun :Function,
+	p_viz_props           :GF_viz_props) {
 	
-	const button           = $(p_seeker_bar_button_element).find("#button");
-	const button_symbol    = $(button).find('#button_symbol'); 
-	const button_seek_info = $(p_seeker_bar_button_element).find('#button_seek_info');
-	const conn             = $(p_container_root).find("#conn");
+	const button = $(p_seeker_bar_button_element).find("#button")[0];
+	const conn   = $(p_container_root).find("#conn")[0];
 
 	//------------------------------------------------------------
 	function init_button() {
 
-		
-
-		// $(button).css("width",    `${button_width_px_int}px`);
-		// $(button).css("height",   `${button_height_px_int}px`);
-		
-		
-		// $(button_symbol).css("top",      `${($(button).height()-$(button_symbol).height())/2}px`);
-		// $(button_symbol).css("left",     '12px');
-	
-
-		// the 'button' is on the left side of the 'conn'
-	  	// (positioned relative to the right edge)
-	  	const button_right_px = button_conn_right_px_int + button_conn_width_px_int;
-	  	$(button).css("right", `${button_right_px}px`);
-
-
-	  	// the 'button' is on the left side of the 'conn'
-	  	const button_seek_info_right_px = button_width_px_int + button_right_px;
-	  	$(button_seek_info).css("right", `${button_seek_info_right_px}px`);
-
-
-		$(button).on("mouseover", (p_event)=>{
-			$(button).css("opacity", '1');
-		});
-		
-		$(button).on("mouseout", (p_event)=>{
-			$(button).css("opacity", '0.7');
-		});
-
 		var seek_percentage_int :number;
 
-		const button_element           = $(p_seeker_bar_button_element).find("#button");
-		const button_seek_info_element = $(p_seeker_bar_button_element).find('#button_seek_info');
-		const seek_page_index_element  = $(p_seeker_bar_button_element).find("#seek_page_index");
+		const button_element           = $(p_seeker_bar_button_element).find("#button")[0];
+		const button_seek_info_element = $(p_seeker_bar_button_element).find('#button_seek_info')[0];
+		const seek_page_index_element  = $(p_seeker_bar_button_element).find("#seek_page_index")[0];
 		
+		var old_button_y_int :number; 
+
 		//-------------------------------------------------
-		function button__mousemove_handler_fun(p_initial_click_coord_int,
-			p_move_event) {
+		function button__mousemove_handler_fun(p_initial_click_coord_int :number,
+			p_move_event :any) {
 
 			// button relative coordinate of the move
 			// IMPORTANT!! - using pageY property of event instead of $(...).offset().top because pageY
@@ -205,10 +121,8 @@ function init_seeking(p_seeker_bar_button_element,
 			//               and we need that frequency to be high for smooth animation of the button.
 			const movement_delta = p_move_event.pageY - p_initial_click_coord_int;
 
-			// const old_button_y = $(button).offset().top; 
-			const button_new_y_int = movement_delta; // old_button_y + movement_delta;
-
-			console.log("-----", button_new_y_int, "init click coord", p_initial_click_coord_int)
+			
+			const button_new_y_int = old_button_y_int + movement_delta;
 
 			seek_percentage_int = handle_user_seek_event(p_seek_start_page_int,
 				p_seek_end_page_int,
@@ -219,20 +133,38 @@ function init_seeking(p_seeker_bar_button_element,
 				button_seek_info_element,
 				conn,
 				seek_page_index_element,
+				p_viz_props);
+		}
 
-				p_viz_props,
-				p_move_event);
+		//-------------------------------------------------
+		function get_btn_y_distance_to_bar(p_bar :HTMLElement, p_event :MouseEvent) {
+			const bar_rect         = p_bar.getBoundingClientRect();
+			const bar_global_y_int = bar_rect.top;
+
+			const mouse_y_relative_to_btn_int = p_event.offsetY;
+			const btn_global_y_int = p_event.clientY - mouse_y_relative_to_btn_int;
+			const y_distance_int   = btn_global_y_int - bar_global_y_int;
+			return y_distance_int;
 		}
 
 		//-------------------------------------------------
 		// MOUSEDOWN
-		$(button).on("mousedown", (p_event)=>{
-	  			
+
+		const bar = $(p_container_root).find("#seek_range_bar")[0];
+
+		$(button).on("mousedown", (p_event :JQueryEventObject)=>{
+			const mouse_event = p_event.originalEvent as MouseEvent;
+
+			
+			// get the Y-axis distance of the button top to the bar top, and memorize this as the old button position
+			const btn_y_distance_to_bar = get_btn_y_distance_to_bar(bar, mouse_event);
+			old_button_y_int = btn_y_distance_to_bar;
+			
+
 			// initial button relative coordinate where the user clicked
 			const initial_click_coord_int = p_event.pageY;
 
-			// when user clicks and holds on the scroll button, a mouse move event handler is added 
-			// to react to movement
+			// when user clicks and holds on the scroll button, a mouse move event handler is added to react to movement
 			$(button).on("mousemove", (p_move_event)=>{
 				
 				button__mousemove_handler_fun(initial_click_coord_int,
@@ -248,9 +180,7 @@ function init_seeking(p_seeker_bar_button_element,
 
 			//--------------
 			// IMPORTANT!! - since random seeking is potentially an expensive operation,
-			//               it is only initialized when the user lets go of the seek button
-			// FIX!! - how is the mousewheel seeking handled? (no mouse seeking? since it cant
-			//         be done on touch devices anyway)
+			//               it is only initialized when the user lets go of the seek button.
 			
 			await seek_to_new_value(seek_percentage_int,
 				p_seek_start_page_int,
@@ -258,28 +188,19 @@ function init_seeking(p_seeker_bar_button_element,
 				p_viz_group_reset_fun);
 
 			//--------------
+			
+			const conn_y = get_conn_y(conn, seek_percentage_int, p_viz_props);
+			mark_seeked_page_on_bar(conn_y,
+				p_viz_props);
 		});
 		$(button).on("mouseleave", (p_event)=>{
 
 			// cancel movement of the button if mouse leaves it
-			// $(button).off("mousemove");
+			$(button).off("mousemove");
 		});
 	}
 
 	//------------------------------------------------------------
-	function init_button_conn() {
-		
-		//------------
-		// CSS
-		$(conn).css('width', `${button_conn_width_px_int}px`);
-		$(conn).css('right', `${button_conn_right_px_int}px`); // p_seeker_range_bar_element.style.width;
-
-		//------------
-	}
-
-	//------------------------------------------------------------
-
-	init_button_conn();
 	init_button();
 }
 
@@ -287,18 +208,14 @@ function init_seeking(p_seeker_bar_button_element,
 // USER_SEEK_EVENT
 
 function handle_user_seek_event(p_seek_start_page_int :number,
-	p_seek_end_page_int   :number,
-	p_button_new_y_int    :number,
-
-	p_seek_range_bar_button,
-
-	p_button_element,
-	p_button_seek_info_element,
-	p_conn_element,
-	p_seek_page_index_element,
-
-	p_viz_props :gf_viz_group.GF_viz_props,
-	p_move_event) {
+	p_seek_end_page_int        :number,
+	p_button_new_y_int         :number,
+	p_seek_range_bar_button    :HTMLElement,
+	p_button_element           :HTMLElement,
+	p_button_seek_info_element :HTMLElement,
+	p_conn_element             :HTMLElement,
+	p_seek_page_index_element  :HTMLElement,
+	p_viz_props                :GF_viz_props) {
 	
 	const button_height_int = $(p_button_element).height();
 	
@@ -317,12 +234,9 @@ function handle_user_seek_event(p_seek_start_page_int :number,
 		//-----------
 		// CONNECTION POSITIONING
 		
-		// 'conn' has negligable height and so its positioning is different from the buttom itself
-		// 1. p_seeker_range_bar_height_px_int : 100 = x : seek_percentage
-		// 2. p_seeker_range_bar_height_px_int * seek_percentage = 100 * x
-		const conn_y = (seeker_range_bar_height_px_int * seek_percentage_int) / 100;
+		const conn_y = get_conn_y(p_conn_element, seek_percentage_int, p_viz_props);
 		$(p_conn_element).css("top", `${Math.floor(conn_y)}px`);
-		
+
 		//-----------
 		// GET_SEEK_PAGE_INDEX
 		const seek_page_index_int = get_seek_page_index(seek_percentage_int,
@@ -332,14 +246,8 @@ function handle_user_seek_event(p_seek_start_page_int :number,
 		//-----------
 
 		if (p_button_seek_info_element != null && p_seek_page_index_element != null) {
-
-			const button_seek_info_y_offset_int = $(p_button_seek_info_element).offset().top;
-
-			display_button_seek_info(p_button_seek_info_element,
-				p_seek_page_index_element,
-				seek_page_index_int,
-				p_button_new_y_int,
-				button_seek_info_y_offset_int);
+			display_button_seek_info(p_seek_page_index_element,
+				seek_page_index_int);
 		}
 		
 		return seek_percentage_int;
@@ -363,8 +271,7 @@ function handle_user_seek_event(p_seek_start_page_int :number,
 async function seek_to_new_value(p_seek_percentage_int :number,
 	p_seek_start_page_int :number,
 	p_seek_end_page_int   :number,
-
-	p_viz_group_reset_fun) {
+	p_viz_group_reset_fun :Function) {
 	
 	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
@@ -384,38 +291,36 @@ async function seek_to_new_value(p_seek_percentage_int :number,
 }
 
 //------------------------------------------------
+function mark_seeked_page_on_bar(p_conn_y_int :number,
+	p_viz_props :GF_viz_props) {
+	
+	const ctx = p_viz_props.bar_canvas_ctx;
+	ctx.rect(0, p_conn_y_int, 50, 1);
+	ctx.stroke();
+}
+
+//------------------------------------------------
 // UTILS
 //-------------------------------------------------
-function init_range_bar_background_canvas(p_first_page_int :number,
-	p_last_page_int :number,
-	p_container) {
+function init_range_bar_canvas(p_container :HTMLElement) :CanvasRenderingContext2D {
 		
 	const bar_width_int  = $(p_container).width();
 	const bar_height_int = $(p_container).height();
-	const pages_num_int  = Math.abs(p_last_page_int - p_first_page_int);
-	const page_single_height_px_int = Math.floor(bar_height_int/pages_num_int)
 
-	const canvas = <HTMLCanvasElement> $(p_container).find('#seek_range_bar_background')[0];
+	const canvas  = <HTMLCanvasElement> $(p_container).find('#seek_range_bar_background')[0];
 	canvas.width  = bar_width_int;
 	canvas.height = bar_height_int;
 	const ctx = canvas.getContext('2d');
 
 	// first check if the canvas 2d context was returned by the browser
 	if (ctx) {
-
 		ctx.fillStyle   = "yellow";
-		ctx.strokeStyle = "black";
-		for (var i=0;i<pages_num_int;i++) {
-
-			ctx.rect(0,
-				i*page_single_height_px_int,
-				bar_width_int,
-				page_single_height_px_int);
-
-			ctx.fill();
-			ctx.stroke();
-		}
+		ctx.strokeStyle = "#7c7c7c";
 	}
+	if (!ctx) {
+		throw new Error("Failed to get 2D context");
+	}
+	return ctx;
 }
 
 //------------------------------------------------
@@ -423,16 +328,10 @@ function init_range_bar_background_canvas(p_first_page_int :number,
 // p_seek_page_index - the index of the page that the user would seek to if he/she
 //                     initiated the seek (released the seek button)
 
-function display_button_seek_info(p_button_seek_info_element,
-	p_seek_page_index_element,
-	p_seek_page_index_int           :number,
-	p_button_new_y_int              :number,
-	p_button_seek_info_y_offset_int :number) { // how far from top of parent div container
-	// p_button_seek_info_draw_fun) {
+function display_button_seek_info(p_seek_page_index_element :HTMLElement,
+	p_seek_page_index_int :number) {
 	
 	$(p_seek_page_index_element).text(`${p_seek_page_index_int}`);
-	$(p_seek_page_index_element).css("left",
-		`${(p_button_seek_info_element.offsetWidth - p_seek_page_index_element.offsetWidth)/2}px`);
 }
 
 //------------------------------------------------
@@ -453,7 +352,7 @@ function get_seek_page_index(p_seek_percentage_int :number,
 }
 
 //------------------------------------------------------------
-function get_seek_percentage(p_button_element,
+function get_seek_percentage(p_button_element :HTMLElement,
 	p_seeker_range_bar_height_px :number,
 	p_btn_global_page_y_int      :number) :number {
 	
@@ -465,4 +364,21 @@ function get_seek_percentage(p_button_element,
 		(p_seeker_range_bar_height_px - $(p_button_element).height());
 
 	return seek_percentage_int;
+}
+
+//------------------------------------------------------------
+function get_conn_y(p_conn_element :HTMLElement,
+	p_seek_percentage_int :number,
+	p_viz_props :GF_viz_props) :number {
+	
+	const seeker_range_bar_height_px_int = p_viz_props.seeker_range_bar_height;
+
+	// 'conn' has negligable height and so its positioning is different from the buttom itself
+	// 1. p_seeker_range_bar_height_px_int : 100 = x : seek_percentage
+	// 2. p_seeker_range_bar_height_px_int * seek_percentage = 100 * x
+	const conn_y = (seeker_range_bar_height_px_int * p_seek_percentage_int) / 100;
+	$(p_conn_element).css("top", `${Math.floor(conn_y)}px`);
+
+	return conn_y;
+
 }

@@ -19,13 +19,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // ///<reference path="../../../../d/jquery.d.ts" />
 
-import * as gf_user_events  from "./../../../../gf_events/ts/gf_user_events";
-import * as gf_viz_group    from "./../../../../gf_controls/gf_viz_group/ts/gf_viz_group";
-import * as gf_gifs_viewer  from "./../../../../gf_core/ts/gf_gifs_viewer";
-import * as gf_image_viewer from "./gf_image_viewer";
-import * as gf_images_http  from "./gf_images_http";
-import * as gf_paging       from "./gf_images_paging";
-import * as gf_events       from "./gf_events";
+import * as gf_user_events  from "../../../../gf_events/ts/gf_user_events";
+import * as gf_gifs_viewer  from "../../../../gf_core/ts/gf_gifs_viewer";
+import * as gf_viz_group    from "./gf_viz_group";
+import * as gf_image_viewer from "../gf_images_core/gf_image_viewer";
+import * as gf_images_http  from "../gf_images_core/gf_images_http";
+// import * as gf_paging       from "../gf_images_core/gf_images_paging";
+import * as gf_events       from "../gf_images_core/gf_events";
 
 // FIX!! - remove this from global scope!!
 export var image_view_type_str = "small_view";
@@ -194,6 +194,7 @@ export function init(p_flow_name_str :string,
 			flow_pages_num_int,
 			current_page_int,
 
+			p_logged_in_bool,
 			p_events_enabled_bool,
 			p_host_str,
 			p_plugin_callbacks_map,
@@ -220,9 +221,9 @@ export function init(p_flow_name_str :string,
 
 //---------------------------------------------------
 function init__viz_group_view(p_flow_name_str :string,
-	p_flow_pages_num_int :number,
-	p_initial_page_int   :number,
-
+	p_flow_pages_num_int   :number,
+	p_initial_page_int     :number,
+	p_logged_in_bool	   :boolean,
 	p_events_enabled_bool  :boolean,
 	p_host_str             :string,
 	p_plugin_callbacks_map :any,
@@ -314,40 +315,32 @@ function init__viz_group_view(p_flow_name_str :string,
 	// this is empty because gf_viz_group wont append to parent itself,
 	// the container div is already present in the DOM
     const parent_id_str = "";
-    
-	const assets_uris_map = {
-        "gf_bar_handle_btn": "https://gloflow.com/images/static/assets/gf_bar_handle_btn.svg",
-    };
-
-	const viz_props :gf_viz_group.GF_viz_props = {
-        seeker_container_height_px: $(window).height(), // 500,
-        seeker_container_width_px:  100,
-        seeker_bar_width_px:        50, 
-        seeker_range_bar_width:     30,
-        seeker_range_bar_height:    500,
-        seeker_range_bar_color_str: "red",
-        assets_uris_map:            assets_uris_map,
-    }
+	
 
 
     const props :gf_viz_group.GF_props = {
 
-		// IDs
+		flow_name_str:           p_flow_name_str,
 		container_id_str:        id_str, 
 		parent_container_id_str: parent_id_str, 
 
         start_page_int:   0,
         end_page_int:     p_flow_pages_num_int,
         initial_page_int: p_initial_page_int,
-        assets_uris_map:  assets_uris_map,
-        viz_props:        viz_props,
+
+		image_view_type_str: current_image_view_type_str,
+		logged_in_bool:      p_logged_in_bool,     
+    	events_enabled_bool: p_events_enabled_bool,
+
+		plugin_callbacks_map: p_plugin_callbacks_map
     };
 
 	const seeker__container_element = gf_viz_group.init(initial_elements_lst,
 		props,
         element_create_fun,
         elements_page_get_fun,
-
+		p_log_fun,
+		
 		// the container already contains elements that are created and attached
 		// to the container, so we dont want to create any initially (only if paging is done).
 		false); // p_create_initial_elements_bool

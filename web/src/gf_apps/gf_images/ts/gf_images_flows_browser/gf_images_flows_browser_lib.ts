@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/jquery.timeago.d.ts" />
 
 import * as gf_time             from "./../../../../gf_core/ts/gf_time";
-
 import * as gf_core_utils       from "./../../../../gf_core/ts/gf_utils";
 import * as gf_image_upload     from "./../../../../gf_core/ts/gf_image_upload";
 import * as gf_user_events      from "./../../../../gf_events/ts/gf_user_events";
@@ -32,10 +31,11 @@ import * as gf_identity_http    from "./../../../../gf_identity/ts/gf_identity_h
 import * as gf_images_events    from "./../gf_images_core/gf_events";
 import * as gf_images_http      from "./../gf_images_core/gf_images_http";
 import * as gf_image_control    from "./../gf_images_core/gf_image_control";
-import * as gf_images_paging    from "../gf_images_core/gf_images_paging";
-import * as gf_view_type_picker from "./../gf_images_core/gf_view_type_picker";
-import * as gf_utils            from "../gf_images_core/gf_utils";
-import * as gf_flows_picker     from "./gf_flows_picker";
+import * as gf_images_paging    from "./../gf_images_core/gf_images_paging";
+import * as gf_utils            from "./../gf_images_core/gf_utils";
+import * as gf_view_type_picker from "./gf_view_type_picker";
+import * as gf_flows_picker        from "./gf_flows_picker";
+import * as gf_flows_browser_utils from "./gf_flows_browser_utils";
 
 //-------------------------------------------------
 declare var URLSearchParams;
@@ -166,7 +166,7 @@ export async function init(p_plugin_callbacks_map :any,
 	//---------------------
 	// CURRENT_PAGE_DISPLAY
 
-	const current_pages_display = gf_images_paging.init__current_pages_display(p_log_fun);
+	const current_pages_display = gf_flows_browser_utils.current_pages_display__init(p_log_fun);
 	$('body').append(current_pages_display);
 
 	//---------------------
@@ -182,9 +182,28 @@ export async function init(p_plugin_callbacks_map :any,
 	//------------------
 	// LOAD_PAGES_ON_SCROLL
 
-	var current_page_int = 6; // the few initial pages are already statically embedded in the document
-	$("#gf_images_flow_container").data("current_page", current_page_int); // used in other functions to inspect current page
+	var initial_page_int = 6; // the few initial pages are already statically embedded in the document
+	$("#gf_images_flow_container").data("current_page", initial_page_int); // used in other functions to inspect current page
 
+	var current_image_view_type_str = gf_view_type_picker.image_view_type_str;
+
+	gf_images_paging.init(initial_page_int,
+		flow_name_str,
+		current_image_view_type_str,
+		logged_in_bool,
+		events_enabled_bool,
+		p_plugin_callbacks_map,
+
+		// p_on_page_load_fun
+		(p_new_page_int :number)=>{
+
+			$("#gf_images_flow_container").data("current_page", p_new_page_int);
+
+			$(current_pages_display).find('#end_page').text(p_new_page_int);
+		},
+		p_log_fun);
+
+	/*
 	var page_is_loading_bool = false;
 
 	window.onscroll = async ()=>{
@@ -224,6 +243,7 @@ export async function init(p_plugin_callbacks_map :any,
 			}
 		}
 	};
+	*/
 
 	//------------------
 }
@@ -349,3 +369,5 @@ function init_upload(p_flow_name_str :string,
 
 		//-------------------------------------------------
 }
+
+

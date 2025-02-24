@@ -6,19 +6,24 @@
     top:         100px;
     right:       74px;
     user-select: none;
-    height:      658px;
+    height:      600px;
     width:       100px;
     
     z-index:     10;
     
     #seeker_bar {
         position: absolute;
-        right: 0px;
+        right:  0px;
+        height: 100%; // 500px;
+        width:  150px;
 
         #seek_range_bar {
             position: absolute;
-            right: 0px;
+            right:  0px;
+            width:  30px;
+            height: 100%; // 500px;
             background-color: #b5b5b5;
+            border-radius: 6px;
 
             canvas {
 
@@ -30,12 +35,14 @@
             position: absolute;
             top:      0px;
             right:    0px;
-            width:    160px;
+            width:    150px;
+            height:   200px;
+            z-index:  1;
 
             #button {
                 position: absolute;
                 top:   0px;
-                right: 0px;
+                right: 40px;
                 background-color: gray;
                 cursor: pointer;
 
@@ -44,14 +51,16 @@
 
                 border-radius: 6px;
                 user-select: none;
-                opacity: 0.7;
+                // opacity: 0.7;
 
                 #button_symbol {
                     position: absolute;
-                    width:  37px;
-                    height: 18px;
-                    left:   12px;
+                    width:  50px;
+                    height: 50px;
                     user-select: none;
+
+                    // prevent a child element from receiving any events and let its parent handle them instead
+                    pointer-events: none;
 
                     img {
                         width:100%;
@@ -89,7 +98,9 @@
     #conn {
         position: absolute;
         height: 1px;
+        width: 70px;
         background-color: black;
         top: 0px;
+        right: 0px;
     }
 }
