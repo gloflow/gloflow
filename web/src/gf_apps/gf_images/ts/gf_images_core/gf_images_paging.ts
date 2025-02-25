@@ -41,7 +41,8 @@ export function init(p_initial_page_int :number,
 	var current_page_int = p_initial_page_int;
 	var page_is_loading_bool = false;
 	
-	window.onscroll = async ()=>{
+	//---------------------------------------------------
+	const scroll_handler_fun = async ()=>{
 
 		// $(document).height() - height of the HTML document
 		// window.innerHeight   - Height (in pixels) of the browser window viewport including, if rendered, the horizontal scrollbar
@@ -57,14 +58,15 @@ export function init(p_initial_page_int :number,
 				const page_source_type_str = "flow"
 
 
-				await load_new_page(page_source_ref_str,
-					page_source_type_str,
+				await load_new_pages(page_source_ref_str,
 					current_page_int,
 					p_view_type_str,
 					p_logged_in_bool,
-					p_events_enabled_bool,
 					p_plugin_callbacks_map,
-					p_log_fun);
+					p_log_fun,
+					1,
+					page_source_type_str,
+					p_events_enabled_bool);
 				
 				current_page_int += 1;
 				page_is_loading_bool = false;
@@ -74,17 +76,22 @@ export function init(p_initial_page_int :number,
 			}
 		}
 	};
+
+	//---------------------------------------------------
+	window.onscroll = scroll_handler_fun;
+	return scroll_handler_fun;
 }
 
 //---------------------------------------------------
-export async function load_new_page(p_page_source_ref_str :string, // p_flow_name_str :string,
-	p_page_source_type_str        :string,
+export async function load_new_pages(p_page_source_ref_str :string, // p_flow_name_str :string,
 	p_current_page_int            :number,
 	p_current_image_view_type_str :string,
 	p_logged_in_bool              :boolean,
-	p_events_enabled_bool         :boolean,
-	p_plugin_callbacks_map :any,
-	p_log_fun :any) {
+	p_plugin_callbacks_map        :any,
+	p_log_fun                     :Function,
+	p_pages_num_int               :number  = 1,
+	p_page_source_type_str        :string  = "flow",
+	p_events_enabled_bool         :boolean = true) {
 
 	const gf_host_str = gf_core_utils.get_current_host();
 
@@ -101,12 +108,13 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 						const flow_name_str = p_page_source_ref_str;
 						const resp_pg_map = await gf_images_http.get_page(flow_name_str,
 							p_current_page_int,
+							p_pages_num_int,
 							p_log_fun);
 
-						const page_lst            = resp_pg_map["pages_lst"][0];
-						const page_user_names_lst = resp_pg_map["pages_user_names_lst"][0];
+						const pages_lst            = resp_pg_map["pages_lst"];
+						const pages_user_names_lst = resp_pg_map["pages_user_names_lst"];
 						
-						p_resolve_fun({page_lst, page_user_names_lst});
+						p_resolve_fun({pages_lst, pages_user_names_lst});
 						break;
 
 					// TAGS
@@ -130,16 +138,22 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 		
 		//---------------------------------------------------
 		
-		const page_map = await fetch_pages() as { page_lst: Object[]; page_user_names_lst: string[] };
-		const page_lst = page_map.page_lst;
-		const page_user_names_lst = page_map.page_user_names_lst;
+		const pages_map = await fetch_pages() as { pages_lst: Object[][]; pages_user_names_lst: string[][] };
+		const pages_lst = pages_map.pages_lst;
+		const pages_user_names_lst = pages_map.pages_user_names_lst;
 		
-		view_page([page_lst], [page_user_names_lst]);
+		view_page(pages_lst, pages_user_names_lst);
 
 		//---------------------------------------------------
 		function view_page(p_pages_lst :any[][], p_pages_user_names_lst: string[][]) {
 
+			console.log("VIEW PAGE...", p_pages_lst)
+
 			var img_i_int = 0;
+			var total_images_int = p_pages_lst.length*p_pages_lst[0].length;
+
+			console.log("total_images_int", total_images_int)
+
 			$.each(p_pages_lst, (p_i, p_page_lst)=>{
 				$.each(p_page_lst, (p_j, p_e)=>{
 
@@ -157,7 +171,7 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 					const img__owner_user_name_str      = p_pages_user_names_lst[p_i][p_j];
 
 					// IMAGE_CONTROL
-					gf_image_control.create(img__id_str,
+					const image_element = gf_image_control.create(img__id_str,
 						img__format_str,
 						img__creation_unix_time_f,
 						img__origin_url_str,
@@ -174,13 +188,12 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 						gf_host_str,
 						//---------------------------------------------------
 						// p_on_img_load_fun
-						(p_image_container :any)=>{
+						(p_image_element :HTMLElement)=>{
 							
-							// IMPORTANT!! - add ".gf_image" to the DOM after the image is fully loaded.
-							$("#gf_images_flow_container #items").append(p_image_container);
+							console.log(">>>> image")
 
 							// MASONRY_LAYOUT
-							gf_utils.masonry_layout_after_img_load(p_image_container);
+							gf_utils.masonry_layout_after_img_load(p_image_element);
 
 							img_i_int++;
 
@@ -191,13 +204,13 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 									
 								// TAGGING
 								gf_utils.init_tagging(img__id_str,
-									p_image_container,
+									p_image_element,
 									gf_host_str,
 									p_log_fun);
 
 								// SHARE
 								gf_images_share.init(img__id_str,
-									p_image_container,
+									p_image_element,
 									p_plugin_callbacks_map,
 									p_log_fun);
 							}
@@ -206,7 +219,7 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 
 							// IMPORTANT!! - only declare load_new_page() as complete after all its
 							//               images complete loading
-							if (p_page_lst.length-1 == img_i_int) {
+							if (total_images_int-1 == img_i_int) {
 								p_resolve_fun({});
 							}
 						},
@@ -218,7 +231,7 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 							// are done (either failed or succeeded) call p_on_complete_fun()
 							img_i_int++;
 
-							if (p_page_lst.length-1 == img_i_int) {
+							if (total_images_int-1 == img_i_int) {
 								p_resolve_fun({});
 							}
 						},
@@ -229,6 +242,9 @@ export async function load_new_page(p_page_source_ref_str :string, // p_flow_nam
 						// p_on_viz_change_fun
 						()=>$("#gf_images_flow_container #items").masonry(),
 						p_log_fun);
+					
+					// IMPORTANT!! - add image_element to container right away, so that image stay in-order
+					$("#gf_images_flow_container #items").append(image_element);
 				});
 			});
 		}

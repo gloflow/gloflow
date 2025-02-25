@@ -26,16 +26,15 @@ import * as gf_flows_browser_utils from "./gf_flows_browser_utils";
 //-------------------------------------------------
 export interface GF_props {
 	
-	readonly flow_name_str           :string
-	readonly container_id_str        :string
-	readonly parent_container_id_str :string
+	readonly flow_name_str :string
+	readonly container     :HTMLElement
 
 	readonly start_page_int   :number
 	readonly end_page_int     :number
 	readonly initial_page_int :number
 
 	readonly image_view_type_str :string
-	readonly logged_in_bool :boolean
+	readonly logged_in_bool      :boolean
 	readonly events_enabled_bool :boolean
 
 	readonly plugin_callbacks_map :any
@@ -45,32 +44,11 @@ export interface GF_props {
 export function init(p_elements_lst :Array<any>,
 	p_props                 :GF_props,
 	p_element_create_fun    :Function,
-	p_elements_page_get_fun :Function,
 	p_log_fun                      :Function,
 	p_create_initial_elements_bool :boolean=true,
 	p_initial_pages_num_int        :number=6) {
-
-	//------------------------
-	// CONTROL_CONTAINER
 	
-	const container_id_str = p_props.container_id_str;
-	var container :HTMLElement;
-
-	// check if a container with this name already exists, and if it does use that.
-	// this is for cases where the DOM structure already exists (maybe from template rendering)
-	// and there are some items already in that container.
-	if ($(`#${container_id_str}`).length > 0) {
-		container = $(`#${container_id_str}`)[0];
-	}
-
-	// otherwise create the div from scratch
-	else {
-		container = $(`<div id=${container_id_str}>
-			<div id="items"></div>
-		</div>`)[0];
-		$(`#${p_props.parent_container_id_str}`).append(container);
-	}
-	
+	const container       = p_props.container;
 	const items_container = $(container).find("#items");
 
 	//------------------------
@@ -89,20 +67,20 @@ export function init(p_elements_lst :Array<any>,
 	//------------------------
 	// MASONRY
 
-	// IMPORTANT!! - as each image loads call masonry to reconfigure the view.
-	//               this is necessary so that initial images in the page, before
-	//               load_new_page() starts getting called, are properly laid out
-	//               by masonry.
-	$('#elements img').on('load', ()=>{
-		$('#elements').masonry();
-		$('#elements').masonry(<any>"reloadItems");
-	});
-
-	$(container).masonry({
+	$(items_container).masonry({
 		// options...
 		itemSelector: '.gf_image',
 		columnWidth:  6,
 		gutter: 10,
+	});
+
+	// IMPORTANT!! - as each image loads call masonry to reconfigure the view.
+	//               this is necessary so that initial images in the page, before
+	//               load_new_page() starts getting called, are properly laid out
+	//               by masonry.
+	$(items_container).find('.gf_image img').on('load', ()=>{
+		$(items_container).masonry();
+		$(items_container).masonry(<any>"reloadItems");
 	});
 
 	//------------------------
@@ -134,8 +112,9 @@ export function init(p_elements_lst :Array<any>,
 			reset_with_new_start_pages(container,
 				new_start_page_int,
 				p_initial_pages_num_int,
-				p_element_create_fun,
-				p_elements_page_get_fun);
+				p_props,
+				// p_element_create_fun,
+				p_log_fun);
 
 			// user seeked to a new random page, so that should be set
 			// as the current page plus the initial pages that are loaded on reset.
@@ -154,8 +133,66 @@ export function init(p_elements_lst :Array<any>,
 	// LOAD_PAGES_ON_SCROLL
 	
 	var initial_page_int = 6;
-
+	
 	gf_images_paging.init(initial_page_int,
+		p_props.flow_name_str,
+		p_props.image_view_type_str,
+		p_props.logged_in_bool,
+		p_props.events_enabled_bool,
+		p_props.plugin_callbacks_map,
+
+		// p_on_page_load_fun
+		(p_new_page_int :number)=>{
+
+			$(container).data("current_page", p_new_page_int);
+
+			const current_pages_display = gf_flows_browser_utils.current_pages_display__get();
+			$(current_pages_display).find('#end_page').text(p_new_page_int);
+		},
+		p_log_fun);
+
+	//------------------------
+	return seeker__container_element;
+}
+
+//-------------------------------------------------
+// RESET_WITH_NEW_START_PAGES
+
+async function reset_with_new_start_pages(p_container :HTMLElement,
+	p_start_page_int        :number, // this is where it was seeked to, and is different from first_page/last_page
+	p_initial_pages_num_int :number,
+	p_props                 :GF_props,
+	p_log_fun			    :Function) {
+
+	//------------------------
+	// REMOVE_ALL - items currently displayed by viz_group, 
+	//              since new ones have to be shown.
+	// $(p_container).find("#items .item").remove();
+
+	$(p_container).find("#items").empty();
+
+	$(p_container).masonry({
+		// options...
+		itemSelector: '.gf_image',
+		columnWidth:  6,
+		gutter: 10,
+	});
+
+	//------------------------
+
+
+	const pages_num_int = 6;
+	await gf_images_paging.load_new_pages(p_props.flow_name_str,
+		p_start_page_int,
+		p_props.image_view_type_str,
+		p_props.logged_in_bool,
+		p_props.plugin_callbacks_map,
+		p_log_fun,
+		pages_num_int);
+
+
+	// INIT_PAGING
+	gf_images_paging.init(p_start_page_int,
 		p_props.flow_name_str,
 		p_props.image_view_type_str,
 		p_props.logged_in_bool,
@@ -170,113 +207,6 @@ export function init(p_elements_lst :Array<any>,
 			// $(current_pages_display).find('#end_page').text(p_new_page_int);
 		},
 		p_log_fun);
-
-	/*
-	const pages_container = $(container).find("#items")[0];
-
-	var page_is_loading_bool = false;
-
-	window.onscroll = async ()=>{
-
-		// $(document).height() - height of the HTML document
-		// window.innerHeight   - Height (in pixels) of the browser window viewport including, if rendered, the horizontal scrollbar
-		if (window.scrollY >= $(document).height() - (window.innerHeight+50)) {
-
-			// IMPORTANT!! - only load 1 page at a time
-			if (!page_is_loading_bool) {
-
-
-				page_is_loading_bool = true;
-				p_log_fun("INFO", `current_page_int - ${current_page_int}`);
-
-				load_new_pages(current_page_int,
-					pages_container,
-					p_element_create_fun,
-					p_elements_page_get_fun);
-
-
-				page_is_loading_bool = false;
-
-				current_page_int += 1;
-				$(container).data("current_page", current_page_int);
-			}
-		}
-	}
-	*/
-
-	//------------------------
-	return seeker__container_element;
-}
-
-//-------------------------------------------------
-// RESET_WITH_NEW_START_PAGES
-
-async function reset_with_new_start_pages(p_container :HTMLElement,
-	p_start_page_int        :number, // this is where it was seeked to, and is different from first_page/last_page
-	p_initial_pages_num_int :number,
-	p_element_create_fun    :Function,
-	p_elements_page_get_fun :Function) {
-
-	//------------------------
-	// REMOVE_ALL - items currently displayed by viz_group, 
-	//              since new ones have to be shown.
-	$(p_container).find("#items .item").remove();
-
-	//------------------------
-
-	// IMPORTANT!! - do a layout after removing all items
-	// p_packery_instance.packery("layout");
-	$(p_container).masonry(<any>"reloadItems");
-
-
-
-	const pages_container = $(p_container).find("#items")[0];
-
-	load_new_pages(p_start_page_int,
-		pages_container,
-		p_element_create_fun,
-		p_elements_page_get_fun,
-		p_initial_pages_num_int);    
-}
-
-//-------------------------------------------------
-async function load_new_pages(p_page_index_int :number,
-	p_pages_container       :HTMLElement,
-	p_element_create_fun    :Function,
-	p_elements_page_get_fun :Function,
-	p_pages_to_load_int     :number=1) {
-
-	// fetch page
-	const elements_lst = await p_elements_page_get_fun(p_page_index_int, p_pages_to_load_int);
-
-	// create elements
-	for (let element_map of elements_lst) {
-
-		const element = p_element_create_fun(element_map);
-		$(element).addClass("item");
-		$(element).css("visibility", "hidden"); // initially elements are not visible until they load
-
-		$(p_pages_container).append(element);
-
-		$(element).find('img').on('load', ()=>{
-
-			// make element visible after its image loads
-			$(element).css('visibility', 'visible');
-			
-			// MASONRY
-			$(p_pages_container).masonry();
-			$(p_pages_container).masonry(<any>"reloadItems");
-			
-			/*
-			const masonry = $(p_pages_container).data('masonry');
-			masonry.once('layoutComplete', (p_event, p_laid_out_items)=>{
-				$(element).css('visibility', 'visible');
-			});
-			*/
-		});
-	}
-
-	return elements_lst;
 }
 
 //-------------------------------------------------

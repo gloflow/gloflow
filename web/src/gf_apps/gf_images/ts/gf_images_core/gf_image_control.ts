@@ -63,6 +63,9 @@ export function create(p_image_id_str :string,
 		case "medium_view":
 			img_url_str = p_img__thumbnail_medium_url_str;
 			break;
+		default:
+			img_url_str = p_img__thumbnail_medium_url_str;
+			break;
 	}
 
 	// IMPORTANT!! - '.gf_image' is initially invisible, and is faded into view when its image is fully loaded
@@ -77,7 +80,10 @@ export function create(p_image_id_str :string,
 			<div class="image_title">${p_img__title_str}</div>
 			<div class="image_container">
 				<img src="${img_url_str}" data-img_thumb_medium_url="${p_img__thumbnail_medium_url_str}"></img>
-				<div class="tags"></div>
+				
+				<div class="tags">
+				
+				</div>
 			</div>
 			<div class="extra_info">
 				<div class="origin_page_url">
@@ -89,7 +95,7 @@ export function create(p_image_id_str :string,
 		</div>`)[0];
 
 	//------------------
-	
+
 	// FIX!! - this needs to happen after the image <div> is added to the DOM, 
 	//         here reloading masonry layout doesnt have the intended effect, since 
 	//         the image hasnt been added yet.
@@ -103,7 +109,6 @@ export function create(p_image_id_str :string,
 		// masonry.once('layoutComplete', (p_event, p_laid_out_items)=>{
 		// 	$(image_element).css('visibility', 'visible');
 		// });
-		
 		
 		// // IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
 		// $('#gf_images_flow_container #items').masonry();
@@ -131,6 +136,7 @@ export function create(p_image_id_str :string,
 				p_img__thumbnail_medium_url_str,
 				p_img__thumbnail_large_url_str,
 				p_flows_names_lst,
+				p_img__tags_lst,
 
 				p_events_enabled_bool,
 				p_host_str,
@@ -144,7 +150,7 @@ export function create(p_image_id_str :string,
 		init_pallete(image_element);
 
 		//------------------
-		
+
 		p_on_img_load_fun(image_element);
 	});
 
@@ -266,6 +272,7 @@ export function init_existing_dom(p_image_element :any,
 	const img_thumb_large_url_str  = $(p_image_element).find('img').data('img_thumb_large_url');
 	const img_format_str           = $(p_image_element).data('img_format');
 	const flows_names_lst          = $(p_image_element).data('img_flows_names').split(",");
+	const tags_lst = $(p_image_element).find(".tags").find(".tag").map((p_i, p_tag_element)=>$(p_tag_element).text().replace(/^#/, "")).get();
 
 	const origin_page_url_link = $(p_image_element).find(".origin_page_url a")[0];
 
@@ -306,7 +313,7 @@ export function init_existing_dom(p_image_element :any,
 			img_thumb_medium_url_str,
 			img_thumb_large_url_str,
 			flows_names_lst,
-
+			tags_lst,
 			p_events_enabled_bool,
 			p_gf_host_str,
 			p_plugin_callbacks_map,

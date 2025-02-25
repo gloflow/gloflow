@@ -203,48 +203,6 @@ export async function init(p_plugin_callbacks_map :any,
 		},
 		p_log_fun);
 
-	/*
-	var page_is_loading_bool = false;
-
-	window.onscroll = async ()=>{
-
-		// $(document).height() - height of the HTML document
-		// window.innerHeight   - Height (in pixels) of the browser window viewport including, if rendered, the horizontal scrollbar
-		if (window.scrollY >= $(document).height() - (window.innerHeight+50)) {
-			
-			// IMPORTANT!! - only load 1 page at a time
-			if (!page_is_loading_bool) {
-				
-				page_is_loading_bool = true;
-				p_log_fun("INFO", `current_page_int - ${current_page_int}`);
-
-				var current_image_view_type_str = gf_view_type_picker.image_view_type_str;
-
-				const page_source_ref_str  = flow_name_str;
-				const page_source_type_str = "flow"
-
-
-				await gf_images_paging.load_new_page(page_source_ref_str,
-					page_source_type_str,
-					current_page_int,
-					current_image_view_type_str,
-					logged_in_bool,
-					events_enabled_bool,
-					p_plugin_callbacks_map,
-					p_log_fun);
-				
-				current_page_int += 1;
-				$("#gf_images_flow_container").data("current_page", current_page_int);
-
-				page_is_loading_bool = false;
-
-				$(current_pages_display).find('#end_page').text(current_page_int);
-				
-			}
-		}
-	};
-	*/
-
 	//------------------
 }
 

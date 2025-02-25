@@ -45,8 +45,9 @@ body {
 	position: fixed;
 	right:    -21px;
 	top:      120px;
-	width:    50px;
-	height:   50px;
+	width:    61px;
+	height:   130px;
+	z-index:  10;
 
 	#masonry_small_images {
 		position:         absolute;
@@ -167,6 +168,7 @@ body {
 // CURRENT_PAGE_DISPLAY
 
 #current_pages_display {
+	width: 40px;
 	position: fixed;
     right: 0px;
     top: 250px;
@@ -176,20 +178,23 @@ body {
     margin-top: 6px;
 
 	#title {
+		text-align: center;
 		font-size: 10px;
 	}
 	#start_page {
+		height: 15px;
 		font-size: 12px;
 		background-color: #a4a4a4;
-		padding-top: 5px;
+		padding-top: 7px;
 		padding-bottom: 4px;
 		text-align: center;
 		border-radius: 6px 0px 0px 6px;
 	}
 	#end_page {
+		height: 16px;
 		font-size: 12px;
 		background-color: #a4a4a4;
-		padding-top: 5px;
+		padding-top: 7px;
 		padding-bottom: 4px;
 		text-align: center;
 		border-radius: 6px 0px 0px 6px;

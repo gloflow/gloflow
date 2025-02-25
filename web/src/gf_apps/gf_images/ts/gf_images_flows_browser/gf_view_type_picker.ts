@@ -17,15 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-// ///<reference path="../../../../d/jquery.d.ts" />
-
-import * as gf_user_events  from "../../../../gf_events/ts/gf_user_events";
-import * as gf_gifs_viewer  from "../../../../gf_core/ts/gf_gifs_viewer";
-import * as gf_viz_group    from "./gf_viz_group";
-import * as gf_image_viewer from "../gf_images_core/gf_image_viewer";
-import * as gf_images_http  from "../gf_images_core/gf_images_http";
-// import * as gf_paging       from "../gf_images_core/gf_images_paging";
-import * as gf_events       from "../gf_images_core/gf_events";
+import * as gf_user_events   from "../../../../gf_events/ts/gf_user_events";
+import * as gf_events        from "../gf_images_core/gf_events";
+import * as gf_image_control from "../gf_images_core/gf_image_control";
+import * as gf_viz_group     from "./gf_viz_group";
+import * as gf_images_paging from "../gf_images_core/gf_images_paging";
 
 // FIX!! - remove this from global scope!!
 export var image_view_type_str = "small_view";
@@ -59,7 +55,7 @@ export function init(p_flow_name_str :string,
 	p_plugin_callbacks_map :any,
 	p_log_fun :any) {
 
-	const container = $(`
+	const view_picker_element = $(`
 		<div id='view_type_picker'>
 			<div id='masonry_small_images'>
 				<img src="https://gf-phoenix.s3.amazonaws.com/assets/gf_images_flows_browser/gf_small_view_icon.svg"></img>
@@ -75,11 +71,11 @@ export function init(p_flow_name_str :string,
 				<div id="tooltip">seek view</div>
 			</div>
 		</div>`);
-	$('body').append(container);
+	$('body').append(view_picker_element);
 
-	const small_view_btn  = $(container).find('#masonry_small_images')[0];
-	const medium_view_btn = $(container).find('#masonry_medium_images')[0];
-	const seek_view_btn   = $(container).find('#viz_group_medium_images')[0];
+	const small_view_btn  = $(view_picker_element).find('#masonry_small_images')[0];
+	const medium_view_btn = $(view_picker_element).find('#masonry_medium_images')[0];
+	const seek_view_btn   = $(view_picker_element).find('#viz_group_medium_images')[0];
 
 	init_tooltip(small_view_btn);
 	init_tooltip(medium_view_btn);
@@ -167,6 +163,8 @@ export function init(p_flow_name_str :string,
 	// SEEK_VIEW
 	$(seek_view_btn).on('click', function() {
 
+		
+
 		// FIX!! - global var. handle this differently;
 		image_view_type_str = "viz_group_medium_view";
 
@@ -240,91 +238,68 @@ function init__viz_group_view(p_flow_name_str :string,
 		const img__format_str               = p_element_map['format_str'];
 		const img__creation_unix_time_f     = p_element_map['creation_unix_time_f'];
 		const img__flows_names_lst          = p_element_map["flows_names_lst"];
+		const img__thumbnail_small_url_str  = p_element_map['thumbnail_small_url_str'];
 		const img__thumbnail_medium_url_str = p_element_map['thumbnail_medium_url_str'];
 		const img__thumbnail_large_url_str  = p_element_map['thumbnail_large_url_str'];
 		const img__origin_page_url_str      = p_element_map['origin_page_url_str'];
-
+		const img__title_str = p_element_map['title_str'];
+		const img__tags_lst  = p_element_map['tags_lst'];
 		const img_url_str = img__thumbnail_medium_url_str;
 
-		// IMPORTANT!! - '.gf_image' is initially invisible, and is faded into view when its image is fully loaded
-		//               and its positioned appropriatelly in the Masonry grid
-		const image_container = $(`
-			<div class="gf_image item ${current_image_view_type_str}"
+		const owner_user_name_str = "anon";
 
-				data-img_id="${image_id_str}"
-				data-img_format="${img__format_str}"
-				data-img_flows_names="${img__flows_names_lst.join(' ')}"
-				
-				style='visibility:hidden;'>
-				<img src="${img_url_str}" data-img_thumb_medium_url="${img__thumbnail_medium_url_str}"></img>
-				<div class="tags_container"></div>
-				<div class="origin_page_url">
-					<a href="${img__origin_page_url_str}" target="_blank">${img__origin_page_url_str}</a>
-				</div>
-				<div class="creation_time">${img__creation_unix_time_f}</div>
-			</div>`);
+
+
+		const image_element = gf_image_control.create(image_id_str,
+			img__format_str,
+			img__creation_unix_time_f,
+			img__origin_page_url_str,
+			img__thumbnail_small_url_str,
+			img__thumbnail_medium_url_str,
+			img__thumbnail_large_url_str,
+			img__title_str,
+			img__tags_lst,
+			owner_user_name_str,
+			img__flows_names_lst,
+			current_image_view_type_str,
+
+
+			p_events_enabled_bool,
+			p_host_str,
+
+			// p_on_img_load_fun
+			()=>{
+
+			},
+
+			// p_on_img_load_error_fun
+			()=>{
+
+			},
+			p_plugin_callbacks_map,
+
+			// p_on_viz_change_fun
+			()=>{
+
+			},
+			p_log_fun);
 			
-		//------------------
-		// VIEWER_INIT
 
-		if (img__format_str == 'gif') {
-			gf_gifs_viewer.init(image_container, image_id_str, img__flows_names_lst, p_log_fun);
-
-		} else {
-
-			gf_image_viewer.init(image_container,
-				image_id_str,
-				img__thumbnail_medium_url_str,
-				img__thumbnail_large_url_str,
-				img__flows_names_lst,
-				p_events_enabled_bool,
-				p_host_str,
-				p_plugin_callbacks_map,
-				p_log_fun);
-		}
-
-		//------------------
-		
-        return image_container;
-    }
-
-    //-------------------------------------------------
-	// ELEMENTS_PAGE_GET
-    function elements_page_get_fun(p_new_page_number_int: number) {
-        return new Promise(async function(p_resolve_fun, p_reject_fun) {
-
-            
-
-			// HTTP_LOAD_NEW_PAGE
-
-			const resp_map = await gf_images_http.get_page(p_flow_name_str,
-				p_new_page_number_int,
-				p_log_fun);
-			const page_elements_lst = resp_map["pages_lst"][0];
-
-			p_resolve_fun(page_elements_lst);
-        });
+        return image_element;
     }
 
 	//-------------------------------------------------
 
 
-	// IMPORTANT!! - already existing div element
-	const id_str = "gf_images_flow_container";
-
-	// this is empty because gf_viz_group wont append to parent itself,
-	// the container div is already present in the DOM
-    const parent_id_str = "";
-	
-
+	const container_element = $('#gf_images_flow_container')[0];
+	const initial_page_int = 0;
 
     const props :gf_viz_group.GF_props = {
 
-		flow_name_str:           p_flow_name_str,
-		container_id_str:        id_str, 
-		parent_container_id_str: parent_id_str, 
+		flow_name_str:    p_flow_name_str,
+		container:        container_element,
 
-        start_page_int:   0,
+        start_page_int:   initial_page_int,
         end_page_int:     p_flow_pages_num_int,
         initial_page_int: p_initial_page_int,
 
@@ -338,13 +313,29 @@ function init__viz_group_view(p_flow_name_str :string,
 	const seeker__container_element = gf_viz_group.init(initial_elements_lst,
 		props,
         element_create_fun,
-        elements_page_get_fun,
 		p_log_fun,
 		
 		// the container already contains elements that are created and attached
 		// to the container, so we dont want to create any initially (only if paging is done).
 		false); // p_create_initial_elements_bool
 
-	// seeker should be in fixed position, as the user scrolls the images themselves
-	$(seeker__container_element).css("position", "fixed");
+
+
+
+	// INIT_PAGING
+	gf_images_paging.init(initial_page_int,
+		p_flow_name_str,
+		current_image_view_type_str,
+		p_logged_in_bool,
+		p_events_enabled_bool,
+		p_plugin_callbacks_map,
+
+		// p_on_page_load_fun
+		(p_new_page_int :number)=>{
+
+			$("#gf_images_flow_container").data("current_page", p_new_page_int);
+
+			// $(current_pages_display).find('#end_page').text(p_new_page_int);
+		},
+		p_log_fun);
 }

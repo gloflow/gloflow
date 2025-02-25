@@ -19,8 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-import * as gf_viz_group from "./gf_viz_group";
-
 //-------------------------------------------------
 interface GF_viz_props {
 	readonly seeker_container_height_px :number;

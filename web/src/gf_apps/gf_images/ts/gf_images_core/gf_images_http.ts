@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 export async function classify(p_image_id_str :string,
 	p_client_type_str :string,
-    p_log_fun) {
+    p_log_fun         :Function) {
 	
 	return new Promise(function(p_resolve_fun, p_reject_fun) {
 
@@ -70,7 +70,7 @@ export async function share(p_image_id_str :string,
 	p_email_address_str :string,
 	p_email_subject_str :string,
 	p_email_body_str    :string,
-    p_log_fun) {
+    p_log_fun           :Function) {
 	
 	return new Promise(function(p_resolve_fun, p_reject_fun) {
 
@@ -117,7 +117,7 @@ export async function share(p_image_id_str :string,
 // GET
 
 export async function get(p_image_id_str :string,
-    p_log_fun) {
+    p_log_fun :Function) {
 
 	return new Promise(function(p_resolve_fun, p_reject_fun) {
 
@@ -156,27 +156,27 @@ export async function get(p_image_id_str :string,
 // GET_PAGE
 
 interface PageData {
-    pages_lst: any[]; // Replace 'any' with more specific type if known
-    pages_user_names_lst: string[];
+    pages_lst            :any[];
+    pages_user_names_lst :string[];
 }
 
 export async function get_page(p_flow_name_str :string,
 	p_current_page_int :number,
-	p_log_fun) :Promise<PageData> {
+	p_pages_num_int    :number,
+	p_log_fun          :Function) :Promise<PageData> {
 
 	return new Promise(function(p_resolve_fun, p_reject_fun) {
 
 		const page_size_int = 10;
-		const url_str       = `/images/flows/browser_page?fname=${p_flow_name_str}&pg_index=${p_current_page_int}&pg_size=${page_size_int}`;
+		const url_str       = `/images/flows/browser_page?fname=${p_flow_name_str}&pg_index=${p_current_page_int}&pg_size=${page_size_int}&pg_num=${p_pages_num_int}`;
 		p_log_fun("INFO", `url_str - ${url_str}`);
 
 		//-------------------------
 		// HTTP AJAX
 		$.get(url_str,
 			function(p_data_map) {
-				console.log("response received");
-				// const data_map = JSON.parse(p_data);
 
+				console.log("response received...");
 				console.log(`data_map["status"] - ${p_data_map["status"]}`);
 				
 				if (p_data_map["status"] == "OK") {

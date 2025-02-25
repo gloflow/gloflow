@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //---------------------------------------------------
 // CURRENT_PAGES_DISPLAY
 //---------------------------------------------------
-
 export function current_pages_display__init(p_log_fun :Function) {
 
 	const container = $(`
@@ -34,8 +33,14 @@ export function current_pages_display__init(p_log_fun :Function) {
 	return container;
 }
 
+//---------------------------------------------------
 export function current_pages_display__reset(p_start_page_int :number,
 	p_end_page_int :number) {
 	$("#current_pages_display #start_page").text(p_start_page_int);
 	$("#current_pages_display #end_page").text(p_end_page_int);
+}
+
+//---------------------------------------------------
+export function current_pages_display__get() {
+	return $("#current_pages_display")[0];
 }
