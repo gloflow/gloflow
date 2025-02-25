@@ -383,27 +383,6 @@ func Run(pConfig *GFconfig,
 	gf_rpc_lib.ServerInitWithMux("gf_solo", portInt, gfSoloHTTPmux)
 
 	//-------------
-	/*
-	// GF_PUBLISHER
-
-	// FIX!! - find a soloution where gf_solo gf_publisher functions can invoke
-	//         gf_images functions in the same process if in non-distributed mode.
-	//         specifying gf_images host
-	//         is there because of the default distributed design that assumes
-	//         gf_publisher and gf_images run as separate processes.
-	gfImagesServiceHostPortStr := "127.0.0.1"
-	gfImagesRuntimeInfo := &gf_publisher_lib.GF_images_extern_runtime_info{
-		Jobs_mngr:               nil, // indicates not to send in-process messages to jobs_mngr goroutine, instead use HTTP REST API of gf_images
-		Service_host_port_str:   gfImagesServiceHostPortStr,
-		Templates_dir_paths_map: pConfig.TemplatesPathsMap,
-	}
-	
-	gf_publisher_lib.InitService(gfSoloHTTPmux,
-		gfImagesRuntimeInfo,
-		pRuntimeSys)
-	*/
-
-	//-------------
 }
 
 //-------------------------------------------------

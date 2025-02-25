@@ -274,27 +274,49 @@ func pipelineGetPage(pReq *http.Request,
 		}
 	}
 
+	pagesNumInt := 1
+	if aLst, ok := qsMap["pg_num"]; ok {
+		pagesNum := aLst[0]
+
+		pagesNumInt, err = strconv.Atoi(pagesNum) // user supplied value
+		if err != nil {
+			gfErr := gf_core.ErrorCreate("failed to parse integer pg_num query string arg",
+				"int_parse_error",
+				map[string]interface{}{"pages_num": pagesNum,},
+				err, "gf_images_flows", pRuntimeSys)
+			return nil, nil, gfErr
+		}
+	}
+
 	pRuntimeSys.LogNewFun("DEBUG", fmt.Sprintf("flow_name_str  - %s", flowNameStr), nil)
 	pRuntimeSys.LogNewFun("DEBUG", fmt.Sprintf("page_index_int - %d", pageIndexInt), nil)
 	pRuntimeSys.LogNewFun("DEBUG", fmt.Sprintf("page_size_int  - %d", pageSizeInt), nil)
+	pRuntimeSys.LogNewFun("DEBUG", fmt.Sprintf("pages_num_int  - %d", pagesNumInt), nil)
 
 	//--------------------
 
 	//--------------------
 	// GET_PAGES
 	cursorStartPositionInt := pageIndexInt * pageSizeInt
-	imagesPageLst, gfErr := dbMongoGetPage(flowNameStr,
-		cursorStartPositionInt, // p_cursor_start_position_int
-		pageSizeInt,            // p_elements_num_int
-		pCtx,
-		pRuntimeSys)
-	if gfErr != nil {
-		return nil, nil, gfErr
+
+	imagesPagesLst := [][]*gf_images_core.GFimage{}
+
+	for i := 0; i < pagesNumInt; i++ {
+		imagesPageLst, gfErr := dbSQLgetPage(flowNameStr,
+			cursorStartPositionInt, // p_cursor_start_position_int
+			pageSizeInt,            // p_elements_num_int
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, nil, gfErr
+		}
+
+		imagesPagesLst = append(imagesPagesLst, imagesPageLst)
+		cursorStartPositionInt += pageSizeInt
 	}
-	
+
 	//------------------
 	
-	imagesPagesLst := [][]*gf_images_core.GFimage{imagesPageLst,}
 	pagesUserNamesLst := resolveUserIDsToUserNames(imagesPagesLst, pCtx, pRuntimeSys)
 
 	return imagesPagesLst, pagesUserNamesLst, nil

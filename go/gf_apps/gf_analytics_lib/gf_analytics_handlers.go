@@ -70,7 +70,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	IMPORTANT!! - this is a special case handler, we dont want it to return any standard JSON responses,
 		this handler should be fire-and-forget from the users/clients perspective.
 	*/
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/a/ue",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/a/ue",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			// CORS - preflight request
