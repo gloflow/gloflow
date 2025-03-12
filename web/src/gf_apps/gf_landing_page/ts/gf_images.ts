@@ -59,12 +59,16 @@ export function init(p_logged_in_bool :boolean,
 		// IMAGE_CONTROL
 		gf_image_control.init_existing_dom(p_image_element,
 			flows_names_lst,
-
 			p_gf_host_str,
 			p_logged_in_bool,
 
 			p_events_enabled_bool,
 			p_plugin_callbacks_map,
+
+			// p_on_viz_change_fun
+			()=>{
+
+			},
 			p_log_fun);
 
 		/*

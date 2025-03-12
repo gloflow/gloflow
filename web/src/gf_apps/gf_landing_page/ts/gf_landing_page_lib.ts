@@ -42,6 +42,7 @@ export async function init(p_events_enabled_bool :boolean,
 	p_plugin_callbacks_map :any,
 	p_log_fun :any) {
 	
+	const app_name_str = "gf_solo"
 	const current_host_str = gf_core_utils.get_current_host();
 
     $("time.timeago").timeago();
@@ -81,6 +82,7 @@ export async function init(p_events_enabled_bool :boolean,
 		gf_user_events.send_event_http(gf_events.GF_LANDING_PAGE_LOAD,
 			"browser",
 			event_meta_map,
+			app_name_str,
 			current_host_str)
 	}
 
