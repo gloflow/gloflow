@@ -317,6 +317,7 @@ func UserpassPipelineCreateRegular(pInput *GFuserpassInputCreate,
 		}
 		gf_events.EmitApp(GF_EVENT_APP__USER_CREATE_REGULAR,
 			eventMetaMap,
+			pRuntimeSys.AppNameStr,
 			output.UserID,
 			pCtx,
 			pRuntimeSys)

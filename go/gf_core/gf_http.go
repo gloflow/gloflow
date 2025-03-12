@@ -138,6 +138,7 @@ func HTTPgetAllCookies(pReq *http.Request) map[string]interface{} {
 func HTTPsetCookieOnResp(pCookieNameStr string,
 	pDataStr     string,
 	pDomainStr   *string,
+	pSameSiteStrictBool bool,
 	pResp        http.ResponseWriter,
 	pTTLhoursInt int) {
 
@@ -161,12 +162,7 @@ func HTTPsetCookieOnResp(pCookieNameStr string,
 		//               not explicitly set the cookie's path will default to the path of 
 		//               the URL where the Set-Cookie HTTP response header was received from.
 		//               This means that the cookie will be sent only for requests to this path and its subpaths.
-		Path: "/", 
-		
-		// ADD!! - ability to specify multiple domains that the session is
-		//         set for in case the GF services and API endpoints are spread
-		//         across multiple domains.
-		// Domain: "", 
+		Path: "/",
 
 		// force cookie to only be accessible over HTTPS connections
 		Secure: true,
@@ -174,12 +170,6 @@ func HTTPsetCookieOnResp(pCookieNameStr string,
 		// IMPORTANT!! - make cookie http_only, disabling browser js context
 		//               from being able to read its value
 		HttpOnly: true,
-
-		// SameSite allows a server to define a cookie attribute making it impossible for
-		// the browser to send this cookie along with cross-site requests. The main
-		// goal is to mitigate the risk of cross-origin information leakage, and provide
-		// some protection against cross-site request forgery attacks.
-		SameSite: http.SameSiteStrictMode,
 	}
 
 	//------------------
@@ -188,7 +178,29 @@ func HTTPsetCookieOnResp(pCookieNameStr string,
 	//          by all subdomains as well.
 	
 	if pDomainStr != nil {
+
+		// ADD!! - ability to specify multiple domains that the session is
+		//         set for in case the GF services and API endpoints are spread
+		//         across multiple domains.
 		cookie.Domain = *pDomainStr
+	}
+
+	if pSameSiteStrictBool {
+		/*
+		SameSiteStrictMode - allows a server to define a cookie attribute making it impossible for
+			the browser to send this cookie along with cross-site requests. The main
+			goal is to mitigate the risk of cross-origin information leakage, and provide
+			some protection against cross-site request forgery attacks.
+		*/
+		cookie.SameSite = http.SameSiteStrictMode
+	} else {
+		/*
+		SameSiteNoneMode - allows for cross-origin sending of cookies, but only if the request is initiated by a "safe" HTTPS method.
+			this is critical for authentication flows where auth is done on third-party domains (for example with Auth0);
+			when request originated from a redirect from a different domain (Auth0) causes the browser to block it even though
+			the cookie is set by the backend on the same domain as the cookie domain.
+		*/
+		cookie.SameSite = http.SameSiteNoneMode
 	}
 
 	//------------------
@@ -236,7 +248,7 @@ func HTTPdeleteCookieOnResp(pCookieNameStr string,
 		Domain:   pDomainForCookiesStr,
 		Secure:   true,
 		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteNoneMode, // http.SameSiteStrictMode,
 	}
 	
 	http.SetCookie(pResp, &expiredCookie)

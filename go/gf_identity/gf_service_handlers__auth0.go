@@ -22,6 +22,7 @@ package gf_identity
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"context"
 	"encoding/base64"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -130,7 +131,30 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 			if pReq.Method == "GET" {
 
-				sessionIDstr, gfErr := gf_identity_core.Auth0loginPipeline(pCtx, pRuntimeSys)
+				//---------------------
+				// INPUT
+
+				// extract QS arg "redirect_url" - where to redirect user after successful login.
+				// allows user to be redirected to the page they were on before being redirected to Auth0 login.
+				loginSuccessRedirectURLstr := pReq.URL.Query().Get("redirect_url")
+				if loginSuccessRedirectURLstr == "" {
+					loginSuccessRedirectURLstr = ""
+				} else {
+					decodedURLstr, err := url.QueryUnescape(loginSuccessRedirectURLstr)
+					if err != nil {
+						gfErr := gf_core.ErrorCreate("failed to decode redirect_url",
+							"http__input_data_invalid_error",
+							map[string]interface{}{},
+							err, "gf_identity", pRuntimeSys)
+						return nil, gfErr
+					}
+
+					loginSuccessRedirectURLstr = decodedURLstr
+				}
+				
+				//---------------------
+
+				sessionIDstr, gfErr := gf_identity_core.Auth0loginPipeline(loginSuccessRedirectURLstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -216,16 +240,28 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			}
 
 			//---------------------
-			// COOKIES 
-			
+			// COOKIES
+
+			/*
+			IMPORTANT!! - strict mode set to None, since the user is authned via Auth0 and on successful auth 
+				user is redirected by Auth0 to this handler. Even though the cookies are set by this server/domain,
+				because the request was a redirect from a third-party domain (Auth0), the browser will treat the
+				cookies as third-party cookies and will block them if the SameSite attribute is set to "Strict".
+				So initially they're set as "None" to allow the browser to set them, and then on subsequent
+				login-finalize request they're set to "Strict" to prevent CSRF attacks.
+			*/
+			sameSiteStrictBool := false
+
 			// SESSION_ID - sets gf_sess cookie
 			gf_identity_core.CreateSessionIDcookie(string(sessionID),
 				pServiceInfo.DomainForAuthCookiesStr,
+				sameSiteStrictBool,
 				pResp)
 
 			// JWT - sets "Authorization" cookie
 			gf_identity_core.CreateAuthCookie(output.JWTtokenStr,
 				pServiceInfo.DomainForAuthCookiesStr,
+				sameSiteStrictBool,
 				pResp)
 			
 			//------------------
@@ -234,25 +270,99 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
 			gf_core.HTTPdisableCachingOfResponse(pResp)
 
-			/*
-			IMPORTANT!! - currently in the Auth0 login_callback, once all login initialization is complete,
-						the client is redirected to the login_page with a QS arg "login_success" set to 1.
-						this indicates to the login page that it should not initialize into its standard login state,
-						but instead should indicate to the user that login has succeeded and then via JS
-						(with a time delay) redirect to Home.
-						this is needed to handle a race condition where if user was redirected to home via a
-						server redirect (HTTP 3xx response) the browser wouldnt have time to set the needed
-						auth cookies that are necessary for the Home handler to authenticate.
-						the recommended solution for this is to do the redirection via client/JS code with a slight
-						time delay, giving the browser time to set the cookies.
-			*/
-			homeUrlStr := "/v1/identity/login_ui?login_success=1"
+
+			var redirectURLstr string
+			if output.LoginSuccessRedirectURLstr == "" {
+				/*
+				IMPORTANT!! - currently in the Auth0 login_callback, once all login initialization is complete,
+					the client is redirected to the login_page with a QS arg "login_success" set to 1.
+					this indicates to the login page that it should not initialize into its standard login state,
+					but instead should indicate to the user that login has succeeded and then via JS
+					(with a time delay) redirect to Home.
+					this is needed to handle a race condition where if user was redirected to home via a
+					server redirect (HTTP 3xx response) the browser wouldnt have time to set the needed
+					auth cookies that are necessary for the Home handler to authenticate.
+					the recommended solution for this is to do the redirection via client/JS code with a slight
+					time delay, giving the browser time to set the cookies.
+				*/
+
+
+				defaultLoginSuccessURLstr := "/v1/identity/login_ui?login_success=1"
+				redirectURLstr = defaultLoginSuccessURLstr
+
+				
+			} else {
+				redirectURLstr = output.LoginSuccessRedirectURLstr
+			}
+			
 			http.Redirect(pResp,
 				pReq,
-				homeUrlStr,
+				redirectURLstr,
 				301)
-			
+
 			//------------------
+
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
+
+	//---------------------
+	// this can only be called by authenticated users.
+
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/auth0/login_finalize",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+			if pReq.Method == "POST" {
+				//------------------
+				// INPUT
+
+				jwtTokenStr, foundBool, gfErr := gf_identity_core.JWTgetTokenFromRequest(pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+				if !foundBool {
+					gfErr := gf_core.ErrorCreate("'Authorization' is missing from auth0 login_finalize handler request cookies",
+						"auth_missing_cookie",
+						map[string]interface{}{},
+						nil, "gf_identity", pRuntimeSys)
+					return nil, gfErr
+				}
+				sessionID, sessionIDfoundBool := gf_identity_core.GetSessionID(pReq, pRuntimeSys)
+				if !sessionIDfoundBool {
+					gfErr := gf_core.ErrorCreate("'session_id' is missing from auth0 login_finalize handler request cookies",
+						"auth_missing_cookie",
+						map[string]interface{}{},
+						nil, "gf_identity", pRuntimeSys)
+					return nil, gfErr
+				}
+
+				//---------------------
+				// COOKIES
+
+				/*
+				IMPORTANT!! - overwrite cookies for the user in same-site strict mode, allowing only this domain
+					to read/write cookies. this is done to prevent CSRF attacks.
+				*/
+				sameSiteStrictBool := true
+
+				// SESSION_ID - sets gf_sess cookie
+				gf_identity_core.CreateSessionIDcookie(string(sessionID),
+					pServiceInfo.DomainForAuthCookiesStr,
+					sameSiteStrictBool,
+					pResp)
+
+				// JWT - sets "Authorization" cookie
+				gf_identity_core.CreateAuthCookie(jwtTokenStr,
+					pServiceInfo.DomainForAuthCookiesStr,
+					sameSiteStrictBool,
+					pResp)
+				
+				//------------------
+				gf_core.HTTPdisableCachingOfResponse(pResp)
+
+				//------------------
+			}
 
 			return nil, nil
 		},
@@ -265,7 +375,48 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 			if pReq.Method == "GET" {
 				
-				//------------------
+				//---------------------
+				// INPUT
+
+				// extract QS arg "redirect_url" - where to redirect user after successful login.
+				// allows user to be redirected to the page they were on before being redirected to Auth0 login.
+				logoutSuccessRedirectURLstr := pReq.URL.Query().Get("redirect_url")
+				if logoutSuccessRedirectURLstr == "" {
+					logoutSuccessRedirectURLstr = ""
+				} else {
+					decodedURLstr, err := url.QueryUnescape(logoutSuccessRedirectURLstr)
+					if err != nil {
+						gfErr := gf_core.ErrorCreate("failed to decode redirect_url",
+							"http__input_data_invalid_error",
+							map[string]interface{}{},
+							err, "gf_identity", pRuntimeSys)
+						return nil, gfErr
+					}
+
+					logoutSuccessRedirectURLstr = decodedURLstr
+				}
+				
+				sessionID, existsBool := gf_identity_core.GetSessionID(pReq, pRuntimeSys)
+				if !existsBool {
+					gfErr := gf_core.ErrorCreate("session_id is missing from auth0 logout handler request cookies",
+						"http_cookie",
+						map[string]interface{}{},
+						nil, "gf_identity", pRuntimeSys)
+					return nil, gfErr
+				}
+
+				//---------------------
+
+				// DB - update session with logout URL
+				gfErr := gf_identity_core.DBsqlAuth0updateSessionLogoutURL(sessionID,
+					logoutSuccessRedirectURLstr,
+					pCtx,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				//---------------------
 				/*
 				IMPORTANT!! - redirect user to Auth0 logout url, which will log them out of Auth0
 					and any third-party identity providers. this does not log them out of the GF
@@ -289,7 +440,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 					logoutURLstr,
 					301)
 
-				//------------------
+				//---------------------
 			}
 			return nil, nil
 		},
@@ -322,8 +473,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 				//------------------
 
-				// IMPORTANT!! - delete GF application session
-				gfErr := gf_identity_core.Auth0logoutPipeline(sessionID, pCtx, pRuntimeSys)
+				logoutSuccessRedirectURLstr, gfErr := gf_identity_core.Auth0logoutPipeline(sessionID, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -331,7 +481,12 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				// unset all session cookies
 				gf_identity_core.DeleteCookies(*pServiceInfo.DomainForAuthCookiesStr, pResp)
 
-				afterLogoutURLstr := "/landing/main"
+				var redirectURLstr string
+				if logoutSuccessRedirectURLstr == "" {
+					redirectURLstr = "/landing/main"
+				} else {
+					redirectURLstr = logoutSuccessRedirectURLstr
+				}
 
 				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
 				gf_core.HTTPdisableCachingOfResponse(pResp)
@@ -339,7 +494,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				// HTTP_REDIRECT
 				http.Redirect(pResp,
 					pReq,
-					afterLogoutURLstr,
+					redirectURLstr,
 					301)
 
 			}

@@ -44,10 +44,17 @@ type GFauth0session struct {
 	// marked as true once the login completes (once Auth0 initial auth returns the user to the GF system).
 	// if the login_callback handler is called and this login_complete is already marked as true,
 	// the http transaction will be immediatelly aborted.
-	LoginCompleteBool bool                   `bson:"login_complete_bool"`
+	LoginCompleteBool bool `bson:"login_complete_bool"`
+	
+	// user can specify which page then want to be redirect to after login,
+	// if they dont want to use the default GF successful-login url.
+	LoginSuccessRedirectURLstr string
 
-	AccessTokenStr    string                 `bson:"access_token_str"`
-	ProfileMap        map[string]interface{} `bson:"profile_map"`
+	// user can specify which page then want to be redirect to after logout
+	LogoutSuccessRedirectURLstr string
+
+	AccessTokenStr string                 `bson:"access_token_str"`
+	ProfileMap     map[string]interface{} `bson:"profile_map"`
 }
 
 type GFauth0inputLoginCallback struct {
@@ -56,7 +63,8 @@ type GFauth0inputLoginCallback struct {
 	Auth0appDomainStr string
 }
 type GFauth0outputLoginCallback struct {
-	JWTtokenStr string     
+	JWTtokenStr string    
+	LoginSuccessRedirectURLstr string 
 }
 
 type GFauth0inputAPItokenGenerate struct {
@@ -102,21 +110,29 @@ func Auth0apiTokenGeneratePipeline(pInput *GFauth0inputAPItokenGenerate,
 
 func Auth0logoutPipeline(pGFsessionID gf_core.GF_ID,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
-	// DELETE_SESSION
-	gfErr := dbSQLauth0deleteSession(pGFsessionID, pCtx, pRuntimeSys)
+	auth0session, gfErr := DBsqlAuth0getSession(pGFsessionID, pCtx, pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return "", gfErr
 	}
 
-	return nil
+	logoutSuccessRedirectURLstr := auth0session.LogoutSuccessRedirectURLstr
+
+	// DELETE_SESSION
+	gfErr = dbSQLauth0deleteSession(pGFsessionID, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
+	}
+
+	return logoutSuccessRedirectURLstr, nil
 }
 
 //---------------------------------------------------
 // LOGIN
 
-func Auth0loginPipeline(pCtx context.Context,
+func Auth0loginPipeline(pLoginSuccessRedirectURLstr string,
+	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
 
 	//---------------------
@@ -134,6 +150,8 @@ func Auth0loginPipeline(pCtx context.Context,
 		// and is now logged in.
 		// this is a new Auth0 session, so the login is marked as not-complete.
 		LoginCompleteBool: false,
+
+		LoginSuccessRedirectURLstr: pLoginSuccessRedirectURLstr,
 	}
 
 	//---------------------
@@ -458,6 +476,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 
 	output := &GFauth0outputLoginCallback{
 		JWTtokenStr: JWTtokenStr,
+		LoginSuccessRedirectURLstr: auth0session.LoginSuccessRedirectURLstr,
 	}
 	return output, nil
 }

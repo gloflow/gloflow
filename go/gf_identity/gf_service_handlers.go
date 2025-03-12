@@ -233,8 +233,7 @@ func initHandlers(pAuthLoginURLstr string,
 	// EMAIL_LOGIN
 	// NO_AUTH
 
-
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/email/login",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/email/logn",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
@@ -246,8 +245,6 @@ func initHandlers(pAuthLoginURLstr string,
 				}
 
 				//---------------------
-
-
 
 				gfErr = gf_identity_core.UsersEmailLoginPipeline(httpInput,
 					pCtx,
@@ -309,9 +306,12 @@ func initHandlers(pAuthLoginURLstr string,
 
 					//---------------------
 					// SET_COOKIES
+
+					sameSiteStrictBool := true
 					jwtTokenValStr := string(loginFinalizeOutput.JWTtokenVal)
 					gf_identity_core.CreateAuthCookie(jwtTokenValStr,
 						pServiceInfo.DomainForAuthCookiesStr,
+						sameSiteStrictBool,
 						pResp)
 
 					//---------------------
@@ -406,8 +406,10 @@ func initHandlers(pAuthLoginURLstr string,
 						//---------------------
 						// SET_COOKIES
 						jwtTokenValStr := string(loginFinalizeOutput.JWTtokenVal)
+						sameSiteStrictBool := true
 						gf_identity_core.CreateAuthCookie(jwtTokenValStr,
 							pServiceInfo.DomainForAuthCookiesStr,
+							sameSiteStrictBool,
 							pResp)
 
 						//---------------------
@@ -496,9 +498,11 @@ func initHandlers(pAuthLoginURLstr string,
 
 					//---------------------	
 					// SET_COOKIES
+					sameSiteStrictBool := true
 					jwtTokenValStr := string(loginFinalizeOutput.JWTtokenVal)
 					gf_identity_core.CreateAuthCookie(jwtTokenValStr,
 						pServiceInfo.DomainForAuthCookiesStr,
+						sameSiteStrictBool,
 						pResp)
 
 					//---------------------

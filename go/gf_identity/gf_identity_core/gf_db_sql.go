@@ -75,10 +75,12 @@ func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 			id,
 			deleted,
 			login_complete,
+			login_success_redirect_url,
+
 			access_token,
 			profile
 		)
-		VALUES ($1, $2, $3, $4, $5, $6);
+		VALUES ($1, $2, $3, $4, $5, $6, $7);
 	`
 
 	// serializing the profile map to JSON to store in the database
@@ -97,6 +99,7 @@ func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 		pAuth0session.ID,
 		pAuth0session.DeletedBool,
 		pAuth0session.LoginCompleteBool,
+		pAuth0session.LoginSuccessRedirectURLstr,
 		pAuth0session.AccessTokenStr,
 		profileMapJSON)
 	
@@ -127,6 +130,8 @@ func DBsqlAuth0getSession(pGFsessionID gf_core.GF_ID,
 			creation_time,
 			user_id,
 			login_complete,
+			login_success_redirect_url,
+			logout_success_redirect_url,
 			access_token,
 			profile
 		FROM gf_auth0_session
@@ -134,15 +139,18 @@ func DBsqlAuth0getSession(pGFsessionID gf_core.GF_ID,
 
 	session := GFauth0session{}
 	var creationTime time.Time
-	var userIDsqlStr sql.NullString
+	var userIDsql sql.NullString
+	var LogoutSuccessRedirectURL sql.NullString
 	var profileJSON  []byte
 
 	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pGFsessionID).Scan(
 		&session.ID,
 		&session.DeletedBool,
 		&creationTime,
-		&userIDsqlStr,
+		&userIDsql,
 		&session.LoginCompleteBool,
+		&session.LoginSuccessRedirectURLstr,
+		&LogoutSuccessRedirectURL,
 		&session.AccessTokenStr,
 		&profileJSON)
 
@@ -159,8 +167,12 @@ func DBsqlAuth0getSession(pGFsessionID gf_core.GF_ID,
 	session.CreationUNIXtimeF = float64(creationTime.Unix())
 
 	// only load user_id if its not an SQL NULL value
-	if userIDsqlStr.Valid {
-		session.UserID = gf_core.GF_ID(userIDsqlStr.String)
+	if userIDsql.Valid {
+		session.UserID = gf_core.GF_ID(userIDsql.String)
+	}
+
+	if LogoutSuccessRedirectURL.Valid {
+		session.LogoutSuccessRedirectURLstr = LogoutSuccessRedirectURL.String
 	}
 
 	if err := json.Unmarshal(profileJSON, &session.ProfileMap); err != nil {
@@ -216,6 +228,37 @@ func dbSQLauth0updateSession(pGFsessionID gf_core.GF_ID,
 		pGFsessionID)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to update Auth0 session in the DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"session_id_str": pGFsessionID,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+
+func DBsqlAuth0updateSessionLogoutURL(pGFsessionID gf_core.GF_ID,
+	pLogoutURLstr string,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	pRuntimeSys.LogNewFun("DEBUG", "updating Auth0 session logout URL...", map[string]interface{}{
+		"session_id": pGFsessionID,
+		"logout_url": pLogoutURLstr,
+	})
+
+	sqlStr := `
+		UPDATE gf_auth0_session
+		SET logout_success_redirect_url = $1
+		WHERE id = $2 AND deleted = false`
+	
+	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pLogoutURLstr, pGFsessionID)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to update Auth0 session logout URL in the DB",
 			"sql_query_execute",
 			map[string]interface{}{
 				"session_id_str": pGFsessionID,
@@ -1411,7 +1454,11 @@ func DBsqlCreateTables(pCtx context.Context,
 		deleted        BOOLEAN DEFAULT FALSE,
 		creation_time  TIMESTAMP DEFAULT NOW(),
 		user_id        TEXT,
-		login_complete BOOLEAN NOT NULL DEFAULT FALSE,
+
+		login_complete              BOOLEAN NOT NULL DEFAULT FALSE,
+		login_success_redirect_url  TEXT,
+		logout_success_redirect_url TEXT,
+		
 		access_token   TEXT,
 		profile        JSON,
 

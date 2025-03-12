@@ -67,6 +67,9 @@ func errorGetDefs() map[string]ErrorDef {
 		"policy__op_denied": ErrorDef{
 			DescrStr: "access policy has denied the operation",
 		},
+		"auth_missing_cookie": ErrorDef{
+			DescrStr: "missing auth cookie",
+		},
 
 		//---------------
 		// DATA_VERIFICATION

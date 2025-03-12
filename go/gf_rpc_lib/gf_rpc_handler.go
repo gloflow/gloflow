@@ -262,6 +262,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			}
 			gf_events.EmitApp(GF_EVENT_RPC__CORS_REQUEST,
 				eventMeta,
+				pRuntimeSys.AppNameStr,
 				userID,
 				ctxWithReqID,
 				pRuntimeSys)
@@ -350,6 +351,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 				}
 				gf_events.EmitApp(GF_EVENT_RPC__IDENTITY_REQUEST,
 					eventMeta,
+					pRuntimeSys.AppNameStr,
 					userID,
 					ctxWithReqID,
 					pRuntimeSys)
