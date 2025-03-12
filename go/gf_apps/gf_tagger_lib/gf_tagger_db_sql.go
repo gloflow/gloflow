@@ -79,13 +79,14 @@ func dbSQLcreateTag(pTagID gf_core.GF_ID,
 // CHECK_FLOW_EXISTS
 
 func DBsqlCheckTagExists(pTagStr string,
-	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+	pTargetObjID gf_core.GF_ID,
+	pRuntimeSys  *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 	db := pRuntimeSys.SQLdb
 
 	var existsBool bool
-	sqlStr := `SELECT exists(SELECT 1 FROM gf_tags WHERE name=$1)`
-	err := db.QueryRow(sqlStr, pTagStr).Scan(&existsBool)
+	sqlStr := `SELECT exists(SELECT 1 FROM gf_tags WHERE name=$1 AND target_obj_id=$2)`
+	err := db.QueryRow(sqlStr, pTagStr, string(pTargetObjID)).Scan(&existsBool)
 
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to check if a tag exists in the DB",

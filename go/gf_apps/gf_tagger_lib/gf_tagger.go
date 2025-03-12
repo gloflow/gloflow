@@ -97,7 +97,7 @@ func CreateIfMissing(pTagsLst []string,
 
 		//----------------------
 		// DB - SQL
-		existsBool, gfErr := DBsqlCheckTagExists(tagStr, pRuntimeSys)
+		existsBool, gfErr := DBsqlCheckTagExists(tagStr, pObjID, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
@@ -207,12 +207,13 @@ func addTagsToObject(pTagsStr string,
 		
 		objID := gf_core.GF_ID(pObjectExternIDstr)
 
-		gfErr = CreateIfMissing([]string{tagStr, },
+		gfErr := CreateIfMissing([]string{tagStr,},
 			objID,
 			pObjectTypeStr,
 			pUserID,
 			pCtx,
 			pRuntimeSys)
+
 		if gfErr != nil {
 			return gfErr
 		}

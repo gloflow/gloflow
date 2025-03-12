@@ -37,6 +37,7 @@ import (
 
 type RuntimeSys struct {
 	
+	AppNameStr	   string
 	ServiceNameStr string
 	EnvStr         string
 	Debug_bool     bool // if debug mode is enabled (some places will print extra info in debug mode)
@@ -93,7 +94,7 @@ type ExternalPlugins struct {
 	
 	//---------------------------
 	// EVENTS
-	EventCallback func(string, map[string]interface{}, GF_ID, *RuntimeSys) *GFerror
+	EventCallback func(string, map[string]interface{}, string, GF_ID, *RuntimeSys) *GFerror
 
 	//---------------------------
 	// SECRETS
