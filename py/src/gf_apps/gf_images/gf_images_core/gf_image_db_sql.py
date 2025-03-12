@@ -20,6 +20,73 @@ from gf_core import gf_core_utils
 from . import gf_image
 
 #---------------------------------------------------
+def eliminate_duplicate_tags(p_image_id_str,
+	p_db_client):
+	
+	table_name_str = "gf_images"
+	cur = p_db_client.cursor()
+
+	query_str = f'''
+		UPDATE {table_name_str}
+		SET tags_lst = ARRAY(
+			SELECT DISTINCT UNNEST(tags_lst)
+		)
+		WHERE id = %s;
+		'''
+	cur.execute(query_str, (p_image_id_str,))
+
+#---------------------------------------------------
+def has_duplicate_tags(p_image_id_str,
+	p_db_client):
+
+	table_name_str = "gf_images"
+	cur = p_db_client.cursor()
+
+	query_str = f'''
+		SELECT EXISTS (
+			SELECT 1 FROM {table_name_str}
+			WHERE id = %s
+			AND array_length(tags_lst, 1) > 
+				array_length(ARRAY(SELECT DISTINCT UNNEST(tags_lst)), 1)
+		);
+	'''
+	
+	try:
+		cur.execute(query_str, (p_image_id_str,))
+		exists_bool = cur.fetchone()[0]
+		cur.close()
+		
+		return exists_bool
+	except Exception as e:
+		print("Error:", e)
+		return False  # Default to False if an error occurs
+
+#---------------------------------------------------
+def get_image(p_image_id_str,
+	p_db_client):
+
+	table_name_str = "gf_images"
+	cur = p_db_client.cursor()
+
+	query_str = f'''
+		SELECT *
+		FROM {table_name_str}
+		WHERE id = %s
+	'''
+
+	cur.execute(query_str, (p_image_id_str,))
+
+	row = cur.fetchone()
+	if row is None:
+		return None
+
+	columns = [desc[0] for desc in cur.description]
+	image_map = dict(zip(columns, row))
+
+	cur.close()
+	return image_map
+
+#---------------------------------------------------
 # p_mongo_source_bool - temporary, used during mongo->sql migration
 
 def put_images(p_image_adt_lst,
