@@ -26,7 +26,7 @@ export function sleep(p_miliseconds_int :number) {
 }
 
 //-------------------------------------------------
-export function init_creation_date(p_target_element, p_log_fun) {
+export function init_creation_date(p_target_element :HTMLElement, p_log_fun :Function) {
 
 	const creation_time_element = $(p_target_element).find('.creation_time');
 	const creation_time_f       = parseFloat($(creation_time_element).text());

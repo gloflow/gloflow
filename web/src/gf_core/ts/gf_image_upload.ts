@@ -18,10 +18,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 //-------------------------------------------------
-
-export function init(p_flow_name_str: string,
-	p_target_full_host_str: string,
-	p_on_upload_fun: any) {
+export function init(p_flow_name_str :string,
+	p_target_full_host_str :string,
+	p_on_upload_fun        :Function) {
 
 	// console.log("UPLOAD INITIALIZED")
 	document.onpaste = function(p_paste_event) {
@@ -66,20 +65,19 @@ export function init(p_flow_name_str: string,
 
 							//-------------------------------------------------
 							// UPLOAD_ACTIVATE_FUN
-							(p_image_name_str: string,
-							p_flows_names_str: string,
-							p_on_upload_complete_fun: any)=>{
+							async (p_image_name_str :string,
+							p_flows_names_str        :string,
+							p_on_upload_complete_fun :Function)=>{
 
 								// UPLOAD_IMAGE
-								gf_upload__run(p_image_name_str,
+								const upload_gf_image_id_str = await gf_upload__run(p_image_name_str,
 									img_data_str,
 									image_format_str,
 									p_flows_names_str,
-									p_target_full_host_str,
-									(p_upload_gf_image_id_str: string)=>{
-										p_on_upload_complete_fun();
-										p_on_upload_fun(p_upload_gf_image_id_str);
-									});
+									p_target_full_host_str);
+
+								p_on_upload_complete_fun();
+								p_on_upload_fun(upload_gf_image_id_str);
 							});
 
 							//-------------------------------------------------
@@ -94,9 +92,9 @@ export function init(p_flow_name_str: string,
 }
 
 //-------------------------------------------------
-function gf_upload__view_img(p_img_data_str,
-	p_flow_name_str,
-	p_upload_activate_fun) {
+function gf_upload__view_img(p_img_data_str :string,
+	p_flow_name_str       :string,
+	p_upload_activate_fun :Function) {
 	
 	//-------------------------------------------------
 	function get_image_dialog() {
@@ -105,23 +103,23 @@ function gf_upload__view_img(p_img_data_str,
 		if ($("#upload_image_dialog").length == 0) {
 
 			const img_dialog = $(`
-				<div id="upload_image_dialog">
+				<div id="upload_image_dialog" class="gf_center">
 					<div id="background"></div>
 
 					<div id="upload_images_detail">
 						<div id="upload_images">
 
-							<!-- IMAGE_PANEL -->
-							<div class="upload_image_panel">
-								<img id="1" class="target_upload_image" src='${p_img_data_str}'></img>
-								<div id="upload_image_name_input">
-									<input placeholder="image name"></input>
+							<div id="upload_image_panel">
+								
+								<div id="images">
+									
 								</div>
-								<div id="upload_image_flow_name_input">
+
+								<div id="upload_image_flow_name_input" class="gf_center">
 									<input placeholder="flow name" value="${p_flow_name_str}"></input>
 								</div>
+
 							</div>
-							<!-- ----------- -->
 
 						</div>
 						<div id="upload_btn">upload image</div>
@@ -129,6 +127,11 @@ function gf_upload__view_img(p_img_data_str,
 
 				</div>`);
 			$("body").append(img_dialog);
+
+			const new_img_id_int    = 1;
+			const new_image_element = append_image(new_img_id_int, p_img_data_str);
+			$(img_dialog).find("#upload_image_panel #images").append(new_image_element);
+
 			return img_dialog;
 		}
 
@@ -137,22 +140,57 @@ function gf_upload__view_img(p_img_data_str,
 			const img_dialog     = $("#upload_image_dialog");
 			const new_img_id_int = parseInt($(img_dialog).find(".target_upload_image").last().attr("id")) + 1 // increment by one from last elements id/index
 			
-			$(img_dialog).find("#upload_images").append(`
-				<!-- IMAGE_PANEL -->
-				<div class="upload_image_panel">
+			/*
+			$(img_dialog).find("#upload_image_panel #images").append(`
+				<div class="image">
+					<div class"remove_btn">
+						<img src="https://assetspub.gloflow.com/assets/gf_sys/gf_close_btn.svg" draggable="false"></img>
+					</div>
 					<img id="${new_img_id_int}" class="target_upload_image" src="${p_img_data_str}"></img>
-					<div id="upload_image_name_input">
+					<div class="upload_image_name_input">
 						<input placeholder="image name"></input>
 					</div>
-					<div id="upload_image_flow_name_input">
-						<input placeholder="flow name"></input>
-					</div>
 				</div>
-				<!-- ----------- -->`);
-			
+			`);
+			*/
+
+			const new_image_element = append_image(new_img_id_int, p_img_data_str);
+			$(img_dialog).find("#upload_image_panel #images").append(new_image_element);
+
 			$(img_dialog).find("#upload_btn").text("upload images");
+			
 			return img_dialog;
 		}
+
+		//-------------------------------------------------
+		function append_image(p_new_image_dom_id_int :number, p_img_data_str :string) :HTMLElement {
+
+			const image_element = $(`
+				<div class="image">
+					<div class="remove_btn">
+						<img src="https://assetspub.gloflow.com/assets/gf_sys/gf_close_btn.svg" draggable="false"></img>
+					</div>
+					<img id="${p_new_image_dom_id_int}" class="target_upload_image" src="${p_img_data_str}"></img>
+					<div class="upload_image_name_input">
+						<input placeholder="image name"></input>
+					</div>
+				</div>
+			`)[0];
+
+			$(image_element).find(".remove_btn").on("click", ()=>{
+				$(image_element).remove();
+
+				// if there are no more images for upload, remove the whole dialog
+				if ($(img_dialog).find(".image").length == 0) {
+					$(img_dialog).remove();
+					$("body").css("overflow-y", "visible"); // turn-on scroll
+				}
+			});
+
+			return image_element;
+		}
+
+		//-------------------------------------------------
 	}
 
 	//-------------------------------------------------
@@ -165,29 +203,22 @@ function gf_upload__view_img(p_img_data_str,
 		// position the upload_image_dialog in view if the user scrolled
 		const scroll_position_f = $(document).scrollTop();
 		$("#upload_image_dialog").css("top", `${scroll_position_f}px`);
-
-		// REPOSITION IMAGES_DETAIL
-		const images_detail = $(img_dialog).find("#upload_images_detail");
-
-		const image_x = Math.max(0, (($(window).width() - $(images_detail).outerWidth()) / 2));
-		const image_y = Math.max(0, (($(window).height() - $(images_detail).outerHeight()) / 2));
-
-		$(images_detail).css("left", image_x+"px");
-		$(images_detail).css("top",  image_y+"px");
 	}
 
 	//-------------------------------------------------
-	const this_image = $(img_dialog).find(".upload_image_panel").last();
+	const this_image = $(img_dialog).find("#upload_image_panel").last();
 	$(this_image).find("img").on("load", ()=>{
 
 		$("body").css("overflow-y", "hidden"); // turn-off scroll
 		position_image_view();
 	});
 
+	/*
 	// reposition image_view on resize
 	$(window).resize(function () {
 		position_image_view();
 	});
+	*/
 
 	//-------------------------------------------------
 	function upload() {
@@ -218,6 +249,9 @@ function gf_upload__view_img(p_img_data_str,
 
 		// ENTER_KEY
 		if (p_event.which == 13) {
+
+			console.log("enter key pressed...");
+
 			// IMPORTANT!! - first time "enter" is pressed to upload an image, we want to unregister
 			//               "enter" as the upload-activation key. 
 			//               we also do this before upload begins, since it might last for some time
@@ -229,6 +263,9 @@ function gf_upload__view_img(p_img_data_str,
 		
 		// ESC_KEY
 		if (p_event.which == 27) {
+
+			console.log("esc key pressed...");
+
 			$(this).unbind(p_event);
 
 			// REMOVE_DIALOG
@@ -253,183 +290,197 @@ function gf_upload__view_img(p_img_data_str,
 }
 
 //-------------------------------------------------
-function gf_upload__run(p_image_name_str,
-	p_image_data_str,
-	p_image_format_str,
-	p_flows_names_str,
-	p_target_full_host_str,
-	p_on_complete_fun) {
-	console.log(`UPLOAD_IMAGE - ${p_image_name_str} - ${p_image_format_str}`);
+async function gf_upload__run(p_image_name_str :string,
+	p_image_data_str       :string,
+	p_image_format_str     :string,
+	p_flows_names_str      :string,
+	p_target_full_host_str :string) {
+	return new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-	const upload_start_f = performance.now();
+		console.log(`UPLOAD_IMAGE - ${p_image_name_str} - ${p_image_format_str}`);
 
-	// UPLOAD__SEND_INIT
-	gf_upload__send_init(p_image_name_str,
-		p_image_data_str,
-		p_image_format_str,
-		p_flows_names_str,
-		p_target_full_host_str,
-		(p_upload_gf_image_id_str, p_presigned_url_str)=>{
+		const upload_start_f = performance.now();
 
-			// UPLOAD_TO_S3
-			gf_upload__s3_put(p_presigned_url_str,
-				p_image_data_str,
-				(p_upload_transfer_duration_sec_f)=>{
+		// UPLOAD__SEND_INIT
+		const upload_map = await gf_upload__send_init(p_image_name_str,
+			p_image_data_str,
+			p_image_format_str,
+			p_flows_names_str,
+			p_target_full_host_str);
+		
+		const upload_gf_image_id_str = upload_map["upload_gf_image_id_str"];
+		const presigned_url_str      = upload_map["presigned_url_str"];
 
-					// UPLOAD__SEND_COMPLETE
-					gf_upload__send_complete(p_upload_gf_image_id_str,
-						p_flows_names_str,
-						p_target_full_host_str,
-						()=>{
+		// UPLOAD_TO_S3
+		const upload_transfer_duration_sec_f = await gf_upload__s3_put(presigned_url_str,
+			p_image_data_str);
 
-							const upload_end_f = performance.now();
-							const upload_duration_sec_f = upload_end_f - upload_start_f;
+		// UPLOAD__SEND_COMPLETE
+		await gf_upload__send_complete(upload_gf_image_id_str,
+			p_flows_names_str,
+			p_target_full_host_str);
 
-							gf_upload__send_metrics(upload_duration_sec_f,
-								p_upload_transfer_duration_sec_f,
-								p_upload_gf_image_id_str,
-								p_target_full_host_str,
-								()=>{
-									p_on_complete_fun(p_upload_gf_image_id_str);
-								});
-						});
-				});
-		});
-}
+		// UPLOAD__SEND_METRICS
+		const upload_end_f = performance.now();
+		const upload_duration_sec_f = upload_end_f - upload_start_f;
 
-//-------------------------------------------------
-function gf_upload__send_init(p_image_name_str,
-	p_image_data_str,
-	p_image_format_str,
-	p_flows_names_str,
-	p_target_full_host_str,
-	p_on_complete_fun) {
+		await gf_upload__send_metrics(upload_duration_sec_f,
+			upload_transfer_duration_sec_f,
+			upload_gf_image_id_str,
+			p_target_full_host_str);
 
-	// UPLOAD_INIT
-	const client_type_str = "browser";
-
-	// auth_r=0 - dont redirect on auth fail, just return status
-	const url_str = `${p_target_full_host_str}/v1/images/upload_init?imgf=${p_image_format_str}&imgn=${p_image_name_str}&f=${p_flows_names_str}&ct=${client_type_str}&auth_r=0`;
-	$.ajax({
-		method: "GET",
-		"url":  url_str,
-		//-------------------------------------------------
-		"success": (p_data_map) => {
-
-			console.log("upload initialized...")
-			console.log(p_data_map);
-
-			const upload_gf_image_id_str = p_data_map["data"]["upload_info_map"]["upload_gf_image_id_str"];
-			const presigned_url_str      = p_data_map["data"]["upload_info_map"]["presigned_url_str"];
-
-			console.log(`upload_gf_image_id - ${upload_gf_image_id_str}`);
-			console.log(`presigned_url      - ${presigned_url_str}`);
-
-
-			p_on_complete_fun(upload_gf_image_id_str,
-				presigned_url_str);
-		}
-
-		//-------------------------------------------------
+		p_resolve_fun(upload_gf_image_id_str);
 	});
 }
 
 //-------------------------------------------------
-function gf_upload__s3_put(p_presigned_url_str,
-	p_image_data_str,
-	p_on_complete_fun) {
+function gf_upload__send_init(p_image_name_str :string,
+	p_image_data_str       :string,
+	p_image_format_str     :string,
+	p_flows_names_str      :string,
+	p_target_full_host_str :string) :Promise<any> {
+	
+	return new Promise(function(p_resolve_fun, p_reject_fun) {
 
-	const image_data_clean_str = p_image_data_str.replace("data:image/png;base64,", "");
-	const image_data           = gf_base64_to_blob(image_data_clean_str, "image/png");
-	const upload_start_f = performance.now();
+		const client_type_str = "browser";
 
-	// AWS_S3
-	$.ajax({
-		"type": "PUT",
-		"url":  p_presigned_url_str,
-		"data": image_data, // p_image_data_str,
+		// auth_r=0 - dont redirect on auth fail, just return status
+		const url_str = `${p_target_full_host_str}/v1/images/upload_init?imgf=${p_image_format_str}&imgn=${p_image_name_str}&f=${p_flows_names_str}&ct=${client_type_str}&auth_r=0`;
+		$.get(url_str)
+			.done((p_data_map) => {
 
-		// these are the headers that were included in the S3 URL signature generated by AWS.
-		// so they have to be set to the same values for the received PUT request signature (on AWS side)
-		// to match.
-		"headers": {
-			"content-type": "image/png",
-			"x-amz-acl":    "public-read",
-		},
+				console.log("upload initialized...")
+				console.log(p_data_map);
 
-		// jqeury is not to convert the image to form data
-		processData: false,
-		"success": ()=>{
-			const upload_end_f = performance.now();
-			const upload_transfer_duration_sec_f = upload_end_f - upload_start_f;
-			p_on_complete_fun(upload_transfer_duration_sec_f);
-		}
-	})
+				if (p_data_map["status"] == "OK") {
+					const upload_gf_image_id_str = p_data_map["data"]["upload_info_map"]["upload_gf_image_id_str"];
+					const presigned_url_str      = p_data_map["data"]["upload_info_map"]["presigned_url_str"];
+
+					console.log(`upload_gf_image_id - ${upload_gf_image_id_str}`);
+					console.log(`presigned_url      - ${presigned_url_str}`);
+
+					p_resolve_fun({
+						"upload_gf_image_id_str": upload_gf_image_id_str,
+						"presigned_url_str":      presigned_url_str,
+					});
+				}
+				else {
+					p_reject_fun(p_data_map["data"]);
+				}
+			})
+			.fail(function(jqXHR, textStatus, errorThrown) {
+				p_reject_fun(textStatus+" - "+errorThrown);
+			});
+	});
 }
 
 //-------------------------------------------------
-function gf_upload__send_metrics(p_upload_duration_sec_f,
-	p_upload_transfer_duration_sec_f,
-	p_upload_gf_image_id_str,
-	p_target_full_host_str,
-	p_on_complete_fun) {
+function gf_upload__s3_put(p_presigned_url_str :string,
+	p_image_data_str :string) :Promise<number> {
+	
+	return new Promise(function(p_resolve_fun, p_reject_fun) {
 
-	const client_type_str = "browser";
+		const image_data_clean_str = p_image_data_str.replace("data:image/png;base64,", "");
+		const image_data           = gf_base64_to_blob(image_data_clean_str, "image/png");
+		const upload_start_f = performance.now();
 
-	// auth_r=0 - dont redirect on auth fail, just return status
-	const url_str = `${p_target_full_host_str}/v1/images/upload_metrics?imgid=${p_upload_gf_image_id_str}&ct=${client_type_str}&auth_r=0`;
+		// AWS_S3
+		$.ajax({
+			"type": "PUT",
+			"url":  p_presigned_url_str,
+			"data": image_data, // p_image_data_str,
 
-	const data_map = {
-		"upload_client_duration_sec_f":          p_upload_duration_sec_f,
-		"upload_client_transfer_duration_sec_f": p_upload_transfer_duration_sec_f,
-	};
-	$.ajax({
-		type: "POST",
-		url:  url_str,
-		data: JSON.stringify(data_map),
-		//-------------------------------------------------
-		"success": (p_data_map) => {
+			// these are the headers that were included in the S3 URL signature generated by AWS.
+			// so they have to be set to the same values for the received PUT request signature (on AWS side)
+			// to match.
+			"headers": {
+				"content-type": "image/png",
+				"x-amz-acl":    "public-read",
+			},
 
-			console.log("upload metrics done...")
-			console.log(p_data_map);
-			p_on_complete_fun();
-		},
-
-		//-------------------------------------------------
-		error: (jqXHR, p_text_status_str)=>{
-
-		}
-	})
+			// jqeury is not to convert the image to form data
+			processData: false,
+			"success": ()=>{
+				const upload_end_f = performance.now();
+				const upload_transfer_duration_sec_f = upload_end_f - upload_start_f;
+				p_resolve_fun(upload_transfer_duration_sec_f);
+			},
+			"error": (jqXHR, textStatus, errorThrown)=>{
+				p_reject_fun(textStatus+" - "+errorThrown);
+			}
+		})
+	});
 }
 
 //-------------------------------------------------
-function gf_upload__send_complete(p_upload_gf_image_id_str,
-	p_flows_names_str,
-	p_target_full_host_str,
-	p_on_complete_fun) {
+function gf_upload__send_metrics(p_upload_duration_sec_f :number,
+	p_upload_transfer_duration_sec_f :number,
+	p_upload_gf_image_id_str         :string,
+	p_target_full_host_str           :string) :Promise<any> {
+	
+	return new Promise(function(p_resolve_fun, p_reject_fun) {
 
-	console.log("AWS S3 PUT upload done...")
+		const client_type_str = "browser";
 
-	// auth_r=0 - dont redirect on auth fail, just return status
-	const url_str = `${p_target_full_host_str}/v1/images/upload_complete?imgid=${p_upload_gf_image_id_str}&f=${p_flows_names_str}&auth_r=0`;
+		// auth_r=0 - dont redirect on auth fail, just return status
+		const url_str = `${p_target_full_host_str}/v1/images/upload_metrics?imgid=${p_upload_gf_image_id_str}&ct=${client_type_str}&auth_r=0`;
 
-	$.ajax({
-		method: "POST",
-		"url":  url_str,
-		//-------------------------------------------------
-		"success": (p_data_map) => {
+		const data_map = {
+			"upload_client_duration_sec_f":          p_upload_duration_sec_f,
+			"upload_client_transfer_duration_sec_f": p_upload_transfer_duration_sec_f,
+		};
+		$.ajax({
+			type: "POST",
+			url:  url_str,
+			data: JSON.stringify(data_map),
+			//-------------------------------------------------
+			"success": (p_data_map) => {
 
-			console.log("upload complete...")
-			console.log(p_data_map);
-			p_on_complete_fun();
-		}
+				console.log("upload metrics done...")
+				console.log(p_data_map);
+				p_resolve_fun({});
+			},
 
-		//-------------------------------------------------
-	})
+			//-------------------------------------------------
+			error: (jqXHR, p_text_status_str)=>{
+				p_reject_fun(p_text_status_str);
+			}
+		})
+	});
 }
 
 //-------------------------------------------------
-function gf_base64_to_blob(p_base64_str, p_mime_type_str)  {
+function gf_upload__send_complete(p_upload_gf_image_id_str :string,
+	p_flows_names_str      :string,
+	p_target_full_host_str :string) :Promise<any> {
+
+	return new Promise(function(p_resolve_fun, p_reject_fun) {
+		console.log("AWS S3 PUT upload done...")
+
+		// auth_r=0 - dont redirect on auth fail, just return status
+		const url_str = `${p_target_full_host_str}/v1/images/upload_complete?imgid=${p_upload_gf_image_id_str}&f=${p_flows_names_str}&auth_r=0`;
+
+		$.ajax({
+			method: "POST",
+			"url":  url_str,
+			//-------------------------------------------------
+			"success": (p_data_map) => {
+
+				console.log("upload complete...")
+				console.log(p_data_map);
+				p_resolve_fun({});
+			},
+
+			//-------------------------------------------------
+			error: (jqXHR, p_text_status_str)=>{
+				p_reject_fun(p_text_status_str);
+			}
+		})
+	});
+}
+
+//-------------------------------------------------
+function gf_base64_to_blob(p_base64_str :string, p_mime_type_str :string)  {
 
 	const slice_size_int = 1024;
 
