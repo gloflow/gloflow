@@ -18,16 +18,53 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 //-------------------------------------------------
-export function send_event_http(p_event_type_str :string,
+export function send_event_beacon(p_event_type_str :string,
     p_source_type_str :string,
     p_data_map        :object,
+    p_app_str         :string,
     p_host_str        :string) {
 
     return new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
             "type_str":        p_event_type_str,
             "source_type_str": p_source_type_str,
-            "data_map":        p_data_map
+            "data_map":        p_data_map,
+            "app_str":         p_app_str
+        };
+
+        //-------------------
+        // URL
+        const url_str = `${p_host_str}/v1/a/ue`;
+
+        //-------------------
+        const data = JSON.stringify(data_map);
+        const blob = new Blob([data], { type: 'application/json' });
+
+        // BEACON - using it instead of ajax() because article marking as read happens on <a> click,
+        //          which unloads the page before ajax() can complete
+        if (navigator.sendBeacon(url_str, blob)) {
+            console.log("Beacon sent successfully");
+            p_resolve_fun({});
+        } else {
+            console.log("Beacon failed");
+            p_reject_fun("Beacon request failed");
+        }
+    });
+}
+
+//-------------------------------------------------
+export function send_event_http(p_event_type_str :string,
+    p_source_type_str :string,
+    p_data_map        :object,
+    p_app_str         :string,
+    p_host_str        :string) {
+
+    return new Promise(function(p_resolve_fun, p_reject_fun) {
+        const data_map = {
+            "type_str":        p_event_type_str,
+            "source_type_str": p_source_type_str,
+            "data_map":        p_data_map,
+            "app_str":         p_app_str
         };
 
         //-------------------
