@@ -43,7 +43,7 @@ type EventsRegisterConsumerMsg struct {
 }
 
 type EventMsg struct {
-	EventsIDstr string                  `json:"events_id_str"`
+	EventsIDstr string                 `json:"events_id_str"`
 	TypeStr     string                 `json:"type_str"`
 	MsgStr      string                 `json:"msg_str"`
 	DataMap     map[string]interface{} `json:"meta_map"`

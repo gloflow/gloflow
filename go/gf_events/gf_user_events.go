@@ -36,6 +36,7 @@ type GFuserEventInput struct {
 	TypeStr       string                 `json:"type_str"`
 	SourceTypeStr string                 `json:"source_type_str"` // "browser"
 	DataMap       map[string]interface{} `json:"data_map"`
+	AppStr        string                 `json:"app_str"`
 	ReqCtx        *GFuserEventReqCtx     `json:"-"`
 }
 
@@ -119,11 +120,13 @@ func UserEventCreate(pInput *GFuserEventInput,
 	// EVENT
 	if pRuntimeSys.EnableEventsAppBool {
 		
+		eventAppStr      := pInput.AppStr
 		eventFullTypeStr := UserEventFullType(pInput)
 		eventMeta := pInput.DataMap
 
 		EmitApp(eventFullTypeStr,
 			eventMeta,
+			eventAppStr,
 			pUserID,
 			pCtx,
 			pRuntimeSys)
@@ -133,37 +136,3 @@ func UserEventCreate(pInput *GFuserEventInput,
 }
 
 //-------------------------------------------------
-
-/*
-func session__get_id_cookie(p_req *http.Request,
-	p_resp        http.ResponseWriter,
-	pRuntimeSys *gf_core.RuntimeSys) string {
-
-	cookie, _ := p_req.Cookie("gf")  
-	if cookie == nil {
-		session_id_str := session__create_id_cookie(p_req, p_resp, pRuntimeSys)
-		return session_id_str
-	} else {
-		session_id_str := cookie.Value
-		return session_id_str
-	}
-}
-
-//-------------------------------------------------
-
-func session__create_id_cookie(p_req *http.Request,
-	p_resp        http.ResponseWriter,
-	pRuntimeSys *gf_core.RuntimeSys) string {
-
-	current_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-	ip_str               := p_req.RemoteAddr
-	session_id_str       := fmt.Sprintf("%f_%s", current_time__unix_f, ip_str)
-
-	pRuntimeSys.LogFun("INFO", "session_id_str - "+session_id_str)
-
-	new_cookie := http.Cookie{Name:"gf", Value:session_id_str}
-	http.SetCookie(p_resp, &new_cookie)
-
-	return session_id_str
-}
-*/

@@ -78,19 +78,29 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 			if pReq.Method == "POST" {
 
-				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
-
 				//-----------------
 				// INPUT
+				
 				input, gfErr := gf_events.UserEventParseInput(pReq, pResp, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 				
+				var userIDfinalStr gf_core.GF_ID
+
+				userLoggedInBool, userID, gfErr := gf_identity_core.GetUserIDfromReq(pReq,
+					pAuthSubsystemTypeStr,
+					pCtx,
+					pRuntimeSys)
+
+				if userLoggedInBool {
+					userIDfinalStr = userID
+				}
+
 				//-----------------
 							
 				gf_events.UserEventCreate(input,
-					userID,
+					userIDfinalStr,
 					pCtx,
 					pRuntimeSys)
 

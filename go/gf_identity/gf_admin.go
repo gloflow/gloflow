@@ -235,6 +235,7 @@ func AdminPipelineUserAddToInviteList(pInput *GFadminInputAddToInviteList,
 		}
 		gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_ADDED_USER_TO_INVITE_LIST,
 			eventMetaMap,
+			pRuntimeSys.AppNameStr,
 			pInput.AdminUserID,
 			pCtx,
 			pRuntimeSys)
@@ -281,6 +282,7 @@ func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListIn
 		}
 		gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_REMOVED_USER_FROM_INVITE_LIST,
 			eventMetaMap,
+			pRuntimeSys.AppNameStr,
 			pInput.AdminUserID,
 			pCtx,
 			pRuntimeSys)
@@ -447,6 +449,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 				}
 				gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_LOGIN_PASS_CONFIRMED,
 					eventMetaMap,
+					pRuntimeSys.AppNameStr,
 					userID,
 					pCtx,
 					pRuntimeSys)
@@ -481,6 +484,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 				}
 				gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_LOGIN_EMAIL_VERIFICATION_SENT,
 					eventMetaMap,
+					pRuntimeSys.AppNameStr,
 					userID,
 					pCtx,
 					pRuntimeSys)
@@ -523,6 +527,7 @@ func adminPipelineCreateAdmin(pInput *gf_identity_core.GFuserpassInputCreate,
 		}
 		gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_CREATE,
 			eventMetaMap,
+			pRuntimeSys.AppNameStr,
 			output.UserID,
 			pCtx,
 			pRuntimeSys)

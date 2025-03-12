@@ -89,6 +89,7 @@ func ImageClassify(pInput *GFimageClassifyInput,
 		}
 		gf_events.EmitApp(gf_images_core.GF_EVENT_APP__IMAGE_CLASSIFY,
 			eventMetaMap,
+			pRuntimeSys.AppNameStr,
 			pUserID,
 			pCtx,
 			pRuntimeSys)

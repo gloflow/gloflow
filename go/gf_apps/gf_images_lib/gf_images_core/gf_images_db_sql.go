@@ -339,7 +339,6 @@ func DBsqlImageExistsByID(pImageID GFimageID,
 
 func DBsqlImagesExistByURLs(pImagesExternURLsLst []string,
 	pFlowNameStr   string,
-	// pClientTypeStr string,
 	pUserID        gf_core.GF_ID,
 	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
@@ -641,11 +640,6 @@ func DBsqlCreateTables(pCtx context.Context,
 		-- FOREIGN KEY (user_id) REFERENCES gf_users(id)
 	);
 	`
-
-
-
-
-
 
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr)
 	if err != nil {

@@ -75,15 +75,7 @@ func DBaddTagToImage(pImageIDstr GFimageID,
 		if gfErr != nil {
 			return gfErr
 		}
-	} else {
-
-		// MONGO
-		gfErr = DBmongoAddTagsToImage(pImageIDstr, pTagsLst, pCtx, pRuntimeSys)
-		if gfErr != nil {
-			return gfErr
-		}
 	}
-
 	return nil
 }
 

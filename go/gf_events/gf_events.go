@@ -27,16 +27,18 @@ import (
 //-------------------------------------------------------------
 
 func EmitApp(pEventAppTypeStr string,
-	pMetaMap    map[string]interface{},
-	pUserID     gf_core.GF_ID,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) {
+	pMetaMap     map[string]interface{},
+	pEventAppStr string,
+	pUserID      gf_core.GF_ID,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) {
 
 	go func() {
 
 		// CALLBACK
 		pRuntimeSys.ExternalPlugins.EventCallback(pEventAppTypeStr,
 			pMetaMap,
+			pEventAppStr,
 			pUserID,
 			pRuntimeSys)
 

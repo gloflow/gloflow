@@ -136,6 +136,7 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 		}
 		gf_events.EmitApp(gf_tagger_core.GF_EVENT_APP__TAG_ADD,
 			eventMeta,
+			pRuntimeSys.AppNameStr,
 			pUserID,
 			pCtx,
 			pRuntimeSys)

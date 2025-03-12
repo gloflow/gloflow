@@ -169,33 +169,34 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	// VIEW_IMAGE
 	// renders a solo image
 	
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/v/",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/images/v/",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "GET" {
 
 				//-----------------
 				// INPUT
 
-				userID := gf_core.GF_ID("anon")
-
 				pathStr    := pReq.URL.Path
 				imageIDstr := strings.Replace(pathStr, "/images/v/", "", 1)
 				imageID    := gf_images_core.GFimageID(imageIDstr)
 
-				/*
-				qsMap       := pReq.URL.Query()
-				flowNameStr := "general"
-				if aLst, ok := qsMap["fname"]; ok {
-					flowNameStr = aLst[0]
+				var userIDfinalStr gf_core.GF_ID
+
+				userLoggedInBool, userID, gfErr := gf_identity_core.GetUserIDfromReq(pReq,
+					pAuthSubsystemTypeStr,
+					pCtx,
+					pRuntimeSys)
+
+				if userLoggedInBool {
+					userIDfinalStr = userID
 				}
-				*/
 
 				//-----------------
 				// RENDER_TEMPLATE
 				templateRenderedStr, gfErr := renderImageViewPage(imageID,
 					templates.imagesViewTmpl,
 					templates.imagesViewSubtemplatesNamesLst,
-					userID,
+					userIDfinalStr,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
@@ -215,7 +216,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					}
 					gf_events.EmitApp(gf_images_core.GF_EVENT_APP__IMAGE_VIEW_PAGE,
 						eventMeta,
-						userID,
+						pRuntimeSys.AppNameStr,
+						userIDfinalStr,
 						pCtx,
 						pRuntimeSys)
 				}
@@ -225,10 +227,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 			return nil, nil
 		},
-		pHTTPmux,
-		metrics,
-		true, // pStoreRunBool
-		nil,
+		rpcHandlerRuntime,
 		pRuntimeSys)
 
 
@@ -267,12 +266,9 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					imagesIDsCastedLst = append(imagesIDsCastedLst, imageID)
 				}
 
-				
-
 				input := &GFimageClassifyInput{
 					ClientTypeStr: clientTypeStr,
 					ImagesIDsLst:  imagesIDsCastedLst,
-
 				}
 
 				//-----------------

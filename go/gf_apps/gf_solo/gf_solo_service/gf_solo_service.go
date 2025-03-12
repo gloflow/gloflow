@@ -426,6 +426,7 @@ func RuntimeGet(pConfigPathStr string,
 	//--------------------
 	// RUNTIME_SYS
 	runtimeSys := &gf_core.RuntimeSys{
+		AppNameStr:     "gf_solo",
 		ServiceNameStr: "gf_solo",
 		EnvStr:         config.EnvStr,
 		LogFun:         pLogFun,

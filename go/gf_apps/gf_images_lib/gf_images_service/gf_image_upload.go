@@ -215,6 +215,7 @@ func UploadInit(pImageNameStr string,
 		}
 		gf_events.EmitApp(gf_images_core.GF_EVENT_APP__IMAGE_UPLOAD_INIT,
 			eventMetaMap,
+			pRuntimeSys.AppNameStr,
 			pUserID,
 			pCtx,
 			pRuntimeSys)
@@ -287,6 +288,7 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
 		}
 		gf_events.EmitApp(gf_images_core.GF_EVENT_APP__IMAGE_UPLOAD_COMPLETE,
 			eventMetaMap,
+			pRuntimeSys.AppNameStr,
 			pUserID,
 			pCtx,
 			pRuntimeSys)
