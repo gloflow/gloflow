@@ -14,6 +14,8 @@ $images_color: #393939; // rgb(59, 124, 156);
 	border-radius: 6px 6px 6px 6px;
 	overflow: hidden;
 	
+	visibility: hidden; // initially images are hidden
+
 	.extra_info_btn {
 		color: white;
 		background-color: #555555;

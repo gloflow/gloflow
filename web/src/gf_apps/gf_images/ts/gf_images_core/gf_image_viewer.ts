@@ -34,6 +34,8 @@ export function init(p_image_element :HTMLElement,
 	p_host_str			   :string,
 	p_plugin_callbacks_map :any,
 	p_log_fun              :Function) {
+	
+	const app_name_str = "gf_solo"
 
 	$(p_image_element).find("img").click(()=>{
 
@@ -108,12 +110,14 @@ export function init(p_image_element :HTMLElement,
             // EVENTS
             if (p_events_enabled_bool) {
                 
+				
                 const event_meta_map = {
 					"image_id": p_image_id_str,
                 };
                 await gf_user_events.send_event_http(gf_events.GF_IMAGES_IMAGE_VIEWER_CLOSE,
                     "browser",
                     event_meta_map,
+					app_name_str,
                     p_host_str)
             }
 
@@ -132,6 +136,7 @@ export function init(p_image_element :HTMLElement,
 			gf_user_events.send_event_http(gf_events.GF_IMAGES_IMAGE_VIEWER_OPEN,
 				"browser",
 				event_meta_map,
+				app_name_str,
 				p_host_str)
 		}
 

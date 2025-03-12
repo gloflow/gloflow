@@ -34,6 +34,7 @@ declare var URLSearchParams;
 //-------------------------------------------------
 export function init(p_log_fun) {
 	
+	
 	gf_sys_panel.init_with_auth(p_log_fun);
 
 	const image_info_element = $("#gf_image")[0];

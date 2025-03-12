@@ -55,6 +55,8 @@ export function init(p_flow_name_str :string,
 	p_plugin_callbacks_map :any,
 	p_log_fun :any) {
 
+	const app_name_str = "gf_solo"
+
 	const view_picker_element = $(`
 		<div id='view_type_picker'>
 			<div id='masonry_small_images'>
@@ -115,6 +117,7 @@ export function init(p_flow_name_str :string,
 			gf_user_events.send_event_http(gf_events.GF_IMAGES_VIEW_TYPE_PICKER_ACTIVATE_VIEW,
 				"browser",
 				event_meta_map,
+				app_name_str,
 				p_host_str)
 		}
 		
@@ -154,6 +157,7 @@ export function init(p_flow_name_str :string,
 			gf_user_events.send_event_http(gf_events.GF_IMAGES_VIEW_TYPE_PICKER_ACTIVATE_VIEW,
 				"browser",
 				event_meta_map,
+				app_name_str,
 				p_host_str)
 		}
 		
@@ -210,6 +214,7 @@ export function init(p_flow_name_str :string,
 			gf_user_events.send_event_http(gf_events.GF_IMAGES_VIEW_TYPE_PICKER_ACTIVATE_VIEW,
 				"browser",
 				event_meta_map,
+				app_name_str,
 				p_host_str)
 		}
 		

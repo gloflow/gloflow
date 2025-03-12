@@ -24,10 +24,11 @@ import * as gf_user_events from "./../../../../gf_events/ts/gf_user_events";
 
 //---------------------------------------------------
 export async function init(p_events_enabled_bool :boolean,
-    p_plugin_callbacks_map,
+    p_plugin_callbacks_map :any,
     p_host_str :string,
     p_log_fun :any) {
 
+    const app_name_str  = "gf_solo"
     const all_flows_lst = await http__get_all_flows(p_host_str, p_log_fun) as {}[];
 
 
@@ -84,6 +85,7 @@ export async function init(p_events_enabled_bool :boolean,
                 gf_user_events.send_event_http(gf_images_events.GF_IMAGES_FLOWS_PICKER_OPEN,
                     "browser",
                     event_meta_map,
+                    app_name_str,
                     p_host_str)
             }
 
@@ -151,6 +153,7 @@ export async function init(p_events_enabled_bool :boolean,
                 await gf_user_events.send_event_http(gf_images_events.GF_IMAGES_FLOW_PICKED,
                     "browser",
                     event_meta_map,
+                    app_name_str,
                     p_host_str)
             }
 

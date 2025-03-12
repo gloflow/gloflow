@@ -47,6 +47,7 @@ declare var URLSearchParams;
 export async function init(p_plugin_callbacks_map :any,
 	p_log_fun :any) {
 
+	const app_name_str = "gf_solo"
 	const current_host_str = gf_core_utils.get_current_host();
 	
 	//---------------------
@@ -106,12 +107,11 @@ export async function init(p_plugin_callbacks_map :any,
 	// EVENTS
 	if (events_enabled_bool && logged_in_bool) {
 		
-		const event_meta_map = {
-
-		};
+		const event_meta_map = {};
 		gf_user_events.send_event_http(gf_images_events.GF_IMAGES_FLOWS_BROWSER_LOAD,
 			"browser",
 			event_meta_map,
+			app_name_str,
 			current_host_str)
 	}
 	
@@ -147,7 +147,7 @@ export async function init(p_plugin_callbacks_map :any,
 
 	$('.gf_image').each((p_i, p_e)=>{
 
-		const image_element = p_e;
+		const image_element = p_e as HTMLElement;
 
 		// IMAGE_CONTROL
 		gf_image_control.init_existing_dom(image_element,

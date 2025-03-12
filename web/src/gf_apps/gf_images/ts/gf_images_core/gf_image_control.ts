@@ -103,16 +103,9 @@ export function create(p_image_id_str :string,
 
 	$(image_element).find('img').on('load', ()=>{
 
-		//------------------
-		// MASONRY_RELOAD
-		// var masonry = $('#gf_images_flow_container #items').data('masonry');
-		// masonry.once('layoutComplete', (p_event, p_laid_out_items)=>{
-		// 	$(image_element).css('visibility', 'visible');
-		// });
-		
-		// // IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
-		// $('#gf_images_flow_container #items').masonry();
-		// $('#gf_images_flow_container #items').masonry(<any>"reloadItems");
+		// image is loaded, make it visible
+		console.log("IMAGE_LOADED ----------");
+		$(image_element).css("visibility", "visible");
 
 		//------------------
 
@@ -255,7 +248,7 @@ created server side when loaded into the browser, and just needs to be initializ
 (no creation of the DOM tree for the image control)
 */
 
-export function init_existing_dom(p_image_element :any,
+export function init_existing_dom(p_image_container :HTMLElement,
 	p_flows_names_lst :string[],
 	p_gf_host_str     :string,
 	p_logged_in_bool  :boolean,
@@ -265,21 +258,33 @@ export function init_existing_dom(p_image_element :any,
 	p_on_viz_change_fun    :Function, // called on any visual change of the image control
 	p_log_fun              :Function) {
 
-    gf_utils.init_image_date(p_image_element, p_log_fun);
+    gf_utils.init_image_date(p_image_container, p_log_fun);
+	
+	const img_element  = $(p_image_container).find('img')[0] as HTMLImageElement;
+	const image_id_str = $(p_image_container).data('img_id');
+	const img_thumb_medium_url_str = $(img_element).data('img_thumb_medium_url');
+	const img_thumb_large_url_str  = $(img_element).data('img_thumb_large_url');
+	const img_format_str           = $(p_image_container).data('img_format');
+	const flows_names_lst          = $(p_image_container).data('img_flows_names').split(",");
+	const tags_lst = $(p_image_container).find(".tags").find(".tag").map((p_i, p_tag_element)=>$(p_tag_element).text().replace(/^#/, "")).get();
 
-	const image_id_str = $(p_image_element).data('img_id');
-	const img_thumb_medium_url_str = $(p_image_element).find('img').data('img_thumb_medium_url');
-	const img_thumb_large_url_str  = $(p_image_element).find('img').data('img_thumb_large_url');
-	const img_format_str           = $(p_image_element).data('img_format');
-	const flows_names_lst          = $(p_image_element).data('img_flows_names').split(",");
-	const tags_lst = $(p_image_element).find(".tags").find(".tag").map((p_i, p_tag_element)=>$(p_tag_element).text().replace(/^#/, "")).get();
+	const origin_page_url_link = $(p_image_container).find(".origin_page_url a")[0];
 
-	const origin_page_url_link = $(p_image_element).find(".origin_page_url a")[0];
+	if (img_element.complete) {
+		$(p_image_container).css("visibility", "visible");
+	}
+	$(img_element).on('load', ()=>{
+
+		console.log("IMAGE_LOADED -------->>>--");
+
+		// image is loaded, make it visible
+		$(p_image_container).css("visibility", "visible");
+	});
 
 	//----------------
 	// TITLE
 	// CLEANUP - if the title is empty, remove the title element
-	const title_element = $(p_image_element).find(".image_title")[0];
+	const title_element = $(p_image_container).find(".image_title")[0];
 	if ($(title_element).text().trim() == "") {
 		$(title_element).remove();
 	}
@@ -291,24 +296,24 @@ export function init_existing_dom(p_image_element :any,
 	// FIX!! - potentially on the server/template-generation side this div node shouldnt get included
 	//         at all for images that dont have an origin_page_url.
 	if ($(origin_page_url_link).text().trim() == "") {
-		$(p_image_element).find(".origin_page_url").remove();
+		$(p_image_container).find(".origin_page_url").remove();
 	}
 
 	//----------------
 	shorten_origin_page_url(origin_page_url_link);
 
 
-	init_extra_info(p_image_element, ()=>p_on_viz_change_fun());
+	init_extra_info(p_image_container, ()=>p_on_viz_change_fun());
 
 	//----------------
 	// GIFS
 	if (img_format_str == 'gif') {			
-		gf_gifs_viewer.init(p_image_element, image_id_str, p_flows_names_lst, p_log_fun);
+		gf_gifs_viewer.init(p_image_container, image_id_str, p_flows_names_lst, p_log_fun);
 	}
 
 	//----------------
 	else {
-		gf_image_viewer.init(p_image_element,
+		gf_image_viewer.init(p_image_container,
 			image_id_str,
 			img_thumb_medium_url_str,
 			img_thumb_large_url_str,
@@ -327,13 +332,13 @@ export function init_existing_dom(p_image_element :any,
 			
 		// TAGGING
 		gf_utils.init_tagging(image_id_str,
-			p_image_element,
+			p_image_container,
 			p_gf_host_str,
 			p_log_fun);
 
 		// SHARE
 		gf_images_share.init(image_id_str,
-			p_image_element,
+			p_image_container,
 			p_plugin_callbacks_map,
 			p_log_fun);
 	}
