@@ -44,7 +44,7 @@ $(document).ready(()=>{
 });
 
 //--------------------------------------------------------
-function init(p_log_fun) {
+function init(p_log_fun :Function) {
 
 	console.log("gf login UI...")
 	
