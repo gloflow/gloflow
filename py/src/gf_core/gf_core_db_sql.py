@@ -27,17 +27,21 @@ def init_db_client(p_db_name_str,
 	
 	if p_from_aws_secrets_bool:
 		# SECRETS
+		print("getting meta from secrets...")
 		db_user_str, db_pass_str, db_host_str, db_port_str = get_meta_from_secrets(p_env_str)
 	else:
 		# ENV
+		print("getting meta from env...")
 		db_user_str, db_pass_str, db_host_str, db_port_str = get_meta_from_env(p_env_str)
 
+	print("connect start...")
 	db_client = psycopg2.connect(
 		host     = db_host_str,
 		port     = int(db_port_str),
 		database = p_db_name_str,
 		user     = db_user_str,
 		password = db_pass_str)
+	print("connect ok...")
 
 	return db_client
 

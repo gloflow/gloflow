@@ -95,7 +95,8 @@ func dbGetPage(pFlowNameStr string,
 
 //---------------------------------------------------
 
-func DBgetAll(pCtx context.Context, pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+func DBgetAll(pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
 	// MONGO
 	mongoResultsLst, gfErr := DBmongoGetAll(pCtx, pRuntimeSys)

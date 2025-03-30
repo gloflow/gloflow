@@ -171,7 +171,8 @@ func DBgetFlowByName(pFlowNameStr string,
 
 //---------------------------------------------------
 
-func DBsqlGetAll(pCtx context.Context, pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+func DBsqlGetAll(pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	sqlStr := `
 		WITH UnwoundFlows AS (
 			SELECT

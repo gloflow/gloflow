@@ -751,7 +751,7 @@ func dbSQLuserGetByETHaddr(pUserAddressETH GFuserAddressETH,
 
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to find user by Eth address in the DB",
-			"sql_find_error",
+			"sql_query_execute",
 			map[string]interface{}{
 				"user_address_eth_str": pUserAddressETH,
 			},

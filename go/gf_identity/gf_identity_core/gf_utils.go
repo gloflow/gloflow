@@ -274,7 +274,9 @@ func HTTPgetEmailConfirmInput(pReq *http.Request,
 	var confirmationCodeStr string
 
 	queryArgsMap := pReq.URL.Query()
-	
+		
+	//----------------------------
+	// USER_NAME
 	if valuesLst, ok := queryArgsMap["u"]; ok {
 		userNameStr = valuesLst[0]
 	} else {
@@ -285,6 +287,8 @@ func HTTPgetEmailConfirmInput(pReq *http.Request,
 		return nil, gfErr
 	}
 
+	//----------------------------
+	// CONFIRMATION_CODE
 	if valuesLst, ok := queryArgsMap["c"]; ok {
 		confirmationCodeStr = valuesLst[0]
 	} else {
@@ -295,6 +299,7 @@ func HTTPgetEmailConfirmInput(pReq *http.Request,
 		return nil, gfErr
 	}
 
+	//----------------------------
 	input := &GFuserHTTPinputEmailConfirm{
 		UserNameStr:    GFuserName(userNameStr),
 		ConfirmCodeStr: confirmationCodeStr,

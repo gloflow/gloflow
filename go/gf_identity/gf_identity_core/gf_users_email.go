@@ -87,7 +87,7 @@ func UsersEmailPipelineVerify(pEmailAddressStr string,
 	}
 	
 	//------------------------
-	// AWS
+	// AWS - SES_EMAIL
 	gfErr = gf_aws.SESsendMessage(pEmailAddressStr,
 		senderAddressStr,
 		msgSubjectStr,
