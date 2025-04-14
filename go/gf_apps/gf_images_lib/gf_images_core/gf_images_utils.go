@@ -58,6 +58,13 @@ func ImageGetPublicURL(pImageFilePathStr string,
 }
 
 //---------------------------------------------------
+
+func ImageGetViewURL(pImageIDstr GFimageID) string {
+	urlStr := fmt.Sprintf("/images/v/%s", pImageIDstr)
+	return urlStr
+}
+
+//---------------------------------------------------
 // LOAD_FILE
 
 func ImageLoadFile(pImageLocalFilePathStr string,
