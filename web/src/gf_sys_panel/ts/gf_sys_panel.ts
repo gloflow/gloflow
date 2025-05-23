@@ -53,10 +53,10 @@ export async function init(p_auth_http_api_map,
 						<img src="/images/d/gf_logo_icon.png"></img>
 					</div>
 
-					<div class="apps">
+					<div id="apps">
 						<div id="images_app_btn"    class="gf_center"><a href="/images/flows/browser">Images</a></div>
-						<div id="domains_app_btn"   class="gf_center"><a href="/a/domains/browser">Domains</a></div>
-						<div id="bookmarks_app_btn" class="gf_center"><a href="/v1/bookmarks/get">B</a></div>
+						<div id="bookmarks_app_btn" class="gf_center"><a href="/v1/bookmarks/get">Bookmarks</a></div>
+						<div id="domains_app_btn"   class="gf_center"><a href="/a/domains/browser">D</a></div>
 					</div>
 				</div>
 			</div>
