@@ -66,7 +66,7 @@ function init_users_list(p_http_api_map, p_log_fun) {
                     <div class="delete_btn">delete</div>
                     <div class="creation_time">${creation_unix_time}</div>
                     <div>
-                </div>`);
+                </div>`)[0];
 
             gf_time.init_creation_date(user_element, p_log_fun);
 
@@ -133,7 +133,7 @@ function init_users_list(p_http_api_map, p_log_fun) {
 }
 
 //-------------------------------------------------
-async function init_invite_list(p_http_api_map, p_log_fun) {
+async function init_invite_list(p_http_api_map :any, p_log_fun: Function) {
     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
         const container = $(`
@@ -177,7 +177,7 @@ async function init_invite_list(p_http_api_map, p_log_fun) {
         const invite_list_lst = output_map["invite_list_lst"];
 
         //-------------------------------------------------
-        function view_invite(p_invite_map) {
+        function view_invite(p_invite_map: any) {
 
             const email_str          = p_invite_map["user_email_str"];
             const creation_unix_time = p_invite_map["creation_unix_time_f"];
@@ -186,7 +186,7 @@ async function init_invite_list(p_http_api_map, p_log_fun) {
                     <div class="email">${email_str}</div>
                     <div class="creation_time">${creation_unix_time}</div>
                     <div class="remove_btn">x</div>
-                </div>`);
+                </div>`)[0];
 
             gf_time.init_creation_date(invite_element, p_log_fun);
 

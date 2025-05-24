@@ -55,7 +55,7 @@ function init(p_log_fun) {
 
 	$("#bookmarks .bookmark").each((p_i, p_bookmark_element)=>{
 
-		gf_time.init_creation_date(p_bookmark_element, p_log_fun);
+		gf_time.init_creation_date(p_bookmark_element as HTMLElement, p_log_fun);
 	});
 }
 

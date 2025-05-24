@@ -37,7 +37,7 @@ import * as gf_tags_picker   from "./../../../gf_tagger/ts/gf_tags_picker/gf_tag
 //-------------------------------------------------
 export async function init(p_tag_str :string,
 	p_plugin_callbacks_map,
-	p_log_fun) {
+	p_log_fun :Function) {
 
 	const events_enabled_bool = true;
 	const current_host_str = gf_core_utils.get_current_host();
@@ -101,15 +101,16 @@ export async function init(p_tag_str :string,
 
 				const page_source_ref_str  = p_tag_str;
 				const page_source_type_str = "tag"
+				const pages_num_int = 1;
 
-				await gf_images_paging.load_new_page(page_source_ref_str,
-					page_source_type_str,
+				await gf_images_paging.load_new_pages(page_source_ref_str,
 					current_page_int,
 					image_view_type_str,
 					logged_in_bool,
-					events_enabled_bool,
 					p_plugin_callbacks_map,
-					p_log_fun);
+					p_log_fun,
+					pages_num_int,
+					page_source_type_str);
 				
 
 				current_page_int += 1;
@@ -147,7 +148,7 @@ function init_images(p_logged_in_bool :boolean,
 
     $('#images_container .gf_image').each((p_i, p_e)=>{
 
-		const image_element = p_e;
+		const image_element = p_e as HTMLElement;
 		
 		/*
 		const image_id_str = $(image_element).data('img_id');
@@ -166,8 +167,14 @@ function init_images(p_logged_in_bool :boolean,
 
 			p_gf_host_str,
 			p_logged_in_bool,
+
 			p_events_enabled_bool,
 			p_plugin_callbacks_map,
+
+			// p_on_viz_change_fun
+			()=>{
+				
+			},
 			p_log_fun);
 
 		/*	
