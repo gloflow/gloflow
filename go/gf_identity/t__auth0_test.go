@@ -20,14 +20,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity
 
 import (
+	"context"
 	"fmt"
 	"testing"
-	"context"
-	"github.com/stretchr/testify/assert"
-	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
+
 	"github.com/davecgh/go-spew/spew"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
+	"github.com/stretchr/testify/assert"
 )
 
 //-------------------------------------------------
@@ -38,7 +39,7 @@ func TestAuth0(pTest *testing.T) {
 
 	serviceNameStr := "gf_identity_test"
 	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
-	sqlHostStr   := cliArgsMap["sql_host_str"].(string)
+	sqlHostStr := cliArgsMap["sql_host_str"].(string)
 	runtimeSys := Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
 	ctx := context.Background()
 
@@ -57,18 +58,18 @@ func TestAuth0(pTest *testing.T) {
 	pubKeyPEMstr := gf_core.CryptoConvertPubKeyToPEM(auth0publicKey)
 
 	runtimeSys.LogNewFun("INFO", "Auth0 keys...", map[string]interface{}{
-		"auth0_key_id":  auth0keyIDstr,
-		"auth0_pub_key": auth0publicKey,
+		"auth0_key_id":      auth0keyIDstr,
+		"auth0_pub_key":     auth0publicKey,
 		"auth0_pub_key_pem": pubKeyPEMstr,
 	})
 
-
-
-
-	
 	//----------------------
 	// LOGIN
-	sessionID, gfErr := gf_identity_core.Auth0loginPipeline(ctx, runtimeSys)
+
+	fmt.Println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ")
+
+	loginSuccessRedirectURLstr := "http://localhost:8080/login/success"
+	sessionID, gfErr := gf_identity_core.Auth0loginPipeline(loginSuccessRedirectURLstr, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
@@ -107,7 +108,7 @@ func TestAuth0(pTest *testing.T) {
 
 	//----------------------
 	// LOGOUT
-	gfErr = gf_identity_core.Auth0logoutPipeline(sessionID, ctx, runtimeSys)
+	_, gfErr = gf_identity_core.Auth0logoutPipeline(sessionID, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
