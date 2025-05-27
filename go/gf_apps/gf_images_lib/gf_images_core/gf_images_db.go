@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_core
 
 import (
+	"fmt"
 	"context"
 	"math/rand"
 	"time"
@@ -60,12 +61,12 @@ func DBgetImage(pImageIDstr GFimageID,
 func DBaddTagToImage(pImageIDstr GFimageID,
 	pTagsLst  []string,
 	pCtx      context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 	// SQL
 	existsBool, gfErr := DBsqlImageExistsByID(pImageIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return false, gfErr
 	}
 
 	if existsBool {
@@ -73,10 +74,10 @@ func DBaddTagToImage(pImageIDstr GFimageID,
 		// SQL
 		gfErr = DBsqlAddTagsToImage(pImageIDstr, pTagsLst, pCtx, pRuntimeSys)
 		if gfErr != nil {
-			return gfErr
+			return false, gfErr
 		}
 	}
-	return nil
+	return existsBool, nil
 }
 
 //---------------------------------------------------
@@ -93,6 +94,7 @@ func DBimageExistsByID(pImageIDstr GFimageID,
 	if gfErr != nil {
 		return false, gfErr
 	}
+	fmt.Println(">>>> image exists in SQL:", existsBool)
 
 	// if there is no image found with desired ID in SQL, try to get it from MongoDB
 	if !existsBool {
@@ -102,6 +104,8 @@ func DBimageExistsByID(pImageIDstr GFimageID,
 		if gfErr != nil {
 			return false, gfErr
 		}
+
+		fmt.Println(">>>> image exists in MongoDB:", existsBool)
 	}
 
 	return existsBool, nil

@@ -244,7 +244,7 @@ func addTagsToObject(pTagsStr string,
 
 			if existsBool {
 
-				gfErr := gf_images_core.DBaddTagToImage(imageID, tagsLst, pCtx, pRuntimeSys)
+				_, gfErr := gf_images_core.DBaddTagToImage(imageID, tagsLst, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return gfErr
 				}

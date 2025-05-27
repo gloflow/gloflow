@@ -629,7 +629,13 @@ func DBsqlCreateTables(pCtx context.Context,
 		-- ---------------
 		-- META
 		meta_map JSONB,  -- metadata external users might assign to an image
-		tags_lst TEXT[], -- human facing tags assigned to an image
+
+		-- ---------------
+		-- TAGS
+		-- LEGACY!! - currently tags are placed in their own table as individual records.
+		--            human facing tags assigned to an image.
+
+		tags_lst TEXT[],
 
 		-- ---------------
 

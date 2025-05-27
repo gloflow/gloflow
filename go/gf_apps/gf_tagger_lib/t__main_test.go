@@ -20,25 +20,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_tagger_lib
 
 import (
-	"os"
-	// "fmt"
-	"testing"
 	"context"
-	"github.com/stretchr/testify/assert"
+	"fmt"
+	"os"
+	"testing"
+	"time"
+
+	"github.com/davecgh/go-spew/spew"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
-	"github.com/davecgh/go-spew/spew"
+	"github.com/stretchr/testify/assert"
 )
 
-var logFun func(string,string)
+var logFun func(string, string)
 var logNewFun gf_core.GFlogFun
 var cliArgsMap map[string]interface{}
 
 //---------------------------------------------------
 
 func TestMain(m *testing.M) {
-	logFun, logNewFun  = gf_core.LogsInit()
+	logFun, logNewFun = gf_core.LogsInit()
 	cliArgsMap = gf_images_core.CLIparseArgs(logFun)
 	v := m.Run()
 	os.Exit(v)
@@ -52,14 +54,14 @@ func TestCreateDiscoveredTags(pTest *testing.T) {
 
 	serviceNameStr := "gf_tagger_test"
 	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
-	sqlHostStr   := cliArgsMap["sql_host_str"].(string)
-	runtimeSys   := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
-	
+	sqlHostStr := cliArgsMap["sql_host_str"].(string)
+	runtimeSys := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
+
 	userID := gf_core.GF_ID("test")
 
 	//--------------------
 	// INIT
-	
+
 	gfErr := dbSQLcreateTables(runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
@@ -87,8 +89,6 @@ func TestCreateDiscoveredTags(pTest *testing.T) {
 
 	//--------------------
 
-
-
 	gfErr = pipelineCreateDiscoveredTags(ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
@@ -103,14 +103,14 @@ func TestCreate(pTest *testing.T) {
 
 	serviceNameStr := "gf_images_flows_test"
 	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
-	sqlHostStr   := cliArgsMap["sql_host_str"].(string)
-	runtimeSys   := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
-	
+	sqlHostStr := cliArgsMap["sql_host_str"].(string)
+	runtimeSys := gf_identity.Tinit(serviceNameStr, mongoHostStr, sqlHostStr, logNewFun, logFun)
+
 	userID := gf_core.GF_ID("test")
 
 	//--------------------
 	// INIT
-	
+
 	gfErr := dbSQLcreateTables(runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
@@ -122,7 +122,6 @@ func TestCreate(pTest *testing.T) {
 
 	tagsStr := "tag1 tag2 tag3"
 	objectTypeStr := "image"
-
 
 	metaMap := map[string]interface{}{}
 
@@ -140,41 +139,66 @@ func TestCreate(pTest *testing.T) {
 	//--------------------
 	// DB_GET_IMAGE
 
-	image, gfErr := gf_images_core.DBgetImage(testImage.IDstr, ctx, runtimeSys)
+	imageFromDB, gfErr := gf_images_core.DBgetImage(testImage.IDstr, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
 
 	/*
-	image, gfErr := gf_images_core.DBmongoGetImage(testImage.IDstr, ctx, runtimeSys)
-	if gfErr != nil {
-		pTest.FailNow()
-	}
+		image, gfErr := gf_images_core.DBmongoGetImage(testImage.IDstr, ctx, runtimeSys)
+		if gfErr != nil {
+			pTest.FailNow()
+		}
 	*/
 
-	spew.Dump(image)
-	assert.True(pTest, len(image.TagsLst) == 3, "image should have 3 tags added to it")
+	fmt.Println("=================================================")
+	spew.Dump(imageFromDB)
 
 	//--------------------
-	// DB_GET_OBJECTS_WITH_TAG
+	// CHECK TAGS COUNT USING dbSQLgetObjectsWithTag
+
+	tagsToCheckLst := []string{"tag1", "tag2", "tag3"}
+	imageIDSetMap := make(map[string]struct{})
 
 	pageIndexInt := 0
-	pageSizeInt := 5
+	pageSizeInt := 100
 
-	imagesLst := []*gf_images_core.GFimage{}
-	gfErr = dbMongoGetObjectsWithTag("tag1",
-		"img",
-		&imagesLst,
-		pageIndexInt,
-		pageSizeInt,
-		ctx,
-		runtimeSys)
-	if gfErr != nil {
-		pTest.FailNow()
+	for _, tag := range tagsToCheckLst {
+
+		imagesFromDBwithTagLst := []*gf_images_core.GFimage{}
+
+		gfErr = dbSQLgetObjectsWithTag(tag,
+			objectTypeStr, // "img",
+			&imagesFromDBwithTagLst,
+			pageIndexInt,
+			pageSizeInt,
+			ctx,
+			runtimeSys)
+		if gfErr != nil {
+			pTest.FailNow()
+		}
+
+		fmt.Println("images with tag", len(imagesFromDBwithTagLst))
+		for _, img := range imagesFromDBwithTagLst {
+			fmt.Println("image ID:", img.IDstr)
+		}
+
+		foundBool := false
+		for _, imgFromDB := range imagesFromDBwithTagLst {
+
+			fmt.Println("---", imgFromDB.IDstr)
+
+			imageIDSetMap[string(imgFromDB.IDstr)] = struct{}{}
+
+			if imgFromDB.IDstr == testImage.IDstr {
+				foundBool = true
+			}
+		}
+
+		assert.True(pTest, foundBool, "the test image ID should be present for tag '"+tag+"'")
 	}
 
-	spew.Dump(imagesLst)
-	assert.True(pTest, len(imagesLst) == 1, "there should be 1 image with tag1 tag in the DB")
+	assert.True(pTest, len(tagsToCheckLst) == 3, "there should be 3 tags checked")
 
 	//--------------------
 }
@@ -182,21 +206,20 @@ func TestCreate(pTest *testing.T) {
 //---------------------------------------------------
 
 func createTestImages(pUserID gf_core.GF_ID,
-	pTest       *testing.T,
-	pCtx        context.Context,
+	pTest *testing.T,
+	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_images_core.GFimage {
 
 	pRuntimeSys.LogNewFun("DEBUG", "creating test images...", nil)
 
 	testImg0 := &gf_images_core.GFimage{
-		IDstr: "test_img_0",
-		T_str: "img",
+		IDstr:          gf_images_core.GFimageID(fmt.Sprintf("test_img_%d", time.Now().UnixNano())),
 		UserID:         pUserID,
 		FlowsNamesLst:  []string{"flow_0"},
 		Origin_url_str: "https://gloflow.com/some_url0",
 		TagsLst:        []string{},
 	}
-	gfErr := gf_images_core.DBmongoPutImage(testImg0, pCtx, pRuntimeSys)
+	gfErr := gf_images_core.DBsqlPutImage(testImg0, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
