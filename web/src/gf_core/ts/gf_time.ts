@@ -28,20 +28,31 @@ export function sleep(p_miliseconds_int :number) {
 //-------------------------------------------------
 export function init_creation_date(p_target_element :HTMLElement, p_log_fun :Function) {
 
-	const creation_time_element = $(p_target_element).find('.creation_time');
-	const creation_time_f       = parseFloat($(creation_time_element).text());
-	const creation_date         = new Date(creation_time_f*1000);
+	init_timeago(p_target_element,
+		".creation_time",
+		p_log_fun);
+}
 
-	const date_msg_str = $.timeago(creation_date);
-	$(creation_time_element).text(date_msg_str);
+//-------------------------------------------------
+export function init_timeago(p_target_element :HTMLElement,
+	p_selector_str: string,
+	p_log_fun :Function) {
 
-	const creation_date__readable_str = creation_date.toDateString();
+	const time_element = $(p_target_element).find(p_selector_str);
+	const time_f       = parseFloat($(time_element).text());
+	const date         = new Date(time_f*1000);
 
-	$(creation_time_element).mouseover((p_e)=>{
-		$(creation_time_element).text(creation_date__readable_str);
+	const date_msg_str = $.timeago(date);
+	$(time_element).text(date_msg_str);
+
+	const date__readable_str = date.toDateString();
+
+	$(time_element).mouseover((p_e)=>{
+		$(time_element).text(date__readable_str);
 	});
 
-	$(creation_time_element).mouseout((p_e)=>{
-		$(creation_time_element).text(date_msg_str);
+	$(time_element).mouseout((p_e)=>{
+		$(time_element).text(date_msg_str);
 	});
 }
+
