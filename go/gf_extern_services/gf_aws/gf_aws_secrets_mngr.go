@@ -99,7 +99,8 @@ func AWSsecretsMngrCreateSecret(pSecretNameStr string,
 //-------------------------------------------------------------
 
 func AWSsecretsMngrGetSecret(pSecretNameStr string,
-	pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
+	pJsonEncodedBool bool,
+	pRuntimeSys *gf_core.RuntimeSys) (interface{}, *gf_core.GFerror) {
 	
 
 
@@ -151,6 +152,10 @@ func AWSsecretsMngrGetSecret(pSecretNameStr string,
 
 	valueStr := *result.SecretString
 
+	if !pJsonEncodedBool {
+		return interface{}(valueStr), nil
+	}
+
 	//--------------
 	var sMap map[string]interface{}
 	err = json.Unmarshal([]byte(valueStr), &sMap)
@@ -165,5 +170,5 @@ func AWSsecretsMngrGetSecret(pSecretNameStr string,
 
 	//--------------
 
-	return sMap, nil
+	return interface{}(sMap), nil
 }
