@@ -85,14 +85,14 @@ function run() {
     }
     const origin_setters_test__program_ast_lst = [
 
-        ["lang_v", "0.0.4"], 
+        ["lang_v", "0.0.4"],
         ["set", "color-background", ["rgb", 0.90, 0.90, 0.90]],
 
         [
             ["set", "material", ["shader", "gf_shader_test"]],
             set_shader_color(stripe_color_str),
         ],
-        
+
         [
             ["z", 5],
             "stripe"
@@ -130,7 +130,7 @@ function run() {
         ["rule", "stripe_2", [["iters_max", 10]], [
 
             ["if", ["==", "$i", 6], [
-                
+
                 set_shader_color(stripe_3_color_str),
 
                 // COORD_ORIGIN
@@ -154,7 +154,7 @@ function run() {
         ["rule", "stripe_3", [["iters_max", 10]], [
 
             ["if", ["==", "$i", 5], [
-                
+
                 set_shader_color(stripe_4_color_str),
 
                 // COORD_ORIGIN
@@ -191,7 +191,7 @@ function run() {
 
                 varying vec3 normal_f;
                 varying vec3 local_pos_v3;
-                
+
                 void main() {
 
                     normal_f     = normalize(normalMatrix * normal);
@@ -216,7 +216,7 @@ function run() {
 
                 void main() {
                     vec3 light_direction_v3 = vec3(0.8, 1, 0.8); // high noon
-                    vec3 color_v3           = vec3(cr, cg, cb); 
+                    vec3 color_v3           = vec3(cr, cg, cb);
 
                     float diffuse_f = .5 + dot(normal_f, light_direction_v3);
                     gl_FragColor    = vec4(diffuse_f * color_v3, 1.0);
@@ -232,7 +232,7 @@ function run() {
     const extern_api_map = {
         "init_engine_fun": function(p_shader_defs_map) {
             console.log("init engine", p_shader_defs_map)
-            
+
             // ENGINE
             engine_api_map = gf_engine.init(p_shader_defs_map);
 
@@ -277,6 +277,6 @@ function run() {
         }
     }
 
-    gf_lang_run(first_scene__program_ast_lst, extern_api_map);
+    gf_lang_run(shader_test__program_ast_lst, extern_api_map);
     // gf_lang.run(form_experiment__ast_lst);
 }

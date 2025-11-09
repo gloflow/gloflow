@@ -91,10 +91,13 @@ func debugRunPyAnalyzer(pProgramsDebugLst []*gf_lang.GFprogramDebug,
 		fmt.Sprintf("-state_history_file=%s", serializedStateHistoryFilePathStr),
 	}
 
+	envMap := map[string]string{}
+
 	// PY_RUN
 	_, gfErr := gf_core.CLIpyRun(pyPathStr,
 		argsLst,
 		nil,
+		envMap,
 		stdoutPrefixStr,
 		pRuntimeSys)
 
