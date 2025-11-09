@@ -25,7 +25,7 @@ export function init(p_flow_name_str :string,
 	// console.log("UPLOAD INITIALIZED")
 	document.onpaste = function(p_paste_event) {
 
-		console.log("paste...");
+		console.log("paste event...");
 
 		// const items = (p_paste_event.clipboardData || p_paste_event.originalEvent.clipboardData).items;
 		const items = p_paste_event.clipboardData?.items;
@@ -34,9 +34,12 @@ export function init(p_flow_name_str :string,
 		
 			// console.log(p_paste_event.clipboardData);
 			// console.log(p_paste_event.originalEvent.clipboardData);
-			console.log(JSON.stringify(items)); // will give you the mime types
+			console.log("pasted content", JSON.stringify(items)); // will give you the mime types
 
 			for (const item of items) {
+
+				console.log("item", item);
+
 				if (item.kind === 'file') {
 
 					const blob   = item.getAsFile();
@@ -58,7 +61,8 @@ export function init(p_flow_name_str :string,
 						// IMPORTANT!! - it seems all images are of "png" format when pasted in.
 						const image_format_str = img_data_str.split(";")[0].replace("data:image/", "")
 						console.log(`image_format_str - ${image_format_str}`);
-
+						
+						//-------------------------------------------------
 						// VIEW_IMAGE
 						gf_upload__view_img(img_data_str,
 							p_flow_name_str,
@@ -81,6 +85,8 @@ export function init(p_flow_name_str :string,
 							});
 
 							//-------------------------------------------------
+
+						//-------------------------------------------------
 					};
 
 					// reader.readAsBinaryString(blob);
@@ -99,9 +105,11 @@ function gf_upload__view_img(p_img_data_str :string,
 	//-------------------------------------------------
 	function get_image_dialog() {
 
+		//-------------------------------
 		// first image
 		if ($("#upload_image_dialog").length == 0) {
 
+			/*
 			const img_dialog = $(`
 				<div id="upload_image_dialog" class="gf_center">
 					<div id="background"></div>
@@ -109,7 +117,7 @@ function gf_upload__view_img(p_img_data_str :string,
 					<div id="upload_images_detail">
 						<div id="upload_images">
 
-							<div id="upload_image_panel">
+							<div id="upload_images_panel">
 								
 								<div id="images">
 									
@@ -126,22 +134,47 @@ function gf_upload__view_img(p_img_data_str :string,
 					</div>
 
 				</div>`);
-			$("body").append(img_dialog);
+			*/
+
+			const dialog = $(`
+				<div id="upload_image_dialog" class="gf_center">
+					<div id="background"></div>
+
+					<div id="upload_image_flow_name_input" class="gf_center">
+						<input placeholder="flow name" value="${p_flow_name_str}"></input>
+					</div>
+					
+					<div id="upload_images">
+
+
+					</div>
+
+					
+					<div id="upload_btn">upload image</div>
+
+				</div>
+				`);
+
+			$("body").append(dialog);
 
 			const new_img_id_int    = 1;
 			const new_image_element = append_image(new_img_id_int, p_img_data_str);
-			$(img_dialog).find("#upload_image_panel #images").append(new_image_element);
 
-			return img_dialog;
+
+			$(dialog).find("#upload_images").append(new_image_element)
+			// $(dialog).find("#upload_images_panel #images").append(new_image_element);
+
+			return dialog;
 		}
 
+		//-------------------------------
 		// MULTI_IMAGE_UPLOAD - additional images upload at a time
 		else {
-			const img_dialog     = $("#upload_image_dialog");
-			const new_img_id_int = parseInt($(img_dialog).find(".target_upload_image").last().attr("id")) + 1 // increment by one from last elements id/index
+			const dialog         = $("#upload_image_dialog");
+			const new_img_id_int = parseInt($(dialog).find(".target_upload_image").last().attr("id")) + 1 // increment by one from last elements id/index
 			
 			/*
-			$(img_dialog).find("#upload_image_panel #images").append(`
+			$(dialog).find("#upload_images_panel #images").append(`
 				<div class="image">
 					<div class"remove_btn">
 						<img src="https://assetspub.gloflow.com/assets/gf_sys/gf_close_btn.svg" draggable="false"></img>
@@ -155,12 +188,14 @@ function gf_upload__view_img(p_img_data_str :string,
 			*/
 
 			const new_image_element = append_image(new_img_id_int, p_img_data_str);
-			$(img_dialog).find("#upload_image_panel #images").append(new_image_element);
+			$(dialog).find("#upload_images").append(new_image_element);
 
-			$(img_dialog).find("#upload_btn").text("upload images");
+			$(dialog).find("#upload_btn").text("upload images");
 			
-			return img_dialog;
+			return dialog;
 		}
+
+		//-------------------------------
 
 		//-------------------------------------------------
 		function append_image(p_new_image_dom_id_int :number, p_img_data_str :string) :HTMLElement {
@@ -170,7 +205,9 @@ function gf_upload__view_img(p_img_data_str :string,
 					<div class="remove_btn">
 						<img src="https://assetspub.gloflow.com/assets/gf_sys/gf_close_btn.svg" draggable="false"></img>
 					</div>
+					
 					<img id="${p_new_image_dom_id_int}" class="target_upload_image" src="${p_img_data_str}"></img>
+
 					<div class="upload_image_name_input">
 						<input placeholder="image name"></input>
 					</div>
@@ -206,7 +243,9 @@ function gf_upload__view_img(p_img_data_str :string,
 	}
 
 	//-------------------------------------------------
-	const this_image = $(img_dialog).find("#upload_image_panel").last();
+
+	// ?????
+	const this_image = $(img_dialog).find("#upload_images_panel").last();
 	$(this_image).find("img").on("load", ()=>{
 
 		$("body").css("overflow-y", "hidden"); // turn-off scroll
@@ -221,9 +260,11 @@ function gf_upload__view_img(p_img_data_str :string,
 	*/
 
 	//-------------------------------------------------
+	// UPLOAD
 	function upload() {
+
 		const image_name_str    = $(this_image).find("#upload_image_name_input input").val();
-		var image_flow_name_str = $(this_image).find("#upload_image_flow_name_input input").val();
+		var image_flow_name_str = $(img_dialog).find("#upload_image_flow_name_input input").val();
 
 		// if no image flow name was supplied then use the default flow
 		if (image_flow_name_str.length == 0) {

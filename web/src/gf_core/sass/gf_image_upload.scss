@@ -25,119 +25,113 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     z-index: 10;
     
     #background {
+        position: absolute;
         width: 100%;
         height: 100%;
         background-color: black;
         opacity: 0.8;
     }
 
-    #upload_images_detail {
-        position:         absolute;
-        background-color: #6c6c6c;
 
-        border-radius: 6px 6px 6px 6px;
+
+    // IMAGE_FLOW_NAME_INPUT
+    #upload_image_flow_name_input {
+        position: absolute;
+        top: 40px;
+
+        width: 10%;
         overflow: hidden;
 
-        #upload_images {
-            display: flex;
-            padding: 11px;
+        input {
+            border:           none;
+            background-color: #c8c8c8;
+            width:          100%;
+            max-width:      400px;
+            padding-top:    10px;
+            padding-bottom: 10px;
+            padding-left:   8px;
+            padding-right:  0px;
 
-            #upload_image_panel {
-                // width: 250px;
+            border-radius: 6px;
 
-                #images {
-                    display: flex;
-                    flex-direction: row;
-                    column-gap: 12px;
-                    border-radius: 6px 6px 0px 0px;
-                    overflow: hidden;
+            &:focus,
+            &:active {
+                outline: none;
+            }
+        }
+    }
 
-                    .image {
-                        position: relative;
-                        height: fit-content;
-                        border-radius: 6px 6px 6px 6px;
-                        overflow: hidden;
-                        height: 50vh;
-                        width: 200px;
+    #upload_images {
 
-                        .remove_btn {
-                            width: 30px;
-                            position: absolute;
-                            top: 7px;
-                            right: 7px;
-                            background-color: gray;
-                            border-radius: 6px;
-                            cursor: pointer;
-                            
-                            img {
-                                width: 100%;
-                            }
+        
+    
+        width: fit-content;
 
-                            &:hover {
-                                background-color: white;
-                            }
-                        }
+        display: flex;
+        flex-direction: row;
+        column-gap: 12px;
+       
 
-                        img {
-                            width: 100%;
-                            height: 87%;
+        border-radius: 6px 6px 0px 0px;
+        // overflow: hidden;
 
-                            // Ensures image covers container while keeping aspect ratio
-                            object-fit: cover;
+        .image {
+            position: relative;
+            height: fit-content;
+            width: 250px;
+            
 
-                            display: block;
-                        }
+            border-radius: 6px 6px 6px 6px;
+            overflow: hidden;
 
-                        // IMAGE_NAME_INPUT
-                        .upload_image_name_input {
-                            // top: -6px;
-                            width: 100%;
-                            position: relative;
+            
 
-                            input {
-                                border:           none;
-                                background-color: #c8c8c8;
-                                width: 97%;
-                                padding-top: 10px;
-                                padding-bottom: 10px;
-                                padding-left: 8px;
-                                padding-right: 0px;
-
-                                &:focus,
-                                &:active {
-                                    outline: none;
-                                }
-                            }
-                        }
-                    }
+            .remove_btn {
+                width: 30px;
+                position: absolute;
+                top: 7px;
+                right: 7px;
+                background-color: gray;
+                border-radius: 6px;
+                cursor: pointer;
+                
+                img {
+                    width: 100%;
                 }
 
-                // IMAGE_FLOW_NAME_INPUT
-                #upload_image_flow_name_input {
-                    position:  relative;
-                    top:       10px;
-                    width:     100%;
-                    
+                &:hover {
+                    background-color: white;
+                }
+            }
 
-                    overflow: hidden;
-                    margin-bottom: 9px;
+            img {
+                width: 100%;
+                // height: 87%;
 
-                    input {
-                        border:           none;
-                        background-color: #c8c8c8;
-                        width:          100%;
-                        max-width:      400px;
-                        padding-top:    10px;
-                        padding-bottom: 10px;
-                        padding-left:   8px;
-                        padding-right:  0px;
+                // Ensures image covers container while keeping aspect ratio
+                object-fit: cover;
 
-                        border-radius: 6px;
+                display: block;
+            }
 
-                        &:focus,
-                        &:active {
-                            outline: none;
-                        }
+            // IMAGE_NAME_INPUT
+            .upload_image_name_input {
+                // top: -6px;
+                width: 100%;
+                position: relative;
+
+                input {
+                    border:           none;
+                    background-color: #c8c8c8;
+                    width: 97%;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                    padding-left: 8px;
+                    padding-right: 0px;
+
+                    &:focus,
+                    &:active {
+                        outline: none;
                     }
                 }
             }
@@ -146,9 +140,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     
 
-    
-
     #upload_btn {
+        position: absolute;
+        bottom: 25px;
+        width: 500px;
+        
         text-align:  center;
         font-size:   16px;
         font-weight: bold;
@@ -158,7 +154,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         background-color: #3a3a3a;
         padding-bottom:   17px;
         padding-top: 17px;
-    
+        
+        border-radius: 6px 6px 6px 6px;
+
         cursor: pointer;
 
         &:hover {
