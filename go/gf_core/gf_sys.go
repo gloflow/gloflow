@@ -89,6 +89,11 @@ type ExternalPlugins struct {
 	CORSoriginDomainsLst []string
 
 	//---------------------------
+	// IDENTITY
+
+	IdentitySessionValidateApiKeyCallback func(string, *http.Request, context.Context, *RuntimeSys) (bool, GF_ID, *GFerror)
+	
+	//---------------------------
 	// IMAGES
 	ImageFilterMetadataCallback func(map[string]interface{}) map[string]interface{}
 	

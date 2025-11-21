@@ -37,6 +37,28 @@ func SessionValidate(pReq *http.Request,
 	pRuntimeSys            *gf_core.RuntimeSys) (bool, string, gf_core.GF_ID, *gf_core.GFerror) {
 
 	//---------------------
+	// PLUGIN - use custom session validation for api keys if provided
+
+	// check if an API key is supplied; if not supplied Get() will return ""
+	if apiKeyStr := pReq.Header.Get("X-Api-Key"); apiKeyStr != "" {
+
+		if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.IdentitySessionValidateApiKeyCallback != nil {
+
+			validBool, userIdentifierStr, gfErr := pRuntimeSys.ExternalPlugins.IdentitySessionValidateApiKeyCallback(apiKeyStr,
+				pReq,
+				pCtx,
+				pRuntimeSys)
+			
+			// calls with an API key dont have session IDs
+			sessionIDstr := ""
+
+			return validBool, sessionIDstr, userIdentifierStr, gfErr
+		} else {
+			return false, "", gf_core.GF_ID(""), nil
+		}
+	}
+	
+	//---------------------
 	// JWT
 	jwtTokenStr, foundBool, gfErr := JWTgetTokenFromRequest(pReq, pRuntimeSys)
 	if gfErr != nil {
