@@ -76,10 +76,11 @@ func Tinit(pServiceNameStr string,
 
 	dbHostStr := pCliArgsMap["sql_host_str"].(string)
 
-	sqlDB, gfErr := gf_core.DBsqlConnect(dbNameStr,
+	sqlDB, _, gfErr := gf_core.DBsqlConnect(dbNameStr,
 		dbUserStr,
 		"", // config.SQLpassStr,
 		dbHostStr,
+		"disable", // SSL mode - required for PostgreSQL 18
 		runtimeSys)
 	if gfErr != nil {
 		panic(-1)
@@ -88,6 +89,6 @@ func Tinit(pServiceNameStr string,
 	runtimeSys.SQLdb = sqlDB
 
 	//--------------------
-	
+
 	return runtimeSys
 }

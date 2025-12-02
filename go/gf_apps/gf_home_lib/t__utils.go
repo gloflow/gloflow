@@ -69,10 +69,11 @@ func Tinit() *gf_core.RuntimeSys {
 
 	dbHostStr := testSQLhostStr
 
-	sqlDB, gfErr := gf_core.DBsqlConnect(dbNameStr,
+	sqlDB, _, gfErr := gf_core.DBsqlConnect(dbNameStr,
 		dbUserStr,
 		"", // config.SQLpassStr,
 		dbHostStr,
+		"disable", // SSL mode - required for PostgreSQL 18
 		runtimeSys)
 	if gfErr != nil {
 		panic(-1)

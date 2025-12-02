@@ -46,6 +46,7 @@ type RuntimeSys struct {
 
 	// DB
 	SQLdb      *sql.DB
+	SQLdsnStr  string
 	Mongo_db   *mongo.Database
 	Mongo_coll *mongo.Collection // main mongodb collection to use when none is specified
 	

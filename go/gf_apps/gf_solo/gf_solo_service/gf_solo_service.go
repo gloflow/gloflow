@@ -56,7 +56,7 @@ func Run(pConfig *GFconfig,
 	green  := color.New(color.BgGreen).Add(color.FgBlack).SprintFunc()
 
 	pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("%s%s", yellow("GF_SOLO"), green("===============")), nil)
-	
+
 
 
 	// EVENTS
@@ -76,15 +76,15 @@ func Run(pConfig *GFconfig,
 	if err != nil {
 		panic(err)
 	}
-	
+
 	pRuntimeSys.LogNewFun("DEBUG", "gf_solo service config", nil)
 	if gf_core.LogsIsDebugEnabled() {
 		spew.Dump(pConfig)
 	}
-	
+
 
 	authLoginURLstr := "/v1/identity/login_ui"
-	
+
 	//-------------
 	user, err := user.Current()
 	if err != nil {
@@ -119,11 +119,11 @@ func Run(pConfig *GFconfig,
 		// DOMAINS
 		DomainBaseStr:           pConfig.DomainBaseStr,
 		DomainForAuthCookiesStr: &pConfig.DomainForAuthCookiesStr,
-		
+
 		AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
 		AuthLoginURLstr:                authLoginURLstr, // on email confirm redirect user to this
 		AuthLoginSuccessRedirectURLstr: "/v1/home/main", // on login success redirecto to home
-		
+
 		// EVENTS
 		EnableEventsAppBool: enableEventsAppBool,
 
@@ -182,7 +182,7 @@ func Run(pConfig *GFconfig,
 			EnableEmailBool:                       true,
 			EnableEmailRequireConfirmForLoginBool: true,
 			EnableMFArequireConfirmForLoginBool:   true, // admins have to MFA confirm to login
-			
+
 		}
 
 		gfErr := gf_admin_lib.InitNewService(pConfig.TemplatesPathsMap,
@@ -228,7 +228,7 @@ func Run(pConfig *GFconfig,
 	if gfErr != nil {
 		return
 	}
-	
+
 	gfImagesServiceInfo := &gf_images_core.GFserviceInfo{
 		DomainBaseStr: pConfig.DomainBaseStr,
 		Mongodb_host_str:                     pConfig.MongoHostStr,
@@ -252,9 +252,9 @@ func Run(pConfig *GFconfig,
 		// on user trying to access authed endpoint while not logged in, redirect to this
 		AuthLoginURLstr: authLoginURLstr,
 		KeyServer:       keyServer,
-		
+
 		//-------------------------
-		
+
 		// IMAGES_STORAGE
 		UseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
 
@@ -272,13 +272,13 @@ func Run(pConfig *GFconfig,
 
 	//-------------
 	// GF_ANALYTICS
-	
+
 	gfAnalyticsServiceInfo := &gf_analytics_lib.GFserviceInfo{
 
 		Media_domain_str:  imagesConfig.MediaDomainStr,
 		Py_stats_dirs_lst: pConfig.AnalyticsPyStatsDirsLst,
 		Run_indexer_bool:  pConfig.AnalyticsRunIndexerBool,
-		
+
 		Templates_paths_map: pConfig.TemplatesPathsMap,
 
 		// IMAGES_STORAGE
@@ -314,7 +314,7 @@ func Run(pConfig *GFconfig,
 
 	//-------------
 	// GF_WEB3
-	
+
 	web3Config := &gf_eth_core.GF_config{
 		AlchemyAPIkeyStr: pConfig.AlchemyAPIkeyStr,
 	}
@@ -324,18 +324,18 @@ func Run(pConfig *GFconfig,
 		web3Config,
 		imagesJobsMngrCh,
 		pRuntimeSys)
-	
+
 	//-------------
 	// GF_LANG
 
-	// ADD!! - expose this as a ENV var. the user should be able to 
+	// ADD!! - expose this as a ENV var. the user should be able to
 	//         disable the language server from starting up and accepting
 	//         programs for execution.
 	enableLangBool := true
 
 	if enableLangBool {
 		langServiceInfo := &gf_lang_service.GFserviceInfo{
-			NameStr: "gf_lang", 
+			NameStr: "gf_lang",
 		}
 		langConfig := &gf_lang_service.GFconfig{}
 		gfErr := gf_lang_service.InitService(gfSoloHTTPmux,
@@ -351,7 +351,7 @@ func Run(pConfig *GFconfig,
 	// METRICS - start prometheus metrics endpoint, and get core_metrics
 	coreMetrics := gf_core.MetricsInit("/metrics", portMetricsInt)
 	pRuntimeSys.Metrics = coreMetrics
-	
+
 	//-------------
 	// PLUGIN - register extern http handlers
 
@@ -361,14 +361,16 @@ func Run(pConfig *GFconfig,
 		// USER_RPC_HANDLERS
 		handlersLst, gfErr := pRuntimeSys.ExternalPlugins.RPChandlersGetCallback(pRuntimeSys)
 		if gfErr != nil {
+
 			return
+
 		}
-		
+
 		//-------------
 
 		authSubsystemTypeStr := pConfig.AuthSubsystemTypeStr
 		metricsGroupNameStr  := "gf_solo__plugin_rpc_handlers"
-		
+
 		gf_rpc_lib.CreateHandlersHTTP(metricsGroupNameStr,
 			handlersLst,
 			gfSoloHTTPmux,
@@ -376,6 +378,7 @@ func Run(pConfig *GFconfig,
 			authLoginURLstr,
 			keyServer,
 			pRuntimeSys)
+
 	}
 
 	//-------------
@@ -396,7 +399,7 @@ func RuntimeGet(pConfigPathStr string,
 	// CONFIG
 	configDirPathStr := path.Dir(pConfigPathStr)  // "./../config/"
 	configNameStr    := path.Base(pConfigPathStr) // "gf_solo"
-	
+
 	config, err := ConfigInit(configDirPathStr, configNameStr)
 	if err != nil {
 		fmt.Println(err)
@@ -411,7 +414,7 @@ func RuntimeGet(pConfigPathStr string,
 		sentryEndpointStr := config.SentryEndpointStr
 		sentrySampleRateDefaultF := 1.0
 		sentryTracingRateForHandlersMap := map[string]float64{
-			
+
 		}
 		err := gf_core.ErrorInitSentry(sentryEndpointStr,
 			sentryTracingRateForHandlersMap,
@@ -441,17 +444,19 @@ func RuntimeGet(pConfigPathStr string,
 		// SENTRY_DSN
 		SentryDSNstr: config.SentryEndpointStr,
 	}
-	
+
 	//--------------------
 	// SQL
 
-	sqlDB, gfErr := gf_core.DBsqlConnect(config.SQLdbNameStr,
+	sqlDB, sqlDSNstr, gfErr := gf_core.DBsqlConnect(config.SQLdbNameStr,
 		config.SQLuserNameStr,
 		config.SQLpassStr,
 		config.SQLhostStr,
+		"require", // SSL mode - required for PostgreSQL 18
 		runtimeSys)
 
 	runtimeSys.SQLdb = sqlDB
+	runtimeSys.SQLdsnStr = sqlDSNstr
 
 	//--------------------
 	// MONGODB

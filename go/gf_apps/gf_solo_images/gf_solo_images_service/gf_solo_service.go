@@ -47,7 +47,7 @@ func Run(pConfig *GFconfig,
 	green  := color.New(color.BgGreen).Add(color.FgBlack).SprintFunc()
 
 	pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("%s%s", yellow("GF_SOLO_IMAGES"), green("===============")), nil)
-	
+
 	// EVENTS
 	enableEventsAppBool := true
 	pRuntimeSys.EnableEventsAppBool = enableEventsAppBool
@@ -60,15 +60,15 @@ func Run(pConfig *GFconfig,
 	if err != nil {
 		panic(err)
 	}
-	
+
 	pRuntimeSys.LogNewFun("DEBUG", "gf_solo service config", nil)
 	if gf_core.LogsIsDebugEnabled() {
 		spew.Dump(pConfig)
 	}
-	
+
 
 	authLoginURLstr := "/v1/identity/login_ui"
-	
+
 	//-------------
 	user, err := user.Current()
 	if err != nil {
@@ -105,7 +105,7 @@ func Run(pConfig *GFconfig,
 	if gfErr != nil {
 		return
 	}
-	
+
 	gfImagesServiceInfo := &gf_images_core.GFserviceInfo{
 		DomainBaseStr: pConfig.DomainBaseStr,
 		Mongodb_host_str:                     pConfig.MongoHostStr,
@@ -127,9 +127,9 @@ func Run(pConfig *GFconfig,
 		// on user trying to access authed endpoint while not logged in, redirect to this
 		// AuthLoginURLstr: authLoginURLstr,
 		KeyServer: keyServer,
-		
+
 		//-------------------------
-		
+
 		// IMAGES_STORAGE
 		UseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
 
@@ -147,7 +147,7 @@ func Run(pConfig *GFconfig,
 
 
 	fmt.Println(imagesJobsMngrCh)
-	
+
 	//-------------
 	// GF_ML
 	// gf_ml_lib.InitService(gfSoloHTTPmux, pRuntimeSys)
@@ -156,7 +156,7 @@ func Run(pConfig *GFconfig,
 	// METRICS - start prometheus metrics endpoint, and get core_metrics
 	coreMetrics := gf_core.MetricsInit("/metrics", portMetricsInt)
 	pRuntimeSys.Metrics = coreMetrics
-	
+
 	//-------------
 	// PLUGIN - register external http handlers
 
@@ -168,12 +168,12 @@ func Run(pConfig *GFconfig,
 		if gfErr != nil {
 			return
 		}
-		
+
 		//-------------
 
 		authSubsystemTypeStr := pConfig.AuthSubsystemTypeStr
 		metricsGroupNameStr  := "gf_solo_images__plugin_rpc_handlers"
-		
+
 		gf_rpc_lib.CreateHandlersHTTP(metricsGroupNameStr,
 			handlersLst,
 			gfSoloHTTPmux,
@@ -201,7 +201,7 @@ func RuntimeGet(pConfigPathStr string,
 	// CONFIG
 	configDirPathStr := path.Dir(pConfigPathStr)  // "./../config/"
 	configNameStr    := path.Base(pConfigPathStr) // "gf_solo"
-	
+
 	config, err := ConfigInit(configDirPathStr, configNameStr)
 	if err != nil {
 		fmt.Println(err)
@@ -216,7 +216,7 @@ func RuntimeGet(pConfigPathStr string,
 		sentryEndpointStr := config.SentryEndpointStr
 		sentrySampleRateDefaultF := 1.0
 		sentryTracingRateForHandlersMap := map[string]float64{
-			
+
 		}
 		err := gf_core.ErrorInitSentry(sentryEndpointStr,
 			sentryTracingRateForHandlersMap,
@@ -245,14 +245,15 @@ func RuntimeGet(pConfigPathStr string,
 		// SENTRY_DSN
 		SentryDSNstr: config.SentryEndpointStr,
 	}
-	
+
 	//--------------------
 	// SQL
 
-	sqlDB, gfErr := gf_core.DBsqlConnect(config.SQLdbNameStr,
+	sqlDB, _, gfErr := gf_core.DBsqlConnect(config.SQLdbNameStr,
 		config.SQLuserNameStr,
 		config.SQLpassStr,
 		config.SQLhostStr,
+		"require", // SSL mode - required for PostgreSQL 18
 		runtimeSys)
 
 	runtimeSys.SQLdb = sqlDB

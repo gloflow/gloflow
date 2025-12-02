@@ -46,14 +46,19 @@ func DBsqlConnect(pDBnameStr string,
 	pUserNameStr string,
 	pPassStr     string,
 	pDBhostStr   string,
-	pRuntimeSys  *RuntimeSys) (*sql.DB, *GFerror) {
-	
-	// FIX!! - make "sslmode=disable" configurable, dont hardcode it
-	urlStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
+	pSSLmodeStr  string,
+	pRuntimeSys  *RuntimeSys) (*sql.DB, string, *GFerror) {
+
+	// SSL mode is now configurable
+	if pSSLmodeStr == "" {
+		pSSLmodeStr = "disable" // default fallback
+	}
+	dbDSNuriStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=%s",
 		pUserNameStr,
 		pPassStr,
 		pDBhostStr,
-		pDBnameStr)
+		pDBnameStr,
+		pSSLmodeStr)
 
 	//-----------------------
 	// CONNECT
@@ -67,7 +72,7 @@ func DBsqlConnect(pDBnameStr string,
 	for retriesInt := 0; retriesInt < maxRetriesInt; retriesInt++ {
 
 		pRuntimeSys.LogNewFun("INFO", "attempt - connecting to SQL DB...", nil)
-		db, err = sql.Open("postgres", urlStr)
+		db, err = sql.Open("postgres", dbDSNuriStr)
 		if err == nil {
 
 			// test the connection
@@ -82,7 +87,7 @@ func DBsqlConnect(pDBnameStr string,
 			time.Sleep(time.Duration(retryIntervalSecsInt) * time.Second)
 		}
 	}
-	
+
 	// if no connection was established even after retrying, return error
 	if db == nil {
 		gfErr := ErrorCreate("failed to connect to a SQL server at target url",
@@ -92,14 +97,14 @@ func DBsqlConnect(pDBnameStr string,
 				"db_name_str": pDBnameStr,
 			},
 			nil, "gf_core", pRuntimeSys)
-		return nil, gfErr
+		return nil, "", gfErr
 	}
 
 	//-----------------------
 
 	fmt.Println("connected to SQL DB...")
 
-	return db, nil
+	return db, dbDSNuriStr, nil
 }
 
 //-------------------------------------------------
@@ -109,7 +114,7 @@ func DBsqlViewTableStructure(pTableNameStr string,
 
 	rows, err := pRuntimeSys.SQLdb.Query(`
 		SELECT column_name, data_type, udt_name
-		FROM information_schema.columns 
+		FROM information_schema.columns
 		WHERE table_name = $1`, pTableNameStr)
 
 	if err != nil {

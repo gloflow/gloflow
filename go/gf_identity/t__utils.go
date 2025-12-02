@@ -50,7 +50,7 @@ type GFtestUserInfo struct {
 func TestCreateUserInDB(pTest *testing.T,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, gf_identity_core.GFuserName) {
-	
+
 	// DB
 	gfErr := gf_identity_core.DBsqlCreateTables(pCtx, pRuntimeSys)
 	if gfErr != nil {
@@ -71,7 +71,7 @@ func TestCreateUserInDB(pTest *testing.T,
 		UserNameStr:       userNameStr,
 		ScreenNameStr:     screenNameStr,
 	}
-	
+
 	// DB
 	gfErr = gf_identity_core.DBsqlUserCreate(user, pCtx, pRuntimeSys)
 	if gfErr != nil {
@@ -93,7 +93,7 @@ func TestUserpassCreateAndLoginNewUser(pUserInfo *GFtestUserInfo,
 	//---------------------------------
 	// CLEANUP
 	TestDBcleanup(pCtx, pRuntimeSys)
-	
+
 	//---------------------------------
 	// ADD_TO_INVITE_LIST
 	gfErr := gf_identity_core.DBsqlUserAddToInviteList(pUserInfo.EmailStr,
@@ -118,7 +118,7 @@ func TestUserpassCreateAndLoginNewUser(pUserInfo *GFtestUserInfo,
 		pHTTPagent,
 		pIdentityServicePortInt,
 		pTest)
-		
+
 	//---------------------------------
 
 	return cookiesInRespLst
@@ -137,11 +137,11 @@ func TestStartService(pAuthSubsystemTypeStr string,
 
 		HTTPmux := http.NewServeMux()
 
-		
+
 		serviceInfo := &gf_identity_core.GFserviceInfo{
 
 			AuthSubsystemTypeStr: pAuthSubsystemTypeStr, // "userpass",
-			
+
 			// IMPORTANT!! - durring testing dont send emails
 			EnableEmailBool: false,
 		}
@@ -209,10 +209,11 @@ func Tinit(pServiceNameStr string,
 
 	dbHostStr := pSQLhostStr
 
-	sqlDB, gfErr := gf_core.DBsqlConnect(dbNameStr,
+	sqlDB, _, gfErr := gf_core.DBsqlConnect(dbNameStr,
 		dbUserStr,
 		"", // config.SQLpassStr,
 		dbHostStr,
+		"disable", // SSL mode - required for PostgreSQL 18
 		runtimeSys)
 	if gfErr != nil {
 		panic(-1)
@@ -229,10 +230,10 @@ func Tinit(pServiceNameStr string,
 
 func TestDBcleanup(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) {
-	
+
 	// CLEANUP
 	collNameStr := "gf_users"
-	gf_core.MongoDelete(bson.M{}, collNameStr, 
+	gf_core.MongoDelete(bson.M{}, collNameStr,
 		map[string]interface{}{
 			"caller_err_msg_str": "failed to cleanup test user DB",
 		},

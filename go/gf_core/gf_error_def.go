@@ -330,6 +330,9 @@ func errorGetDefs() map[string]ErrorDef {
 		"sql_prepare_statement": ErrorDef{
 			DescrStr:"failed to prepare an SQL statement with Prepare()",
 		},
+		"sql_generic_error": ErrorDef{
+			DescrStr:"generic SQL error",
+		},
 		
 		//---------------
 		// REDIS

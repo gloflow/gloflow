@@ -29,7 +29,7 @@ import (
 //-------------------------------------------------
 
 func TestGenAddress(pTest *testing.T) {
-	
+
 
 	privateKeyHexStr, publicKeyHexStr, addressHexStr, _ := EthGenerateKeys()
 
@@ -41,7 +41,7 @@ func TestGenAddress(pTest *testing.T) {
 //---------------------------------------------------
 
 func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
-	
+
 	//-----------------------
 	// MONGODB_HOST
 	var mongoDBhostPortStr string
@@ -69,7 +69,7 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 		ServiceNameStr: "gf_web3_monitor_test",
 		LogFun:         logFun,
 		LogNewFun:      logNewFun,
-		
+
 		// SENTRY - enable it for error reporting
 		ErrorsSendToSentryBool: true,
 	}
@@ -97,7 +97,7 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	
+
 	//--------------------
 	// SQL
 
@@ -106,10 +106,11 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 
 	dbHostStr := sqlHostStr
 
-	sqlDB, gfErr := gf_core.DBsqlConnect(dbNameStr,
+	sqlDB, _, gfErr := gf_core.DBsqlConnect(dbNameStr,
 		dbUserStr,
 		"", // config.SQLpassStr,
 		dbHostStr,
+		"disable", // SSL mode - required for PostgreSQL 18
 		runtimeSys)
 	if gfErr != nil {
 		panic(-1)
@@ -119,7 +120,7 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 
 	//--------------------
 	// SENTRY
-	
+
 	// FIX!! - load this from ENV var
 	sentryEndpointURIstr := "https://702b507d193d45029674fbf98bcedaaf@o502595.ingest.sentry.io/5590469"
 
