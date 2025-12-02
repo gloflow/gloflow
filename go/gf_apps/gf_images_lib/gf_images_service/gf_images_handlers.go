@@ -673,18 +673,12 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 	//---------------------
 	// HEALTH
-
-	// FIX!! - change to "/v1/images/healthz" but have to also fix infra healthcheck path 
-	//         otherwise service is going to get marked as unhealthy
 	
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/v1/healthz",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/images/healthz",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			return nil, nil
 		},
-		pHTTPmux,
-		nil,   // no metrics for health endpoint
-		false, // pStoreRunBool
-		nil,
+		rpcHandlerRuntime,
 		pRuntimeSys)
 	
 	//---------------------
