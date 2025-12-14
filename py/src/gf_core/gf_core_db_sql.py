@@ -23,8 +23,9 @@ import psycopg2
 #---------------------------------------------------------------------------------
 def init_db_client(p_db_name_str,
 	p_env_str,
-	p_from_aws_secrets_bool=False):
-	
+	p_from_aws_secrets_bool=False,
+	p_app_name_str="gloflow"):
+
 	if p_from_aws_secrets_bool:
 		# SECRETS
 		print("getting meta from secrets...")
@@ -40,7 +41,13 @@ def init_db_client(p_db_name_str,
 		port     = int(db_port_str),
 		database = p_db_name_str,
 		user     = db_user_str,
-		password = db_pass_str)
+		password = db_pass_str,
+		connect_timeout = 30,        # Connection timeout in seconds
+		keepalives = 1,              # Enable TCP keepalives
+		keepalives_idle = 600,       # Time before sending keepalives (10 minutes)
+		keepalives_interval = 30,    # Interval between keepalives
+		keepalives_count = 3,        # Number of lost keepalives before disconnect
+		application_name = p_app_name_str)  # For connection identification
 	print("connect ok...")
 
 	return db_client
@@ -67,7 +74,7 @@ def get_meta_from_secrets(p_db_env_str,
 
 	secrets_client = boto3.client('secretsmanager',
 		region_name="us-east-1")
-	
+
 	db_host_port_str = secrets_client.get_secret_value(SecretId=f"{p_prefix_str}_host_{p_db_env_str}")["SecretString"]
 	db_creds_str     = secrets_client.get_secret_value(SecretId=f"{p_prefix_str}_creds_{p_db_env_str}")["SecretString"]
 	print("db RDS creds fetched from aws secrets_manager...")
