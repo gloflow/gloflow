@@ -11,10 +11,13 @@ body {
 
 #home_container {
 	position: absolute;
+	width: 100%;
+    height: 100%;
 }
 
-/*------------------------------------------------------------------*/
-/*PROFILE_IMAGE*/
+//------------------------------------------------------------------
+// PROFILE_IMAGE
+
 #profile_image {
 	position: absolute;
 	background-color: #e3b91a;
@@ -31,8 +34,9 @@ body {
     user-select: none;
 }
 
-/*------------------------------------------------------------------*/
-/*NAMES*/
+//------------------------------------------------------------------
+// NAMES
+
 #home_container #names {
 	background-color: #ffcc0e;
     width: 119px;
@@ -46,8 +50,9 @@ body {
 	font-family: "IBM Plex Sans", sans-serif;
 }
 
-/*------------------------------------------------------------------*/
-/*MY_ETH_ADDRESSES*/
+//------------------------------------------------------------------
+// MY_ETH_ADDRESSES
+
 #home_container #my_eth_addresses {
 	position: absolute;
     width: 132px;
@@ -90,8 +95,9 @@ body {
 	user-select: none;
 }
 
-/*------------------------------------------------------------------*/
-/*OBSERVED_ETH_ADDRESSES*/
+//------------------------------------------------------------------
+// OBSERVED_ETH_ADDRESSES
+
 #home_container #observed_eth_addresses {
 	position: absolute;
 	width: 132px;
@@ -137,8 +143,9 @@ body {
 	background-color: #8d8051;
 }
 
-/*------------------------------------------------------------------*/
-/*ETH_ADDRESS*/
+//------------------------------------------------------------------
+// ETH_ADDRESS
+
 .eth_address {
 	position: relative;
 	background-color: #bfaa5a;
@@ -247,7 +254,7 @@ body {
 	user-select: none;
 }
 
-/*------------------------------------------------------------*/
+//------------------------------------------------------------------
 .eth_address .tags_container {
 	position: absolute;
     left: 157px;
@@ -262,8 +269,9 @@ body {
     padding-bottom: 4px;
 }
 
-/*------------------------------------------------------------------*/
-/*NFTs*/
+//------------------------------------------------------------------
+/*
+// NFT
 .nfts_container {
 	background-color: #746a44;
     width: 250px;
@@ -278,5 +286,6 @@ body {
 
 
 }
+*/
 
-/*------------------------------------------------------------------*/
+//------------------------------------------------------------------
