@@ -180,8 +180,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				imageIDstr := strings.Replace(pathStr, "/images/v/", "", 1)
 				imageID    := gf_images_core.GFimageID(imageIDstr)
 
+				// auth is optional here - if user is logged in, we get the user ID, if not, we proceed as anonymous
 				var userIDfinalStr gf_core.GF_ID
-
 				userLoggedInBool, userID, gfErr := gf_identity_core.GetUserIDfromReq(pReq,
 					pAuthSubsystemTypeStr,
 					pCtx,

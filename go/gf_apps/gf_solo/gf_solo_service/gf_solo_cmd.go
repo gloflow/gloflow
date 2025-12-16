@@ -66,7 +66,9 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 
 			logFun, logNewFun := gf_core.LogsInit()
 			log.SetOutput(os.Stdout)
+
 			
+
 			runtimeSys, config, err := RuntimeGet(cliConfigPathStr, pExternalPlugins, logFun, logNewFun)
 			if err != nil {
 				panic(err)
@@ -127,12 +129,14 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 		panic(err)
 	}
 	
+	/*
 	// ENV
 	err = viper.BindEnv("env", "GF_ENV")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
+	*/
 
 	//--------------------
 	// CLI_ARGUMENT - PORT
@@ -146,12 +150,14 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 		panic(err)
 	}
 	
+	/*
 	// ENV
 	err = viper.BindEnv("port", "GF_PORT")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
+	*/
 
 	//--------------------
 	// CLI_ARGUMENT - PORT_ADMIN
@@ -165,12 +171,14 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 		panic(err)
 	}
 	
+	/*
 	// ENV
 	err = viper.BindEnv("port", "GF_PORT_ADMIN")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
+	*/
 
 	//--------------------
 	// CLI_ARGUMENT - PORT__METRICS
@@ -182,12 +190,14 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 		panic(err)
 	}
 	
+	/*
 	// ENV
 	err = viper.BindEnv("port_metrics", "GF_PORT_METRICS")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
+	*/
 
 	//--------------------
 	// MONGODB
@@ -200,12 +210,14 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 		panic(err)
 	}
 
+	/*
 	// ENV
 	err = viper.BindEnv("mongodb_host", "GF_MONGODB_HOST")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
+	*/
 
 	//--------------------
 	// CLI_ARGUMENT - MONGODB_DB_NAME
@@ -216,16 +228,19 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 		panic(err)
 	}
 
+	/*
 	// ENV
 	err = viper.BindEnv("mongodb_db_name", "GF_MONGODB_DB_NAME")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
+	*/
 
 	//--------------------
 	// SQL
 	//--------------------
+	/*
 	// ENV
 	err = viper.BindEnv("sql_user_name", "GF_SQL_USER_NAME")
 	if err != nil {
@@ -253,6 +268,7 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
+	*/
 
 	//--------------------
 	// CLI_ARGUMENT - SENTRY_ENDPOINT
@@ -263,12 +279,14 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 		panic(err)
 	}
 
+	/*
 	// ENV
 	err = viper.BindEnv("sentry_endpoint", "GF_SENTRY_ENDPOINT")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
+	*/
 
 	//--------------------
 	
@@ -285,12 +303,14 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 		panic(err)
 	}
 
+	/*
 	// ENV
 	err = viper.BindEnv("auth_subsystem_type", "GF_AUTH_SUBSYSTEM_TYPE")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
+	*/
 
 	//--------------------
 	// CLI_ARGUMENT - ADMIN_MFA_SECRET_KEY_BASE32
@@ -303,12 +323,14 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 		panic(err)
 	}
 
+	/*
 	// ENV
 	err = viper.BindEnv("admin_mfa_secret_key_base32", "GF_ADMIN_MFA_SECRET_KEY_BASE32")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
+	*/
 
 	//--------------------
 	// CLI_ARGUMENT - ADMIN_EMAIL
@@ -320,15 +342,17 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 		panic(err)
 	}
 
+	/*
 	// ENV
 	err = viper.BindEnv("admin_email", "GF_ADMIN_EMAIL")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
+	*/
 
 	//--------------------
-
+	/*
 	// ENV
 	err = viper.BindEnv("domain_base", "GF_DOMAIN_BASE")
 	if err != nil {
@@ -363,8 +387,10 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
+	*/
 
 	//--------------------
 
 	return cmdBase
 }
+

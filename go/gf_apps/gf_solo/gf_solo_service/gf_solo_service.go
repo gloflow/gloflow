@@ -269,7 +269,7 @@ func Run(pConfig *GFconfig,
 		gfImagesServiceInfo,
 		imagesConfig,
 		pRuntimeSys)
-
+	
 	//-------------
 	// GF_ANALYTICS
 
@@ -443,6 +443,9 @@ func RuntimeGet(pConfigPathStr string,
 
 		// SENTRY_DSN
 		SentryDSNstr: config.SentryEndpointStr,
+
+		// IDENTITY
+		IdentitySubsystemTypeStr: config.AuthSubsystemTypeStr,
 	}
 
 	//--------------------

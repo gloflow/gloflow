@@ -73,6 +73,9 @@ type RuntimeSys struct {
 
 	// EVENTS
 	EnableEventsAppBool bool
+
+	// IDENTITY
+	IdentitySubsystemTypeStr string
 }
 
 //-------------------------------------------------

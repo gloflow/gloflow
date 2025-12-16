@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_solo_service
 
 import (
+	"fmt"
 	"strings"
 	"github.com/spf13/viper"
 )
@@ -131,11 +132,16 @@ func ConfigInit(pConfigDirPathStr string,
 	viper.SetEnvPrefix("GF")
 
 	// IMPORTANT!! - enable Viper parsing ENV vars.
-	
 	viper.AutomaticEnv()
 	
 	//--------------------
 
+	//--------------------
+	// ENV_VARS
+	bindEnvVars()
+
+	//--------------------
+	
 	// LOAD
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -150,4 +156,144 @@ func ConfigInit(pConfigDirPathStr string,
 	}
 
 	return config, nil
+}
+
+func bindEnvVars() {
+
+	// ENV
+	err := viper.BindEnv("env", "GF_ENV")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("port", "GF_PORT")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("port", "GF_PORT_ADMIN")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("port_metrics", "GF_PORT_METRICS")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("mongodb_host", "GF_MONGODB_HOST")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("mongodb_db_name", "GF_MONGODB_DB_NAME")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
+	// SQL
+	//--------------------
+	// ENV
+	err = viper.BindEnv("sql_user_name", "GF_SQL_USER_NAME")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("sql_pass", "GF_SQL_PASS")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("sql_host", "GF_SQL_HOST")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("sql_db_name", "GF_SQL_DB_NAME")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
+	// ENV
+	err = viper.BindEnv("sentry_endpoint", "GF_SENTRY_ENDPOINT")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("auth_subsystem_type", "GF_AUTH_SUBSYSTEM_TYPE")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("admin_mfa_secret_key_base32", "GF_ADMIN_MFA_SECRET_KEY_BASE32")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("admin_email", "GF_ADMIN_EMAIL")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("domain_base", "GF_DOMAIN_BASE")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("domain_admin_base", "GF_DOMAIN_ADMIN_BASE")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("alchemy_api_key", "GF_ALCHEMY_SERVICE_ACC__API_KEY")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("images_use_new_storage_engine", "GF_IMAGES_USE_NEW_STORAGE_ENGINE")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("ipfs_node_host", "GF_IPFS__NODE_HOST")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
 }
