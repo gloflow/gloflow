@@ -35,28 +35,6 @@ import (
 
 //---------------------------------------------------
 
-type GFauth0session struct {
-	ID                gf_core.GF_ID          `bson:"id_str"`
-	DeletedBool       bool                   `bson:"deleted_bool"`
-	CreationUNIXtimeF float64                `bson:"creation_unix_time_f"`
-	UserID            gf_core.GF_ID          `bson:"user_id"`
-	
-	// marked as true once the login completes (once Auth0 initial auth returns the user to the GF system).
-	// if the login_callback handler is called and this login_complete is already marked as true,
-	// the http transaction will be immediatelly aborted.
-	LoginCompleteBool bool `bson:"login_complete_bool"`
-	
-	// user can specify which page then want to be redirect to after login,
-	// if they dont want to use the default GF successful-login url.
-	LoginSuccessRedirectURLstr string
-
-	// user can specify which page then want to be redirect to after logout
-	LogoutSuccessRedirectURLstr string
-
-	AccessTokenStr string                 `bson:"access_token_str"`
-	ProfileMap     map[string]interface{} `bson:"profile_map"`
-}
-
 type GFauth0inputLoginCallback struct {
 	CodeStr           string
 	SessionID         gf_core.GF_ID
@@ -106,35 +84,29 @@ func Auth0apiTokenGeneratePipeline(pInput *GFauth0inputAPItokenGenerate,
 }
 
 //---------------------------------------------------
-// LOGOUT_PIPELINE
-
-func Auth0logoutPipeline(pGFsessionID gf_core.GF_ID,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-	
-	auth0session, gfErr := DBsqlAuth0getSession(pGFsessionID, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return "", gfErr
-	}
-
-	logoutSuccessRedirectURLstr := auth0session.LogoutSuccessRedirectURLstr
-
-	// DELETE_SESSION
-	gfErr = dbSQLauth0deleteSession(pGFsessionID, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return "", gfErr
-	}
-
-	return logoutSuccessRedirectURLstr, nil
-}
-
-//---------------------------------------------------
 // LOGIN
 
 func Auth0loginPipeline(pLoginSuccessRedirectURLstr string,
-	pCtx context.Context,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
 
+	
+	
+	// in the initial Auth0 login pipeline the user is not yet known. its only known
+	// after the login callback when Auth0 redirects back to GF with the user info.
+	var userID *gf_core.GF_ID = nil
+
+	// SESSION_CREATE
+	sessionID, gfErr := SessionCreate(userID, &pLoginSuccessRedirectURLstr,
+		GF_AUTH_SUBSYSTEM_TYPE__AUTH0,
+		pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gf_core.GF_ID(""), gfErr
+	}
+
+	return sessionID, nil
+
+	/*
 	//---------------------
 	// SESSION_ID
 	sessionID := generateSessionID()
@@ -142,7 +114,7 @@ func Auth0loginPipeline(pLoginSuccessRedirectURLstr string,
 	//---------------------
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	auth0session := &GFauth0session{
+	session := &GFsession{
 		ID:                sessionID,
 		CreationUNIXtimeF: creationUNIXtimeF,
 
@@ -156,17 +128,15 @@ func Auth0loginPipeline(pLoginSuccessRedirectURLstr string,
 
 	//---------------------
 	// DB
-	gfErr := dbSQLauth0createNewSession(auth0session,
+	gfErr := dbSQLcreateNewSession(session,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return gf_core.GF_ID(""), gfErr
 	}
 
-	/*
-	with auth0 auth method only login_attept is created initially with session_id only.
-	after auth0 logs the user in only then is the login_attempt updated with user info. 
-	*/
+	// with auth0 auth method only login_attept is created initially with session_id only.
+	// after auth0 logs the user in only then is the login_attempt updated with user info. 
 	userTypeStr := "standard"
 	_, gfErr = loginAttempCreateWithSession(sessionID, userTypeStr, pCtx, pRuntimeSys)
 	if gfErr != nil {
@@ -174,8 +144,9 @@ func Auth0loginPipeline(pLoginSuccessRedirectURLstr string,
 	}
 
 	//------------------------
+	*/
 
-	return sessionID, nil
+	
 }
 
 //---------------------------------------------------
@@ -194,7 +165,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	// created in the previously called login handler, and that a login with that session 
 	// has not already been completed
 
-	auth0session, gfErr := DBsqlAuth0getSession(sessionID,
+	auth0session, gfErr := DBsqlGetSession(sessionID,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -366,9 +337,9 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 				GivenNameStr:  profileMap["given_name"].(string),
 				FamilyNameStr: profileMap["family_name"].(string),
 				NicknameStr:   googleNicknameStr,
-				// LocaleStr:     profileMap["locale"].(string),
 				UpdatedAtStr:  profileMap["updated_at"].(string),
 				PictureURLstr: profileMap["picture"].(string),
+				// LocaleStr:     profileMap["locale"].(string),
 			}
 
 
@@ -438,7 +409,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	// cant be invoked again
 	loginCompleteBool := true
 
-	gfErr = dbSQLauth0updateSession(sessionID,
+	gfErr = DBsqlUpdateSession(sessionID,
 		userID,
 		loginCompleteBool,
 
@@ -515,7 +486,7 @@ func Auth0createGFuserIfNone(pBasicUserInfo *GFauth0basicUserInfo,
 	}
 	*/
 
-	pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> Auth0 /userinfo response recieved...`,
+	pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> Auth0 profile...`,
 		map[string]interface{}{
 			"auth0_user_info_map": pBasicUserInfo.ProfileMap,
 		})
@@ -564,7 +535,27 @@ func Auth0createGFuserIfNone(pBasicUserInfo *GFauth0basicUserInfo,
 
 		//---------------------
 
+		createInput := &GFuserCreateInput{
+			UserID:             auth0userID,
+			CreationUNIXtimeF:  creationUNIXtimeF,
+			UserTypeStr:        "standard",
+			UserNameStr:        pBasicUserInfo.UserNameStr,
+			ScreenNameStr:      screenNameStr,
+			EmailStr:           emailStr,
+			ProfileImageURLstr: profileImageURLstr,
+		}
 
+		_, gfErr = UsersPipelineCreate(createInput,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+
+		//---------------------
+
+
+		/*
 		user := &GFuser{
 			Vstr:               "0",
 			ID:                 auth0userID,
@@ -584,6 +575,7 @@ func Auth0createGFuserIfNone(pBasicUserInfo *GFauth0basicUserInfo,
 		}
 	
 		//------------------------
+		*/
 	
 	} else {
 

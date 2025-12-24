@@ -68,8 +68,18 @@ type GFuserCreds struct {
 	PassHashStr string                   `bson:"pass_hash_str"`
 }
 
+type GFuserCreateInput struct {
+	UserID             gf_core.GF_ID
+	CreationUNIXtimeF  float64
+	UserTypeStr	       string
+	UserNameStr        GFuserName
+	ScreenNameStr      string
+	EmailStr           string
+	ProfileImageURLstr string
+}
+
 // io_update
-type GFuserInputUpdate struct {
+type GFuserUpdateInput struct {
 	UserID            gf_core.GF_ID    `validate:"required"`                 // required - not updated, but for lookup
 	UserAddressETHstr GFuserAddressETH `validate:"omitempty,eth_addr"`       // optional - add an Eth address to the user
 	ScreenNameStr     *string          `validate:"omitempty,min=3,max=50"`   // optional
@@ -83,11 +93,11 @@ type GFuserOutputUpdate struct {
 	
 }
 
-type GFuserInputGet struct {
+type GFuserGetInput struct {
 	UserID gf_core.GF_ID
 }
 
-type GFuserOutputGet struct {
+type GFuserGetOutput struct {
 	UserNameStr        GFuserName
 	ScreenNameStr      string
 	EmailStr           string
@@ -119,6 +129,36 @@ type GFloginAttemptUpdateOp struct {
 }
 
 //---------------------------------------------------
+// PIPELINE_CREATE
+
+func UsersPipelineCreate(pInput *GFuserCreateInput,
+	pCtx 	    context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFuser, *gf_core.GFerror) {
+
+	user := &GFuser{
+		Vstr:               "0",
+		ID:                 pInput.UserID,
+		CreationUNIXtimeF:  pInput.CreationUNIXtimeF,
+		UserTypeStr:        pInput.UserTypeStr,
+		UserNameStr:        pInput.UserNameStr, 
+		ScreenNameStr:      pInput.ScreenNameStr,
+		EmailStr:           pInput.EmailStr,
+		ProfileImageURLstr: pInput.ProfileImageURLstr,
+	}
+
+	//------------------------
+	// DB
+	gfErr := DBsqlUserCreate(user, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	//------------------------
+
+	return user, nil
+}
+
+//---------------------------------------------------
 // PIPELINE_LOGOUT
 
 func UsersPipelineLogout(pUserID gf_core.GF_ID,
@@ -132,7 +172,7 @@ func UsersPipelineLogout(pUserID gf_core.GF_ID,
 //---------------------------------------------------
 // PIPELINE_UPDATE
 
-func UsersPipelineUpdate(pInput *GFuserInputUpdate,
+func UsersPipelineUpdate(pInput *GFuserUpdateInput,
 	pServiceInfo *GFserviceInfo,
 	pCtx         context.Context,
 	pRuntimeSys  *gf_core.RuntimeSys) (*GFuserOutputUpdate, *gf_core.GFerror) {
@@ -194,9 +234,9 @@ func UsersPipelineUpdate(pInput *GFuserInputUpdate,
 //---------------------------------------------------
 // PIPELINE_GET
 
-func UsersPipelineGet(pInput *GFuserInputGet,
+func UsersPipelineGet(pInput *GFuserGetInput,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GFuserOutputGet, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFuserGetOutput, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE
@@ -214,7 +254,7 @@ func UsersPipelineGet(pInput *GFuserInputGet,
 		return nil, gfErr
 	}
 
-	output := &GFuserOutputGet{
+	output := &GFuserGetOutput{
 		UserNameStr:        user.UserNameStr,
 		ScreenNameStr:      user.ScreenNameStr,
 		EmailStr:           user.EmailStr,

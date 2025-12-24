@@ -352,7 +352,7 @@ func UserpassPipelineCreate(pInput *GFuserpassInputCreate,
 	emailStr    := pInput.EmailStr
 
 	userIdentifierStr := string(userNameStr)
-	userID            := usersCreateID(userIdentifierStr, creationUNIXtimeF)
+	userID            := CreateUserID(userIdentifierStr, creationUNIXtimeF)
 
 	user := &GFuser{
 		Vstr:              "0",
@@ -368,7 +368,7 @@ func UserpassPipelineCreate(pInput *GFuserpassInputCreate,
 	passHashStr := userpassGetPassHash(passStr, passSaltStr)
 
 	credsCreationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	userCredsID            := usersCreateID(userIdentifierStr, credsCreationUNIXtimeF)
+	userCredsID            := CreateUserID(userIdentifierStr, credsCreationUNIXtimeF)
 
 	userCreds := &GFuserCreds {
 		Vstr:              "0",

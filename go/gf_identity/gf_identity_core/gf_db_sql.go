@@ -31,15 +31,15 @@ import (
 )
 
 //---------------------------------------------------
-// AUTH0
+// SESSION
 //---------------------------------------------------
-// AUTH0_DELETE_SESSION
+// DELETE_SESSION
 
-func dbSQLauth0deleteSession(pGFsessionID gf_core.GF_ID,
+func dbSQLdeleteSession(pGFsessionID gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-	pRuntimeSys.LogNewFun("DEBUG", "deleting Auth0 session...", map[string]interface{}{
+	pRuntimeSys.LogNewFun("DEBUG", "deleting session...", map[string]interface{}{
 		"session_id": pGFsessionID,
 	})
 	
@@ -63,9 +63,9 @@ func dbSQLauth0deleteSession(pGFsessionID gf_core.GF_ID,
 }
 
 //---------------------------------------------------
-// AUTH0_CREATE_NEW_SESSION
+// CREATE_NEW_SESSION
 
-func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
+func dbSQLcreateNewSession(pSession *GFsession,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -78,13 +78,15 @@ func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 			login_success_redirect_url,
 
 			access_token,
-			profile
+			profile,
+
+			auth_subsystem_type
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7);
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
 	`
 
 	// serializing the profile map to JSON to store in the database
-	profileMapJSON, err := json.Marshal(pAuth0session.ProfileMap)
+	profileMapJSON, err := json.Marshal(pSession.ProfileMap)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to serialize profile_map to JSON for DB",
 			"json_encode_error",
@@ -96,18 +98,19 @@ func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 	_, err = pRuntimeSys.SQLdb.ExecContext(pCtx,
 		sqlStr,
 		"0",
-		pAuth0session.ID,
-		pAuth0session.DeletedBool,
-		pAuth0session.LoginCompleteBool,
-		pAuth0session.LoginSuccessRedirectURLstr,
-		pAuth0session.AccessTokenStr,
-		profileMapJSON)
+		pSession.ID,
+		pSession.DeletedBool,
+		pSession.LoginCompleteBool,
+		pSession.LoginSuccessRedirectURLstr,
+		pSession.AccessTokenStr,
+		profileMapJSON,
+		pSession.AuthSubsystemTypeStr)
 	
 	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to insert GFauth0session into the DB",
+		gfErr := gf_core.ErrorCreate("failed to insert session into the DB",
 			"sql_query_execute",
 			map[string]interface{}{
-				"session_id_str": pAuth0session.ID,
+				"session_id_str": pSession.ID,
 			},
 			err, "gf_identity_core", pRuntimeSys)
 		return gfErr
@@ -117,11 +120,11 @@ func dbSQLauth0createNewSession(pAuth0session *GFauth0session,
 }
 
 //---------------------------------------------------
-// AUTH0_GET_SESSION
+// SESSION_GET
 
-func DBsqlAuth0getSession(pGFsessionID gf_core.GF_ID,
+func DBsqlGetSession(pGFsessionID gf_core.GF_ID,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GFauth0session, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFsession, *gf_core.GFerror) {
 
 	sqlStr := `
 		SELECT
@@ -137,7 +140,7 @@ func DBsqlAuth0getSession(pGFsessionID gf_core.GF_ID,
 		FROM gf_auth0_session
 		WHERE id = $1`
 
-	session := GFauth0session{}
+	session := GFsession{}
 	var creationTime time.Time
 	var userIDsql sql.NullString
 	var LogoutSuccessRedirectURL sql.NullString
@@ -155,7 +158,7 @@ func DBsqlAuth0getSession(pGFsessionID gf_core.GF_ID,
 		&profileJSON)
 
 	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to find Auth0 session by ID in the DB",
+		gfErr := gf_core.ErrorCreate("failed to find session by ID in the DB",
 			"sql_query_execute",
 			map[string]interface{}{
 				"session_id_str": pGFsessionID,
@@ -189,9 +192,9 @@ func DBsqlAuth0getSession(pGFsessionID gf_core.GF_ID,
 }
 
 //---------------------------------------------------
-// AUTH0_UPDATE_SESSION
+// UPDATE_SESSION
 
-func dbSQLauth0updateSession(pGFsessionID gf_core.GF_ID,
+func DBsqlUpdateSession(pGFsessionID gf_core.GF_ID,
 	pUserID            gf_core.GF_ID,
 	pLoginCompleteBool bool,
 	pAuth0profileMap   map[string]interface{},
@@ -209,11 +212,11 @@ func dbSQLauth0updateSession(pGFsessionID gf_core.GF_ID,
 		return gfErr
 	}
 
-	pRuntimeSys.LogNewFun("DEBUG", "updating Auth0 session...", map[string]interface{}{
+	pRuntimeSys.LogNewFun("DEBUG", "updating session...", map[string]interface{}{
 		"session_id":     pGFsessionID,
 		"user_id":        pUserID,
 		"login_complete": pLoginCompleteBool,
-		"auth0_profile":  pAuth0profileMap,
+		"profile":        pAuth0profileMap,
 	})
 
 	sqlStr := `
@@ -227,7 +230,7 @@ func dbSQLauth0updateSession(pGFsessionID gf_core.GF_ID,
 		profileMapJSONstr,
 		pGFsessionID)
 	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to update Auth0 session in the DB",
+		gfErr := gf_core.ErrorCreate("failed to update session in the DB",
 			"sql_query_execute",
 			map[string]interface{}{
 				"session_id_str": pGFsessionID,
@@ -241,12 +244,12 @@ func dbSQLauth0updateSession(pGFsessionID gf_core.GF_ID,
 
 //---------------------------------------------------
 
-func DBsqlAuth0updateSessionLogoutURL(pGFsessionID gf_core.GF_ID,
+func DBsqlUpdateSessionLogoutURL(pGFsessionID gf_core.GF_ID,
 	pLogoutURLstr string,
 	pCtx         context.Context,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	pRuntimeSys.LogNewFun("DEBUG", "updating Auth0 session logout URL...", map[string]interface{}{
+	pRuntimeSys.LogNewFun("DEBUG", "updating session logout URL...", map[string]interface{}{
 		"session_id": pGFsessionID,
 		"logout_url": pLogoutURLstr,
 	})
@@ -258,7 +261,7 @@ func DBsqlAuth0updateSessionLogoutURL(pGFsessionID gf_core.GF_ID,
 	
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pLogoutURLstr, pGFsessionID)
 	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to update Auth0 session logout URL in the DB",
+		gfErr := gf_core.ErrorCreate("failed to update session logout URL in the DB",
 			"sql_query_execute",
 			map[string]interface{}{
 				"session_id_str": pGFsessionID,
@@ -552,37 +555,6 @@ func DBsqlGetUserNameByID(pUserID gf_core.GF_ID,
 }
 
 //---------------------------------------------------
-// GET_USER_EMAIL_BY_ID
-
-func DBsqlGetUserEmailByID(pUserID gf_core.GF_ID,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-
-	sqlStr := `
-		SELECT email
-		FROM gf_users
-		WHERE id = $1 AND deleted = false
-		LIMIT 1
-	`
-	row := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, string(pUserID))
-
-	var emailAddressStr string
-
-	err := row.Scan(&emailAddressStr)
-	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to get user email address from the SQL DB",
-			"sql_query_execute",
-			map[string]interface{}{
-				"user_id_str": pUserID,
-			},
-			err, "gf_identity_core", pRuntimeSys)
-		return "", gfErr
-	}
-
-	return emailAddressStr, nil
-}
-
-//---------------------------------------------------
 // USER_EXISTS_BY_ID
 
 func DBsqlUserExistsByID(pUserID gf_core.GF_ID,
@@ -855,64 +827,6 @@ func DBsqlUserUpdate(pUserIDstr gf_core.GF_ID,
 }
 
 //---------------------------------------------------
-// EMAIL
-//---------------------------------------------------
-
-func DBsqlUserEmailIsConfirmed(pUserNameStr GFuserName,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
-
-	sqlStr := `
-		SELECT email_confirmed
-		FROM gf_users
-		WHERE user_name = $1 AND deleted = false
-		LIMIT 1
-	`
-
-	var emailConfirmedBool bool
-
-	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, string(pUserNameStr)).Scan(&emailConfirmedBool)
-	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to get user email_confirmed from the DB",
-			"sql_query_execute",
-			map[string]interface{}{
-				"user_name_str": pUserNameStr,
-			},
-			err, "gf_identity_core", pRuntimeSys)
-		return false, gfErr
-	}
-
-	return emailConfirmedBool, nil
-}
-
-//---------------------------------------------------
-
-func dbSQLuserGetEmailConfirmedByUsername(pUserNameStr GFuserName,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
-
-	sqlStr := `
-		SELECT email_confirmed
-		FROM gf_users
-		WHERE user_name = $1`
-
-	var emailConfirmedBool bool
-	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pUserNameStr).Scan(&emailConfirmedBool)
-
-	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to get user email_confirm status of a user from the DB",
-			"sql_query_execute",
-			map[string]interface{}{
-				"user_name_str": string(pUserNameStr),
-			},
-			err, "gf_identity_core", pRuntimeSys)
-		return false, gfErr
-	}
-
-	return emailConfirmedBool, nil
-}
-
-//---------------------------------------------------
 // INVITE_LIST
 //---------------------------------------------------
 
@@ -1118,6 +1032,199 @@ func dbSQLuserCredsGetPassHash(pUserNameStr GFuserName,
 //---------------------------------------------------
 // EMAIL
 //---------------------------------------------------
+
+func DBsqlUserExistsByEmail(pEmailStr string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, gf_core.GF_ID, *gf_core.GFerror) {
+
+	sqlStr := `
+		SELECT COUNT(*), COALESCE(
+			(
+				SELECT id FROM gf_users
+				WHERE email = $1 AND deleted = false
+				ORDER BY creation_time DESC
+				LIMIT 1
+			),
+		'')
+		FROM gf_users
+		WHERE email = $1 AND deleted = false
+	`
+
+	var countInt int
+	var userID string
+
+	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pEmailStr).Scan(&countInt, &userID)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to check if there is a user in the DB with a given email",
+			"sql_query_execute",
+			map[string]interface{}{
+				"email_str": pEmailStr,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return false, gf_core.GF_ID(""), gfErr
+	}
+
+	if countInt > 0 {
+		return true, gf_core.GF_ID(userID), nil
+	}
+	return false, gf_core.GF_ID(""), nil
+}
+
+//---------------------------------------------------
+
+func DBsqlGetUserByEmail(pEmailStr string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFuser, *gf_core.GFerror) {
+	
+	sqlStr := `
+		SELECT 
+			v,
+			id,
+			deleted,
+			creation_time,
+			user_type,
+			user_name,
+			screen_name,
+			description,
+			addresses_eth,
+			email,
+			email_confirmed,
+			profile_image_url,
+			banner_image_url
+
+		FROM gf_users
+		WHERE email = $1 AND deleted = false
+		LIMIT 1
+	`
+
+	row := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pEmailStr)
+	user := &GFuser{}
+
+	var addressesEth pq.StringArray	
+	var creationTime time.Time
+
+	err := row.Scan(
+		&user.Vstr,
+		&user.ID,
+		&user.DeletedBool,
+		&creationTime,
+		&user.UserTypeStr,
+		&user.UserNameStr,
+		&user.ScreenNameStr,
+		&user.DescriptionStr,
+		&addressesEth,
+		&user.EmailStr,
+		&user.EmailConfirmedBool,
+		&user.ProfileImageURLstr,
+		&user.BannerImageURLstr)
+
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to find user by email in the DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"email_str": pEmailStr,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	for _, addr := range addressesEth {
+		user.AddressesETHlst = append(user.AddressesETHlst, GFuserAddressETH(addr))
+	}
+	user.CreationUNIXtimeF = float64(creationTime.Unix())
+
+	return user, nil
+}
+
+//---------------------------------------------------
+// GET_USER_EMAIL_BY_ID
+
+func DBsqlGetUserEmailByID(pUserID gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+
+	sqlStr := `
+		SELECT email
+		FROM gf_users
+		WHERE id = $1 AND deleted = false
+		LIMIT 1
+	`
+	row := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, string(pUserID))
+
+	var emailAddressStr string
+
+	err := row.Scan(&emailAddressStr)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to get user email address from the SQL DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"user_id_str": pUserID,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return "", gfErr
+	}
+
+	return emailAddressStr, nil
+}
+
+//---------------------------------------------------
+
+func DBsqlUserEmailIsConfirmed(pUserNameStr GFuserName,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+
+	sqlStr := `
+		SELECT email_confirmed
+		FROM gf_users
+		WHERE user_name = $1 AND deleted = false
+		LIMIT 1
+	`
+
+	var emailConfirmedBool bool
+
+	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, string(pUserNameStr)).Scan(&emailConfirmedBool)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to get user email_confirmed from the DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"user_name_str": pUserNameStr,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return false, gfErr
+	}
+
+	return emailConfirmedBool, nil
+}
+
+//---------------------------------------------------
+
+func dbSQLuserGetEmailConfirmedByUsername(pUserNameStr GFuserName,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+
+	sqlStr := `
+		SELECT email_confirmed
+		FROM gf_users
+		WHERE user_name = $1`
+
+	var emailConfirmedBool bool
+	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pUserNameStr).Scan(&emailConfirmedBool)
+
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to get user email_confirm status of a user from the DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"user_name_str": string(pUserNameStr),
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return false, gfErr
+	}
+
+	return emailConfirmedBool, nil
+}
+
+//---------------------------------------------------
+
 // CREATE__EMAIL_CONFIRM
 
 func dbSQLuserEmailConfirmCreate(pUserNameStr GFuserName,
@@ -1459,8 +1566,10 @@ func DBsqlCreateTables(pCtx context.Context,
 		login_success_redirect_url  TEXT,
 		logout_success_redirect_url TEXT,
 		
-		access_token   TEXT,
-		profile        JSON,
+		access_token TEXT,
+		profile      JSON,
+
+		auth_subsystem_type VARCHAR(20) DEFAULT 'auth0',
 
 		PRIMARY KEY(id),
 		FOREIGN KEY (user_id) REFERENCES gf_users(id)

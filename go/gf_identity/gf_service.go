@@ -94,14 +94,17 @@ func InitService(pTemplatesPathsMap map[string]string,
 		return nil, gfErr
 	}
 
+	//------------------------
 	// ETH - these handlers are always enabled, whether userpass|auth0 auth subsystem is activated
 	gfErr = initHandlersEth(keyServerInfo, pHTTPmux, pServiceInfo, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
-	
+
+	//------------------------
 	switch pServiceInfo.AuthSubsystemTypeStr {
 
+	//------------------------
 	// USERPASS
 	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__USERPASS:
 		
@@ -112,7 +115,8 @@ func InitService(pTemplatesPathsMap map[string]string,
 		if gfErr != nil {
 			return nil, gfErr
 		}
-
+	
+	//------------------------
 	// AUTH0
 	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0:
 		

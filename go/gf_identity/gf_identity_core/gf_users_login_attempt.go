@@ -91,7 +91,7 @@ func loginAttempCreateWithSession(pSessionID gf_core.GF_ID,
 	pRuntimeSys  *gf_core.RuntimeSys) (*GFloginAttempt, *gf_core.GFerror) {
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	loginAttemptID    := usersCreateID(string(pSessionID), creationUNIXtimeF)
+	loginAttemptID    := CreateUserID(string(pSessionID), creationUNIXtimeF)
 
 	loginAttempt := &GFloginAttempt{
 		Vstr:              "0",
@@ -121,7 +121,7 @@ func loginAttempCreate(pUserID gf_core.GF_ID,
 
 	userIdentifierStr := string(pUserNameStr)
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	loginAttemptID    := usersCreateID(userIdentifierStr, creationUNIXtimeF)
+	loginAttemptID    := CreateUserID(userIdentifierStr, creationUNIXtimeF)
 
 	loginAttempt := &GFloginAttempt{
 		Vstr:              "0",

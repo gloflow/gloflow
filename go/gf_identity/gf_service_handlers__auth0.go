@@ -138,7 +138,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				// allows user to be redirected to the page they were on before being redirected to Auth0 login.
 				loginSuccessRedirectURLstr := pReq.URL.Query().Get("redirect_url")
 				if loginSuccessRedirectURLstr == "" {
-					loginSuccessRedirectURLstr = ""
+					loginSuccessRedirectURLstr = "/"
 				} else {
 					decodedURLstr, err := url.QueryUnescape(loginSuccessRedirectURLstr)
 					if err != nil {
@@ -406,9 +406,8 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				}
 
 				//---------------------
-
 				// DB - update session with logout URL
-				gfErr := gf_identity_core.DBsqlAuth0updateSessionLogoutURL(sessionID,
+				gfErr := gf_identity_core.DBsqlUpdateSessionLogoutURL(sessionID,
 					logoutSuccessRedirectURLstr,
 					pCtx,
 					pRuntimeSys)
@@ -473,13 +472,18 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 				//------------------
 
-				logoutSuccessRedirectURLstr, gfErr := gf_identity_core.Auth0logoutPipeline(sessionID, pCtx, pRuntimeSys)
+				domainForAuthCookiesStr := *pServiceInfo.DomainForAuthCookiesStr
+
+				logoutSuccessRedirectURLstr, gfErr := gf_identity_core.LogoutPipeline(sessionID,
+					domainForAuthCookiesStr,
+					pResp,
+					pCtx,
+					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				// unset all session cookies
-				gf_identity_core.DeleteCookies(*pServiceInfo.DomainForAuthCookiesStr, pResp)
+				
 
 				var redirectURLstr string
 				if logoutSuccessRedirectURLstr == "" {

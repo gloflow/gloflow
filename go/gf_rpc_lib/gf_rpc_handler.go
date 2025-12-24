@@ -132,13 +132,15 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 	pHandlerRuntime *GFrpcHandlerRuntime,
 	pRuntimeSys     *gf_core.RuntimeSys) {
 
-	// check auth key_server has been initialized and passed to the handler runtime
-	if pAuthBool && pHandlerRuntime.AuthKeyServer == nil {
-		panic("Auth key_server has to be defined!")
-	}
+	
 
 	// AUTH0
 	if pHandlerRuntime.AuthSubsystemTypeStr == gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
+
+		// check auth key_server has been initialized and passed to the handler runtime
+		if pAuthBool && pHandlerRuntime.AuthKeyServer == nil {
+			panic("Auth key_server has to be defined!")
+		}
 		
 	} else {
 

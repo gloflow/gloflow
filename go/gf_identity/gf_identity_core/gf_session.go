@@ -30,6 +30,32 @@ import (
 
 //---------------------------------------------------
 
+type GFsession struct {
+	ID                gf_core.GF_ID          `bson:"id_str"`
+	DeletedBool       bool                   `bson:"deleted_bool"`
+	CreationUNIXtimeF float64                `bson:"creation_unix_time_f"`
+	UserID            gf_core.GF_ID          `bson:"user_id"`
+	
+	// marked as true once the login completes (once Auth0 initial auth returns the user to the GF system).
+	// if the login_callback handler is called and this login_complete is already marked as true,
+	// the http transaction will be immediatelly aborted.
+	LoginCompleteBool bool `bson:"login_complete_bool"`
+	
+	// user can specify which page then want to be redirect to after login,
+	// if they dont want to use the default GF successful-login url.
+	LoginSuccessRedirectURLstr string
+
+	// user can specify which page then want to be redirect to after logout
+	LogoutSuccessRedirectURLstr string
+
+	AccessTokenStr string                 `bson:"access_token_str"`
+	ProfileMap     map[string]interface{} `bson:"profile_map"`
+
+	AuthSubsystemTypeStr string `bson:"auth_subsystem_type_str"`
+}
+
+//---------------------------------------------------
+
 func SessionValidate(pReq *http.Request,
 	pKeyServerInfo         *GFkeyServerInfo,
 	pAuthSubsystemTypeStr  string,
@@ -134,6 +160,67 @@ func SessionValidate(pReq *http.Request,
 	}
 
 	return true, userIdentifierStr, sessionID, nil
+}
+
+//---------------------------------------------------
+
+func SessionCreate(pUserID *gf_core.GF_ID,
+	pLoginSuccessRedirectURLstr *string,
+	pAuthSubsystemTypeStr       string,
+	pCtx                        context.Context,
+	pRuntimeSys                 *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
+
+	//---------------------
+	// SESSION_ID
+	sessionID := generateSessionID()
+	
+	//---------------------
+
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	session := &GFsession{
+		ID:                sessionID,
+		CreationUNIXtimeF: creationUNIXtimeF,
+
+		// indicate if the user already passed the initial login process,
+		// and is now logged in.
+		// this is a new Auth0 session, so the login is marked as not-complete.
+		LoginCompleteBool: false,
+
+		AuthSubsystemTypeStr: pAuthSubsystemTypeStr,
+	}
+
+	// with Auth0 the userID is only known after the login completes, and the session
+	// record is updated then. session is created initially without userID at the login start.
+	if pUserID != nil {
+		session.UserID = *pUserID
+	}
+
+	if pLoginSuccessRedirectURLstr != nil {
+		session.LoginSuccessRedirectURLstr = *pLoginSuccessRedirectURLstr
+	}
+
+	//---------------------
+	// DB
+	gfErr := dbSQLcreateNewSession(session,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gf_core.GF_ID(""), gfErr
+	}
+
+	/*
+	with auth0 auth method only login_attept is created initially with session_id only.
+	after auth0 logs the user in only then is the login_attempt updated with user info. 
+	*/
+	userTypeStr := "standard"
+	_, gfErr = loginAttempCreateWithSession(sessionID, userTypeStr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gf_core.GF_ID(""), gfErr
+	}
+
+	//------------------------
+
+	return sessionID, nil
 }
 
 //---------------------------------------------------

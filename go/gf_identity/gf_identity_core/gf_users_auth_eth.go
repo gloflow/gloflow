@@ -273,7 +273,7 @@ func ETHpipelineCreate(pInput *GFethInputCreate,
 	userAddressesETHlst := []GFuserAddressETH{UserAddressETH, }
 
 	userIdentifierStr := string(UserAddressETH)
-	userID := usersCreateID(userIdentifierStr, creationUNIXtimeF)
+	userID := CreateUserID(userIdentifierStr, creationUNIXtimeF)
 
 	user := &GFuser{
 		Vstr:              "0",

@@ -33,7 +33,7 @@ import (
 //---------------------------------------------------
 // CREATE_NEW_SESSION
 
-func dbMongoAuth0createNewSession(pAuth0session *GFauth0session,
+func dbMongoAuth0createNewSession(pAuth0session *GFsession,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
@@ -41,7 +41,7 @@ func dbMongoAuth0createNewSession(pAuth0session *GFauth0session,
 	gfErr := gf_core.MongoInsert(pAuth0session,
 		collNameStr,
 		map[string]interface{}{
-			"caller_err_msg_str": "failed to insert GFauth0session into the DB",
+			"caller_err_msg_str": "failed to insert session into the DB",
 		},
 		pCtx,
 		pRuntimeSys)
@@ -57,11 +57,11 @@ func dbMongoAuth0createNewSession(pAuth0session *GFauth0session,
 
 func dbMongoAuth0getSession(pGFsessionID gf_core.GF_ID,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GFauth0session, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFsession, *gf_core.GFerror) {
 
 	findOpts := options.FindOne()
 	
-	session := GFauth0session{}
+	session := GFsession{}
 	collNameStr := "gf_auth0_session"
 
 	err := pRuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx, bson.M{
@@ -71,10 +71,10 @@ func dbMongoAuth0getSession(pGFsessionID gf_core.GF_ID,
 		findOpts).Decode(&session)
 
 	if err != nil {
-		gfErr := gf_core.MongoHandleError("failed to find Auth0 session by ID in the DB",
+		gfErr := gf_core.MongoHandleError("failed to find session by ID in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
-				"auth0_session_id_str": pGFsessionID,
+				"session_id_str": pGFsessionID,
 			},
 			err, "gf_identity", pRuntimeSys)
 		return nil, gfErr

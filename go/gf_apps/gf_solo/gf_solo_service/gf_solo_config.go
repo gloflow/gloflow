@@ -36,9 +36,6 @@ type GFconfig struct {
 	DomainBaseStr      string `mapstructure:"domain_base"`
 	DomainAdminBaseStr string `mapstructure:"domain_admin_base"`
 
-	// DOMAIN_FOR_AUTH_COOKIES - domain/pattern that is set on the auth cookies to restrict their scope.
-	DomainForAuthCookiesStr string `mapstructure:"domain_for_auth_cookies"`
-
 	// PORTS
 	PortStr        string `mapstructure:"port"`
 	PortAdminStr   string `mapstructure:"port_admin"`
@@ -65,6 +62,9 @@ type GFconfig struct {
 	AuthSubsystemTypeStr       string `mapstructure:"auth_subsystem_type"`
 	AdminMFAsecretKeyBase32str string `mapstructure:"admin_mfa_secret_key_base32"`
 	AdminEmailStr              string `mapstructure:"admin_email"`
+
+	// DOMAIN_FOR_AUTH_COOKIES - domain/pattern that is set on the auth cookies to restrict their scope.
+	DomainForAuthCookiesStr string `mapstructure:"domain_for_auth_cookies"`
 
 	//--------------------
 	// GF_IMAGES

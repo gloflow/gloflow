@@ -66,8 +66,6 @@ func TestAuth0(pTest *testing.T) {
 	//----------------------
 	// LOGIN
 
-	fmt.Println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ")
-
 	loginSuccessRedirectURLstr := "http://localhost:8080/login/success"
 	sessionID, gfErr := gf_identity_core.Auth0loginPipeline(loginSuccessRedirectURLstr, ctx, runtimeSys)
 	if gfErr != nil {
@@ -80,7 +78,7 @@ func TestAuth0(pTest *testing.T) {
 
 	//----------------------
 	// GET_SESSION
-	session, gfErr := gf_identity_core.DBsqlAuth0getSession(sessionID, ctx, runtimeSys)
+	session, gfErr := gf_identity_core.DBsqlGetSession(sessionID, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
@@ -108,14 +106,14 @@ func TestAuth0(pTest *testing.T) {
 
 	//----------------------
 	// LOGOUT
-	_, gfErr = gf_identity_core.Auth0logoutPipeline(sessionID, ctx, runtimeSys)
+	_, gfErr = gf_identity_core.LogoutPipeline(sessionID, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
 
 	//----------------------
 	// GET_SESSION
-	session, gfErr = gf_identity_core.DBsqlAuth0getSession(sessionID, ctx, runtimeSys)
+	session, gfErr = gf_identity_core.DBsqlGetSession(sessionID, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}

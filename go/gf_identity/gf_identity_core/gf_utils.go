@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_core
 
 import (
-	// "fmt"
+	"fmt"
 	"context"
 	"net/http"
 	"io/ioutil"
@@ -68,7 +68,7 @@ func GetUserIDfromReq(pReq *http.Request,
 
 	// AUTH0
 	if pAuthSubsystemTypeStr == GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
-		auth0session, gfErr := DBsqlAuth0getSession(sessionID, pCtx, pRuntimeSys)
+		auth0session, gfErr := DBsqlGetSession(sessionID, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return false, gf_core.GF_ID(""), gfErr
 		}
@@ -120,7 +120,7 @@ func ResolveUserName(pUserID gf_core.GF_ID,
 //---------------------------------------------------
 // CREATE_ID
 
-func usersCreateID(pUserIdentifierStr string,
+func CreateUserID(pUserIdentifierStr string,
 	pCreationUNIXtimeF float64) gf_core.GF_ID {
 
 	fieldsForIDlst := []string{
@@ -130,6 +130,15 @@ func usersCreateID(pUserIdentifierStr string,
 		pCreationUNIXtimeF)
 
 	return gfIDstr
+}
+
+func CreateUserInternalOAuthID(pOAuthIDstr string,
+	pOAuthProviderStr string) gf_core.GF_ID {
+		
+	internalOAuthID := gf_core.GF_ID(fmt.Sprintf("%s-oauth2|%s",
+		pOAuthProviderStr,
+		pOAuthIDstr))
+	return internalOAuthID
 }
 
 //---------------------------------------------------
