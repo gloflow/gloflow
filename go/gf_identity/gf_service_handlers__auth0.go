@@ -154,7 +154,9 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				
 				//---------------------
 
-				sessionIDstr, gfErr := gf_identity_core.Auth0loginPipeline(loginSuccessRedirectURLstr, pCtx, pRuntimeSys)
+				sessionIDstr, gfErr := gf_identity_core.Auth0loginPipeline(loginSuccessRedirectURLstr,
+					pCtx,
+					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -407,7 +409,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 				//---------------------
 				// DB - update session with logout URL
-				gfErr := gf_identity_core.DBsqlUpdateSessionLogoutURL(sessionID,
+				gfErr := gf_identity_core.DBsqlUpdateSessionLogoutRedirectURL(sessionID,
 					logoutSuccessRedirectURLstr,
 					pCtx,
 					pRuntimeSys)

@@ -68,8 +68,6 @@ func Auth0apiTokenGeneratePipeline(pInput *GFauth0inputAPItokenGenerate,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
-	
-	
 	tokenStr, gfErr := gf_auth0.GenerateAccessToken(pInput.AppClientIDstr,
 		pInput.AppClientSecretStr,
 		pInput.AudienceStr,
@@ -104,49 +102,17 @@ func Auth0loginPipeline(pLoginSuccessRedirectURLstr string,
 		return gf_core.GF_ID(""), gfErr
 	}
 
-	return sessionID, nil
 
-	/*
-	//---------------------
-	// SESSION_ID
-	sessionID := generateSessionID()
-	
-	//---------------------
-
-	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	session := &GFsession{
-		ID:                sessionID,
-		CreationUNIXtimeF: creationUNIXtimeF,
-
-		// indicate if the user already passed the initial login process,
-		// and is now logged in.
-		// this is a new Auth0 session, so the login is marked as not-complete.
-		LoginCompleteBool: false,
-
-		LoginSuccessRedirectURLstr: pLoginSuccessRedirectURLstr,
-	}
-
-	//---------------------
-	// DB
-	gfErr := dbSQLcreateNewSession(session,
+	gfErr = DBsqlUpdateSessionLoginRedirectURL(sessionID,
+		pLoginSuccessRedirectURLstr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return gf_core.GF_ID(""), gfErr
 	}
 
-	// with auth0 auth method only login_attept is created initially with session_id only.
-	// after auth0 logs the user in only then is the login_attempt updated with user info. 
-	userTypeStr := "standard"
-	_, gfErr = loginAttempCreateWithSession(sessionID, userTypeStr, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return gf_core.GF_ID(""), gfErr
-	}
 
-	//------------------------
-	*/
-
-	
+	return sessionID, nil
 }
 
 //---------------------------------------------------

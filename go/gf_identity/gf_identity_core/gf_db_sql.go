@@ -44,7 +44,7 @@ func dbSQLdeleteSession(pGFsessionID gf_core.GF_ID,
 	})
 	
 	sqlStr := `
-		UPDATE gf_auth0_session
+		UPDATE gf_auth_session
 		SET deleted = true
 		WHERE id = $1 AND deleted = false`
 
@@ -70,7 +70,7 @@ func dbSQLcreateNewSession(pSession *GFsession,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	sqlStr := `
-		INSERT INTO gf_auth0_session (
+		INSERT INTO gf_auth_session (
 			v,
 			id,
 			deleted,
@@ -137,7 +137,7 @@ func DBsqlGetSession(pGFsessionID gf_core.GF_ID,
 			logout_success_redirect_url,
 			access_token,
 			profile
-		FROM gf_auth0_session
+		FROM gf_auth_session
 		WHERE id = $1`
 
 	session := GFsession{}
@@ -220,8 +220,12 @@ func DBsqlUpdateSession(pGFsessionID gf_core.GF_ID,
 	})
 
 	sqlStr := `
-		UPDATE gf_auth0_session
-		SET user_id=$1, login_complete = $2, profile = $3
+		UPDATE gf_auth_session
+		SET 
+			user_id        = $1,
+			login_complete = $2,
+			profile        = $3
+
 		WHERE id = $4 AND deleted = false`
 
 	_, err = pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr,
@@ -243,8 +247,43 @@ func DBsqlUpdateSession(pGFsessionID gf_core.GF_ID,
 }
 
 //---------------------------------------------------
+// UPDATE_SESSION_LOGOUT_REDIRECT_URL
 
-func DBsqlUpdateSessionLogoutURL(pGFsessionID gf_core.GF_ID,
+func DBsqlUpdateSessionLoginRedirectURL(pGFsessionID gf_core.GF_ID,
+	pLoginURLstr string,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	pRuntimeSys.LogNewFun("DEBUG", "updating session login redirect URL...", map[string]interface{}{
+		"session_id": pGFsessionID,
+		"login_url":  pLoginURLstr,
+	})
+
+	sqlStr := `
+		UPDATE gf_auth_session
+		SET
+			login_success_redirect_url = $1
+		
+		WHERE id = $2 AND deleted = false`
+	
+	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pLoginURLstr, pGFsessionID)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to update session login redirect URL in the DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"session_id_str": pGFsessionID,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+// UPDATE_SESSION_LOGOUT_REDIRECT_URL
+
+func DBsqlUpdateSessionLogoutRedirectURL(pGFsessionID gf_core.GF_ID,
 	pLogoutURLstr string,
 	pCtx         context.Context,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -255,8 +294,10 @@ func DBsqlUpdateSessionLogoutURL(pGFsessionID gf_core.GF_ID,
 	})
 
 	sqlStr := `
-		UPDATE gf_auth0_session
-		SET logout_success_redirect_url = $1
+		UPDATE gf_auth_session
+		SET
+			logout_success_redirect_url = $1
+		
 		WHERE id = $2 AND deleted = false`
 	
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pLogoutURLstr, pGFsessionID)
@@ -1305,7 +1346,7 @@ func dbSQLloginAttemptCreate(pLoginAttempt *GFloginAttempt,
 			
 			user_type,
 			user_name,
-			auth0_session_id,
+			auth_session_id,
 			
 			pass_confirmed,
 			email_confirmed,
@@ -1313,14 +1354,14 @@ func dbSQLloginAttemptCreate(pLoginAttempt *GFloginAttempt,
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 	
 	/*
-	IMPORTANT!! - there is a foreign key defined on the auth0_session_id column,
+	IMPORTANT!! - there is a foreign key defined on the auth_session_id column,
 				  so if it either has to be a NULL value or a valid session_id.
 				  here we're checking if its an empty string value. if it is we're passing
 				  an uninitialized pointer which has a nil value.
 	*/              
-	var auth0sessionID *gf_core.GF_ID
-	if pLoginAttempt.Auth0sessionID != "" {
-		auth0sessionID = &pLoginAttempt.Auth0sessionID
+	var authSessionID *gf_core.GF_ID
+	if pLoginAttempt.AuthSessionID != "" {
+		authSessionID = &pLoginAttempt.AuthSessionID
 	}
 
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr,
@@ -1329,7 +1370,7 @@ func dbSQLloginAttemptCreate(pLoginAttempt *GFloginAttempt,
 		
 		pLoginAttempt.UserTypeStr,
 		string(pLoginAttempt.UserNameStr),
-		auth0sessionID,
+		authSessionID,
 
 		pLoginAttempt.PassConfirmedBool,
 		pLoginAttempt.EmailConfirmedBool,
@@ -1464,7 +1505,7 @@ func DBsqlLoginAttemptUpdateBySessionID(pSessionID gf_core.GF_ID,
 	sqlStr := fmt.Sprintf(`
 		UPDATE gf_login_attempts
 		SET %s
-		WHERE auth0_session_id = $1 AND deleted = false`, *fieldsTargetsStr)
+		WHERE auth_session_id = $1 AND deleted = false`, *fieldsTargetsStr)
 
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, inputValsLst...)
 	if err != nil {
@@ -1555,7 +1596,7 @@ func DBsqlCreateTables(pCtx context.Context,
 		PRIMARY KEY(id)
 	);
 
-	CREATE TABLE IF NOT EXISTS gf_auth0_session (
+	CREATE TABLE IF NOT EXISTS gf_auth_session (
 		v              VARCHAR(255),
 		id             TEXT,
 		deleted        BOOLEAN DEFAULT FALSE,
@@ -1612,7 +1653,7 @@ func DBsqlCreateTables(pCtx context.Context,
 		-- only used for auth0 authentication since initially only the session_id
 		-- is know, and not the user_name/id. that info is only known afterwards
 		-- once the user is redirected back to GF from auth0 dialogs
-		auth0_session_id TEXT,
+		auth_session_id TEXT,
 
 		pass_confirmed   BOOLEAN,
 		email_confirmed  BOOLEAN,
@@ -1620,7 +1661,7 @@ func DBsqlCreateTables(pCtx context.Context,
 	
 		PRIMARY KEY(id),
 		FOREIGN KEY (user_id) REFERENCES gf_users(id),
-		FOREIGN KEY (auth0_session_id) REFERENCES gf_auth0_session(id)
+		FOREIGN KEY (auth_session_id) REFERENCES gf_auth_session(id)
 	);
 
 	CREATE TABLE IF NOT EXISTS gf_users_invite_list (

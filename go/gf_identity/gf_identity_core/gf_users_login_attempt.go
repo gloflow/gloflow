@@ -39,7 +39,7 @@ type GFloginAttempt struct {
 	UserID             gf_core.GF_ID `bson:"user_id_str"`
 	UserNameStr        GFuserName    `bson:"user_name_str"`
 	
-	Auth0sessionID gf_core.GF_ID `bson:"auth0_session_id"`
+	AuthSessionID gf_core.GF_ID `bson:"auth_session_id"`
 
 	PassConfirmedBool  bool `bson:"pass_confirmed_bool"`
 	EmailConfirmedBool bool `bson:"email_confirmed_bool"`
@@ -98,7 +98,7 @@ func loginAttempCreateWithSession(pSessionID gf_core.GF_ID,
 		ID:                loginAttemptID,
 		CreationUNIXtimeF: creationUNIXtimeF,
 		UserTypeStr:       pUserTypeStr,
-		Auth0sessionID:    pSessionID,
+		AuthSessionID:     pSessionID,
 	}
 	gfErr := dbSQLloginAttemptCreate(loginAttempt,
 		pCtx,
