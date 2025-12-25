@@ -72,7 +72,7 @@ func dbSQLgetPage(pFlowNameStr string,
 	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, query, pFlowNameStr, pElementsNumInt, pCursorStartPositionInt)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to get a page of images from a flow",
-			"sql_query_execution",
+			"sql_query_execute",
 			map[string]interface{}{
 				"flow_name_str":             pFlowNameStr,
 				"cursor_start_position_int": pCursorStartPositionInt,

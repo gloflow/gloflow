@@ -38,11 +38,11 @@ import (
 func dbSQLdeleteSession(pGFsessionID gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	
+
 	pRuntimeSys.LogNewFun("DEBUG", "deleting session...", map[string]interface{}{
 		"session_id": pGFsessionID,
 	})
-	
+
 	sqlStr := `
 		UPDATE gf_auth_session
 		SET deleted = true
@@ -77,12 +77,11 @@ func dbSQLcreateNewSession(pSession *GFsession,
 			login_complete,
 			login_success_redirect_url,
 
-			access_token,
 			profile,
 
 			auth_subsystem_type
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+		VALUES ($1, $2, $3, $4, $5, $6, $7);
 	`
 
 	// serializing the profile map to JSON to store in the database
@@ -102,10 +101,9 @@ func dbSQLcreateNewSession(pSession *GFsession,
 		pSession.DeletedBool,
 		pSession.LoginCompleteBool,
 		pSession.LoginSuccessRedirectURLstr,
-		pSession.AccessTokenStr,
 		profileMapJSON,
 		pSession.AuthSubsystemTypeStr)
-	
+
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to insert session into the DB",
 			"sql_query_execute",
@@ -135,7 +133,6 @@ func DBsqlGetSession(pGFsessionID gf_core.GF_ID,
 			login_complete,
 			login_success_redirect_url,
 			logout_success_redirect_url,
-			access_token,
 			profile
 		FROM gf_auth_session
 		WHERE id = $1`
@@ -154,7 +151,6 @@ func DBsqlGetSession(pGFsessionID gf_core.GF_ID,
 		&session.LoginCompleteBool,
 		&session.LoginSuccessRedirectURLstr,
 		&LogoutSuccessRedirectURL,
-		&session.AccessTokenStr,
 		&profileJSON)
 
 	if err != nil {
@@ -187,7 +183,7 @@ func DBsqlGetSession(pGFsessionID gf_core.GF_ID,
 			err, "gf_identity_core", pRuntimeSys)
 		return nil, gfErr
 	}
-	
+
 	return &session, nil
 }
 
@@ -221,7 +217,7 @@ func DBsqlUpdateSession(pGFsessionID gf_core.GF_ID,
 
 	sqlStr := `
 		UPDATE gf_auth_session
-		SET 
+		SET
 			user_id        = $1,
 			login_complete = $2,
 			profile        = $3
@@ -263,9 +259,9 @@ func DBsqlUpdateSessionLoginRedirectURL(pGFsessionID gf_core.GF_ID,
 		UPDATE gf_auth_session
 		SET
 			login_success_redirect_url = $1
-		
+
 		WHERE id = $2 AND deleted = false`
-	
+
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pLoginURLstr, pGFsessionID)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to update session login redirect URL in the DB",
@@ -297,9 +293,9 @@ func DBsqlUpdateSessionLogoutRedirectURL(pGFsessionID gf_core.GF_ID,
 		UPDATE gf_auth_session
 		SET
 			logout_success_redirect_url = $1
-		
+
 		WHERE id = $2 AND deleted = false`
-	
+
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pLogoutURLstr, pGFsessionID)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to update session logout URL in the DB",
@@ -314,7 +310,37 @@ func DBsqlUpdateSessionLogoutRedirectURL(pGFsessionID gf_core.GF_ID,
 	return nil
 }
 
-//---------------------------------------------------
+//-------------------------------------------------------------
+
+func DBsqlGetSessionLogoutRedirectURL(pGFsessionID gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+
+	pRuntimeSys.LogNewFun("DEBUG", "getting session logout URL...", map[string]interface{}{
+		"session_id": pGFsessionID,
+	})
+
+	sqlStr := `
+		SELECT logout_success_redirect_url
+		FROM gf_auth_session
+		WHERE id = $1 AND deleted = false`
+
+	var logoutURLstr string
+	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pGFsessionID).Scan(&logoutURLstr)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to get session logout URL from the DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"session_id_str": pGFsessionID,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return "", gfErr
+	}
+
+	return logoutURLstr, nil
+}
+
+//-------------------------------------------------------------
 // USER
 //---------------------------------------------------
 // USER_CREATE
@@ -422,7 +448,7 @@ func DBsqlUserGetAll(pCtx context.Context,
 	for rows.Next() {
 
 		var user GFuser
-		var addressesEth pq.StringArray	
+		var addressesEth pq.StringArray
 		var creationTime time.Time
 
 		err := rows.Scan(
@@ -439,7 +465,7 @@ func DBsqlUserGetAll(pCtx context.Context,
 			&user.EmailConfirmedBool,
 			&user.ProfileImageURLstr,
 			&user.BannerImageURLstr)
-		
+
 		if err != nil {
 			gfErr := gf_core.ErrorCreate("failed to get all users records from rows",
 				"sql_row_scan",
@@ -504,9 +530,9 @@ func DBsqlGetBasicInfoByETHaddr(pUserAddressETH GFuserAddressETH,
 func DBsqlUserGetByID(pUserID gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFuser, *gf_core.GFerror) {
-	
+
 	sqlStr := `
-	SELECT 
+	SELECT
 		v,
 		id,
 		deleted,
@@ -528,7 +554,7 @@ func DBsqlUserGetByID(pUserID gf_core.GF_ID,
 	row := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pUserID)
 	user := &GFuser{}
 
-	var addressesEth pq.StringArray	
+	var addressesEth pq.StringArray
 	var creationTime time.Time
 
 	err := row.Scan(
@@ -725,7 +751,7 @@ func dbSQLuserGetByETHaddr(pUserAddressETH GFuserAddressETH,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFuser, *gf_core.GFerror) {
 
 	sqlStr := `
-		SELECT 
+		SELECT
 			v,
 			id,
 			deleted,
@@ -744,7 +770,7 @@ func dbSQLuserGetByETHaddr(pUserAddressETH GFuserAddressETH,
 
 	user := GFuser{}
 
-	var addressesEth pq.StringArray	
+	var addressesEth pq.StringArray
 	var creationTime time.Time
 
 	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pUserAddressETH).Scan(
@@ -787,10 +813,10 @@ func DBsqlUserUpdate(pUserIDstr gf_core.GF_ID,
 	pUpdateOp   *GFuserUpdateOp,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	
+
 	updateFields := []string{}
 	paramsLst    := []interface{}{}
-	
+
 	i:=1
 
 	if pUpdateOp.DeletedBool != nil {
@@ -834,7 +860,7 @@ func DBsqlUserUpdate(pUserIDstr gf_core.GF_ID,
 		paramsLst = append(paramsLst, *pUpdateOp.EmailConfirmedBool)
 		i+=1
 	}
-	
+
 	if pUpdateOp.MFAconfirmBool != nil {
 		pRuntimeSys.LogNewFun("DEBUG", "user 'mfa_confirm' column to be updated...", nil)
 		updateFields = append(updateFields, fmt.Sprintf("mfa_confirm = $%d", i))
@@ -890,7 +916,7 @@ func DBsqlUserGetAllInInviteList(pCtx context.Context,
 
 	inviteListLst := []map[string]interface{}{}
 	for rows.Next() {
-		
+
 		var userEmail string
 		var creationTime time.Time
 
@@ -901,14 +927,14 @@ func DBsqlUserGetAllInInviteList(pCtx context.Context,
 				err, "gf_identity_core", pRuntimeSys)
 			return nil, gfErr
 		}
-		
+
 		inviteRecord := map[string]interface{}{
 			"user_email_str":       userEmail,
 			"creation_unix_time_f": float64(creationTime.Unix()),
 		}
 		inviteListLst = append(inviteListLst, inviteRecord)
 	}
-	
+
 	if err := rows.Err(); err != nil {
 		gfErr := gf_core.ErrorCreate("failed to iterate through rows to get all users in invite list",
 			"sql_row_scan",
@@ -931,7 +957,7 @@ func DBsqlUserAddToInviteList(pUserEmailStr string,
 		(user_email)
 		VALUES ($1)
 	`
-	
+
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pUserEmailStr)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to add a user to the invite_list in the DB",
@@ -942,7 +968,7 @@ func DBsqlUserAddToInviteList(pUserEmailStr string,
 			err, "gf_identity_core", pRuntimeSys)
 		return gfErr
 	}
-	
+
 	return nil
 }
 
@@ -951,13 +977,13 @@ func DBsqlUserAddToInviteList(pUserEmailStr string,
 func DBsqlUserRemoveFromInviteList(pUserEmailStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	
+
 	sqlStr := `
 		UPDATE gf_users_invite_list
 		SET deleted = TRUE
 		WHERE user_email = $1 AND deleted = FALSE
 	`
-	
+
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pUserEmailStr)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to remove user from invite list",
@@ -1019,7 +1045,7 @@ func dbSQLuserCredsCreate(pUserCreds *GFuserCreds,
 			pass_hash
 		)
 		VALUES ($1, $2, $3, $4, $5, $6)`
-	
+
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr,
 		pUserCreds.Vstr,
 		pUserCreds.ID,
@@ -1038,7 +1064,7 @@ func dbSQLuserCredsCreate(pUserCreds *GFuserCreds,
 			err, "gf_identity_core", pRuntimeSys)
 		return gfErr
 	}
-	
+
 	return nil
 }
 
@@ -1116,9 +1142,9 @@ func DBsqlUserExistsByEmail(pEmailStr string,
 func DBsqlGetUserByEmail(pEmailStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFuser, *gf_core.GFerror) {
-	
+
 	sqlStr := `
-		SELECT 
+		SELECT
 			v,
 			id,
 			deleted,
@@ -1141,7 +1167,7 @@ func DBsqlGetUserByEmail(pEmailStr string,
 	row := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pEmailStr)
 	user := &GFuser{}
 
-	var addressesEth pq.StringArray	
+	var addressesEth pq.StringArray
 	var creationTime time.Time
 
 	err := row.Scan(
@@ -1293,7 +1319,7 @@ func dbSQLuserEmailConfirmCreate(pUserNameStr GFuserName,
 			err, "gf_identity_core", pRuntimeSys)
 		return gfErr
 	}
-	
+
 	return nil
 }
 
@@ -1338,27 +1364,27 @@ func dbSQLuserEmailConfirmGetCode(pUserNameStr GFuserName,
 func dbSQLloginAttemptCreate(pLoginAttempt *GFloginAttempt,
 	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	
+
 	sqlStr := `
 		INSERT INTO gf_login_attempts (
 			v,
 			id,
-			
+
 			user_type,
 			user_name,
 			auth_session_id,
-			
+
 			pass_confirmed,
 			email_confirmed,
 			mfa_confirmed)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
-	
+
 	/*
 	IMPORTANT!! - there is a foreign key defined on the auth_session_id column,
 				  so if it either has to be a NULL value or a valid session_id.
 				  here we're checking if its an empty string value. if it is we're passing
 				  an uninitialized pointer which has a nil value.
-	*/              
+	*/
 	var authSessionID *gf_core.GF_ID
 	if pLoginAttempt.AuthSessionID != "" {
 		authSessionID = &pLoginAttempt.AuthSessionID
@@ -1367,7 +1393,7 @@ func dbSQLloginAttemptCreate(pLoginAttempt *GFloginAttempt,
 	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr,
 		pLoginAttempt.Vstr,
 		pLoginAttempt.ID,
-		
+
 		pLoginAttempt.UserTypeStr,
 		string(pLoginAttempt.UserNameStr),
 		authSessionID,
@@ -1396,7 +1422,7 @@ func dbSQLloginAttemptCreate(pLoginAttempt *GFloginAttempt,
 func dbSQLloginAttemptGetByUsername(pUserNameStr GFuserName,
 	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFloginAttempt, *gf_core.GFerror) {
-	
+
 	sqlStr := `
 		SELECT
 			v,
@@ -1460,7 +1486,7 @@ func DBsqlLoginAttemptUpdate(pLoginAttemptID gf_core.GF_ID,
 
 	inputValsLst := []interface{}{pLoginAttemptID,}
 	fieldsTargetsStr, fieldsValsLst := dbSQLloginAttemptPrepareUpdateStatement(pUpdateOp)
-	
+
 	if fieldsTargetsStr == nil {
 		return nil
 	}
@@ -1495,7 +1521,7 @@ func DBsqlLoginAttemptUpdateBySessionID(pSessionID gf_core.GF_ID,
 
 	inputValsLst := []interface{}{pSessionID,}
 	fieldsTargetsStr, fieldsValsLst := dbSQLloginAttemptPrepareUpdateStatement(pUpdateOp)
-	
+
 	if fieldsTargetsStr == nil {
 		return nil
 	}
@@ -1606,8 +1632,7 @@ func DBsqlCreateTables(pCtx context.Context,
 		login_complete              BOOLEAN NOT NULL DEFAULT FALSE,
 		login_success_redirect_url  TEXT,
 		logout_success_redirect_url TEXT,
-		
-		access_token TEXT,
+
 		profile      JSON,
 
 		auth_subsystem_type VARCHAR(20) DEFAULT 'auth0',
@@ -1635,7 +1660,7 @@ func DBsqlCreateTables(pCtx context.Context,
 		user_id            TEXT,
 		confirm_code       TEXT,
 		creation_time      TIMESTAMP DEFAULT NOW(),
-	
+
 		PRIMARY KEY(confirm_code),
 		FOREIGN KEY (user_id) REFERENCES gf_users(id)
 	);
@@ -1649,7 +1674,7 @@ func DBsqlCreateTables(pCtx context.Context,
 		user_type        VARCHAR(255), -- "admin" or "standard"
 		user_id          TEXT,
 		user_name        VARCHAR(255),
-		
+
 		-- only used for auth0 authentication since initially only the session_id
 		-- is know, and not the user_name/id. that info is only known afterwards
 		-- once the user is redirected back to GF from auth0 dialogs
@@ -1658,7 +1683,7 @@ func DBsqlCreateTables(pCtx context.Context,
 		pass_confirmed   BOOLEAN,
 		email_confirmed  BOOLEAN,
 		mfa_confirmed    BOOLEAN,
-	
+
 		PRIMARY KEY(id),
 		FOREIGN KEY (user_id) REFERENCES gf_users(id),
 		FOREIGN KEY (auth_session_id) REFERENCES gf_auth_session(id)
@@ -1668,7 +1693,7 @@ func DBsqlCreateTables(pCtx context.Context,
 		user_email      TEXT UNIQUE NOT NULL,
 		creation_time   TIMESTAMP DEFAULT NOW(),
 		deleted         BOOLEAN DEFAULT FALSE,
-	
+
 		PRIMARY KEY(user_email)
 	);
 	`
