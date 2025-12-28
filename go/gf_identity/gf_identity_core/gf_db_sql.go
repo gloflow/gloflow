@@ -79,9 +79,11 @@ func dbSQLcreateNewSession(pSession *GFsession,
 
 			profile,
 
-			auth_subsystem_type
+			auth_subsystem_type,
+			auth_method,
+			user_id_idp
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7);
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
 	`
 
 	// serializing the profile map to JSON to store in the database
@@ -102,7 +104,9 @@ func dbSQLcreateNewSession(pSession *GFsession,
 		pSession.LoginCompleteBool,
 		pSession.LoginSuccessRedirectURLstr,
 		profileMapJSON,
-		pSession.AuthSubsystemTypeStr)
+		pSession.AuthSubsystemTypeStr,
+		pSession.AuthMethodStr,
+		pSession.UserIDidp)
 
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to insert session into the DB",
@@ -338,6 +342,69 @@ func DBsqlGetSessionLogoutRedirectURL(pGFsessionID gf_core.GF_ID,
 	}
 
 	return logoutURLstr, nil
+}
+
+func DBsqlUpdateSessionAuthMethod(pGFsessionID gf_core.GF_ID,
+	pAuthMethodStr string,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	pRuntimeSys.LogNewFun("DEBUG", "updating session auth method...", map[string]interface{}{
+		"session_id":    pGFsessionID,
+		"auth_method":   pAuthMethodStr,
+	})
+
+	sqlStr := `
+		UPDATE gf_auth_session
+		SET
+			auth_method = $1
+
+		WHERE id = $2 AND deleted = false`
+
+	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pAuthMethodStr, pGFsessionID)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to update session auth method in the DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"session_id_str": pGFsessionID,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
+
+func DBsqlUpdateSessionUserIDidp(pGFsessionID gf_core.GF_ID,
+	pUserIDidp gf_core.GF_ID,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	pRuntimeSys.LogNewFun("DEBUG", "updating session user ID from IDP...", map[string]interface{}{
+		"session_id": pGFsessionID,
+		"user_id_idp": pUserIDidp,
+	})
+
+	sqlStr := `
+		UPDATE gf_auth_session
+		SET
+			user_id_idp = $1
+
+		WHERE id = $2 AND deleted = false`
+
+	_, err := pRuntimeSys.SQLdb.ExecContext(pCtx, sqlStr, pUserIDidp, pGFsessionID)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to update session user ID from IDP in the DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"session_id_str": pGFsessionID,
+				"user_id_idp": pUserIDidp,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
 }
 
 //-------------------------------------------------------------
@@ -1366,7 +1433,7 @@ func dbSQLloginAttemptCreate(pLoginAttempt *GFloginAttempt,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	sqlStr := `
-		INSERT INTO gf_login_attempts (
+		INSERT INTO gf_auth_login_attempts (
 			v,
 			id,
 
@@ -1432,7 +1499,7 @@ func dbSQLloginAttemptGetByUsername(pUserNameStr GFuserName,
 			pass_confirmed,
 			email_confirmed,
 			mfa_confirmed
-		FROM gf_login_attempts
+		FROM gf_auth_login_attempts
 		WHERE user_name = $1 AND deleted = FALSE`
 
 	rows, err := pRuntimeSys.SQLdb.QueryContext(pCtx, sqlStr, string(pUserNameStr))
@@ -1494,7 +1561,7 @@ func DBsqlLoginAttemptUpdate(pLoginAttemptID gf_core.GF_ID,
 	inputValsLst = append(inputValsLst, fieldsValsLst...)
 
 	sqlStr := fmt.Sprintf(`
-		UPDATE gf_login_attempts
+		UPDATE gf_auth_login_attempts
 		SET %s
 		WHERE id = $1 AND deleted = false`, *fieldsTargetsStr)
 
@@ -1529,7 +1596,7 @@ func DBsqlLoginAttemptUpdateBySessionID(pSessionID gf_core.GF_ID,
 	inputValsLst = append(inputValsLst, fieldsValsLst...)
 
 	sqlStr := fmt.Sprintf(`
-		UPDATE gf_login_attempts
+		UPDATE gf_auth_login_attempts
 		SET %s
 		WHERE auth_session_id = $1 AND deleted = false`, *fieldsTargetsStr)
 
@@ -1633,9 +1700,11 @@ func DBsqlCreateTables(pCtx context.Context,
 		login_success_redirect_url  TEXT,
 		logout_success_redirect_url TEXT,
 
-		profile      JSON,
+		profile JSON,
 
 		auth_subsystem_type VARCHAR(20) DEFAULT 'auth0',
+		auth_method         VARCHAR, -- "google-oauth2", "github-oauth2", "email", etc.
+		user_id_idp         TEXT,    -- user ID as per the identity provider (idp)
 
 		PRIMARY KEY(id),
 		FOREIGN KEY (user_id) REFERENCES gf_users(id)
@@ -1665,7 +1734,7 @@ func DBsqlCreateTables(pCtx context.Context,
 		FOREIGN KEY (user_id) REFERENCES gf_users(id)
 	);
 
-	CREATE TABLE IF NOT EXISTS gf_login_attempts (
+	CREATE TABLE IF NOT EXISTS gf_auth_login_attempts (
 		v                VARCHAR(255),
 		id               TEXT,
 		deleted          BOOLEAN DEFAULT FALSE,

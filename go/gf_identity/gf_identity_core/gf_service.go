@@ -31,6 +31,11 @@ const (
 	GF_AUTH_SUBSYSTEM_TYPE__USERPASS = "userpass"
 	GF_AUTH_SUBSYSTEM_TYPE__ETH      = "eth"
 	GF_AUTH_SUBSYSTEM_TYPE__AUTH0    = "auth0"
+
+	GF_AUTH_METHOD_OAUTH_GOOGLE = "google-oauth2"
+	GF_AUTH_METHOD_OAUTH_GITHUB = "github-oauth2"
+	GF_AUTH_METHOD_EMAIL        = "email"
+
 )
 
 //---------------------------------------------------

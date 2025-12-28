@@ -54,11 +54,11 @@ type GFauth0inputAPItokenGenerate struct {
 }
 
 type GFauth0basicUserInfo struct {
-	SubjectTypeStr string
-	UserID         gf_core.GF_ID
-	UserNameStr    GFuserName
-	EmailStr       string
-	ProfileMap     map[string]interface{}
+	AuthMethodStr string
+	UserID        gf_core.GF_ID
+	UserNameStr   GFuserName
+	EmailStr      string
+	ProfileMap    map[string]interface{}
 }
 
 //---------------------------------------------------
@@ -87,17 +87,19 @@ func Auth0apiTokenGeneratePipeline(pInput *GFauth0inputAPItokenGenerate,
 func Auth0loginPipeline(pLoginSuccessRedirectURLstr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
-
-	
 	
 	// in the initial Auth0 login pipeline the user is not yet known. its only known
 	// after the login callback when Auth0 redirects back to GF with the user info.
 	var userID *gf_core.GF_ID = nil
 
 	// SESSION_CREATE
-	sessionID, gfErr := SessionCreate(userID, &pLoginSuccessRedirectURLstr,
+	sessionID, gfErr := SessionCreate(userID,
+		&pLoginSuccessRedirectURLstr,
 		GF_AUTH_SUBSYSTEM_TYPE__AUTH0,
-		pCtx, pRuntimeSys)
+		nil,
+		nil,
+		pCtx,
+		pRuntimeSys)
 	if gfErr != nil {
 		return gf_core.GF_ID(""), gfErr
 	}
@@ -264,12 +266,12 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	})
 
 	subjectStr := profileMap["sub"].(string)
-	subjectTypeStr := strings.Split(subjectStr, "|")[0]
+	authMethodStr := strings.Split(subjectStr, "|")[0]
 	var userID      gf_core.GF_ID
 	var userNameStr GFuserName
 	var emailStr    string
 
-	switch subjectTypeStr {
+	switch authMethodStr {
 
 	//---------------------
 	// DATABASE - username/password
@@ -345,19 +347,19 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	}
 	
 	basicUserInfo := &GFauth0basicUserInfo{
-		SubjectTypeStr: subjectTypeStr,
-		UserID:         userID,
-		UserNameStr:    userNameStr,
-		EmailStr:       emailStr,
-		ProfileMap:     profileMap,
+		AuthMethodStr: authMethodStr,
+		UserID:        userID,
+		UserNameStr:   userNameStr,
+		EmailStr:      emailStr,
+		ProfileMap:    profileMap,
 	}
 
 	pRuntimeSys.LogNewFun("DEBUG", "basic user info", map[string]interface{}{
-		"subject_type": basicUserInfo.SubjectTypeStr,
-		"user_id":      basicUserInfo.UserID,
-		"user_name":    basicUserInfo.UserNameStr,
-		"email":        basicUserInfo.EmailStr,
-		"profile_map":  basicUserInfo.ProfileMap,
+		"auth_method": basicUserInfo.AuthMethodStr,
+		"user_id":     basicUserInfo.UserID,
+		"user_name":   basicUserInfo.UserNameStr,
+		"email":       basicUserInfo.EmailStr,
+		"profile_map": basicUserInfo.ProfileMap,
 	})
 
 	gfErr = Auth0createGFuserIfNone(basicUserInfo,
@@ -385,6 +387,15 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 
 		//---------------
 		
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+
+	gfErr = DBsqlUpdateSessionAuthMethod(sessionID,
+		authMethodStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {

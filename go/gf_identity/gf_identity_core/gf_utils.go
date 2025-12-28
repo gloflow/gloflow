@@ -132,11 +132,11 @@ func CreateUserID(pUserIdentifierStr string,
 	return gfIDstr
 }
 
-func CreateUserInternalOAuthID(pOAuthIDstr string,
-	pOAuthProviderStr string) gf_core.GF_ID {
+func CreateUserIdentityProviderID(pOAuthIDstr string,
+	pProviderStr string) gf_core.GF_ID {
 		
-	internalOAuthID := gf_core.GF_ID(fmt.Sprintf("%s-oauth2|%s",
-		pOAuthProviderStr,
+	internalOAuthID := gf_core.GF_ID(fmt.Sprintf("%s|%s",
+		pProviderStr,
 		pOAuthIDstr))
 	return internalOAuthID
 }

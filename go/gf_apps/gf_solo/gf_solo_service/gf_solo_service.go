@@ -411,6 +411,8 @@ func RuntimeGet(pConfigPathStr string,
 	// SENTRY - ERROR_REPORTING
 	if config.SentryEndpointStr != "" {
 
+		fmt.Println("Initializing Sentry error reporting...")
+
 		sentryEndpointStr := config.SentryEndpointStr
 		sentrySampleRateDefaultF := 1.0
 		sentryTracingRateForHandlersMap := map[string]float64{

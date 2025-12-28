@@ -27,19 +27,19 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 )
-
+ 
 //---------------------------------------------------
 
 type GFsession struct {
-	ID                gf_core.GF_ID          `bson:"id_str"`
-	DeletedBool       bool                   `bson:"deleted_bool"`
-	CreationUNIXtimeF float64                `bson:"creation_unix_time_f"`
-	UserID            gf_core.GF_ID          `bson:"user_id"`
+	ID                gf_core.GF_ID
+	DeletedBool       bool
+	CreationUNIXtimeF float64
+	UserID            gf_core.GF_ID
 	
 	// marked as true once the login completes (once Auth0 initial auth returns the user to the GF system).
 	// if the login_callback handler is called and this login_complete is already marked as true,
 	// the http transaction will be immediatelly aborted.
-	LoginCompleteBool bool `bson:"login_complete_bool"`
+	LoginCompleteBool bool
 	
 	// user can specify which page then want to be redirect to after login,
 	// if they dont want to use the default GF successful-login url.
@@ -48,10 +48,14 @@ type GFsession struct {
 	// user can specify which page then want to be redirect to after logout
 	LogoutSuccessRedirectURLstr string
 
-	AccessTokenStr string                 `bson:"access_token_str"`
-	ProfileMap     map[string]interface{} `bson:"profile_map"`
+	AccessTokenStr string
+	ProfileMap     map[string]interface{}
 
-	AuthSubsystemTypeStr string `bson:"auth_subsystem_type_str"`
+	AuthSubsystemTypeStr string
+	AuthMethodStr        *string
+
+	// USER_ID_IDP - user ID in the IDP system (google, github, etc.)
+	UserIDidp *gf_core.GF_ID
 }
 
 //---------------------------------------------------
@@ -167,6 +171,8 @@ func SessionValidate(pReq *http.Request,
 func SessionCreate(pUserID *gf_core.GF_ID,
 	pLoginSuccessRedirectURLstr *string,
 	pAuthSubsystemTypeStr       string,
+	pAuthMethodStr			    *string,
+	pUserIDidp                  *gf_core.GF_ID,
 	pCtx                        context.Context,
 	pRuntimeSys                 *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
 
@@ -187,6 +193,8 @@ func SessionCreate(pUserID *gf_core.GF_ID,
 		LoginCompleteBool: false,
 
 		AuthSubsystemTypeStr: pAuthSubsystemTypeStr,
+		AuthMethodStr:        pAuthMethodStr,
+		UserIDidp:            pUserIDidp,
 	}
 
 	// with Auth0 the userID is only known after the login completes, and the session
