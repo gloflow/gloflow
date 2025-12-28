@@ -60,6 +60,61 @@ type GFsession struct {
 
 //---------------------------------------------------
 
+func SessionValidateOrRedirectToLogin(pReq *http.Request,
+	pResp                   http.ResponseWriter,
+	pKeyServerInfo          *GFkeyServerInfo,
+	pAuthSubsystemTypeStr   string,
+	pAuthLoginURLstr        *string,
+	pAuthRedirectOnFailBool bool,
+	pCtx                    context.Context,
+	pRuntimeSys             *gf_core.RuntimeSys) (bool, string, gf_core.GF_ID, *gf_core.GFerror) {
+
+	validBool, userIdentifierStr, sessionID, gfErr := SessionValidate(pReq,
+		pKeyServerInfo,
+		pAuthSubsystemTypeStr,
+		pCtx,
+		pRuntimeSys)
+
+	//---------------------------------------------------
+	redirectFun := func() {			
+		//-------------------------
+		// HTTP_REDIRECT - redirect user to login url
+		http.Redirect(pResp,
+			pReq,
+			*pAuthLoginURLstr,
+			301)
+		
+		//-------------------------
+	}
+
+	//---------------------------------------------------
+
+	if gfErr != nil {
+
+		// if the JWT supplied by the user to auth is invalid,
+		// redirect the user to the login page so that they can auth.
+		if gfErr.Type_str == "crypto_jwt_verify_token_error" {
+			if pAuthRedirectOnFailBool && pAuthLoginURLstr != nil {
+				redirectFun()
+			}
+		}
+
+		return false, "", gf_core.GF_ID(""), gfErr
+	}
+
+	if !validBool {
+		if pAuthRedirectOnFailBool && pAuthLoginURLstr != nil {
+			redirectFun()
+		}
+
+		return false, "", gf_core.GF_ID(""), nil
+	}
+
+	return validBool, userIdentifierStr, sessionID, nil
+}
+
+//---------------------------------------------------
+
 func SessionValidate(pReq *http.Request,
 	pKeyServerInfo         *GFkeyServerInfo,
 	pAuthSubsystemTypeStr  string,

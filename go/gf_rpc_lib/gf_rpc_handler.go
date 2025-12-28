@@ -32,7 +32,6 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_identity/gf_session"
 	
 	// "github.com/gloflow/gloflow/go/gf_events"
 	"github.com/davecgh/go-spew/spew"
@@ -181,7 +180,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		//-----------------------
 		
 		// SESSION_VALIDATE
-		validBool, userIdentifierStr, sessionID, gfErr := gf_session.ValidateOrRedirectToLogin(pReq,
+		validBool, userIdentifierStr, sessionID, gfErr := gf_identity_core.SessionValidateOrRedirectToLogin(pReq,
 			pResp,
 			pHandlerRuntime.AuthKeyServer,
 			pHandlerRuntime.AuthSubsystemTypeStr,
@@ -218,7 +217,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 			//-----------------------
 
-			// if no redirection of auth failure is specified (which happens in ValidateOrRedirectToLogin())
+			// if no redirection of auth failure is specified (which happens in SessionValidateOrRedirectToLogin())
 			// return an error
 			if !authRedirectOnFailBool {
 				msgStr := "unauthorized access"
