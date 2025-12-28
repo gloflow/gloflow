@@ -95,6 +95,10 @@ type ExternalPlugins struct {
 	//---------------------------
 	// IDENTITY
 
+	// for custom validation of general sessions
+	IdentitySessionValidateCallback func(*http.Request, context.Context, *RuntimeSys) (bool, GF_ID, GF_ID, *GFerror)
+	
+	// for custom validation of API keys
 	IdentitySessionValidateApiKeyCallback func(string, *http.Request, context.Context, *RuntimeSys) (bool, GF_ID, *GFerror)
 	
 	//---------------------------

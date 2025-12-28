@@ -180,7 +180,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		//-----------------------
 		
 		// SESSION_VALIDATE
-		validBool, userIdentifierStr, sessionID, gfErr := gf_identity_core.SessionValidateOrRedirectToLogin(pReq,
+		validBool, userID, sessionID, gfErr := gf_identity_core.SessionValidateOrRedirectToLogin(pReq,
 			pResp,
 			pHandlerRuntime.AuthKeyServer,
 			pHandlerRuntime.AuthSubsystemTypeStr,
@@ -191,12 +191,12 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		
 		pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> session validation...`,
 			map[string]interface{}{
-				"path_str":            pathStr,
-				"valid_bool":          validBool,
-				"user_identifier_str": userIdentifierStr,
-				"session_id_str":      sessionID,
-				"auth_redirect_on_failure_bool": authRedirectOnFailBool,
-				"auth_method_str":               pHandlerRuntime.AuthSubsystemTypeStr,
+				"path":                     pathStr,
+				"valid":                    validBool,
+				"user_id":                  userID,
+				"session_id":               sessionID,
+				"auth_redirect_on_failure": authRedirectOnFailBool,
+				"auth_method":              pHandlerRuntime.AuthSubsystemTypeStr,
 			})
 			
 		if gfErr != nil {
@@ -230,7 +230,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 		//-----------------------
 		// AUTH_CONTEXT - attach user_id and session_id to a handler context
-		ctxUserID := context.WithValue(ctx, "gf_user_id", userIdentifierStr)
+		ctxUserID := context.WithValue(ctx, "gf_user_id", userID)
 		ctxAuth   := context.WithValue(ctxUserID, "gf_session_id", string(sessionID))
 
 		//-----------------------
