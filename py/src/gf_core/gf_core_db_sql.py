@@ -21,6 +21,45 @@ import boto3
 import psycopg2
 
 #---------------------------------------------------------------------------------
+def init_db_engine(p_db_name_str,
+	p_env_str,
+	p_from_aws_secrets_bool=False,
+	p_app_name_str="gloflow"):
+
+	from sqlalchemy import create_engine
+
+	if p_from_aws_secrets_bool:
+
+		# SECRETS
+		print("getting meta from secrets...")
+		db_user_str, db_pass_str, db_host_str, db_port_str = get_meta_from_secrets(p_env_str)
+	else:
+		# ENV
+		print("getting meta from env...")
+		db_user_str, db_pass_str, db_host_str, db_port_str = get_meta_from_env(p_env_str)
+
+	database_url_str = f"postgresql://{db_user_str}:{db_pass_str}@{db_host_str}:{db_port_str}/{p_db_name_str}"
+
+	engine = create_engine(
+		database_url_str,
+		pool_size=10,
+		max_overflow=20,
+		pool_recycle=3600,
+		pool_pre_ping=True,
+		pool_timeout=30,
+		connect_args={
+			"connect_timeout": 30,
+			"keepalives": 1,
+			"keepalives_idle": 600,
+			"keepalives_interval": 30,
+			"keepalives_count": 3,
+			"application_name": "gloflow"
+		}
+	)
+	return engine
+
+
+#---------------------------------------------------------------------------------
 def init_db_client(p_db_name_str,
 	p_env_str,
 	p_from_aws_secrets_bool=False,
