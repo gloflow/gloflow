@@ -1358,7 +1358,6 @@ func dbSQLuserGetEmailConfirmedByUsername(pUserNameStr GFuserName,
 }
 
 //---------------------------------------------------
-
 // CREATE__EMAIL_CONFIRM
 
 func dbSQLuserEmailConfirmCreate(pUserNameStr GFuserName,

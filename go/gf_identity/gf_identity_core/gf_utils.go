@@ -149,7 +149,7 @@ func GetUserIDfromCtx(pCtx context.Context) (gf_core.GF_ID, bool) {
 	userID := pCtx.Value("gf_user_id")
 
 	if userID != nil {
-		userID := gf_core.GF_ID(userID.(string))
+		userID := userID.(gf_core.GF_ID)
 		return userID, true
 	}
 	
