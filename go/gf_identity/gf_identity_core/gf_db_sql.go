@@ -407,6 +407,28 @@ func DBsqlUpdateSessionUserIDidp(pGFsessionID gf_core.GF_ID,
 	return nil
 }
 
+func DBgetSessionUserID(pGFsessionID gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
+	sqlStr := `
+		SELECT user_id
+		FROM gf_auth_session
+		WHERE id = $1 AND deleted = false`
+	var userIDstr string
+
+	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, pGFsessionID).Scan(&userIDstr)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to get session user ID from the DB",
+			"sql_query_execute",
+			map[string]interface{}{
+				"session_id_str": pGFsessionID,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return gf_core.GF_ID(""), gfErr
+	}
+	return gf_core.GF_ID(userIDstr), nil
+}
+
 //-------------------------------------------------------------
 // USER
 //---------------------------------------------------

@@ -70,6 +70,9 @@ func errorGetDefs() map[string]ErrorDef {
 		"auth_missing_cookie": ErrorDef{
 			DescrStr: "missing auth cookie",
 		},
+		"auth_generic": ErrorDef{
+			DescrStr: "generic authentication error",
+		},
 
 		//---------------
 		// DATA_VERIFICATION
@@ -486,6 +489,10 @@ func errorGetDefs() map[string]ErrorDef {
 		},
 		"crypto_x509_parse": ErrorDef{
 			DescrStr: "failed to parse x509 info",
+		},
+
+		"crypto_generic": ErrorDef{
+			DescrStr: "generic cryptographic error",
 		},
 
 		//---------------

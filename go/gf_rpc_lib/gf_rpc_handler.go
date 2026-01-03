@@ -314,11 +314,8 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		authHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
 			
 			pathStr := pReq.URL.Path
-			pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> auth http handler...`,
-				map[string]interface{}{
-					"path_str":                pathStr,
-					"auth_subsystem_type_str": pHandlerRuntime.AuthSubsystemTypeStr,
-				})
+
+			pRuntimeSys.LogNewFun("INFO", "------------------> HTTP REQ", map[string]interface{}{"path_str": pathStr})
 
 			//-----------------------
 			// METRICS
@@ -495,8 +492,6 @@ func getHandler(pAuthBool bool,
 		startTimeUNIXf := float64(time.Now().UnixNano())/1000000000.0
 		pathStr := pReq.URL.Path
 
-		pRuntimeSys.LogNewFun("INFO", "------------------> HTTP REQ", map[string]interface{}{"path_str": pPathStr})
-
 		//------------------
 		// PANIC_HANDLING
 
@@ -553,7 +548,6 @@ func getHandler(pAuthBool bool,
 		defer spanRoot.Finish()
 
 		ctxRoot := spanRoot.Context()
-
 
 		//------------------
 		// PLUGIN - run request pre-process callback

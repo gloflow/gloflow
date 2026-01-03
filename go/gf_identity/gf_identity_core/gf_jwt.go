@@ -44,7 +44,7 @@ func JWTpipelineGenerate(pUserIdentifierStr string,
 	pKeyServerInfo        *GFkeyServerInfo,
 	pCtx                  context.Context,
 	pRuntimeSys           *gf_core.RuntimeSys) (*GFjwtTokenVal, *gf_core.GFerror) {
-	
+
 	// KEY_SERVER
 	privateKey, gfErr := ksClientJWTgetSigningKey(pAuthSubsystemTypeStr, pKeyServerInfo, pRuntimeSys)
 	if gfErr != nil {
@@ -76,10 +76,10 @@ func jwtGenerate(pUserIdentifierStr string,
 	pAudienceStr string,
 	pCtx         context.Context,
 	pRuntimeSys  *gf_core.RuntimeSys) (*GFjwtTokenVal, *gf_core.GFerror) {
-	
+
 	pRuntimeSys.LogNewFun("DEBUG", "JWT generated for user", map[string]interface{}{
 		"user_identifier_str": pUserIdentifierStr,})
-		
+
 	issuerStr := "gf"
 	_, jwtTokenTTLsecInt  := GetSessionTTL()
 	creationUNIXtimeF     := float64(time.Now().UnixNano())/1000000000.0
@@ -111,13 +111,13 @@ func jwtGenerate(pUserIdentifierStr string,
 		// unique identifier for the token, often referred to as the "JWT ID".
 		// optional and can be used to uniquely identify a specific token.
 		// way to prevent token replay attacks, where an attacker tries to reuse a previously issued token
-		
+
 		// ADD!! - pass in a GF session ID here to be used as the unique JWT ID,
-		//         to be able to reference sessions with JWT tokens directly. 
+		//         to be able to reference sessions with JWT tokens directly.
 		"jti": "", // ID
 
 		//-----------
-		
+
 		"iat": int(creationUNIXtimeF), // issued_at
 		"iss": issuerStr,              // issuer
 		"nbf": int(creationUNIXtimeF), // not_before
@@ -125,7 +125,7 @@ func jwtGenerate(pUserIdentifierStr string,
 
 		//----------------------
 	}
-	
+
 	pRuntimeSys.LogNewFun("DEBUG", "claims created for new generated JWT", nil)
 	if gf_core.LogsIsDebugEnabled() {
 		spew.Dump(claimsMap)
@@ -159,20 +159,21 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 	pKeyServerInfo        *GFkeyServerInfo,
 	pCtx                  context.Context,
 	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-	
+
 	pRuntimeSys.LogNewFun("DEBUG", "validating JWT token...", map[string]interface{}{
 		"auth_subsystem_type": pAuthSubsystemTypeStr,
 	})
 
 	// KEY_SERVER
 	publicKey, gfErr := KSclientJWTgetValidationKey(pAuthSubsystemTypeStr,
-		pKeyServerInfo, pRuntimeSys)
+		pKeyServerInfo,
+		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}
-	
+
 	// VALIDATE
-	validBool, userIdentifierStr, gfErr := JWTvalidate(pJWTtokenVal,
+	validBool, _, userIdentifierStr, gfErr := JWTvalidate(pJWTtokenVal,
 		publicKey,
 		pCtx,
 		pRuntimeSys)
@@ -199,39 +200,50 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 	pPublicKey  *rsa.PublicKey,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (bool, bool, string, *gf_core.GFerror) {
 
+	expiredBool := false
 	//-------------------------
 	// JWT_PARSE
 
 	// token validation
 	jwtToken, err := jwt.Parse(string(pJWTtokenVal), func(pToken *jwt.Token) (interface{}, error) {
-
 		return pPublicKey, nil
 	})
 
 	if err != nil {
+
+		// Check if the error is specifically a token expiration error
+		if validationErr, ok := err.(*jwt.ValidationError); ok {
+			if validationErr.Errors&jwt.ValidationErrorExpired != 0 {
+				
+
+				expiredBool = true
+				return false, expiredBool, "", nil
+			}
+		}
+
 		gfErr := gf_core.ErrorCreate("failed to verify a JWT token",
 			"crypto_jwt_verify_token_error",
 			map[string]interface{}{
 				"jwt_token_val_str": pJWTtokenVal,
 			},
 			err, "gf_identity_core", pRuntimeSys)
-		return false, "", gfErr
+		return false, expiredBool, "", gfErr
 	}
 
 	//-------------------------
-	
+
 	pRuntimeSys.LogNewFun("DEBUG", "token validation has been executed...", nil)
 	if gf_core.LogsIsDebugEnabled() {
 		spew.Dump(jwtToken)
 	}
 
 	validBool := jwtToken.Valid
-	
+
 	//-------------------------
 	// USER_IDENTIFIER
-	
+
 	var userIdentifierStr string
 
 	if userIdentifierClaimStr, ok := jwtToken.Claims.(jwt.MapClaims)["sub"]; ok {
@@ -243,14 +255,14 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 				"jwt_token_val_str": pJWTtokenVal,
 			},
 			err, "gf_identity_core", pRuntimeSys)
-		return false, "", gfErr
+		return false, expiredBool, "", gfErr
 	}
 
 	//-------------------------
 
 	pRuntimeSys.LogNewFun("DEBUG", "validated JWT token", map[string]interface{}{"valid_bool": validBool,})
 
-	return validBool, userIdentifierStr, nil
+	return validBool, expiredBool, userIdentifierStr, nil
 }
 
 //-------------------------------------------------------------
@@ -258,19 +270,19 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 // extract JWT token from a http request and return it as a string
 func JWTgetTokenFromRequest(pReq *http.Request,
 	pRuntimeSys *gf_core.RuntimeSys) (string, bool, *gf_core.GFerror) {
-	
+
 	// AUTHORIZATION_HEADER - set by a GF http handler /v1/identity/auth0/login_callback
 	//                        on successful completion of login at the end of the handler.
 	//                        this is the standard Oauth2 header symbol.
 
 	cookieNameStr := "Authorization"
 	cookieFoundBool, cookieValueStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq, pRuntimeSys)
-	
+
 	pRuntimeSys.LogNewFun("DEBUG", `auth0 Authorization cookie fetch attempt from incoming request...`,
 		map[string]interface{}{
 			"cookie_found_bool": cookieFoundBool,
 		})
-		
+
     // authCookie, err := pReq.Cookie("Authorization")
     if !cookieFoundBool {
 		return "", false, nil

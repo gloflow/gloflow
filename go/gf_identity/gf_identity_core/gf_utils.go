@@ -61,7 +61,7 @@ func GetUserIDfromReq(pReq *http.Request,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, gf_core.GF_ID, *gf_core.GFerror) {
 
 
-	sessionID, sessionIDfoundBool := GetSessionID(pReq, pRuntimeSys)
+	sessionID, sessionIDfoundBool := GetSessionIDfromReq(pReq, pRuntimeSys)
 	if !sessionIDfoundBool {
 		return false, gf_core.GF_ID(""), nil
 	}

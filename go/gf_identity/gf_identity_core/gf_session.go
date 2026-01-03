@@ -106,8 +106,9 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 	if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.IdentitySessionValidateCallback != nil {
 
 		validBool, userID, sessionID, gfErr = pRuntimeSys.ExternalPlugins.IdentitySessionValidateCallback(pReq,
-				pCtx,
-				pRuntimeSys)
+			pResp,
+			pCtx,
+			pRuntimeSys)
 
 		if gfErr != nil {
 			return false, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
@@ -189,7 +190,7 @@ func SessionValidate(pReq *http.Request,
 	//---------------------
 	// SESSION_ID
 
-	sessionID, sessionIDfoundBool := GetSessionID(pReq, pRuntimeSys)
+	sessionID, sessionIDfoundBool := GetSessionIDfromReq(pReq, pRuntimeSys)
 	if !sessionIDfoundBool {
 
 		/*
@@ -382,7 +383,7 @@ func DeleteCookies(pDomainForAuthCookiesStr string,
 
 //---------------------------------------------------
 
-func GetSessionID(pReq *http.Request,
+func GetSessionIDfromReq(pReq *http.Request,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, bool) {
 
 	sessCookieNameStr := "gf_sess"

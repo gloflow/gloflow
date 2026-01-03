@@ -330,7 +330,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 						nil, "gf_identity", pRuntimeSys)
 					return nil, gfErr
 				}
-				sessionID, sessionIDfoundBool := gf_identity_core.GetSessionID(pReq, pRuntimeSys)
+				sessionID, sessionIDfoundBool := gf_identity_core.GetSessionIDfromReq(pReq, pRuntimeSys)
 				if !sessionIDfoundBool {
 					gfErr := gf_core.ErrorCreate("'session_id' is missing from auth0 login_finalize handler request cookies",
 						"auth_missing_cookie",
@@ -398,7 +398,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 					logoutSuccessRedirectURLstr = decodedURLstr
 				}
 				
-				sessionID, existsBool := gf_identity_core.GetSessionID(pReq, pRuntimeSys)
+				sessionID, existsBool := gf_identity_core.GetSessionIDfromReq(pReq, pRuntimeSys)
 				if !existsBool {
 					gfErr := gf_core.ErrorCreate("session_id is missing from auth0 logout handler request cookies",
 						"http_cookie",
@@ -463,7 +463,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				context because this handler is not authed, and so in gf_rpc the auth path is not chosen
 				and context is not enriched with the session_id.
 				*/
-				sessionID, existsBool := gf_identity_core.GetSessionID(pReq, pRuntimeSys)
+				sessionID, existsBool := gf_identity_core.GetSessionIDfromReq(pReq, pRuntimeSys)
 				if !existsBool {
 					gfErr := gf_core.ErrorCreate("session_id is missing from auth0 logout_callback handler request cookies",
 						"http_cookie",
