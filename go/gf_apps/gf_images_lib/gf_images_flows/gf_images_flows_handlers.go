@@ -56,7 +56,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		"/images/flows/browser_page",
 	}
 	metricsGroupNameStr := "flows"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_images", handlersEndpointsLst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_images", handlersEndpointsLst, pRuntimeSys)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

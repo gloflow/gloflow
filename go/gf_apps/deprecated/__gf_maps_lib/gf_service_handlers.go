@@ -50,7 +50,7 @@ func initHandlers(pAuthSubsystemTypeStr string,
 		"/v1/maps/view",
 	}
 	metricsGroupNameStr := "maps"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_maps", handlersEndpointsLst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_maps", handlersEndpointsLst, pRuntimeSys)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

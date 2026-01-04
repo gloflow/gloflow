@@ -78,7 +78,7 @@ func CreateHandlersHTTP(pMetricsGroupNameStr string,
 		handlersEndpointsLst = append(handlersEndpointsLst, pathStr)
 	}
 
-	metrics := MetricsCreateForHandlers(pMetricsGroupNameStr, "gf_solo", handlersEndpointsLst)
+	metrics := MetricsCreateForHandlers(pMetricsGroupNameStr, "gf_solo", handlersEndpointsLst, pRuntimeSys)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

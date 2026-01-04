@@ -46,7 +46,7 @@ func initHandlers(pStatusServerCh gf_p2p.GFp2pStatusServerCh,
 		"/v1/p2p/status",
 	}
 	metricsGroupNameStr := "status"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_p2p", handlersEndpointsLst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_p2p", handlersEndpointsLst, pRuntimeSys)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

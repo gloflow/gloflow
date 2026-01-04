@@ -40,7 +40,7 @@ func initHandlers(pHTTPmux *http.ServeMux,
 		"/v1/identity/userpass/login",
 	}
 	metricsGroupNameStr := "core"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.NameStr, handlersEndpointsLst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.NameStr, handlersEndpointsLst, pRuntimeSys)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

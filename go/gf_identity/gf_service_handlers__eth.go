@@ -44,7 +44,7 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 		"/v1/identity/eth/create",
 	}
 	metricsGroupNameStr := "eth"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.NameStr, handlersEndpointsLst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.NameStr, handlersEndpointsLst, pRuntimeSys)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

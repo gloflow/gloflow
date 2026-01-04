@@ -28,6 +28,7 @@ import (
 	"fmt"
 	"strings"
 	"github.com/prometheus/client_golang/prometheus"
+	gf_core "github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
@@ -85,8 +86,13 @@ func MetricsCreateGlobal() *GFglobalMetrics {
 
 func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 	pServiceNameStr       string,
-	pHandlersEndpointsLst []string) *GFmetrics {
+	pHandlersEndpointsLst []string,
+	pRuntimeSys           *gf_core.RuntimeSys) *GFmetrics {
 	
+	pRuntimeSys.LogNewFun("DEBUG", `creating metrics for RPC handlers...`, map[string]interface{}{
+		"metrics_group": pMetricsGroupNameStr,
+		"service_name":  pServiceNameStr,
+	})
 
 	handlersCountersMap := map[string]prometheus.Counter{}
 	for _, handlerEndpointStr := range pHandlersEndpointsLst {
@@ -94,6 +100,11 @@ func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 		handlerEndpointCleanStr := strings.ReplaceAll(handlerEndpointStr, "/", "_")
 		nameStr := fmt.Sprintf("gf_rpc__handler_reqs_num__%s_%s", pServiceNameStr, handlerEndpointCleanStr)
 		
+		pRuntimeSys.LogNewFun("DEBUG", `registering handler metric...`, map[string]interface{}{
+			"handler_endpoint": handlerEndpointStr,
+			"metric_name":      nameStr,
+		})
+
 		handlerReqsNumCounter := prometheus.NewCounter(prometheus.CounterOpts{
 			Name: nameStr,
 			Help: "handler number of requests",

@@ -82,7 +82,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		"/images/c",
 	}
 	metricsGroupNameStr := "main"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_images", handlersEndpointsLst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_images", handlersEndpointsLst, pRuntimeSys)
 
 	//---------------------
 	// rpcHandlerRuntime

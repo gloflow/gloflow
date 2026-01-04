@@ -43,7 +43,7 @@ func initHandlersUserpass(pKeyServer *gf_identity_core.GFkeyServerInfo,
 		"/v1/identity/userpass/create",
 	}
 	metricsGroupNameStr := "userpass"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.NameStr, handlersEndpointsLst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.NameStr, handlersEndpointsLst, pRuntimeSys)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
