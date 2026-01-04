@@ -146,7 +146,6 @@ func DBmongoTraceWriteBulk(p_txs_traces_lst []*GF_eth__tx_trace,
 //-------------------------------------------------
 
 func Trace__plot(p_tx_id_hex_str string,
-	p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
 	pCtx           context.Context,
 	p_py_plugins   *gf_eth_core.GF_py_plugins,
 	p_metrics      *gf_eth_core.GF_metrics,
@@ -156,7 +155,7 @@ func Trace__plot(p_tx_id_hex_str string,
 
 	//-----------------------
 	// WORKER_INSPECTOR__HOST_PORT
-	host_port_str      := p_get_hosts_fn(pCtx, p_runtime)[0]
+	host_port_str      := ""
 	start_time__unix_f := float64(time.Now().UnixNano()) / 1000000000.0
 
 	// GET_TRACE

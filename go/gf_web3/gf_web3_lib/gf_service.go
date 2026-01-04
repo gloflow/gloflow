@@ -31,10 +31,10 @@ import (
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_blocks"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_tx"
-	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_indexer"
-	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_worker"
+	// "github.com/gloflow/gloflow/go/gf_web3/gf_eth_indexer"
+	// "github.com/gloflow/gloflow/go/gf_web3/gf_eth_worker"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_address"
-	"github.com/gloflow/gloflow/go/gf_web3/gf_nft"
+	// "github.com/gloflow/gloflow/go/gf_web3/gf_nft"
 )
 
 //-------------------------------------------------
@@ -51,17 +51,6 @@ func InitService(pAuthSubsystemTypeStr string,
 	gfErr := gf_address.InitHandlers(pAuthSubsystemTypeStr,
 		pKeyServer,
 		pHTTPmux,
-		pRuntimeSys)
-	if gfErr != nil {
-		panic(gfErr.Error)
-	}
-
-	//-------------
-	// NFT
-	gfErr = gf_nft.InitHandlers(pKeyServer,
-		pHTTPmux,
-		pConfig,
-		pImagesJobsMngrCh,
 		pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
@@ -135,22 +124,8 @@ func RunService(pRuntime *gf_eth_core.GF_runtime) {
 	}
 
 	//-------------
-	// WORKER_DISCOVERY
-	get_hosts_fn, _ := gf_eth_worker.Discovery__init(pRuntime)
-	
-	//-------------
-	// INDEXER
-
-	indexer_cmds_ch, indexer_job_updates_new_consumer_ch, gfErr := gf_eth_indexer.Init(get_hosts_fn, metrics, pRuntime)
-	if gfErr != nil {
-		panic(gfErr.Error)
-	}
-
-	//-------------
 	// HANDLERS
-	gfErr = InitHandlers(get_hosts_fn,
-		indexer_cmds_ch,
-		indexer_job_updates_new_consumer_ch,
+	gfErr = InitHandlers(
 		metrics,
 		pRuntime)
 	if gfErr != nil {

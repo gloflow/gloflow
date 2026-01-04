@@ -41,7 +41,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		"/v1/web3/address/add",
 	}
 	metricsGroupNameStr := "main"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_web3_monitor_address", handlersEndpointsLst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_web3_monitor_address", handlersEndpointsLst, pRuntimeSys)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

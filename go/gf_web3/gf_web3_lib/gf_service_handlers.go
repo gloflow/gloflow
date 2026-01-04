@@ -27,7 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
-	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_indexer"
+	// "github.com/gloflow/gloflow/go/gf_web3/gf_eth_indexer"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_blocks"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_contract"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_tx"
@@ -35,19 +35,9 @@ import (
 
 //-------------------------------------------------
 
-func InitHandlers(pGetHostsFun func(context.Context, *gf_eth_core.GF_runtime) []string,
-	pIndexerCmdsCh                  gf_eth_indexer.GF_indexer_ch,
-	pIndexerJobUpdatesNewConsumerCh gf_eth_indexer.GF_job_update_new_consumer_ch,
+func InitHandlers(
 	pMetrics                        *gf_eth_core.GF_metrics,
 	pRuntime                        *gf_eth_core.GF_runtime) *gf_core.GFerror {
-
-	//---------------------
-	// INDEXER
-
-	gf_eth_indexer.Init_handlers(pIndexerCmdsCh,
-		pIndexerJobUpdatesNewConsumerCh,
-		pMetrics,
-		pRuntime)
 
 	//---------------------
 	// GET__FAVORITES_TX_ADD
@@ -114,7 +104,6 @@ func InitHandlers(pGetHostsFun func(context.Context, *gf_eth_core.GF_runtime) []
 			spanPipeline := sentry.StartSpan(spanRoot.Context(), "tx_trace_plot")
 
 			plot_svg_str, gfErr := gf_eth_tx.Trace__plot(txHexStr,
-				pGetHostsFun,
 				spanPipeline.Context(),
 				pRuntime.Py_plugins,
 				pMetrics,
@@ -175,7 +164,7 @@ func InitHandlers(pGetHostsFun func(context.Context, *gf_eth_core.GF_runtime) []
 			spanPipeline := sentry.StartSpan(ctx, "blocks_get_from_workers")
 
 			blockFromWorkersMap, gfErr := gf_eth_blocks.Get_from_workers__pipeline(blockNumInt,
-				pGetHostsFun,
+				nil,
 				abisDefsMap,
 				spanPipeline.Context(),
 				pMetrics,
