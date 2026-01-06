@@ -109,9 +109,6 @@ func HTTPgetCookieFromReq(pCookieNameStr string,
 	pReq        *http.Request,
 	pRuntimeSys *RuntimeSys) (bool, string) {
 
-	pRuntimeSys.LogNewFun("DEBUG", `cookies in request...`,
-		HTTPgetAllCookies(pReq))
-
 	for _, cookie := range pReq.Cookies() {
 		if (cookie.Name == pCookieNameStr) {
 			dataStr := cookie.Value

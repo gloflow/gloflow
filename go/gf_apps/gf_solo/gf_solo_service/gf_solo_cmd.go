@@ -30,7 +30,9 @@ import (
 
 //-------------------------------------------------
 
-func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
+func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
+	pConfig           *GFconfig,
+	pExternRuntimeSys *gf_core.RuntimeSys) *cobra.Command {
 
 	var cliConfigPathStr string
 
@@ -67,15 +69,29 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 			logFun, logNewFun := gf_core.LogsInit()
 			log.SetOutput(os.Stdout)
 
-			
+			// external users can supply their own RuntimeSys which can be used.
+			// if not supplied, we create a new one here.
+			var resolvedRuntimeSys *gf_core.RuntimeSys
+			var resolvedConfig     *GFconfig
 
-			runtimeSys, config, err := RuntimeGet(cliConfigPathStr, pExternalPlugins, logFun, logNewFun)
-			if err != nil {
-				panic(err)
+			if pExternRuntimeSys == nil {
+				runtimeSys, config, err := RuntimeGet(cliConfigPathStr,
+					pExternalPlugins,
+					logFun,
+					logNewFun)
+				if err != nil {
+					panic(err)
+				}
+
+				resolvedRuntimeSys = runtimeSys
+				resolvedConfig     = config
+			} else {
+				resolvedRuntimeSys = pExternRuntimeSys
+				resolvedConfig     = pConfig
 			}
 
 			// RUN_SERVICE
-			Run(config, runtimeSys)			
+			Run(resolvedConfig, resolvedRuntimeSys)			
 		},
 	}
 

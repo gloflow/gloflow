@@ -57,8 +57,6 @@ func Run(pConfig *GFconfig,
 
 	pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("%s%s", yellow("GF_SOLO"), green("===============")), nil)
 
-
-
 	// EVENTS
 	enableEventsAppBool := true
 	pRuntimeSys.EnableEventsAppBool = enableEventsAppBool

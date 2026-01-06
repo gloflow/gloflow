@@ -282,7 +282,7 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 
 	//--------------------
 	// DB_PERSIST
-	if pRuntimeSys.Errors_send_to_mongodb_bool {
+	if pRuntimeSys.ErrorsSendToMongodbBool {
 		
 		ctx := context.Background()
 		errsDBcollNameStr := fmt.Sprintf("%s_errors", namesPrefixStr)
