@@ -69,6 +69,67 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 	pCtx                    context.Context,
 	pRuntimeSys             *gf_core.RuntimeSys) (bool, gf_core.GF_ID, gf_core.GF_ID, *gf_core.GFerror) {
 
+	//-------------------------
+	// SESSION_VALIDATE
+	validBool, userID, sessionID, gfErr := SessionValidateWithPlugins(pReq,
+		pResp,
+		pKeyServerInfo,
+		pAuthSubsystemTypeStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return false, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
+	}
+
+	//-------------------------
+
+	if gfErr != nil {
+
+		// if the JWT supplied by the user to auth is invalid,
+		// redirect the user to the login page so that they can auth.
+		if gfErr.Type_str == "crypto_jwt_verify_token_error" {
+			if pAuthRedirectOnFailBool && pAuthLoginURLstr != nil {
+				//-------------------------
+				// HTTP_REDIRECT - redirect user to login url
+				http.Redirect(pResp,
+					pReq,
+					*pAuthLoginURLstr,
+					301)
+					
+				//-------------------------
+			}
+		}
+
+		return false, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
+	}
+
+	if !validBool {
+		if pAuthRedirectOnFailBool && pAuthLoginURLstr != nil {
+			//-------------------------
+			// HTTP_REDIRECT - redirect user to login url
+			http.Redirect(pResp,
+				pReq,
+				*pAuthLoginURLstr,
+				301)
+			}
+
+			//-------------------------
+
+		return false, gf_core.GF_ID(""), gf_core.GF_ID(""), nil
+	}
+
+	return validBool, userID, sessionID, nil
+}
+
+//---------------------------------------------------
+
+func SessionValidateWithPlugins(pReq *http.Request,
+	pResp                 http.ResponseWriter,
+	pKeyServerInfo        *GFkeyServerInfo,
+	pAuthSubsystemTypeStr string,
+	pCtx                  context.Context,
+	pRuntimeSys           *gf_core.RuntimeSys) (bool, gf_core.GF_ID, gf_core.GF_ID, *gf_core.GFerror) {
+
 	var validBool bool
 	var userID    gf_core.GF_ID
 	var sessionID gf_core.GF_ID
@@ -79,7 +140,7 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 	// PLUGIN - use custom session validation for api keys if provided
 
 	// check if an API key is supplied; if not supplied Get() will return ""
-	if apiKeyStr := pReq.Header.Get("X-Api-Key"); apiKeyStr != "" {
+	if apiKeyStr := pReq.Header.Get(GF_IDENTITY_API_KEY_HEADER); apiKeyStr != "" {
 
 		if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.IdentitySessionValidateApiKeyCallback != nil {
 
@@ -97,13 +158,14 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 		} else {
 			return false, gf_core.GF_ID(""), gf_core.GF_ID(""), nil
 		}
-	}
-	
+
 	//---------------------
 	// SESSION_VALIDATE
 
 	// PLUGIN - use custom session validation if provided
-	if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.IdentitySessionValidateCallback != nil {
+
+	} else if pRuntimeSys.ExternalPlugins != nil && 
+		pRuntimeSys.ExternalPlugins.IdentitySessionValidateCallback != nil {
 
 		validBool, userID, sessionID, gfErr = pRuntimeSys.ExternalPlugins.IdentitySessionValidateCallback(pReq,
 			pResp,
@@ -125,39 +187,6 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 	}
 
 	//---------------------------------------------------
-	redirectFun := func() {			
-		//-------------------------
-		// HTTP_REDIRECT - redirect user to login url
-		http.Redirect(pResp,
-			pReq,
-			*pAuthLoginURLstr,
-			301)
-		
-		//-------------------------
-	}
-
-	//---------------------------------------------------
-
-	if gfErr != nil {
-
-		// if the JWT supplied by the user to auth is invalid,
-		// redirect the user to the login page so that they can auth.
-		if gfErr.Type_str == "crypto_jwt_verify_token_error" {
-			if pAuthRedirectOnFailBool && pAuthLoginURLstr != nil {
-				redirectFun()
-			}
-		}
-
-		return false, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
-	}
-
-	if !validBool {
-		if pAuthRedirectOnFailBool && pAuthLoginURLstr != nil {
-			redirectFun()
-		}
-
-		return false, gf_core.GF_ID(""), gf_core.GF_ID(""), nil
-	}
 
 	return validBool, userID, sessionID, nil
 }
@@ -170,11 +199,13 @@ func SessionValidate(pReq *http.Request,
 	pCtx                   context.Context,
 	pRuntimeSys            *gf_core.RuntimeSys) (bool, gf_core.GF_ID, gf_core.GF_ID, *gf_core.GFerror) {
 
+	sessionValidBool := false
+
 	//---------------------
 	// JWT
-	jwtTokenStr, foundBool, gfErr := JWTgetTokenFromRequest(pReq, pRuntimeSys)
+	jwtTokenStr, foundBool, gfErr := GetJWTtokenFromRequest(pReq, pRuntimeSys)
 	if gfErr != nil {
-		return false, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
+		return sessionValidBool, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
 	}
 	
 	if !foundBool {
@@ -184,7 +215,7 @@ func SessionValidate(pReq *http.Request,
 		    JWT in request is not an abnormal situation (an error), and 
 		    it means that the user is not authenticated yet.
 		*/
-		return false, gf_core.GF_ID(""), gf_core.GF_ID(""), nil
+		return sessionValidBool, gf_core.GF_ID(""), gf_core.GF_ID(""), nil
 	}
 
 	//---------------------
@@ -198,7 +229,7 @@ func SessionValidate(pReq *http.Request,
 		    session_id in request is not an abnormal situation (an error), and 
 		    it means that the user is not authenticated yet.
 		*/
-		return false, gf_core.GF_ID(""), gf_core.GF_ID(""), nil
+		return sessionValidBool, gf_core.GF_ID(""), gf_core.GF_ID(""), nil
 	}
 
 	//---------------------
@@ -216,12 +247,12 @@ func SessionValidate(pReq *http.Request,
 			pKeyServerInfo,
 			pRuntimeSys)
 		if gfErr != nil {
-			return false, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
+			return sessionValidBool, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
 		}
 		
 		userIdentifierFromJWTstr, gfErr := gf_auth0.JWTvalidateToken(jwtTokenStr, publicKey, pRuntimeSys)
 		if gfErr != nil {
-			return false, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
+			return sessionValidBool, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
 		}
 
 		userID = gf_core.GF_ID(userIdentifierFromJWTstr)
@@ -237,15 +268,27 @@ func SessionValidate(pReq *http.Request,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
-			return false, "", gf_core.GF_ID(""), gfErr
+			return sessionValidBool, "", gf_core.GF_ID(""), gfErr
 		}
 
 		userID = gf_core.GF_ID(userIdentifierFromJWTstr)
 
 	//---------------------
+	default:
+		gfErr := gf_core.ErrorCreate("unsupported auth subsystem type for session validation",
+			"auth_generic",
+			map[string]interface{}{
+				"auth_subsystem_type": pAuthSubsystemTypeStr,
+			},
+			nil, "gf_identity_core", pRuntimeSys)
+		return sessionValidBool, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
+
+	//---------------------
 	}
 
-	return true, userID, sessionID, nil
+	sessionValidBool = true
+
+	return sessionValidBool, userID, sessionID, nil
 }
 
 //---------------------------------------------------

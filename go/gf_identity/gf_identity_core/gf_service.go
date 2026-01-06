@@ -36,6 +36,7 @@ const (
 	GF_AUTH_METHOD_OAUTH_GITHUB = "github-oauth2"
 	GF_AUTH_METHOD_EMAIL        = "email"
 
+	GF_IDENTITY_API_KEY_HEADER = "GF-Api-Key"
 )
 
 //---------------------------------------------------

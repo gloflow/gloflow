@@ -121,12 +121,12 @@ func dbNonceDeleteAll(pUserAddressETHstr GFuserAddressETH,
 		}})
 		
 	if err != nil {
-		gfErr := gf_core.MongoHandleError("failed to mark all nonces for a user_address_eth as deleted",
+		gfErr := gf_core.ErrorCreate("failed to mark all nonces for a user_address_eth as deleted",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"user_address_eth": pUserAddressETHstr,
 			},
-			err, "gf_identity", pRuntimeSys)
+			err, "gf_identity_core", pRuntimeSys)
 		return gfErr
 	}
 
@@ -173,12 +173,12 @@ func dbNonceGet(pUserAddressETHstr GFuserAddressETH,
 			return GFuserNonceVal(""), false, nil
 		}
 
-		gfErr := gf_core.MongoHandleError("failed to find user by address in the DB",
+		gfErr := gf_core.ErrorCreate("failed to find user by address in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"user_address_eth_str": pUserAddressETHstr,
 			},
-			err, "gf_identity", pRuntimeSys)
+			err, "gf_identity_core", pRuntimeSys)
 		return GFuserNonceVal(""), false, gfErr
 	}
 

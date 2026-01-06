@@ -235,6 +235,7 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 	//-------------------------
 
 	pRuntimeSys.LogNewFun("DEBUG", "token validation has been executed...", nil)
+
 	if gf_core.LogsIsDebugEnabled() {
 		spew.Dump(jwtToken)
 	}
@@ -268,24 +269,23 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 //-------------------------------------------------------------
 
 // extract JWT token from a http request and return it as a string
-func JWTgetTokenFromRequest(pReq *http.Request,
+func GetJWTtokenFromRequest(pReq *http.Request,
 	pRuntimeSys *gf_core.RuntimeSys) (string, bool, *gf_core.GFerror) {
 
-	// AUTHORIZATION_HEADER - set by a GF http handler /v1/identity/auth0/login_callback
-	//                        on successful completion of login at the end of the handler.
-	//                        this is the standard Oauth2 header symbol.
+	
 
+	// AUTHORIZATION_HEADER - standard Oauth2 header symbol.
 	cookieNameStr := "Authorization"
-	cookieFoundBool, cookieValueStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq, pRuntimeSys)
 
-	pRuntimeSys.LogNewFun("DEBUG", `auth0 Authorization cookie fetch attempt from incoming request...`,
+	jwtTokenFoundBool, cookieValueStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq, pRuntimeSys)
+
+	pRuntimeSys.LogNewFun("DEBUG", `"Authorization" cookie getting from request...`,
 		map[string]interface{}{
-			"cookie_found_bool": cookieFoundBool,
+			"jwt_token_found": jwtTokenFoundBool,
 		})
 
-    // authCookie, err := pReq.Cookie("Authorization")
-    if !cookieFoundBool {
-		return "", false, nil
+    if !jwtTokenFoundBool {
+		return "", jwtTokenFoundBool, nil
 	}
 
 	authHeaderStr := cookieValueStr
@@ -300,8 +300,8 @@ func JWTgetTokenFromRequest(pReq *http.Request,
 				"auth_header_str": authHeaderStr,
 			},
 			nil, "gf_auth0", pRuntimeSys)
-		return "", false, gfErr
+		return "", jwtTokenFoundBool, gfErr
     }
 
-    return authPartsLst[1], true, nil
+    return authPartsLst[1], jwtTokenFoundBool, nil
 }
