@@ -357,7 +357,7 @@ func Run(pConfig *GFconfig,
 
 		//-------------
 		// USER_RPC_HANDLERS
-		handlersLst, gfErr := pRuntimeSys.ExternalPlugins.RPChandlersGetCallback(pRuntimeSys)
+		handlersLst, gfErr := pRuntimeSys.ExternalPlugins.RPChandlersGetCallback(gfSoloHTTPmux, pRuntimeSys)
 		if gfErr != nil {
 
 			return

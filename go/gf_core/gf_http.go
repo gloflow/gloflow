@@ -57,6 +57,16 @@ type HTTPhandlerInfo struct {
 
 //---------------------------------------------------
 
+func PrintAllHeaders(pReq *http.Request) {
+	for name, values := range pReq.Header {
+		for _, value := range values {
+			fmt.Printf("%s: %s\n", name, value)
+		}
+	}
+}
+
+//---------------------------------------------------
+
 func GetClientIP(pReq *http.Request) string {
 
 	// Check X-Forwarded-For header (comma-separated list of IPs)

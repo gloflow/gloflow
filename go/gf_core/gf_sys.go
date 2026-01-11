@@ -85,7 +85,7 @@ type ExternalPlugins struct {
 
 	//---------------------------
 	// RPC_HANDLERS
-	RPChandlersGetCallback func(*RuntimeSys) ([]HTTPhandlerInfo, *GFerror)
+	RPChandlersGetCallback func(*http.ServeMux, *RuntimeSys) ([]HTTPhandlerInfo, *GFerror)
 	RPCreqPreProcessCallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) (bool, *GFerror)
 
 	// CORS_DOMAINS - domains that are allowed to access the API, beyond the domain
