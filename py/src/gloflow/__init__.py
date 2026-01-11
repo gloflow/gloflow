@@ -17,6 +17,7 @@ version = "0.1.18"
 # DB
 class db():
     init         = gf_core_db_sql.init_db_client
+    init_engine  = gf_core_db_sql.init_db_engine
     table_exists = gf_core_db_sql.table_exists
 
 # CORE

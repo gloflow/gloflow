@@ -27,7 +27,7 @@ import (
 	"crypto/rsa"
 	"github.com/golang-jwt/jwt"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
@@ -128,7 +128,7 @@ func jwtGenerate(pUserIdentifierStr string,
 
 	pRuntimeSys.LogNewFun("DEBUG", "claims created for new generated JWT", nil)
 	if gf_core.LogsIsDebugEnabled() {
-		spew.Dump(claimsMap)
+		// spew.Dump(claimsMap)
 	}
 
 	//----------------------
@@ -237,7 +237,7 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 	pRuntimeSys.LogNewFun("DEBUG", "token validation has been executed...", nil)
 
 	if gf_core.LogsIsDebugEnabled() {
-		spew.Dump(jwtToken)
+		// spew.Dump(jwtToken)
 	}
 
 	validBool := jwtToken.Valid
@@ -270,36 +270,69 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 
 // extract JWT token from a http request and return it as a string
 func GetJWTtokenFromRequest(pReq *http.Request,
-	pRuntimeSys *gf_core.RuntimeSys) (string, bool, *gf_core.GFerror) {
-
+	pLookInHeaderForJWTbool bool,
+	pRuntimeSys             *gf_core.RuntimeSys) (string, bool, *gf_core.GFerror) {
 	
+	var authTokenStr string
+	var jwtTokenFoundBool bool
 
-	// AUTHORIZATION_HEADER - standard Oauth2 header symbol.
-	cookieNameStr := "Authorization"
+	//-------------------------
+	// HEADER
+	if pLookInHeaderForJWTbool {
 
-	jwtTokenFoundBool, cookieValueStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq, pRuntimeSys)
+		headerNameStr := "Authorization"
 
-	pRuntimeSys.LogNewFun("DEBUG", `"Authorization" cookie getting from request...`,
-		map[string]interface{}{
-			"jwt_token_found": jwtTokenFoundBool,
-		})
+		authTokenStr = pReq.Header.Get(headerNameStr)
+		var jwtTokenFoundInHeaderBool bool = false
+		if authTokenStr != "" {
+			jwtTokenFoundInHeaderBool = true
+		}
 
-    if !jwtTokenFoundBool {
-		return "", jwtTokenFoundBool, nil
+		pRuntimeSys.LogNewFun("DEBUG", `"Authorization" header getting from request...`,
+			map[string]interface{}{
+				"jwt_token_found": jwtTokenFoundInHeaderBool,
+			})
+
+		if !jwtTokenFoundInHeaderBool {
+			return "", jwtTokenFoundInHeaderBool, nil
+		}
+
+		jwtTokenFoundBool = jwtTokenFoundInHeaderBool
+
+	//-------------------------
+	// COOKIE
+	} else {
+
+		// AUTHORIZATION_HEADER - standard Oauth2 header symbol.
+		cookieNameStr := "Authorization"
+
+		jwtTokenFoundInCookieBool, cookieValueStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq, pRuntimeSys)
+
+		pRuntimeSys.LogNewFun("DEBUG", `"Authorization" cookie getting from request...`,
+			map[string]interface{}{
+				"jwt_token_found": jwtTokenFoundInCookieBool,
+			})
+
+		if !jwtTokenFoundInCookieBool {
+			return "", jwtTokenFoundInCookieBool, nil
+		}
+
+		authTokenStr = cookieValueStr
+		jwtTokenFoundBool = jwtTokenFoundInCookieBool
 	}
 
-	authHeaderStr := cookieValueStr
+	//-------------------------
 
-	// remove the "Bearer" header in the token
-    authPartsLst := strings.Split(authHeaderStr, " ")
+	// remove the "Bearer" part in the token
+    authPartsLst := strings.Split(authTokenStr, " ")
     if len(authPartsLst) != 2 || strings.ToLower(authPartsLst[0]) != "bearer" {
 		gfErr := gf_core.ErrorCreate("Authorization cookie is not in a valid format (not composed of 2 components, starting with 'Bearer ...')",
 			"http_cookie",
 			map[string]interface{}{
 				"path_str":        pReq.URL.Path,
-				"auth_header_str": authHeaderStr,
+				"auth_token_str": authTokenStr,
 			},
-			nil, "gf_auth0", pRuntimeSys)
+			nil, "gf_identity_core", pRuntimeSys)
 		return "", jwtTokenFoundBool, gfErr
     }
 

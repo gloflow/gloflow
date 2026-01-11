@@ -319,7 +319,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				//------------------
 				// INPUT
 
-				jwtTokenStr, foundBool, gfErr := gf_identity_core.GetJWTtokenFromRequest(pReq, pRuntimeSys)
+				jwtTokenStr, foundBool, gfErr := gf_identity_core.GetJWTtokenFromRequest(pReq, false, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

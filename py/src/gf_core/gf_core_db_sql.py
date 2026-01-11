@@ -58,7 +58,6 @@ def init_db_engine(p_db_name_str,
 	)
 	return engine
 
-
 #---------------------------------------------------------------------------------
 def init_db_client(p_db_name_str,
 	p_env_str,

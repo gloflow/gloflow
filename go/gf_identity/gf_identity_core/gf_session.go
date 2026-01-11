@@ -203,7 +203,7 @@ func SessionValidate(pReq *http.Request,
 
 	//---------------------
 	// JWT
-	jwtTokenStr, foundBool, gfErr := GetJWTtokenFromRequest(pReq, pRuntimeSys)
+	jwtTokenStr, foundBool, gfErr := GetJWTtokenFromRequest(pReq, false, pRuntimeSys)
 	if gfErr != nil {
 		return sessionValidBool, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
 	}
