@@ -251,7 +251,7 @@ func TestGetAll(pTest *testing.T) {
 	//------------------
 	// INITIAL_COUNTS - to compare against
 
-	initAllFlowsCountsLst, gfErr := pipelineGetAll(ctx, runtimeSys)
+	initAllFlowsCountsLst, gfErr := pipelineGetAll(true, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
@@ -268,7 +268,7 @@ func TestGetAll(pTest *testing.T) {
 	
 	//------------------
 
-	newFlowsCountsLst, gfErr := pipelineGetAll(ctx, runtimeSys)
+	newFlowsCountsLst, gfErr := pipelineGetAll(true, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}

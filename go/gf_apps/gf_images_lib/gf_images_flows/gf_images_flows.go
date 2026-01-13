@@ -202,12 +202,13 @@ func CreateIfMissing(pFlowsNamesLst []string,
 
 //-------------------------------------------------
 
-func pipelineGetAll(pCtx context.Context,
+func PipelineGetAll(pUseMongoBool bool,
+	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	//-----------------------------
 	// DB
-	resultsLst, gfErr := DBgetAll(pCtx, pRuntimeSys)
+	resultsLst, gfErr := DBgetAll(pUseMongoBool, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

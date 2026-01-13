@@ -95,13 +95,19 @@ func dbGetPage(pFlowNameStr string,
 
 //---------------------------------------------------
 
-func DBgetAll(pCtx context.Context,
+func DBgetAll(pUseMongoBool bool,
+	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
 	// MONGO
-	mongoResultsLst, gfErr := DBmongoGetAll(pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
+	var mongoResultsLst []map[string]interface{}
+	if pUseMongoBool {
+
+		var gfErr *gf_core.GFerror
+		mongoResultsLst, gfErr = DBmongoGetAll(pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
 	}
 
 	// SQL
@@ -119,17 +125,19 @@ func DBgetAll(pCtx context.Context,
 		mergedMap[flowNameStr] = countInt
 	}
 
-	for _, resultMap := range mongoResultsLst {
-		
-		flowNameStr := resultMap["_id"].(string) // result["flow_name"].(string)
-		countInt := int(resultMap["count_int"].(int32))
+	if pUseMongoBool {
+		for _, resultMap := range mongoResultsLst {
+			
+			flowNameStr := resultMap["_id"].(string) // result["flow_name"].(string)
+			countInt := int(resultMap["count_int"].(int32))
 
-		if existingCount, exists := mergedMap[flowNameStr]; exists {
-			if countInt > existingCount {
+			if existingCount, exists := mergedMap[flowNameStr]; exists {
+				if countInt > existingCount {
+					mergedMap[flowNameStr] = countInt
+				}
+			} else {
 				mergedMap[flowNameStr] = countInt
 			}
-		} else {
-			mergedMap[flowNameStr] = countInt
 		}
 	}
 

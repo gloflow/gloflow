@@ -80,7 +80,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
-				allFlowsNamesLst, gfErr := pipelineGetAll(pCtx, pRuntimeSys)
+				useMongoBool := true
+				allFlowsNamesLst, gfErr := PipelineGetAll(useMongoBool, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
