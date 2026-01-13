@@ -81,9 +81,11 @@ func dbSQLcreateNewSession(pSession *GFsession,
 
 			auth_subsystem_type,
 			auth_method,
-			user_id_idp
+			user_id_idp,
+
+			user_agent
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 	`
 
 	// serializing the profile map to JSON to store in the database
@@ -106,7 +108,9 @@ func dbSQLcreateNewSession(pSession *GFsession,
 		profileMapJSON,
 		pSession.AuthSubsystemTypeStr,
 		pSession.AuthMethodStr,
-		pSession.UserIDidp)
+
+		pSession.UserIDidp,
+		pSession.UserAgent)
 
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to insert session into the DB",
@@ -1726,6 +1730,9 @@ func DBsqlCreateTables(pCtx context.Context,
 		auth_subsystem_type VARCHAR(20) DEFAULT 'auth0',
 		auth_method         VARCHAR, -- "google-oauth2", "github-oauth2", "email", etc.
 		user_id_idp         TEXT,    -- user ID as per the identity provider (idp)
+		user_agent          VARCHAR, -- user agent string of the browser/client
+
+		mcp BOOLEAN DEFAULT FALSE, -- if its a AI/MCP session
 
 		PRIMARY KEY(id),
 		FOREIGN KEY (user_id) REFERENCES gf_users(id)

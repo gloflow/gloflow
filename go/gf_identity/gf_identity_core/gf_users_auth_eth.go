@@ -141,7 +141,7 @@ func ETHpipelineLogin(pInput *GFethInputLogin,
 
 	//------------------------
 	// SESSION_ID
-	sessionID := generateSessionID()
+	sessionID := GenerateSessionID()
 	output.SessionID = sessionID
 
 	//------------------------

@@ -349,7 +349,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				sameSiteStrictBool := true
 
 				// SESSION_ID - sets gf_sess cookie
-				gf_identity_core.CreateSessionIDcookie(string(sessionID),
+				gf_identity_core.CreateSessionIDcookie(string(*sessionID),
 					pServiceInfo.DomainForAuthCookiesStr,
 					sameSiteStrictBool,
 					pResp)
@@ -409,7 +409,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 				//---------------------
 				// DB - update session with logout URL
-				gfErr := gf_identity_core.DBsqlUpdateSessionLogoutRedirectURL(sessionID,
+				gfErr := gf_identity_core.DBsqlUpdateSessionLogoutRedirectURL(*sessionID,
 					logoutSuccessRedirectURLstr,
 					pCtx,
 					pRuntimeSys)
@@ -476,7 +476,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 				domainForAuthCookiesStr := *pServiceInfo.DomainForAuthCookiesStr
 
-				logoutSuccessRedirectURLstr, gfErr := gf_identity_core.LogoutPipeline(sessionID,
+				logoutSuccessRedirectURLstr, gfErr := gf_identity_core.LogoutPipeline(*sessionID,
 					domainForAuthCookiesStr,
 					pResp,
 					pCtx,

@@ -98,6 +98,7 @@ func Auth0loginPipeline(pLoginSuccessRedirectURLstr string,
 		GF_AUTH_SUBSYSTEM_TYPE__AUTH0,
 		nil,
 		nil,
+		nil,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {

@@ -66,7 +66,7 @@ func HTTPrespond(p_data interface{},
 
 func ErrorInHandler(p_handler_url_path_str string,
 	p_user_msg_str string,
-	p_gf_err       *gf_core.GFerror,
+	pGFerr       *gf_core.GFerror,
 	p_resp         http.ResponseWriter,
 	pRuntimeSys    *gf_core.RuntimeSys) {
 
@@ -75,14 +75,14 @@ func ErrorInHandler(p_handler_url_path_str string,
 		"handler_error_user_msg": p_user_msg_str,
 	}
 
-	if p_gf_err != nil {
-		dataMap["gf_error_type"]     = p_gf_err.Type_str
-		dataMap["gf_error_user_msg"] = p_gf_err.User_msg_str
+	if pGFerr != nil {
+		dataMap["gf_error_type"]     = pGFerr.Type_str
+		dataMap["gf_error_user_msg"] = pGFerr.User_msg_str
 	}
 
 	// DEBUG
-	if pRuntimeSys.Debug_bool {
-		dataMap["error"] = p_gf_err.Error
+	if pRuntimeSys.DebugBool {
+		dataMap["error"] = pGFerr.Error
 	}
 
 	HTTPrespond(dataMap, statusStr, p_resp, pRuntimeSys)

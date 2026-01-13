@@ -186,9 +186,11 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 					pAuthSubsystemTypeStr,
 					pCtx,
 					pRuntimeSys)
-
+				if gfErr != nil {
+					return nil, gfErr
+				}
 				if userLoggedInBool {
-					userIDfinalStr = userID
+					userIDfinalStr = *userID
 				}
 
 				//-----------------

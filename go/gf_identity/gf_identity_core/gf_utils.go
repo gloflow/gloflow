@@ -58,27 +58,23 @@ type GFuserHTTPinputEmailLoginConfirm struct {
 func GetUserIDfromReq(pReq *http.Request,
 	pAuthSubsystemTypeStr  string,
 	pCtx		context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (bool, gf_core.GF_ID, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GF_ID, *gf_core.GFerror) {
 
 
 	sessionID, sessionIDfoundBool := GetSessionIDfromReq(pReq, pRuntimeSys)
 	if !sessionIDfoundBool {
-		return false, gf_core.GF_ID(""), nil
+		return false, nil, nil
 	}
 
-	// AUTH0
-	if pAuthSubsystemTypeStr == GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
-		auth0session, gfErr := DBsqlGetSession(sessionID, pCtx, pRuntimeSys)
-		if gfErr != nil {
-			return false, gf_core.GF_ID(""), gfErr
-		}
-
-		userID := auth0session.UserID
-
-		return true, userID, nil
+	// DB
+	session, gfErr := DBsqlGetSession(*sessionID, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return false, nil, gfErr
 	}
 
-	return false, gf_core.GF_ID(""), nil
+	userID := session.UserID
+
+	return true, &userID, nil
 }
 
 //---------------------------------------------------

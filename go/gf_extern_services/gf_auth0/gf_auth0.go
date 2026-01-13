@@ -415,7 +415,7 @@ func JWTgetPublicKeyForTenant(pConfig *GFconfig,
 // key is valid.
 func JWTvalidateToken(pTokenStr string,
 	pPubKey     *rsa.PublicKey,
-	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*gf_core.GF_ID, *gf_core.GFerror) {
 
     token, err := jwt.Parse(pTokenStr, func(pToken *jwt.Token) (interface{}, error) {
 
@@ -437,7 +437,7 @@ func JWTvalidateToken(pTokenStr string,
 			},
 			err, "gf_auth0", pRuntimeSys)
 
-        return "", gfErr
+        return nil, gfErr
     }
 
 	//---------------------------
@@ -449,13 +449,13 @@ func JWTvalidateToken(pTokenStr string,
 				"jwt_token_val_str": pTokenStr,
 			},
 			err, "gf_auth0", pRuntimeSys)
-		return "", gfErr
+		return nil, gfErr
     }
 
 	//---------------------------
 
-	userIdentifierClaimStr := token.Claims.(jwt.MapClaims)["sub"].(string)
-	userIdentifierStr := userIdentifierClaimStr
+	userIdentifierFromClaimStr := token.Claims.(jwt.MapClaims)["sub"].(string)
+	userID := gf_core.GF_ID(userIdentifierFromClaimStr)
 
-    return userIdentifierStr, nil
+    return &userID, nil
 }

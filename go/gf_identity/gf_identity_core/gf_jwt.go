@@ -158,7 +158,7 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 	pAuthSubsystemTypeStr string,
 	pKeyServerInfo        *GFkeyServerInfo,
 	pCtx                  context.Context,
-	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	pRuntimeSys           *gf_core.RuntimeSys) (*gf_core.GF_ID, *gf_core.GFerror) {
 
 	pRuntimeSys.LogNewFun("DEBUG", "validating JWT token...", map[string]interface{}{
 		"auth_subsystem_type": pAuthSubsystemTypeStr,
@@ -169,16 +169,16 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 		pKeyServerInfo,
 		pRuntimeSys)
 	if gfErr != nil {
-		return "", gfErr
+		return nil, gfErr
 	}
 
 	// VALIDATE
-	validBool, _, userIdentifierStr, gfErr := JWTvalidate(pJWTtokenVal,
+	validBool, _, userID, gfErr := JWTvalidate(pJWTtokenVal,
 		publicKey,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
-		return "", gfErr
+		return nil, gfErr
 	}
 
 	if !validBool {
@@ -189,10 +189,10 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 				"auth_subsystem_type_str": pAuthSubsystemTypeStr,
 			},
 			nil, "gf_identity_core", pRuntimeSys)
-		return "", gfErr
+		return nil, gfErr
 	}
 
-	return userIdentifierStr, nil
+	return userID, nil
 }
 
 //---------------------------------------------------
@@ -200,7 +200,7 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 	pPublicKey  *rsa.PublicKey,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (bool, bool, string, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (bool, bool, *gf_core.GF_ID, *gf_core.GFerror) {
 
 	expiredBool := false
 	//-------------------------
@@ -217,9 +217,8 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 		if validationErr, ok := err.(*jwt.ValidationError); ok {
 			if validationErr.Errors&jwt.ValidationErrorExpired != 0 {
 				
-
 				expiredBool = true
-				return false, expiredBool, "", nil
+				return false, expiredBool, nil, nil
 			}
 		}
 
@@ -229,26 +228,23 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 				"jwt_token_val_str": pJWTtokenVal,
 			},
 			err, "gf_identity_core", pRuntimeSys)
-		return false, expiredBool, "", gfErr
+		return false, expiredBool, nil, gfErr
 	}
 
 	//-------------------------
 
 	pRuntimeSys.LogNewFun("DEBUG", "token validation has been executed...", nil)
 
-	if gf_core.LogsIsDebugEnabled() {
-		// spew.Dump(jwtToken)
-	}
-
 	validBool := jwtToken.Valid
 
 	//-------------------------
 	// USER_IDENTIFIER
 
-	var userIdentifierStr string
+	var userID gf_core.GF_ID
 
-	if userIdentifierClaimStr, ok := jwtToken.Claims.(jwt.MapClaims)["sub"]; ok {
-		userIdentifierStr = userIdentifierClaimStr.(string)
+	if userIdentifierFromClaimStr, ok := jwtToken.Claims.(jwt.MapClaims)["sub"]; ok {
+		userIdentifierStr := userIdentifierFromClaimStr.(string)
+		userID = gf_core.GF_ID(userIdentifierStr)
 	} else {
 		gfErr := gf_core.ErrorCreate("validated JWT token is missing an expected 'sub' claim",
 			"crypto_jwt_verify_token_error",
@@ -256,14 +252,17 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 				"jwt_token_val_str": pJWTtokenVal,
 			},
 			err, "gf_identity_core", pRuntimeSys)
-		return false, expiredBool, "", gfErr
+		return false, expiredBool, nil, gfErr
 	}
 
 	//-------------------------
 
-	pRuntimeSys.LogNewFun("DEBUG", "validated JWT token", map[string]interface{}{"valid_bool": validBool,})
+	pRuntimeSys.LogNewFun("DEBUG", "validated JWT token...",
+		map[string]interface{}{
+			"valid_bool": validBool,
+		})
 
-	return validBool, expiredBool, userIdentifierStr, nil
+	return validBool, expiredBool, &userID, nil
 }
 
 //-------------------------------------------------------------
@@ -291,6 +290,7 @@ func GetJWTtokenFromRequest(pReq *http.Request,
 		pRuntimeSys.LogNewFun("DEBUG", `"Authorization" header getting from request...`,
 			map[string]interface{}{
 				"jwt_token_found": jwtTokenFoundInHeaderBool,
+				"auth_token_str": authTokenStr[:10] + "..." + authTokenStr[len(authTokenStr)-10:],
 			})
 
 		if !jwtTokenFoundInHeaderBool {

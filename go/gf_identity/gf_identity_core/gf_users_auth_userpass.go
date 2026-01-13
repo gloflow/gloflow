@@ -104,7 +104,7 @@ func UserpassPipelineLogin(pInput *GFuserpassInputLogin,
 
 	//------------------------
 	// SESSION_ID
-	sessionID := generateSessionID()
+	sessionID := GenerateSessionID()
 	output.SessionID = sessionID
 
 	//------------------------

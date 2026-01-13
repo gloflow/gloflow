@@ -56,6 +56,9 @@ type GFsession struct {
 
 	// USER_ID_IDP - user ID in the IDP system (google, github, etc.)
 	UserIDidp *gf_core.GF_ID
+
+	// USER_AGENT - user agent string of the browser/client
+	UserAgent *string
 }
 
 //---------------------------------------------------
@@ -67,7 +70,7 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 	pAuthLoginURLstr        *string,
 	pAuthRedirectOnFailBool bool,
 	pCtx                    context.Context,
-	pRuntimeSys             *gf_core.RuntimeSys) (bool, gf_core.GF_ID, gf_core.GF_ID, *gf_core.GFerror) {
+	pRuntimeSys             *gf_core.RuntimeSys) (bool, *gf_core.GF_ID, *gf_core.GF_ID, *gf_core.GFerror) {
 
 	//-------------------------
 	// SESSION_VALIDATE
@@ -78,7 +81,7 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
-		return false, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
+		return false, nil, nil, gfErr
 	}
 
 	//-------------------------
@@ -100,7 +103,7 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 			}
 		}
 
-		return false, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
+		return false, nil, nil, gfErr
 	}
 
 	if !validBool {
@@ -115,7 +118,7 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 
 			//-------------------------
 
-		return false, gf_core.GF_ID(""), gf_core.GF_ID(""), nil
+		return false, nil, nil, nil
 	}
 
 	return validBool, userID, sessionID, nil
@@ -128,11 +131,11 @@ func SessionValidateWithPlugins(pReq *http.Request,
 	pKeyServerInfo        *GFkeyServerInfo,
 	pAuthSubsystemTypeStr string,
 	pCtx                  context.Context,
-	pRuntimeSys           *gf_core.RuntimeSys) (bool, gf_core.GF_ID, gf_core.GF_ID, *gf_core.GFerror) {
+	pRuntimeSys           *gf_core.RuntimeSys) (bool, *gf_core.GF_ID, *gf_core.GF_ID, *gf_core.GFerror) {
 
 	var validBool bool
-	var userID    gf_core.GF_ID
-	var sessionID gf_core.GF_ID
+	var userID    *gf_core.GF_ID
+	var sessionID *gf_core.GF_ID
 	var gfErr     *gf_core.GFerror
 
 	//---------------------
@@ -149,14 +152,11 @@ func SessionValidateWithPlugins(pReq *http.Request,
 				pCtx,
 				pRuntimeSys)
 			if gfErr != nil {
-				return false, "", gf_core.GF_ID(""), gfErr
+				return false, nil, nil, gfErr
 			}
-
-			// calls with an API key dont have session IDs
-			sessionID = gf_core.GF_ID("")
 			
 		} else {
-			return false, gf_core.GF_ID(""), gf_core.GF_ID(""), nil
+			return false, nil, nil, nil
 		}
 
 	//---------------------
@@ -173,7 +173,7 @@ func SessionValidateWithPlugins(pReq *http.Request,
 			pRuntimeSys)
 
 		if gfErr != nil {
-			return false, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
+			return false, nil, nil, gfErr
 		}
 
 	// INTERNAL - use built-in session validation
@@ -197,7 +197,7 @@ func SessionValidate(pReq *http.Request,
 	pKeyServerInfo         *GFkeyServerInfo,
 	pAuthSubsystemTypeStr  string,
 	pCtx                   context.Context,
-	pRuntimeSys            *gf_core.RuntimeSys) (bool, gf_core.GF_ID, gf_core.GF_ID, *gf_core.GFerror) {
+	pRuntimeSys            *gf_core.RuntimeSys) (bool, *gf_core.GF_ID, *gf_core.GF_ID, *gf_core.GFerror) {
 
 	sessionValidBool := false
 
@@ -205,7 +205,7 @@ func SessionValidate(pReq *http.Request,
 	// JWT
 	jwtTokenStr, foundBool, gfErr := GetJWTtokenFromRequest(pReq, false, pRuntimeSys)
 	if gfErr != nil {
-		return sessionValidBool, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
+		return sessionValidBool, nil, nil, gfErr
 	}
 	
 	if !foundBool {
@@ -215,7 +215,7 @@ func SessionValidate(pReq *http.Request,
 		    JWT in request is not an abnormal situation (an error), and 
 		    it means that the user is not authenticated yet.
 		*/
-		return sessionValidBool, gf_core.GF_ID(""), gf_core.GF_ID(""), nil
+		return sessionValidBool, nil, nil, nil
 	}
 
 	//---------------------
@@ -229,12 +229,12 @@ func SessionValidate(pReq *http.Request,
 		    session_id in request is not an abnormal situation (an error), and 
 		    it means that the user is not authenticated yet.
 		*/
-		return sessionValidBool, gf_core.GF_ID(""), gf_core.GF_ID(""), nil
+		return sessionValidBool, nil, nil, nil
 	}
 
 	//---------------------
 	
-	var userID gf_core.GF_ID
+	var userID *gf_core.GF_ID
 
 	switch pAuthSubsystemTypeStr {
 	
@@ -247,31 +247,31 @@ func SessionValidate(pReq *http.Request,
 			pKeyServerInfo,
 			pRuntimeSys)
 		if gfErr != nil {
-			return sessionValidBool, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
+			return sessionValidBool, nil, nil, gfErr
 		}
 		
-		userIdentifierFromJWTstr, gfErr := gf_auth0.JWTvalidateToken(jwtTokenStr, publicKey, pRuntimeSys)
+		userIDfromAuth0, gfErr := gf_auth0.JWTvalidateToken(jwtTokenStr, publicKey, pRuntimeSys)
 		if gfErr != nil {
-			return sessionValidBool, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
+			return sessionValidBool, nil, nil, gfErr
 		}
 
-		userID = gf_core.GF_ID(userIdentifierFromJWTstr)
+		userID = userIDfromAuth0
 
 	//---------------------
 	// USERPASS
 	case GF_AUTH_SUBSYSTEM_TYPE__USERPASS:
 
 		// JWT_VALIDATE
-		userIdentifierFromJWTstr, gfErr := JWTpipelineValidate(GFjwtTokenVal(jwtTokenStr),
+		userIDfromGF, gfErr := JWTpipelineValidate(GFjwtTokenVal(jwtTokenStr),
 			pAuthSubsystemTypeStr,
 			pKeyServerInfo,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
-			return sessionValidBool, "", gf_core.GF_ID(""), gfErr
+			return sessionValidBool, nil, nil, gfErr
 		}
 
-		userID = gf_core.GF_ID(userIdentifierFromJWTstr)
+		userID = userIDfromGF
 
 	//---------------------
 	default:
@@ -281,7 +281,7 @@ func SessionValidate(pReq *http.Request,
 				"auth_subsystem_type": pAuthSubsystemTypeStr,
 			},
 			nil, "gf_identity_core", pRuntimeSys)
-		return sessionValidBool, gf_core.GF_ID(""), gf_core.GF_ID(""), gfErr
+		return sessionValidBool, nil, nil, gfErr
 
 	//---------------------
 	}
@@ -298,12 +298,13 @@ func SessionCreate(pUserID *gf_core.GF_ID,
 	pAuthSubsystemTypeStr       string,
 	pAuthMethodStr			    *string,
 	pUserIDidp                  *gf_core.GF_ID,
+	pUserAgentStr               *string,
 	pCtx                        context.Context,
 	pRuntimeSys                 *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
 
 	//---------------------
 	// SESSION_ID
-	sessionID := generateSessionID()
+	sessionID := GenerateSessionID()
 	
 	//---------------------
 
@@ -330,6 +331,10 @@ func SessionCreate(pUserID *gf_core.GF_ID,
 
 	if pLoginSuccessRedirectURLstr != nil {
 		session.LoginSuccessRedirectURLstr = *pLoginSuccessRedirectURLstr
+	}
+
+	if pUserAgentStr != nil {
+		session.UserAgent = pUserAgentStr
 	}
 
 	//---------------------
@@ -427,20 +432,20 @@ func DeleteCookies(pDomainForAuthCookiesStr string,
 //---------------------------------------------------
 
 func GetSessionIDfromReq(pReq *http.Request,
-	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, bool) {
+	pRuntimeSys *gf_core.RuntimeSys) (*gf_core.GF_ID, bool) {
 
 	sessCookieNameStr := "gf_sess"
 	existsBool, valStr := gf_core.HTTPgetCookieFromReq(sessCookieNameStr, pReq, pRuntimeSys)
 
 	sessionID := gf_core.GF_ID(valStr)
-	return sessionID, existsBool
+	return &sessionID, existsBool
 }
 
 //---------------------------------------------------
 // VAR
 //---------------------------------------------------
 
-func generateSessionID() gf_core.GF_ID {
+func GenerateSessionID() gf_core.GF_ID {
 
 	creationUNIXtimeF  := float64(time.Now().UnixNano())/1000000000.0
 	randomStr          := gf_core.StrRandom()

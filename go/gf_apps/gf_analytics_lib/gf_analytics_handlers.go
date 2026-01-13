@@ -93,8 +93,12 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 					pCtx,
 					pRuntimeSys)
 
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
 				if userLoggedInBool {
-					userIDfinalStr = userID
+					userIDfinalStr = *userID
 				}
 
 				//-----------------
