@@ -17,12 +17,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+enum ErrorMessage {
+	UNAUTHORIZED = "unauthorized access"
+}
+
 //-------------------------------------------------
 export function init(p_flow_name_str :string,
 	p_target_full_host_str :string,
 	p_on_upload_fun        :Function) {
 
-	// console.log("UPLOAD INITIALIZED")
+	console.log("UPLOAD INITIALIZED >>>>>>>>>>>>>>>>")
+	
+	
 	document.onpaste = function(p_paste_event) {
 
 		console.log("paste event...");
@@ -70,15 +76,22 @@ export function init(p_flow_name_str :string,
 							//-------------------------------------------------
 							// UPLOAD_ACTIVATE_FUN
 							async (p_image_name_str :string,
-							p_flows_names_str        :string,
+							p_flows_names_lst        :string[],
 							p_on_upload_complete_fun :Function)=>{
 
 								// UPLOAD_IMAGE
-								const upload_gf_image_id_str = await gf_upload__run(p_image_name_str,
-									img_data_str,
-									image_format_str,
-									p_flows_names_str,
-									p_target_full_host_str);
+								let upload_gf_image_id_str :string;	
+								try {
+									upload_gf_image_id_str = await gf_upload__run(p_image_name_str,
+										img_data_str,
+										image_format_str,
+										p_flows_names_lst,
+										p_target_full_host_str);
+								} catch (p_error_map: any) {
+									const error_str: string = p_error_map["error_msg_str"];
+									add_error_status_msg(error_str);
+									return;
+								}
 
 								p_on_upload_complete_fun();
 								p_on_upload_fun(upload_gf_image_id_str);
@@ -98,10 +111,37 @@ export function init(p_flow_name_str :string,
 }
 
 //-------------------------------------------------
+function add_error_status_msg(p_error_msg_str :string) {
+
+	let user_msg_str: string;
+
+	if (p_error_msg_str === ErrorMessage.UNAUTHORIZED) {
+		user_msg_str = "unauthorized access - please log in to upload images";
+	} else {
+		user_msg_str = `${p_error_msg_str} - failed to upload image`;
+	}
+
+	const error_msg_element = $(`
+		<div class="error_status_msg">
+			${user_msg_str}
+		</div>
+	`)[0];
+
+	$("#upload_image_dialog #status_msgs").append(error_msg_element);
+
+}
+
+//-------------------------------------------------
 function gf_upload__view_img(p_img_data_str :string,
-	p_flow_name_str       :string,
-	p_upload_activate_fun :Function) {
+	p_default_flow_name_str :string,
+	p_upload_activate_fun   :Function) {
 	
+
+	const img_dialog = get_image_dialog();
+
+	position_image_view();
+	turn_off_scroll();
+
 	//-------------------------------------------------
 	function get_image_dialog() {
 
@@ -109,51 +149,21 @@ function gf_upload__view_img(p_img_data_str :string,
 		// first image
 		if ($("#upload_image_dialog").length == 0) {
 
-			/*
-			const img_dialog = $(`
-				<div id="upload_image_dialog" class="gf_center">
-					<div id="background"></div>
-
-					<div id="upload_images_detail">
-						<div id="upload_images">
-
-							<div id="upload_images_panel">
-								
-								<div id="images">
-									
-								</div>
-
-								<div id="upload_image_flow_name_input" class="gf_center">
-									<input placeholder="flow name" value="${p_flow_name_str}"></input>
-								</div>
-
-							</div>
-
-						</div>
-						<div id="upload_btn">upload image</div>
-					</div>
-
-				</div>`);
-			*/
-
 			const dialog = $(`
 				<div id="upload_image_dialog" class="gf_center">
 					<div id="background"></div>
 
 					<div id="upload_image_flow_name_input" class="gf_center">
-						<input placeholder="flow name" value="${p_flow_name_str}"></input>
+						<input placeholder="flow name" value="${p_default_flow_name_str}"></input>
 					</div>
 					
 					<div id="upload_images">
-
-
 					</div>
-
 					
 					<div id="upload_btn">upload image</div>
+					<div id="status_msgs"></div>
 
-				</div>
-				`);
+				</div>`)[0];
 
 			$("body").append(dialog);
 
@@ -161,8 +171,7 @@ function gf_upload__view_img(p_img_data_str :string,
 			const new_image_element = append_image(new_img_id_int, p_img_data_str);
 
 
-			$(dialog).find("#upload_images").append(new_image_element)
-			// $(dialog).find("#upload_images_panel #images").append(new_image_element);
+			$(dialog).find("#upload_images").append(new_image_element);
 
 			return dialog;
 		}
@@ -231,10 +240,6 @@ function gf_upload__view_img(p_img_data_str :string,
 	}
 
 	//-------------------------------------------------
-	const img_dialog = get_image_dialog();
-	
-
-	//-------------------------------------------------
 	function position_image_view() {
 
 		// position the upload_image_dialog in view if the user scrolled
@@ -243,21 +248,23 @@ function gf_upload__view_img(p_img_data_str :string,
 	}
 
 	//-------------------------------------------------
+	function turn_off_scroll() {
+		$("body").css("overflow-y", "hidden"); // turn-off scroll
+	}
+
+	function turn_on_scroll() {
+		$("body").css("overflow-y", "visible"); // turn-on scroll
+	}
+
+	//-------------------------------------------------
 
 	// ?????
 	const this_image = $(img_dialog).find("#upload_images_panel").last();
 	$(this_image).find("img").on("load", ()=>{
 
-		$("body").css("overflow-y", "hidden"); // turn-off scroll
-		position_image_view();
+		
+		
 	});
-
-	/*
-	// reposition image_view on resize
-	$(window).resize(function () {
-		position_image_view();
-	});
-	*/
 
 	//-------------------------------------------------
 	// UPLOAD
@@ -266,21 +273,39 @@ function gf_upload__view_img(p_img_data_str :string,
 		const image_name_str    = $(this_image).find("#upload_image_name_input input").val();
 		var image_flow_name_str = $(img_dialog).find("#upload_image_flow_name_input input").val();
 
+		const flows_lst :string[] = [];
+
 		// if no image flow name was supplied then use the default flow
 		if (image_flow_name_str.length == 0) {
-			image_flow_name_str = p_flow_name_str;
-		} 
+			image_flow_name_str = p_default_flow_name_str;
+			flows_lst.push(image_flow_name_str);
+		}
 		else {
 
-			// LOCAL_STORAGE
-			localStorage.setItem("gf:upload_flow_name_str", image_flow_name_str);
+			
+			
+
+			// Handle both comma and space separated flow names
+			const separators = /[,\s]+/;
+			
+			image_flow_name_str.split(separators).forEach((p_flow_name_str :string)=>{
+				if (p_flow_name_str.trim().length > 0) {
+
+					// if multiple flow names where supplied, make sure they are trimmed of whitespace
+					flows_lst.push(p_flow_name_str.trim());
+				}
+			});
+
+
+			// LOCAL_STORAGE - set the flow name in local storage for next time
+			localStorage.setItem("gf:upload_flows_names_str", flows_lst.join(","));
 		}
 		
-		p_upload_activate_fun(image_name_str, image_flow_name_str, ()=>{
+		p_upload_activate_fun(image_name_str, flows_lst, ()=>{
 
 			// REMOVE_UPLOAD_DIALOG - when upload_activate function completes, remove the dialog
 			$(img_dialog).remove();
-			$("body").css("overflow-y", "visible"); // turn-on scroll
+			turn_on_scroll();
 		});
 	}
 
@@ -327,6 +352,8 @@ function gf_upload__view_img(p_img_data_str :string,
 		// REMOVE_UPLOAD_DIALOG - remove dialog on click on background
 		$(img_dialog).remove();
 		$("body").css("overflow-y", "visible"); // turn-on scroll
+
+		turn_on_scroll();
 	})
 }
 
@@ -334,8 +361,8 @@ function gf_upload__view_img(p_img_data_str :string,
 async function gf_upload__run(p_image_name_str :string,
 	p_image_data_str       :string,
 	p_image_format_str     :string,
-	p_flows_names_str      :string,
-	p_target_full_host_str :string) {
+	p_flows_names_lst      :string[],
+	p_target_full_host_str :string): Promise<string> {
 	return new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 		console.log(`UPLOAD_IMAGE - ${p_image_name_str} - ${p_image_format_str}`);
@@ -343,11 +370,17 @@ async function gf_upload__run(p_image_name_str :string,
 		const upload_start_f = performance.now();
 
 		// UPLOAD__SEND_INIT
-		const upload_map = await gf_upload__send_init(p_image_name_str,
-			p_image_data_str,
-			p_image_format_str,
-			p_flows_names_str,
-			p_target_full_host_str);
+		let upload_map;
+		try {
+			upload_map = await gf_upload__send_init(p_image_name_str,
+				p_image_data_str,
+				p_image_format_str,
+				p_flows_names_lst,
+				p_target_full_host_str);
+		} catch (p_error_map) {
+			p_reject_fun(p_error_map);
+			return;
+		}
 		
 		const upload_gf_image_id_str = upload_map["upload_gf_image_id_str"];
 		const presigned_url_str      = upload_map["presigned_url_str"];
@@ -358,7 +391,7 @@ async function gf_upload__run(p_image_name_str :string,
 
 		// UPLOAD__SEND_COMPLETE
 		await gf_upload__send_complete(upload_gf_image_id_str,
-			p_flows_names_str,
+			p_flows_names_lst,
 			p_target_full_host_str);
 
 		// UPLOAD__SEND_METRICS
@@ -378,40 +411,47 @@ async function gf_upload__run(p_image_name_str :string,
 function gf_upload__send_init(p_image_name_str :string,
 	p_image_data_str       :string,
 	p_image_format_str     :string,
-	p_flows_names_str      :string,
+	p_flows_names_lst      :string[],
 	p_target_full_host_str :string) :Promise<any> {
 	
 	return new Promise(function(p_resolve_fun, p_reject_fun) {
 
 		const client_type_str = "browser";
 
+		const flows_names_str = p_flows_names_lst.join(",");
+
 		// auth_r=0 - dont redirect on auth fail, just return status
-		const url_str = `${p_target_full_host_str}/v1/images/upload_init?imgf=${p_image_format_str}&imgn=${p_image_name_str}&f=${p_flows_names_str}&ct=${client_type_str}&auth_r=0`;
+		const url_str = `${p_target_full_host_str}/v1/images/upload_init?imgf=${p_image_format_str}&imgn=${p_image_name_str}&f=${flows_names_str}&ct=${client_type_str}&auth_r=0`;
 		$.get(url_str)
-			.done((p_data_map) => {
+		.done((p_data_map) => {
 
-				console.log("upload initialized...")
-				console.log(p_data_map);
+			console.log("upload initialized...")
+			console.log(p_data_map);
 
-				if (p_data_map["status"] == "OK") {
-					const upload_gf_image_id_str = p_data_map["data"]["upload_info_map"]["upload_gf_image_id_str"];
-					const presigned_url_str      = p_data_map["data"]["upload_info_map"]["presigned_url_str"];
+			if (p_data_map["status"] == "OK") {
+				const upload_gf_image_id_str = p_data_map["data"]["upload_info_map"]["upload_gf_image_id_str"];
+				const presigned_url_str      = p_data_map["data"]["upload_info_map"]["presigned_url_str"];
 
-					console.log(`upload_gf_image_id - ${upload_gf_image_id_str}`);
-					console.log(`presigned_url      - ${presigned_url_str}`);
+				console.log(`upload_gf_image_id - ${upload_gf_image_id_str}`);
+				console.log(`presigned_url      - ${presigned_url_str}`);
 
-					p_resolve_fun({
-						"upload_gf_image_id_str": upload_gf_image_id_str,
-						"presigned_url_str":      presigned_url_str,
-					});
-				}
-				else {
-					p_reject_fun(p_data_map["data"]);
-				}
-			})
-			.fail(function(jqXHR, textStatus, errorThrown) {
-				p_reject_fun(textStatus+" - "+errorThrown);
-			});
+				p_resolve_fun({
+					"upload_gf_image_id_str": upload_gf_image_id_str,
+					"presigned_url_str":      presigned_url_str,
+				});
+			}
+			else {
+				const error_data_map = p_data_map["data"];
+				const error_msg_str = error_data_map["handler_error_user_msg"];
+
+				p_reject_fun({
+					"error_msg_str": error_msg_str,
+				});
+			}
+		})
+		.fail(function(jqXHR, textStatus, errorThrown) {
+			p_reject_fun(textStatus+" - "+errorThrown);
+		});
 	});
 }
 
@@ -492,14 +532,16 @@ function gf_upload__send_metrics(p_upload_duration_sec_f :number,
 
 //-------------------------------------------------
 function gf_upload__send_complete(p_upload_gf_image_id_str :string,
-	p_flows_names_str      :string,
+	p_flows_names_lst      :string[],
 	p_target_full_host_str :string) :Promise<any> {
 
 	return new Promise(function(p_resolve_fun, p_reject_fun) {
 		console.log("AWS S3 PUT upload done...")
 
+		const flows_names_str = p_flows_names_lst.join(",");
+
 		// auth_r=0 - dont redirect on auth fail, just return status
-		const url_str = `${p_target_full_host_str}/v1/images/upload_complete?imgid=${p_upload_gf_image_id_str}&f=${p_flows_names_str}&auth_r=0`;
+		const url_str = `${p_target_full_host_str}/v1/images/upload_complete?imgid=${p_upload_gf_image_id_str}&f=${flows_names_str}&auth_r=0`;
 
 		$.ajax({
 			method: "POST",

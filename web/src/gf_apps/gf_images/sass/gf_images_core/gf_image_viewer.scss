@@ -36,10 +36,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	}
 
 	#main {
-		
-		height: 80%;
+		position: relative;
+		// height: fit-content;
+
+		// automatically scale the image down to fit whichever dimension hits that limit first,
+		// while preserving the image's original aspect ratio
+		max-width: 85%;
+		// max-height: 85%;
+
 		display: flex;
-		flex-direction: row;
+		flex-direction: column;
 
 		z-index: 1;
 
@@ -49,9 +55,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		#image_container {
 			
 			position: relative;
+			width: 100%;
 
 			img {
-				height: 100%;
+				
+				width: 100%;
+				// height: 100%;
+
 				border-radius: 6px 6px 6px 6px;
 			}
 
@@ -94,41 +104,75 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		}
 
 		#image_details {
-
+			position: absolute;
+			right: 0px;
+			
 			display: flex;
-			flex-direction: column;
-			row-gap: 10px;
-			margin-top: 20px;
+			flex-direction: row;
+			column-gap: 10px;
+			width: fit-content;
 
-			#flows_names {
-				width: auto;
-				font-size: 16px;
-				
-				.flow_name {
-					background-color: lightgray;
-					padding-left: 4px;
-					padding-right: 5px;
-					padding-top: 2px;
-					padding-bottom: 3px;
+			margin-top: 8px;
+    		margin-right: 8px;
 
-					border-radius: 0px 6px 6px 0px;
+			#flows {
+				background-color: gray;
+				border-radius: 6px 6px 6px 6px;
+				overflow: hidden;
 
-					a {
-						color: black;
-						text-decoration: none;
+				.label {
+					font-size: 12px;
+					text-align: center;
+					margin-top: 2px;
+					margin-bottom: 2px;
+					color: #3e3e3e;
+				}
+				#flows_names {
+					width: auto;
+					font-size: 16px;
+					
+					display: flex;
+					flex-direction: row;
+					column-gap: 6px;
+
+					.flow_name {
+						background-color: lightgray;
+
+						padding-left: 7px;
+						padding-right: 7px;
+						padding-top: 3px;
+						padding-bottom: 4px;
+
+						border-radius: 6px 6px 6px 6px;
+
+						cursor: pointer;
+
+						a {
+							color: black;
+							text-decoration: none;
+						}
+
+						&:hover {
+							background-color: white;
+						}
+						&:active {
+							background-color: #c0c0c0;
+						}
 					}
 				}
 			}
 
 			#image_view_link {
 				font-size: 12px;
-				background-color: gray;
+				background-color: #a6a6a6;
 				padding-bottom: 3px;
-				padding-right: 4px;
-				padding-left: 3px;
+				padding-right: 6px;
+				padding-left: 6px;
 				padding-top: 2px;
 				
-				border-radius: 0px 6px 6px 0px;
+				border-radius: 6px 6px 6px 6px;
+
+				cursor: pointer;
 
 				a {
 					color: inherit;

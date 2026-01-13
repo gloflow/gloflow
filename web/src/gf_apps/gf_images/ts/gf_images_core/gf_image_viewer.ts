@@ -34,7 +34,7 @@ export function init(p_image_element :HTMLElement,
 	p_host_str			   :string,
 	p_plugin_callbacks_map :any,
 	p_log_fun              :Function) {
-	
+
 	const app_name_str = "gf_solo"
 
 	$(p_image_element).find("img").click(()=>{
@@ -45,16 +45,21 @@ export function init(p_image_element :HTMLElement,
 			<div id="image_viewer" class="gf_center">
 				<div id="background"></div>
 				<div id="main">
+					
 					<div id="image_container">
 						<img src="${p_img_thumb_large_url_str}"></img>
 						<div id="tags">
 						
 						</div>
 					</div>
+
 					<div id="image_details">
 						
-						<div id="flows_names" class="gf_center">
-							
+						<div id="flows">
+							<div class="label">flows</div>
+							<div id="flows_names">
+								
+							</div>
 						</div>
 						
 						<div id="image_view_link" class="gf_center">
