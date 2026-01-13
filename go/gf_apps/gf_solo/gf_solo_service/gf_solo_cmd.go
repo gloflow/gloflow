@@ -83,6 +83,10 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 					panic(err)
 				}
 
+				if gf_core.LogsIsDebugEnabled() {
+					runtimeSys.DebugBool = true
+				}
+
 				resolvedRuntimeSys = runtimeSys
 				resolvedConfig     = config
 			} else {

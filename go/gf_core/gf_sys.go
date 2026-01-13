@@ -40,7 +40,7 @@ type RuntimeSys struct {
 	AppNameStr	   string
 	ServiceNameStr string
 	EnvStr         string
-	Debug_bool     bool // if debug mode is enabled (some places will print extra info in debug mode)
+	DebugBool      bool // if debug mode is enabled (some places will print extra info in debug mode)
 	LogFun         func(string, string)
 	LogNewFun      GFlogFun
 
@@ -96,10 +96,10 @@ type ExternalPlugins struct {
 	// IDENTITY
 
 	// for custom validation of general sessions
-	IdentitySessionValidateCallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) (bool, GF_ID, GF_ID, *GFerror)
+	IdentitySessionValidateCallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) (bool, *GF_ID, *GF_ID, *GFerror)
 	
 	// for custom validation of API keys
-	IdentitySessionValidateApiKeyCallback func(string, *http.Request, context.Context, *RuntimeSys) (bool, GF_ID, *GFerror)
+	IdentitySessionValidateApiKeyCallback func(string, *http.Request, context.Context, *RuntimeSys) (bool, *GF_ID, *GFerror)
 	
 	//---------------------------
 	// IMAGES
