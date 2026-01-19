@@ -226,16 +226,21 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 					nil, pResp, pRuntimeSys)
 			}
 			return nil
+
+		// SESSION_VALID
+		} else {
+
+			//-----------------------
+			// AUTH_CONTEXT - attach user_id and session_id to a handler context
+			ctxUserID := context.WithValue(ctx, "gf_user_id", *userID)
+			ctxAuth   := context.WithValue(ctxUserID, "gf_session_id", string(*sessionID))
+
+			//-----------------------
+
+			return &ctxAuth
 		}
 
-		//-----------------------
-		// AUTH_CONTEXT - attach user_id and session_id to a handler context
-		ctxUserID := context.WithValue(ctx, "gf_user_id", *userID)
-		ctxAuth   := context.WithValue(ctxUserID, "gf_session_id", string(*sessionID))
-
-		//-----------------------
-
-		return &ctxAuth
+		return &ctx
 	}
 
 	//-------------------------------------------------

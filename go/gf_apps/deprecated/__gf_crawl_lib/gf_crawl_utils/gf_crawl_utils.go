@@ -73,7 +73,7 @@ func Get__html_doc_over_http(pURLstr string,
 	doc, err := goquery.NewDocumentFromResponse(HTTPfetch.Resp)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to parse a fetched HTML page from a crawled url",
-			"html_parse_error",
+			"html_parse",
 			map[string]interface{}{"url_str": pURLstr,},
 			err, "gf_crawl_utils", pRuntimeSys)
 		return nil, gfErr

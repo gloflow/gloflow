@@ -208,7 +208,13 @@ func errorGetDefs() map[string]ErrorDef {
 		"http_cookie": ErrorDef{
 			DescrStr:"failed to handle a http cookie",
 		},
-		"html_parse_error": ErrorDef{
+		"http_wrong_method": ErrorDef{
+			DescrStr: "HTTP request method is not allowed for the given endpoint",
+		},
+
+		//---------------
+		// HTML
+		"html_parse": ErrorDef{
 			DescrStr: "parsing of a HTML document failed",
 		},
 		

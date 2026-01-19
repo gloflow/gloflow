@@ -16,7 +16,7 @@ setup(
     author=",".join(authors_lst),
     author_email="glofloworg@gmail.com",
     description="""
-Py package for interacting with the gloflow platform API's.
+Py package for the open-source GloFlow project
 """,
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
