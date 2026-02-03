@@ -38,6 +38,7 @@ RUN pip3 install \
     sentry-sdk \
     icecream \
     click \
+    typer \
     docker
 
 # RUST_DEPENDENCIES
