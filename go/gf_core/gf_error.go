@@ -25,6 +25,7 @@ SOFTWARE.
 package gf_core
 
 import (
+	"os"
 	"fmt"
 	"time"
 	"strings"
@@ -42,7 +43,7 @@ import (
 
 type GFerror struct {
 	Id                   bson.ObjectId          `bson:"_id,omitempty"`
-	Id_str               string                 `bson:"id_str"` 
+	Id_str               string                 `bson:"id_str"`
 	T_str                string                 `bson:"t"`                    // "gf_error"
 	Creation_unix_time_f float64                `bson:"creation_unix_time_f"`
 	Type_str             string                 `bson:"type_str"`
@@ -79,7 +80,7 @@ func PanicCheckAndHandle(pUserMsgStr string,
 		//--------------------
 		// SENTRY
 		if pRuntimeSys.ErrorsSendToSentryBool {
-			
+
 			/*sentry.ConfigureScope(func(scope *sentry.Scope) {
 				scope.SetExtra("gf_error.service_name",   gf_error.ServiceNameStr)
 				scope.SetExtra("gf_error.subsystem_name", gf_error.Subsystem_name_str)
@@ -146,9 +147,9 @@ func ErrorCreateWithStackSkip(pUserMsgStr string,
 	pSubsystemNameStr      string,
 	pSkipStackFramesNumInt int,
 	pRuntimeSys            *RuntimeSys) *GFerror {
-	
+
 	error_defs_map := errorGetDefs()
-	
+
 	gf_err := ErrorCreateWithDefs(pUserMsgStr,
 		pErrorTypeStr,
 		pErrorDataMap,
@@ -171,7 +172,7 @@ func ErrorCreate(pUserMsgStr string,
 	pRuntimeSys       *RuntimeSys) *GFerror {
 
 	error_defs_map := errorGetDefs()
-	
+
 	gf_err := ErrorCreateWithDefs(pUserMsgStr,
 		pErrorTypeStr,
 		pErrorDataMap,
@@ -180,7 +181,7 @@ func ErrorCreate(pUserMsgStr string,
 		error_defs_map,
 
 		// IMPORTANT!! - ErrorCreateWithDefs() is 2 stack levels away from the caller
-		//               of ErrorCreate() so its important to account for that to get 
+		//               of ErrorCreate() so its important to account for that to get
 		//               the proper caller information.
 		2, // pSkipStackFramesNumInt
 		pRuntimeSys)
@@ -197,20 +198,20 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 	pSubsystemNameStr string,
 	pErrDefsMap       map[string]ErrorDef,
 
-	// IMPORTANT!! - number of stack frames to skip before recording. without skipping 
+	// IMPORTANT!! - number of stack frames to skip before recording. without skipping
 	//               we would get info on this function, not its caller which is where
 	//               the error occured.
 	pSkipStackFramesNumInt int,
 
 	pRuntimeSys *RuntimeSys) *GFerror {
 
-	
+
 
 	creationUNIXtimeF := float64(time.Now().UnixNano()) / 1000000000.0
 	idStr             := fmt.Sprintf("%s:%f", pErrorTypeStr, creationUNIXtimeF)
 	stackTraceStr     := string(debug.Stack())
 
-	// // IMPORTANT!! - number of stack frames to skip before recording. without skipping 
+	// // IMPORTANT!! - number of stack frames to skip before recording. without skipping
 	// //               we would get info on this function, not its caller which is where
 	// //               the error occured.
 	// skip_stack_frames_num_int := 1
@@ -283,7 +284,7 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 	//--------------------
 	// DB_PERSIST
 	if pRuntimeSys.ErrorsSendToMongodbBool {
-		
+
 		ctx := context.Background()
 		errsDBcollNameStr := fmt.Sprintf("%s_errors", namesPrefixStr)
 
@@ -292,11 +293,11 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 
 		}
 	}
-	
+
 	//--------------------
 	// SENTRY
 	if pRuntimeSys.ErrorsSendToSentryBool {
-		
+
 		/*
 		sentry.ConfigureScope(func(scope *sentry.Scope) {
 			scope.SetExtra("gf_error.service_name",   gf_error.ServiceNameStr)
@@ -331,7 +332,7 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 			} else {
 
 				// IMPORTANT!! - in case the GF_error doesnt have a correspoting
-				//               golang error. this is for GF error conditions that are 
+				//               golang error. this is for GF error conditions that are
 				//               not caused by a golang error.
 				err := errors.New(fmt.Sprintf("%s error - %s", strings.ToUpper(namesPrefixStr), gfErr.Type_str))
 				sentry.CaptureException(err)
@@ -341,7 +342,7 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 		// FLUSH
 		defer sentry.Flush(2 * time.Second)
 	}
-	
+
 	//--------------------
 	// METRICS - prometheus metrics
 	if pRuntimeSys.Metrics != nil {
@@ -355,14 +356,13 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 
 //-------------------------------------------------
 
-func ErrorInitSentry(pSentryEndpointStr string,
+func ErrorInitSentry(pSentryDSNstr string,
 	pTransactionsTracingRateMap map[string]float64,
 	pSampleRateDefaultF         float64) error {
 
 	fmt.Println("INIT SENTRY")
 
-	err := sentry.Init(sentry.ClientOptions{
-		Dsn: pSentryEndpointStr,
+	sentryOptions := sentry.ClientOptions{
 
 		// Enable printing of SDK debug messages.
 		// Useful when getting started or trying to figure something out.
@@ -373,7 +373,7 @@ func ErrorInitSentry(pSentryEndpointStr string,
 
 		EnableTracing: true,
 		TracesSampler: sentry.TracesSampler(func(pSamplingCtx sentry.SamplingContext) float64 {
-			
+
 			transactionNameStr := pSamplingCtx.Span.Name
 			if sampleRateF, ok := pTransactionsTracingRateMap[transactionNameStr]; ok {
 				return sampleRateF
@@ -385,11 +385,31 @@ func ErrorInitSentry(pSentryEndpointStr string,
 		// TracesSampleRate: pSampleRateDefaultF, // 1.0,
 
 		//--------------------
-	})
+	}
+
+	//--------------------
+	// DSN
+	if pSentryDSNstr == "" {
+		fmt.Println("Sentry DSN not passed in via config, using SENTRY_DSN ENV var...")
+		sentryDSNstr := os.Getenv("SENTRY_DSN")
+		sentryOptions.Dsn = sentryDSNstr
+
+		fmt.Println(sentryDSNstr)
+
+	} else {
+		fmt.Println("Sentry DSN passed in...")
+		fmt.Println(pSentryDSNstr)
+
+		sentryOptions.Dsn = pSentryDSNstr
+	}
+
+	//--------------------
+
+	err := sentry.Init(sentryOptions)
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 

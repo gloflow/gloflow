@@ -32,7 +32,7 @@ import (
 
 //-------------------------------------------------------------
 
-type GFmixpanelInfo struct {
+type GFsecrets struct {
 	UsernameStr  string
 	SecretStr    string
 	ProjectIDstr string
@@ -41,25 +41,25 @@ type GFmixpanelInfo struct {
 
 //-------------------------------------------------------------
 
-func Init(pInfo *GFmixpanelInfo) *mixpanel.ApiClient {
-	mp := mixpanel.NewApiClient(pInfo.ProjectTokenStr)
+func Init(pSecrets *GFsecrets) *mixpanel.ApiClient {
+	mp := mixpanel.NewApiClient(pSecrets.ProjectTokenStr)
 	return mp
 }
 
 func EventSend(pEventTypeStr string,
 	pEventMetaMap map[string]interface{},
-	
+
 	pMixpanelClient *mixpanel.ApiClient,
 	pUserID         gf_core.GF_ID,
 	pCtx            context.Context,
 	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	
+
 
 	err := pMixpanelClient.Track(pCtx, []*mixpanel.Event{
 		pMixpanelClient.NewEvent(pEventTypeStr, string(pUserID), pEventMetaMap),
 	})
-	
+
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to send event to mixpanel",
 			"library_error",
@@ -110,7 +110,7 @@ func EventSendHTTP(pEventTypeStr string,
 
 
 	if len(errs) > 0 {
-		
+
 		// log all errors
 		errorMessages := make([]string, len(errs))
 		for i, err := range errs {

@@ -28,7 +28,7 @@ import (
 	"net/http"
 	"github.com/getsentry/sentry-go"
 	"github.com/fatih/color"
-	"github.com/gloflow/gloflow/go/gf_core"
+	gf_core "github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_identity"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
@@ -49,7 +49,7 @@ import (
 
 //-------------------------------------------------
 
-func Run(pConfig *GFconfig,
+func Run(pConfig *gf_core.GFconfig,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	yellow := color.New(color.BgYellow).Add(color.FgBlack).SprintFunc()
@@ -267,7 +267,7 @@ func Run(pConfig *GFconfig,
 		gfImagesServiceInfo,
 		imagesConfig,
 		pRuntimeSys)
-	
+
 	//-------------
 	// GF_ANALYTICS
 
@@ -389,21 +389,49 @@ func Run(pConfig *GFconfig,
 //-------------------------------------------------
 
 func RuntimeGet(pConfigPathStr string,
+	pBootPlugins     *gf_core.ExternalBootPlugins,
 	pExternalPlugins *gf_core.ExternalPlugins,
 	pLogFun          func(string, string),
-	pLogNewFun       gf_core.GFlogFun) (*gf_core.RuntimeSys, *GFconfig, error) {
+	pLogNewFun       gf_core.GFlogFun) (*gf_core.RuntimeSys, *gf_core.GFconfig, error) {
+
+	//--------------------
+	// RUNTIME_SYS
+	runtimeSys := &gf_core.RuntimeSys{
+		AppNameStr:     "gf_solo",
+		ServiceNameStr: "gf_solo",
+		LogFun:         pLogFun,
+		LogNewFun:      pLogNewFun,
+
+		// EXTERNAL_PLUGINS
+		ExternalPlugins: pExternalPlugins,
+	}
 
 	//--------------------
 	// CONFIG
 	configDirPathStr := path.Dir(pConfigPathStr)  // "./../config/"
 	configNameStr    := path.Base(pConfigPathStr) // "gf_solo"
 
-	config, err := ConfigInit(configDirPathStr, configNameStr)
+	// PLUGIN
+	var pluginConfigLoadCallbackFun gf_core.GFpluginConfigLoadCallback
+	if pBootPlugins != nil {
+		pluginConfigLoadCallbackFun = pBootPlugins.ConfigLoadCallback
+	}
+
+	config, err := ConfigInit(configDirPathStr,
+		configNameStr,
+		pluginConfigLoadCallbackFun,
+		runtimeSys)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("failed to load config")
 		return nil, nil, err
 	}
+
+	runtimeSys.EnvStr = config.EnvStr
+
+	//--------------------
+	// GF_IDENTITY
+	runtimeSys.IdentitySubsystemTypeStr = config.AuthSubsystemTypeStr
 
 	//--------------------
 	// SENTRY - ERROR_REPORTING
@@ -412,6 +440,9 @@ func RuntimeGet(pConfigPathStr string,
 		fmt.Println("Initializing Sentry error reporting...")
 
 		sentryEndpointStr := config.SentryEndpointStr
+		runtimeSys.SentryDSNstr = sentryEndpointStr
+		runtimeSys.ErrorsSendToMongodbBool = true // enable it for error reporting
+
 		sentrySampleRateDefaultF := 1.0
 		sentryTracingRateForHandlersMap := map[string]float64{
 
@@ -424,28 +455,6 @@ func RuntimeGet(pConfigPathStr string,
 		}
 
 		defer sentry.Flush(2 * time.Second)
-	}
-
-	//--------------------
-	// RUNTIME_SYS
-	runtimeSys := &gf_core.RuntimeSys{
-		AppNameStr:     "gf_solo",
-		ServiceNameStr: "gf_solo",
-		EnvStr:         config.EnvStr,
-		LogFun:         pLogFun,
-		LogNewFun:      pLogNewFun,
-
-		// SENTRY - enable it for error reporting
-		ErrorsSendToSentryBool: true,
-
-		// EXTERNAL_PLUGINS
-		ExternalPlugins: pExternalPlugins,
-
-		// SENTRY_DSN
-		SentryDSNstr: config.SentryEndpointStr,
-
-		// IDENTITY
-		IdentitySubsystemTypeStr: config.AuthSubsystemTypeStr,
 	}
 
 	//--------------------

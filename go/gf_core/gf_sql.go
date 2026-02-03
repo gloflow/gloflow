@@ -26,10 +26,61 @@ package gf_core
 
 import (
 	"fmt"
+	"net/url"
 	"time"
 	"database/sql"
 	_ "github.com/lib/pq"
 )
+
+//-------------------------------------------------
+
+func validatePostgresURL(pURLstr string) (bool, string) {
+	parsedURL, err := url.Parse(pURLstr)
+	if err != nil {
+		return false, fmt.Sprintf("invalid URL format: %s", err.Error())
+	}
+
+	// Check scheme
+	if parsedURL.Scheme != "postgres" && parsedURL.Scheme != "postgresql" {
+		return false, fmt.Sprintf("invalid scheme: expected 'postgres' or 'postgresql', got '%s'", parsedURL.Scheme)
+	}
+
+	// Check username
+	if parsedURL.User == nil || parsedURL.User.Username() == "" {
+		return false, "missing username"
+	}
+
+	// Check password
+	if _, hasPassword := parsedURL.User.Password(); !hasPassword {
+		return false, "missing password"
+	}
+
+	// Check host
+	if parsedURL.Host == "" {
+		return false, "missing host"
+	}
+
+	// Check database name (path without leading slash)
+	dbName := parsedURL.Path
+	if dbName == "" || dbName == "/" {
+		return false, "missing database name"
+	}
+
+	// Check sslmode parameter
+	sslMode := parsedURL.Query().Get("sslmode")
+	if sslMode == "" {
+		return false, "missing sslmode parameter"
+	}
+
+	validSSLModes := map[string]bool{
+		"disable": true, "require": true, "verify-ca": true, "verify-full": true,
+	}
+	if !validSSLModes[sslMode] {
+		return false, fmt.Sprintf("invalid sslmode: %s", sslMode)
+	}
+
+	return true, ""
+}
 
 //-------------------------------------------------
 
@@ -59,6 +110,19 @@ func DBsqlConnect(pDBnameStr string,
 		pDBhostStr,
 		pDBnameStr,
 		pSSLmodeStr)
+
+	// Validate the DSN URL
+	if valid, reasonStr := validatePostgresURL(dbDSNuriStr); !valid {
+		gfErr := ErrorCreate(fmt.Sprintf("invalid Postgres DSN: %s", reasonStr),
+			"generic_error",
+			map[string]interface{}{
+				"db_host_str": pDBhostStr,
+				"db_name_str": pDBnameStr,
+				"reason_str":  reasonStr,
+			},
+			nil, "gf_core", pRuntimeSys)
+		return nil, "", gfErr
+	}
 
 	//-----------------------
 	// CONNECT

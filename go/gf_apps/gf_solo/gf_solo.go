@@ -32,7 +32,7 @@ func main() {
 
 	}
 
-	cmdBase := gf_solo_service.CmdsInit(externalPlugins, nil, nil)
+	cmdBase := gf_solo_service.CmdsInit(nil, externalPlugins, nil, nil)
 	err := cmdBase.Execute()
 	if err != nil {
 		panic(err)

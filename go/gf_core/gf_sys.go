@@ -36,7 +36,7 @@ import (
 // RUNTIME_SYS
 
 type RuntimeSys struct {
-	
+
 	AppNameStr	   string
 	ServiceNameStr string
 	EnvStr         string
@@ -49,7 +49,7 @@ type RuntimeSys struct {
 	SQLdsnStr  string
 	Mongo_db   *mongo.Database
 	Mongo_coll *mongo.Collection // main mongodb collection to use when none is specified
-	
+
 	// ERRORS
 	ErrorsSendToMongodbBool bool // if errors should be persisted to Mongodb
 	ErrorsSendToSentryBool  bool // if errors should be sent to Sentry service
@@ -59,7 +59,8 @@ type RuntimeSys struct {
 	Validator *validator.Validate
 
 	// PLUGINS
-	ExternalPlugins *ExternalPlugins
+	ExternalBootPlugins *ExternalBootPlugins
+	ExternalPlugins     *ExternalPlugins
 
 	Metrics *GFmetrics
 
@@ -81,6 +82,18 @@ type RuntimeSys struct {
 //-------------------------------------------------
 // PLUGINS
 
+type GFpluginConfigLoadCallback func(*GFconfig, *RuntimeSys) (*GFconfig, *GFerror)
+
+// special plugins that run at startup, and need a lot less infra setup to run
+type ExternalBootPlugins struct {
+	//---------------------------
+	// CONFIG
+
+	ConfigLoadCallback GFpluginConfigLoadCallback
+
+	//---------------------------
+}
+
 type ExternalPlugins struct {
 
 	//---------------------------
@@ -97,14 +110,14 @@ type ExternalPlugins struct {
 
 	// for custom validation of general sessions
 	IdentitySessionValidateCallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) (bool, *GF_ID, *GF_ID, *GFerror)
-	
+
 	// for custom validation of API keys
 	IdentitySessionValidateApiKeyCallback func(string, *http.Request, context.Context, *RuntimeSys) (bool, *GF_ID, *GFerror)
-	
+
 	//---------------------------
 	// IMAGES
 	ImageFilterMetadataCallback func(map[string]interface{}) map[string]interface{}
-	
+
 	//---------------------------
 	// EVENTS
 	EventCallback func(string, map[string]interface{}, string, GF_ID, *RuntimeSys) *GFerror
@@ -116,7 +129,7 @@ type ExternalPlugins struct {
 
 	//---------------------------
 	// EMAIL
-	
+
 	// called on every sending of email in the system
 	EmailSendingCallback func(string, string, string, string, *RuntimeSys) *GFerror
 

@@ -125,7 +125,7 @@ func errorGetDefs() map[string]ErrorDef {
 		"verify__sess_data_missing_in_req": ErrorDef{
 			DescrStr: "session data missing in http request",
 		},
-		
+
 		//---------------
 		// FILESYSTEM
 		"file_open_error": ErrorDef{
@@ -217,7 +217,7 @@ func errorGetDefs() map[string]ErrorDef {
 		"html_parse": ErrorDef{
 			DescrStr: "parsing of a HTML document failed",
 		},
-		
+
 		//---------------
 		"rpc_context_value_missing": ErrorDef{
 			DescrStr: "expected key is missing from a gf_rpc context",
@@ -237,7 +237,7 @@ func errorGetDefs() map[string]ErrorDef {
 		"udp_write_packge_to_socket_error": ErrorDef{
 			DescrStr: "failed to write package to UDP socket",
 		},
-		
+
 		//---------------
 		// IMAGES
 		"image_decoding_error": ErrorDef{
@@ -266,7 +266,7 @@ func errorGetDefs() map[string]ErrorDef {
 		},
 		"mongodb_ping_error": ErrorDef{
 			DescrStr: "failed to ping a mongodb host - package (go.mongodb.org/mongo-driver)",
-		},		
+		},
 		"mongodb_find_error": ErrorDef{
 			DescrStr:"c.Find() failed to find a mongodb document",
 		},
@@ -312,7 +312,7 @@ func errorGetDefs() map[string]ErrorDef {
 		"mongodb_get_collection_names_error": ErrorDef{
 			DescrStr:"failed to get all mongodb collection names",
 		},
-		
+
 		//---------------
 		// SQL
 		"sql_failed_to_connect": ErrorDef{
@@ -342,7 +342,7 @@ func errorGetDefs() map[string]ErrorDef {
 		"sql_generic_error": ErrorDef{
 			DescrStr:"generic SQL error",
 		},
-		
+
 		//---------------
 		// REDIS
 		"redis_cmd": ErrorDef{
@@ -372,7 +372,7 @@ func errorGetDefs() map[string]ErrorDef {
 		"template_render_error": ErrorDef{
 			DescrStr:"template.Execute() failed to render a template - package (text/template)",
 		},
-		
+
 		//---------------
 		// AWS
 		"aws_general_error": ErrorDef{
@@ -395,7 +395,7 @@ func errorGetDefs() map[string]ErrorDef {
 		"aws_ec2_autoscaling_describe_error": ErrorDef{
 			DescrStr: "failed to get info on a EC2 autoscaling group",
 		},
-		
+
 		// ECS
 		"aws_ecs_service_update_error": ErrorDef{
 			DescrStr: "failed to update an AWS ECS service",
@@ -408,7 +408,7 @@ func errorGetDefs() map[string]ErrorDef {
 		"aws_secretsmngr_get_secret_value_error": ErrorDef{
 			DescrStr: "failed to get secret value from AWS SECRETS_MANAGER service",
 		},
-		
+
 		// SQS
 		"aws_sqs_queue_create_error": ErrorDef{
 			DescrStr: "failed to create SQS queue",
@@ -476,6 +476,9 @@ func errorGetDefs() map[string]ErrorDef {
 		"crypto_jwt_parse_token_error": ErrorDef{
 			DescrStr: "JWT token failed to parse",
 		},
+		"jwks_parse_error": ErrorDef{
+			DescrStr: "failed to parse JWKS data",
+		},
 		"crypto_ec_recover_pubkey": ErrorDef{
 			DescrStr: "failed to recovery Pubkey fro signature",
 		},
@@ -488,6 +491,7 @@ func errorGetDefs() map[string]ErrorDef {
 		"crypto_signature_eth_last_byte_invalid_value": ErrorDef{
 			DescrStr: "last byte of an ethereum signature does not have the proper V value",
 		},
+
 
 		// PEM
 		"crypto_pem_decode": ErrorDef{
@@ -507,7 +511,7 @@ func errorGetDefs() map[string]ErrorDef {
 		"gf_lang_program_run_failed": ErrorDef{
 			DescrStr: "failed to execute a gf_lang program",
 		},
-		
+
 		//---------------
 	}
 	return errorDefsMap

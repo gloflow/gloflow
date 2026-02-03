@@ -23,83 +23,8 @@ import (
 	"fmt"
 	"strings"
 	"github.com/spf13/viper"
+	gf_core "github.com/gloflow/gloflow/go/gf_core"
 )
-
-//-------------------------------------------------------------
-
-type GFconfig struct {
-
-	// ENVIRONMENT
-	EnvStr string `mapstructure:"env"`
-
-	// DOMAINS - where this gf_solo instance is reachable on
-	DomainBaseStr      string `mapstructure:"domain_base"`
-	DomainAdminBaseStr string `mapstructure:"domain_admin_base"`
-
-	// PORTS
-	PortStr        string `mapstructure:"port"`
-	PortAdminStr   string `mapstructure:"port_admin"`
-	PortMetricsStr string `mapstructure:"port_metrics"`
-
-	// SQL
-	SQLuserNameStr string `mapstructure:"sql_user_name"`
-	SQLpassStr     string `mapstructure:"sql_pass"`
-	SQLhostStr     string `mapstructure:"sql_host"`
-	SQLdbNameStr   string `mapstructure:"sql_db_name"`
-
-	// MONGODB - this is the dedicated mongodb DB
-	MongoHostStr   string `mapstructure:"mongodb_host"`
-	MongoDBnameStr string `mapstructure:"mongodb_db_name"`
-
-	// SENTRY_ENDPOINT
-	SentryEndpointStr string `mapstructure:"sentry_endpoint"`
-
-	// TEMPLATES
-	TemplatesPathsMap map[string]string `mapstructure:"templates_paths"`
-
-	//--------------------
-	// IDENTITY
-	AuthSubsystemTypeStr       string `mapstructure:"auth_subsystem_type"`
-	AdminMFAsecretKeyBase32str string `mapstructure:"admin_mfa_secret_key_base32"`
-	AdminEmailStr              string `mapstructure:"admin_email"`
-
-	// DOMAIN_FOR_AUTH_COOKIES - domain/pattern that is set on the auth cookies to restrict their scope.
-	DomainForAuthCookiesStr string `mapstructure:"domain_for_auth_cookies"`
-
-	//--------------------
-	// GF_IMAGES
-	ImagesConfigFilePathStr string `mapstructure:"images__config_file_path"`
-
-	//--------------------
-	// GF_ANALYTICS
-
-	AnalyticsPyStatsDirsLst []string `mapstructure:"analytics__py_stats_dirs"`
-	AnalyticsRunIndexerBool bool     `mapstructure:"analytics__run_indexer"`
-
-	//--------------------
-	// ALCHEMY
-	AlchemyAPIkeyStr string `mapstructure:"alchemy_api_key"`
-
-	//--------------------
-	// NEW_STORAGE_ENGINE - flag indicating if the new image storage engine should be used
-	ImagesUseNewStorageEngineBool bool `mapstructure:"images_use_new_storage_engine"`
-
-	// IPFS
-	IPFSnodeHostStr string `mapstructure:"ipfs_node_host"`
-
-	//--------------------
-	// DEPRECATED!!
-
-	// ELASTICSEARCH
-	// ElasticsearchHostStr string `mapstructure:"elasticsearch_host"`
-
-	// CRAWLER
-	// CrawlConfigFilePathStr     string `mapstructure:"crawl__config_file_path"`
-	// CrawlClusterNodeTypeStr    string `mapstructure:"crawl__cluster_node_type"`
-	// CrawlImagesLocalDirPathStr string `mapstructure:"crawl__images_local_dir_path"`
-
-	//--------------------
-}
 
 //-------------------------------------------------------------
 // CONFIG_INIT
@@ -113,17 +38,19 @@ configs are loaded from:
 - via CLI args
 */
 func ConfigInit(pConfigDirPathStr string,
-	pConfigFileNameStr string) (*GFconfig, error) {
+	pConfigFileNameStr   string,
+	pConfigLoadPluginFun gf_core.GFpluginConfigLoadCallback,
+	pRuntimeSys          *gf_core.RuntimeSys) (*gf_core.GFconfig, error) {
 
 	configNameStr := strings.Split(pConfigFileNameStr, ".")[0] // viper expects just the file name, without extension
-	
+
 	// FILE
 	viper.AddConfigPath(pConfigDirPathStr)
 	viper.SetConfigName(configNameStr)
-	
+
 	//--------------------
 	// ENV_VARS
-	// all config members that have their mapstructure name for Viper config, 
+	// all config members that have their mapstructure name for Viper config,
 	// also have a corresponding ENV var name thats generated for them by
 	// upper-casing their name.
 	//--------------------
@@ -133,7 +60,7 @@ func ConfigInit(pConfigDirPathStr string,
 
 	// IMPORTANT!! - enable Viper parsing ENV vars.
 	viper.AutomaticEnv()
-	
+
 	//--------------------
 
 	//--------------------
@@ -141,7 +68,7 @@ func ConfigInit(pConfigDirPathStr string,
 	bindEnvVars()
 
 	//--------------------
-	
+
 	// LOAD
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -149,14 +76,31 @@ func ConfigInit(pConfigDirPathStr string,
 	}
 
 	// CONFIG
-	config := &GFconfig{}
+	config := &gf_core.GFconfig{}
 	err = viper.Unmarshal(config)
 	if err != nil {
 		return nil, err
 	}
 
+	// IMPORTANT!! - Environment is ciritical param for all subsequent potential config loading,
+	//               in pConfigLoadPluginFun, so setting it here right away.
+	//               when config is loaded, either via ENV vars or from config file, the Env value is found out.
+	pRuntimeSys.EnvStr = config.EnvStr
+
+	// PLUGIN - allows users to specify a custom function to load additional configs
+	//          external to GF core
+	if pConfigLoadPluginFun != nil {
+		newConfig, gfErr := pConfigLoadPluginFun(config, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr.Error
+		}
+		return newConfig, nil
+	}
+
 	return config, nil
 }
+
+//-------------------------------------------------------------
 
 func bindEnvVars() {
 

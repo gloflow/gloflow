@@ -25,7 +25,72 @@ import (
 	"github.com/spf13/viper"
 )
 
-//-------------------------------------------------
+//-------------------------------------------------------------
+
+type GFconfig struct {
+
+	// ENVIRONMENT
+	EnvStr string `mapstructure:"env"`
+
+	// DOMAINS - where this gf_solo instance is reachable on
+	DomainBaseStr      string `mapstructure:"domain_base"`
+	DomainAdminBaseStr string `mapstructure:"domain_admin_base"`
+
+	// PORTS
+	PortStr        string `mapstructure:"port"`
+	PortAdminStr   string `mapstructure:"port_admin"`
+	PortMetricsStr string `mapstructure:"port_metrics"`
+
+	// SQL
+	SQLuserNameStr string `mapstructure:"sql_user_name"`
+	SQLpassStr     string `mapstructure:"sql_pass"`
+	SQLhostStr     string `mapstructure:"sql_host"`
+	SQLdbNameStr   string `mapstructure:"sql_db_name"`
+
+	// MONGODB - this is the dedicated mongodb DB
+	MongoHostStr   string `mapstructure:"mongodb_host"`
+	MongoDBnameStr string `mapstructure:"mongodb_db_name"`
+
+	// SENTRY_ENDPOINT
+	SentryEndpointStr string `mapstructure:"sentry_endpoint"`
+
+	// TEMPLATES
+	TemplatesPathsMap map[string]string `mapstructure:"templates_paths"`
+
+	//--------------------
+	// IDENTITY
+	AuthSubsystemTypeStr       string `mapstructure:"auth_subsystem_type"`
+	AdminMFAsecretKeyBase32str string `mapstructure:"admin_mfa_secret_key_base32"`
+	AdminEmailStr              string `mapstructure:"admin_email"`
+
+	// DOMAIN_FOR_AUTH_COOKIES - domain/pattern that is set on the auth cookies to restrict their scope.
+	DomainForAuthCookiesStr string `mapstructure:"domain_for_auth_cookies"`
+
+	//--------------------
+	// GF_IMAGES
+	ImagesConfigFilePathStr string `mapstructure:"images__config_file_path"`
+
+	//--------------------
+	// GF_ANALYTICS
+
+	AnalyticsPyStatsDirsLst []string `mapstructure:"analytics__py_stats_dirs"`
+	AnalyticsRunIndexerBool bool     `mapstructure:"analytics__run_indexer"`
+
+	//--------------------
+	// ALCHEMY
+	AlchemyAPIkeyStr string `mapstructure:"alchemy_api_key"`
+
+	//--------------------
+	// NEW_STORAGE_ENGINE - flag indicating if the new image storage engine should be used
+	ImagesUseNewStorageEngineBool bool `mapstructure:"images_use_new_storage_engine"`
+
+	// IPFS
+	IPFSnodeHostStr string `mapstructure:"ipfs_node_host"`
+
+	//--------------------
+}
+
+//-------------------------------------------------------------
 // reads config argument either from the CLI or from a config (file or ENV vars)
 
 func ConfigGetArg(pArgNameStr string, pCmd *cobra.Command) string {

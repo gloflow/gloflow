@@ -25,13 +25,14 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/gloflow/gloflow/go/gf_core"
+	gf_core "github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
 
-func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
-	pConfig           *GFconfig,
+func CmdsInit(pExternalBootPlugins *gf_core.ExternalBootPlugins,
+	pExternalPlugins *gf_core.ExternalPlugins,
+	pConfig           *gf_core.GFconfig,
 	pExternRuntimeSys *gf_core.RuntimeSys) *cobra.Command {
 
 	var cliConfigPathStr string
@@ -72,10 +73,11 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 			// external users can supply their own RuntimeSys which can be used.
 			// if not supplied, we create a new one here.
 			var resolvedRuntimeSys *gf_core.RuntimeSys
-			var resolvedConfig     *GFconfig
+			var resolvedConfig     *gf_core.GFconfig
 
 			if pExternRuntimeSys == nil {
 				runtimeSys, config, err := RuntimeGet(cliConfigPathStr,
+					pExternalBootPlugins,
 					pExternalPlugins,
 					logFun,
 					logNewFun)
@@ -95,7 +97,7 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 			}
 
 			// RUN_SERVICE
-			Run(resolvedConfig, resolvedRuntimeSys)			
+			Run(resolvedConfig, resolvedRuntimeSys)
 		},
 	}
 
@@ -124,7 +126,7 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 	}
 
 	//--------------------
-	
+
 	cmdBase.AddCommand(cmdStart)
 	cmdStart.AddCommand(cmdStartService)
 
@@ -148,7 +150,7 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 		fmt.Println("failed to bind CLI arg to Viper config")
 		panic(err)
 	}
-	
+
 	/*
 	// ENV
 	err = viper.BindEnv("env", "GF_ENV")
@@ -169,7 +171,7 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 		fmt.Println("failed to bind CLI arg to Viper config")
 		panic(err)
 	}
-	
+
 	/*
 	// ENV
 	err = viper.BindEnv("port", "GF_PORT")
@@ -184,13 +186,13 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 	portAdminDefaultStr := "1901"
 	cmdBase.PersistentFlags().StringP("port_admin", "a", portAdminDefaultStr,
 		"port on which to listen for HTTP admin traffic")
-	
+
 	err = viper.BindPFlag("port_admin", cmdBase.PersistentFlags().Lookup("port_admin"))
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
 		panic(err)
 	}
-	
+
 	/*
 	// ENV
 	err = viper.BindEnv("port", "GF_PORT_ADMIN")
@@ -209,7 +211,7 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 		fmt.Println("failed to bind CLI arg to Viper config")
 		panic(err)
 	}
-	
+
 	/*
 	// ENV
 	err = viper.BindEnv("port_metrics", "GF_PORT_METRICS")
@@ -309,8 +311,8 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 	*/
 
 	//--------------------
-	
-	
+
+
 
 	//--------------------
 	// CLI_ARGUMENT - AUTH_SUBSYSTEM_TYPE
@@ -413,4 +415,3 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 
 	return cmdBase
 }
-
