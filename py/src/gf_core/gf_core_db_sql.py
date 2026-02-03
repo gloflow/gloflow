@@ -105,21 +105,20 @@ def get_meta_from_env(p_db_env_str,
 	return db_user_str, db_pass_str, db_host_str, db_port_str
 
 #---------------------------------------------------------------------------------
-def get_meta_from_secrets(p_db_env_str,
-	p_prefix_str="gf_rds"):
+def get_meta_from_secrets(p_db_env_str):
 
 	print("getting db meta from aws secrets_manager...")
 
 	secrets_client = boto3.client('secretsmanager',
 		region_name="us-east-1")
 
-	db_host_port_str = secrets_client.get_secret_value(SecretId=f"{p_prefix_str}_host_{p_db_env_str}")["SecretString"]
-	db_creds_str     = secrets_client.get_secret_value(SecretId=f"{p_prefix_str}_creds_{p_db_env_str}")["SecretString"]
+	db_secret_str = secrets_client.get_secret_value(SecretId=f"gf_rds_{p_db_env_str}")["SecretString"]
 	print("db RDS creds fetched from aws secrets_manager...")
 
-	db_creds_map = json.loads(db_creds_str)
+	db_creds_map = json.loads(db_secret_str)
 	db_user_str = db_creds_map["username"]
 	db_pass_str = db_creds_map["password"]
+	db_host_port_str = db_creds_map["host"]
 
 	db_host_str, db_port_str = db_host_port_str.split(":")
 
