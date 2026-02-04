@@ -37,6 +37,7 @@ func renderBookmarks(pBookmarksLst []*GFbookmark,
 	type tmpl_data struct {
 		Bookmarks_lst    []*GFbookmark
 		Sys_release_info gf_core.SysReleaseInfo
+		EnvStr           string
 		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 	
@@ -46,6 +47,7 @@ func renderBookmarks(pBookmarksLst []*GFbookmark,
 		tmpl_data{
 			Bookmarks_lst:    pBookmarksLst,
 			Sys_release_info: sys_release_info,
+			EnvStr:           pRuntimeSys.EnvStr,
 			//-------------------------------------------------
 			// IS_SUBTEMPLATE_DEFINED
 			Is_subtmpl_def: func(pSubtemplateNameStr string) bool {

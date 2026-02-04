@@ -44,18 +44,18 @@ func renderTemplate(// pFeaturedPostsLst []*GFfeaturedPost,
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 	
 	type tmplData struct {
-		// FeaturedPostsLst   []*GFfeaturedPost
 		FeaturedImages0lst []*GFfeaturedImage
 		FeaturedImages1lst []*GFfeaturedImage
+		EnvStr             string
 		SysReleaseInfo     gf_core.SysReleaseInfo
 		IsSubtmplDef       func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
 	buff := new(bytes.Buffer)
 	err := pTemplate.Execute(buff, tmplData{
-		// FeaturedPostsLst:   pFeaturedPostsLst,
 		FeaturedImages0lst: pFeaturedImages0lst,
 		FeaturedImages1lst: pFeaturedImages1lst,
+		EnvStr:             pRuntimeSys.EnvStr,
 		SysReleaseInfo:     sysReleaseInfo,
 		
 		//-------------------------------------------------

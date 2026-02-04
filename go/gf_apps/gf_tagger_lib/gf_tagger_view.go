@@ -100,6 +100,7 @@ func renderObjectsWithTag(pTagStr string,
 		ImagesWithTagCountInt int64
 		ImagesWithTagLst      []map[string]interface{}
 		Sys_release_info      gf_core.SysReleaseInfo
+		EnvStr                string
 		Is_subtmpl_def        func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
@@ -117,6 +118,7 @@ func renderObjectsWithTag(pTagStr string,
 			ImagesWithTagCountInt: imagesWithTagCountInt,
 			ImagesWithTagLst:      allPagesImagesWithTagLst,
 			Sys_release_info:      sysReleaseInfo,
+			EnvStr:                pRuntimeSys.EnvStr,
 			
 			//-------------------------------------------------
 			// IS_SUBTEMPLATE_DEFINED

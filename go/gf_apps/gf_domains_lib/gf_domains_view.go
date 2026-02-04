@@ -38,12 +38,14 @@ func domainsBrowserRenderTemplate(pDomainsLst []GFdomain,
 	type tmpl_data struct {
 		Domains_lst      []GFdomain
 		Sys_release_info gf_core.SysReleaseInfo
+		EnvStr           string
 		Is_subtmpl_def   func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 
 	err := pTmpl.Execute(pResp, tmpl_data{
 		Domains_lst:      pDomainsLst,
 		Sys_release_info: sysReleaseInfo,
+		EnvStr:           pRuntimeSys.EnvStr,
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
 		Is_subtmpl_def: func(pSubtemplateNameStr string) bool {

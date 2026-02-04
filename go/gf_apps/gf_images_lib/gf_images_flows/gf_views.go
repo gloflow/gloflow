@@ -213,6 +213,7 @@ func renderTemplate(pFlowNameStr string,
 		Images_pages_lst   [][]map[string]interface{}
 		Flow_pages_num_int int64
 		Sys_release_info   gf_core.SysReleaseInfo
+		EnvStr             string
 		Is_subtmpl_def     func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 
@@ -222,6 +223,7 @@ func renderTemplate(pFlowNameStr string,
 		Images_pages_lst:   imagesPagesLst,
 		Flow_pages_num_int: pFlowPagesNumInt,
 		Sys_release_info:   sysReleaseInfo,
+		EnvStr:             pRuntimeSys.EnvStr,
 
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED

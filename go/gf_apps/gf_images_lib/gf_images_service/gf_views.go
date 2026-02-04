@@ -67,6 +67,7 @@ func renderImageViewPage(pImageID gf_images_core.GFimageID,
 		TagsLst               []string
 		MetaJSONstr           string
 		SysReleaseInfo        gf_core.SysReleaseInfo
+		EnvStr                string
 		IsSubtmplDef          func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 
@@ -81,6 +82,7 @@ func renderImageViewPage(pImageID gf_images_core.GFimageID,
 		TagsLst:               image.TagsLst,
 		MetaJSONstr:           filteredMetaJSONstr,
 		SysReleaseInfo:        sysReleaseInfo,
+		EnvStr:                pRuntimeSys.EnvStr,
 
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED

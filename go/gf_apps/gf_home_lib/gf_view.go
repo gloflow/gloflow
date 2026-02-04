@@ -35,12 +35,14 @@ func viewRenderTemplateDashboard(pTemplate *template.Template,
 	
 	type tmplData struct {
 		Sys_release_info gf_core.SysReleaseInfo
+		EnvStr           string
 		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
 	buff := new(bytes.Buffer)
 	err := pTemplate.Execute(buff, tmplData{
 		Sys_release_info: sysReleaseInfo,
+		EnvStr:           pRuntimeSys.EnvStr,
 		
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
