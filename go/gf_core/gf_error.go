@@ -226,9 +226,10 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 	//--------------------
 	// ERROR_DEF
 
+	errorInternalDescrStr := ""
 	errorDef, ok := pErrDefsMap[pErrorTypeStr]
-	if !ok {
-		panic(fmt.Sprintf("unknown gf_error type encountered - %s", pErrorTypeStr))
+	if ok {
+		errorInternalDescrStr = errorDef.DescrStr
 	}
 
 	//--------------------
@@ -240,7 +241,7 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 		Type_str:             pErrorTypeStr,
 		User_msg_str:         pUserMsgStr,
 		Data_map:             pErrorDataMap,
-		Descr_str:            errorDef.DescrStr,
+		Descr_str:            errorInternalDescrStr,
 		Error:                pError,
 		ServiceNameStr:       pRuntimeSys.ServiceNameStr,
 		Subsystem_name_str:   pSubsystemNameStr,
