@@ -36,6 +36,12 @@ import (
 )
 
 //---------------------------------------------------
+const (
+	AUTH_REQUIRED = "required"
+	AUTH_OPTIONAL = "optional"
+	AUTH_NONE	  = "none"
+)
+
 type HTTPfetch = GF_http_fetch
 type GF_http_fetch = Gf_http_fetch
 
@@ -53,6 +59,15 @@ type HTTPhandlerInfo struct {
 	AuthBool   bool
 	PathStr    string
 	HandlerFun HTTPhandler
+}
+
+type HTTPhandlerV2 func(context.Context, http.ResponseWriter, *http.Request) (map[string]interface{}, *GFerror)
+type HTTPhandlerV2info struct {
+	NameStr    string   // optional name for the handler (used for metrics naming)
+	AuthStr    string   // AUTH_REQUIRED, AUTH_OPTIONAL, AUTH_NONE
+	PathStr    string
+	DomainsLst []string // if nil, handler will be registered for the main domain only
+	HandlerFun HTTPhandlerV2
 }
 
 //---------------------------------------------------
@@ -151,7 +166,7 @@ func HTTPsetCookieOnResp(pCookieNameStr string,
 
 	ttl    := time.Duration(pTTLhoursInt) * time.Hour
 	expire := time.Now().Add(ttl)
-	
+
 	cookie := http.Cookie{
 		Name:  pCookieNameStr,
 		Value: pDataStr,
@@ -166,7 +181,7 @@ func HTTPsetCookieOnResp(pCookieNameStr string,
 		//               otherwise the cookie will only be set requests
 		//               that are on some subset of urls relative to the root.
 		// IMPORTANT!! - In Go (and in HTTP cookies in general), if the Path for a cookie is
-		//               not explicitly set the cookie's path will default to the path of 
+		//               not explicitly set the cookie's path will default to the path of
 		//               the URL where the Set-Cookie HTTP response header was received from.
 		//               This means that the cookie will be sent only for requests to this path and its subpaths.
 		Path: "/",
@@ -183,7 +198,7 @@ func HTTPsetCookieOnResp(pCookieNameStr string,
 	// DOMAIN - associates a domain with the cookie.
 	//          if the domain name is prefixed with ".", this cookie will be accessible
 	//          by all subdomains as well.
-	
+
 	if pDomainStr != nil {
 
 		// ADD!! - ability to specify multiple domains that the session is
@@ -231,7 +246,7 @@ func HTTPsetCookieOnReq(pCookieNameStr string,
 	// DOMAIN - associates a domain with the cookie.
 	//          if the domain name is prefixed with ".", this cookie will be accessible
 	//          by all subdomains as well.
-	
+
 	if pDomainStr != nil {
 		cookie.Domain = *pDomainStr
 	}
@@ -257,7 +272,7 @@ func HTTPdeleteCookieOnResp(pCookieNameStr string,
 		HttpOnly: true,
 		SameSite: http.SameSiteNoneMode, // http.SameSiteStrictMode,
 	}
-	
+
 	http.SetCookie(pResp, &expiredCookie)
 }
 
@@ -292,7 +307,7 @@ func HTTPdetectMIMEtypeFromURL(pURLstr string,
 	// fetch the first 512 bytes, which is all we need
 	// for determening MIME type.
 	//
-	// "Range" - HTTP request header indicates the part of a document 
+	// "Range" - HTTP request header indicates the part of a document
 	//           that the server should return.
 	pHeadersMap["Range"] = "bytes=0-511"
 
@@ -302,7 +317,7 @@ func HTTPdetectMIMEtypeFromURL(pURLstr string,
 		return "", gfErr
 	}
 	defer HTTPfetch.Resp.Body.Close()
-	
+
 
 	bodyBytesLst, _ := ioutil.ReadAll(HTTPfetch.Resp.Body)
 
@@ -380,12 +395,12 @@ func HTTPfetchURL(pURLstr string,
 	//-------------------------
 	// req_with_ctx := req.WithContext(pCtx)
 
-	
+
 	reqUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
 	// EXECUTE
 	resp, err := client.Do(req)
-	
+
 	respUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
 	if err != nil {
@@ -409,7 +424,7 @@ func HTTPfetchURL(pURLstr string,
 	}
 
 	HTTPfetch := &GF_http_fetch{
-		Url_str:          pURLstr, 
+		Url_str:          pURLstr,
 		Status_code_int:  statusCodeInt,
 		Resp_headers_map: respHeadersMap,
 		Req_time_f:       reqUNIXtimeF,
@@ -426,7 +441,7 @@ func HTTPgetFile(pTargetURLstr string,
 	pFileLocalPathStr string,
 	pCtx              context.Context,
 	pRuntimeSys       *RuntimeSys) *GFerror {
-	
+
 
 	//--------------
 	headersMap, userAgentStr := HTTPgetReqConfig()
@@ -506,7 +521,7 @@ func HTTPputFile(pTargetURLstr string,
 		return nil, gfErr
 	}
 
-	// golang http client sets "Transfer-Encoding": "chunked", 
+	// golang http client sets "Transfer-Encoding": "chunked",
 	// which is rejected by some servers (AWS, etc.). so here we turn that off.
 	req.TransferEncoding = []string{"identity"}
 
@@ -566,7 +581,7 @@ func HTTPinitStaticServingWithMux(pURLbaseStr string,
 	p_local_dir_path_str string,
 	p_mux                *http.ServeMux,
 	pRuntimeSys        *RuntimeSys) {
-	
+
 	// IMPORTANT!! - trailing "/" in this url spec is important, since the desired urls that should
 	//               match this are /*/static/some_further_text, and those will only match
 	//               if the spec here ends with "/"
@@ -583,7 +598,7 @@ func HTTPinitStaticServingWithMux(pURLbaseStr string,
 
 func HTTPinitStaticServing(pURLbaseStr string,
 	pRuntimeSys *RuntimeSys) {
-	
+
 	local_dir_str := fmt.Sprintf("./static")
 
 	// IMPORTANT!! - trailing "/" in this url spec is important, since the desired urls that should
@@ -711,7 +726,7 @@ func HTTPgetStreamingResponse(pURLstr string,
 				err, "gf_core", pRuntimeSys)
 	    	return nil, gfErr
 	    }
-	    
+
 	    line_str := string(lineLst)
 
 	    if strings.HasPrefix(line_str,"data: ") {

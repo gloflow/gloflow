@@ -1,69 +1,22 @@
-/*
-MIT License
-
-Copyright (c) 2021 Ivan Trajkovic
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
 package gf_rpc_lib
 
 import (
+	"context"
 	"fmt"
 	"net/http"
-	"context"
 	"time"
-	"github.com/getsentry/sentry-go"
-	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 
-	// "github.com/gloflow/gloflow/go/gf_events"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/getsentry/sentry-go"
+
+	gf_core "github.com/gloflow/gloflow/go/gf_core"
+	gf_identity_core "github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
 
 //-------------------------------------------------
+// CREATE_HANDLERS_V2_HTTP - creates a batch of handlers
 
-type GFrpcHandlerRuntime struct {
-	Mux             *http.ServeMux
-	Metrics         *GFmetrics
-	MetricsGlobal   *GFglobalMetrics
-	StoreRunBool    bool
-	SentryHub       *sentry.Hub
-
-	AuthSubsystemTypeStr string
-	AuthLoginURLstr      string // url redirected too if user not logged in and tries to access auth handler
-	AuthKeyServer        *gf_identity_core.GFkeyServerInfo
-
-	EnableEventsBool bool
-}
-
-type GFrpcHandlerRun struct {
-	ClassStr       string  `bson:"class_str"`
-	HandlerURLstr  string  `bson:"handler_url_str"`
-	StartTimeUNIXf float64 `bson:"start_time__unix_f"`
-	EndTimeUNIXf   float64 `bson:"endTimeUNIXf"`
-}
-
-//-------------------------------------------------
-// CREATE_HANDLERS_HTTP - mainly used, creates a batch of handlers
-
-func CreateHandlersHTTP(pHandlersLst []gf_core.HTTPhandlerInfo,
+func CreateHandlersV2http(pHandlersLst []gf_core.HTTPhandlerV2info,
 	pHTTPmux              *http.ServeMux,
 	pAuthSubsystemTypeStr string,
 	pAuthLoginURLstr      string,
@@ -73,13 +26,7 @@ func CreateHandlersHTTP(pHandlersLst []gf_core.HTTPhandlerInfo,
 
 	//---------------------
 	// METRICS
-	handlersEndpointsLst := []string{}
-	for _, handlerInfo := range pHandlersLst {
-		pathStr := handlerInfo.PathStr
-		handlersEndpointsLst = append(handlersEndpointsLst, pathStr)
-	}
-
-	metrics := MetricsCreateForHandlersFromEndpoints(pMetricsGroupNameStr, "gf_solo", handlersEndpointsLst, pRuntimeSys)
+	metrics := MetricsCreateForHandlers(pMetricsGroupNameStr, "gf_solo", pHandlersLst, pRuntimeSys)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
@@ -95,43 +42,30 @@ func CreateHandlersHTTP(pHandlersLst []gf_core.HTTPhandlerInfo,
 		AuthKeyServer:        pKeyServer,
 	}
 
-	pRuntimeSys.LogNewFun("DEBUG", "creating handlers with auth...",
+	pRuntimeSys.LogNewFun("DEBUG", "creating v2 handlers...",
 		map[string]interface{}{"auth_subsystem_type": rpcHandlerRuntime.AuthSubsystemTypeStr})
 
-	for _, handlerDescr := range pHandlersLst {
+	for _, handlerInfo := range pHandlersLst {
 
 		// CREATE_HANDLER
-		CreateHandlerHTTPwithAuth(handlerDescr.AuthBool,
-			handlerDescr.PathStr,
-			handlerDescr.HandlerFun,
+		CreateHandlerV2http(handlerInfo.NameStr,
+			handlerInfo.AuthStr,
+			handlerInfo.PathStr,
+			handlerInfo.DomainsLst,
+			handlerInfo.HandlerFun,
 			rpcHandlerRuntime,
 			pRuntimeSys)
 	}
 }
 
 //-------------------------------------------------
-// CREATE
-//-------------------------------------------------
-// HTTP
-// DEPRECATED!!
-
-func CreateHandlerHTTP(pPathStr string,
-	pHandlerFun gf_core.HTTPhandler,
-	pRuntimeSys *gf_core.RuntimeSys) {
-
-	CreateHandlerHTTPwithMetrics(pPathStr,
-		pHandlerFun,
-		nil,
-		false,
-		pRuntimeSys)
-}
-
-//-------------------------------------------------
 // HTTP_WITH_AUTH
 
-func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication or not
+func CreateHandlerV2http(pNameStr string, // optional name for handler (used for metrics)
+	pAuthStr string, // if handler uses authentication or not
 	pPathStr        string,
-	pHandlerFun     gf_core.HTTPhandler,
+	pDomainsLst     []string,
+	pHandlerFun     gf_core.HTTPhandlerV2,
 	pHandlerRuntime *GFrpcHandlerRuntime,
 	pRuntimeSys     *gf_core.RuntimeSys) {
 
@@ -139,14 +73,15 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 	if pHandlerRuntime.AuthSubsystemTypeStr == gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
 
 		// check auth key_server has been initialized and passed to the handler runtime
-		if pAuthBool && pHandlerRuntime.AuthKeyServer == nil {
+		if (pAuthStr == gf_core.AUTH_REQUIRED || pAuthStr == gf_core.AUTH_OPTIONAL) && pHandlerRuntime.AuthKeyServer == nil {
 			panic("Auth key_server has to be defined!")
 		}
 
 	}
 
 	// HANDLER_FUN
-	appHandlerFun := getHandler(pAuthBool,
+	appHandlerFun := getHandlerV2(pNameStr,
+		pAuthStr,
 		pPathStr,
 		pHandlerFun,
 		pHandlerRuntime.Metrics,
@@ -199,7 +134,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			//-----------------------
 		}
 
-		pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> session validation...`,
+		pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> v2 session validation...`,
 			map[string]interface{}{
 				"path":                     pathStr,
 				"valid":                    validBool,
@@ -209,16 +144,14 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 				"auth_subsystem_type":      pHandlerRuntime.AuthSubsystemTypeStr,
 			})
 
-		// SESSION_NOT_VALID
-		if !validBool {
+		//-----------------------
+		// REQUIRED - SESSION_NOT_VALID
+		if !validBool && pAuthStr == gf_core.AUTH_REQUIRED {
 
-			//-----------------------
 			// METRICS
 			if pHandlerRuntime.Metrics != nil {
 				pHandlerRuntime.Metrics.HandlersAuthSessionInvalidCounter.Inc()
 			}
-
-			//-----------------------
 
 			// if no redirection of auth failure is specified (which happens in SessionValidateOrRedirectToLogin())
 			// return an error
@@ -236,6 +169,15 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 			//-----------------------
 
+
+		//-----------------------
+		// OPTIONAL - SESSION_NOT_VALID
+		} else if !validBool && pAuthStr == gf_core.AUTH_OPTIONAL {
+
+			// DO NOTHING - session is not valid, but auth is optional, so handler should still
+			// continue to process the request.
+
+		//-----------------------
 		// SESSION_VALID
 		} else {
 
@@ -250,6 +192,12 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			exitReqBool = false
 			return exitReqBool, ctxAuth
 		}
+
+		//-----------------------
+
+		// session is valid, no need to interupt the handler from further execution
+		exitReqBool = false
+		return exitReqBool, ctx
 	}
 
 	//-------------------------------------------------
@@ -264,27 +212,6 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		}
 
 		//-----------------------
-
-		/*
-		//------------------
-		// EVENT
-		if pHandlerRuntime.EnableEventsBool {
-			eventMeta := map[string]interface{}{
-				"path":   pathStr,
-				"origin": originStr,
-				"req_id": reqIDstr,
-				"auth_subsystem_type": pHandlerRuntime.AuthSubsystemTypeStr,
-			}
-			gf_events.EmitApp(GF_EVENT_RPC__CORS_REQUEST,
-				eventMeta,
-				pRuntimeSys.AppNameStr,
-				userID,
-				ctxWithReqID,
-				pRuntimeSys)
-		}
-
-		//------------------
-		*/
 
 		if pRuntimeSys.ExternalPlugins != nil &&
 			pRuntimeSys.ExternalPlugins.CORSoriginDomainsLst != nil {
@@ -322,7 +249,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 	//-------------------------------------------------
 
-	if pAuthBool {
+	if pAuthStr == gf_core.AUTH_REQUIRED || pAuthStr == gf_core.AUTH_OPTIONAL {
 
 		//-------------------------------------------------
 		authHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
@@ -332,12 +259,18 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			pRuntimeSys.LogNewFun("INFO", "------------------> HTTP REQ", map[string]interface{}{"path_str": pathStr})
 
 			//-----------------------
+			// ALLOWED_DOMAINS
+			// if the handler has specified allowed domains, check if the request domain is in the list
+
+			if !isFromAllowedDomain(pReq, pResp, pDomainsLst, pRuntimeSys) {
+				return
+			}
+
+			//-----------------------
 			// METRICS
 			if pHandlerRuntime.MetricsGlobal != nil {
 				pHandlerRuntime.MetricsGlobal.HandlersAuthCounter.Inc()
 			}
-
-			//-----------------------
 
 			//-----------------------
 			// VALIDATE_SESSION
@@ -349,26 +282,6 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			// REQ_ID
 			reqIDstr := genRequestID()
 			ctxWithReqID := context.WithValue(ctxAuth, "gf_req_id", reqIDstr)
-
-			//-----------------------
-			/*
-			// EVENT
-			// userID, _ := gf_identity_core.GetUserIDfromCtx(*ctxAuth)
-
-			if pHandlerRuntime.EnableEventsBool && strings.HasPrefix(pathStr, "/v1/identity") {
-				eventMeta := map[string]interface{}{
-					"path":   pathStr,
-					"req_id": reqIDstr,
-					"auth_subsystem_type": pHandlerRuntime.AuthSubsystemTypeStr,
-				}
-				gf_events.EmitApp(GF_EVENT_RPC__IDENTITY_REQUEST,
-					eventMeta,
-					pRuntimeSys.AppNameStr,
-					userID,
-					ctxWithReqID,
-					pRuntimeSys)
-			}
-			*/
 
 			//-----------------------
 			// CORS
@@ -423,6 +336,21 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		//-------------------------------------------------
 		wrappedHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
 
+			domainStr := pReq.Host
+			pathStr := pReq.URL.Path
+
+			pRuntimeSys.LogNewFun("INFO", "------------------> HTTP REQ",
+				map[string]interface{}{"path": pathStr, "domain": domainStr})
+
+			//-----------------------
+			// ALLOWED_DOMAINS
+			// if the handler has specified allowed domains, check if the request domain is in the list
+
+			if !isFromAllowedDomain(pReq, pResp, pDomainsLst, pRuntimeSys) {
+				return
+			}
+
+			//-----------------------
 			// CORS
 			originStr := pReq.Header.Get("Origin")
 			if originStr != "" {
@@ -445,56 +373,53 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 }
 
 //-------------------------------------------------
-// HTTP_WITH_MUX
-// DEPRECATED!!
 
-func CreateHandlerHTTPwithMux(pPathStr string,
-	pHandlerFun   gf_core.HTTPhandler,
-	pMux          *http.ServeMux,
-	pMetrics      *GFmetrics,
-	pStoreRunBool bool,
-	pSentryHub    *sentry.Hub,
-	pRuntimeSys   *gf_core.RuntimeSys) {
+func isFromAllowedDomain(pReq *http.Request,
+	pResp       http.ResponseWriter,
+	pDomainsLst []string,
+	pRuntimeSys *gf_core.RuntimeSys) bool {
 
-	handlerFun := getHandler(false, // pAuthBool
-		pPathStr,
-		pHandlerFun,
-		pMetrics,
-		pStoreRunBool,
-		pSentryHub,
-		nil,
-		pRuntimeSys)
+	// if no domains are specified, allow all
+	if len(pDomainsLst) == 0 {
+		return true
+	}
 
-	pMux.HandleFunc(pPathStr, handlerFun)
-}
 
-//-------------------------------------------------
-// HTTP_WITH_METRICS
-// DEPRECATED!!
+	pathStr := pReq.URL.Path
+	domainStr := pReq.Host
 
-func CreateHandlerHTTPwithMetrics(pPathStr string,
-	pHandlerFun   gf_core.HTTPhandler,
-	pMetrics      *GFmetrics,
-	pStoreRunBool bool,
-	pRuntimeSys   *gf_core.RuntimeSys) {
 
-	handlerFun := getHandler(false, // pAuthBool
-		pPathStr,
-		pHandlerFun,
-		pMetrics,
-		pStoreRunBool,
-		nil,
-		nil,
-		pRuntimeSys)
+	spew.Dump(pDomainsLst)
+	fmt.Println(domainStr)
 
-	http.HandleFunc(pPathStr, handlerFun)
+	forAllowedDomainBool := false
+	for _, allowedDomainStr := range pDomainsLst {
+		if domainStr == allowedDomainStr {
+			forAllowedDomainBool = true
+			break
+		}
+	}
+
+	if !forAllowedDomainBool {
+
+		pRuntimeSys.LogNewFun("DEBUG", "req not for allowed domain...",
+			map[string]interface{}{"path": pReq.URL.Path, "domain": domainStr, "allowed_domains": pDomainsLst})
+
+		msgStr := "unauthorized domain access"
+		ErrorInHandler(pathStr,
+			msgStr,
+			nil, pResp, pRuntimeSys)
+	}
+
+	return forAllowedDomainBool
 }
 
 //-------------------------------------------------
 
-func getHandler(pAuthBool bool,
+func getHandlerV2(pNameStr string,
+	pAuthStr string,
 	pPathStr         string,
-	pHandlerFun      gf_core.HTTPhandler,
+	pHandlerFun      gf_core.HTTPhandlerV2,
 	pMetrics         *GFmetrics,
 	pStoreRunBool    bool,
 	pSentryHub       *sentry.Hub,
@@ -613,60 +538,4 @@ func getHandler(pAuthBool bool,
 		//------------------
 	}
 	return handlerFun
-}
-
-//-------------------------------------------------
-
-func finalizeHandler(pPathStr string,
-	pSpanRoot *sentry.Span,
-	pStartTimeUNIXf float64,
-	pEndTimeUNIXf   float64,
-	pStoreRunBool   bool,
-	pRuntimeSys     *gf_core.RuntimeSys) {
-
-	// TRACE
-	pSpanRoot.Finish()
-
-	if pStoreRunBool {
-		go func() {
-			StoreRPChandlerRun(pPathStr, pStartTimeUNIXf, pEndTimeUNIXf, pRuntimeSys)
-		}()
-	}
-}
-
-//-------------------------------------------------
-
-func StoreRPChandlerRun(pHandlerURLstr string,
-	pStartTimeUNIXf float64,
-	pEndTimeUNIXf   float64,
-	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
-
-	// dont store a run if there is no DB initialized
-	if pRuntimeSys.Mongo_db == nil {
-		return nil
-	}
-
-	run := &GFrpcHandlerRun{
-		ClassStr:       "rpc_handler_run",
-		HandlerURLstr:  pHandlerURLstr,
-		StartTimeUNIXf: pStartTimeUNIXf,
-		EndTimeUNIXf:   pEndTimeUNIXf,
-	}
-
-	ctx         := context.Background()
-	collNameStr := "gf_rpc_handler_run"
-
-	gfErr := gf_core.MongoInsert(run,
-		collNameStr,
-		map[string]interface{}{
-			"handler_url_str":    pHandlerURLstr,
-			"caller_err_msg_str": "failed to insert rpc_handler_run",
-		},
-		ctx,
-		pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
-
-	return nil
 }

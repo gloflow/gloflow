@@ -57,7 +57,7 @@ func HTTPrespond(p_data interface{},
 		"status": p_status_str,
 		"data":   p_data,
 	})
-	
+
 	p_resp.Header().Set("Content-Type", "application/json")
 	p_resp.Write(r_byte_lst)
 }
@@ -66,7 +66,7 @@ func HTTPrespond(p_data interface{},
 
 func ErrorInHandler(p_handler_url_path_str string,
 	p_user_msg_str string,
-	pGFerr       *gf_core.GFerror,
+	pGFerr         *gf_core.GFerror,
 	p_resp         http.ResponseWriter,
 	pRuntimeSys    *gf_core.RuntimeSys) {
 
@@ -107,7 +107,7 @@ func GetResponseFormat(p_qs_map map[string][]string,
 
 func HTTPcorsPreflightHandle(p_req *http.Request,
 	p_resp http.ResponseWriter) {
-	
+
 	// CORS - preflight request
 	if p_req.Method == "OPTIONS" {
 		p_resp.Header().Set("Access-Control-Allow-Origin", "*")
@@ -126,7 +126,7 @@ func Get_http_input_to_struct(p_input_struct interface{},
 	handler_url_path_str := p_req.URL.Path
 	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
 	err               := json.Unmarshal(body_bytes_lst, &p_input_struct)
-		
+
 	if err != nil {
 		gf_err := gf_core.ErrorCreate("failed to parse json http input",
 			"json_decode_error",

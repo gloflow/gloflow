@@ -65,6 +65,8 @@ func MetricsCreateGlobal() *GFglobalMetrics {
 		Name: fmt.Sprintf("gf_rpc__handler_auth"), 
 		Help: "number of auth requests received",
 	})
+	// MustRegister - panics if metric already registered. used here because global metrics
+	//                are only created once at startup, so duplicate registration is an error
 	prometheus.MustRegister(handlersAuthCounter)
 
 	handlersCORScounter := prometheus.NewCounter(prometheus.CounterOpts{
@@ -84,10 +86,27 @@ func MetricsCreateGlobal() *GFglobalMetrics {
 //-------------------------------------------------
 // CREATE_FOR_HANDLERS
 
-func MetricsCreateForHandlers(pMetricsGroupNameStr string,
+// MetricsCreateForHandlersFromEndpoints - backward compatibility function that takes endpoint strings
+func MetricsCreateForHandlersFromEndpoints(pMetricsGroupNameStr string,
 	pServiceNameStr       string,
 	pHandlersEndpointsLst []string,
 	pRuntimeSys           *gf_core.RuntimeSys) *GFmetrics {
+	
+	// convert endpoint strings to handler info structs
+	handlersLst := []gf_core.HTTPhandlerV2info{}
+	for _, endpointStr := range pHandlersEndpointsLst {
+		handlersLst = append(handlersLst, gf_core.HTTPhandlerV2info{
+			PathStr: endpointStr,
+		})
+	}
+	
+	return MetricsCreateForHandlers(pMetricsGroupNameStr, pServiceNameStr, handlersLst, pRuntimeSys)
+}
+
+func MetricsCreateForHandlers(pMetricsGroupNameStr string,
+	pServiceNameStr  string,
+	pHandlersLst     []gf_core.HTTPhandlerV2info,
+	pRuntimeSys      *gf_core.RuntimeSys) *GFmetrics {
 	
 	pRuntimeSys.LogNewFun("DEBUG", `creating metrics for RPC handlers...`, map[string]interface{}{
 		"metrics_group": pMetricsGroupNameStr,
@@ -95,13 +114,37 @@ func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 	})
 
 	handlersCountersMap := map[string]prometheus.Counter{}
-	for _, handlerEndpointStr := range pHandlersEndpointsLst {
+	for _, handlerInfo := range pHandlersLst {
 
-		handlerEndpointCleanStr := strings.ReplaceAll(handlerEndpointStr, "/", "_")
-		nameStr := fmt.Sprintf("gf_rpc__handler_reqs_num__%s_%s", pServiceNameStr, handlerEndpointCleanStr)
+		handlerEndpointStr := handlerInfo.PathStr
+		
+		var metricNameStr string
+		
+		// use NameStr if provided, otherwise derive from path
+		if handlerInfo.NameStr != "" {
+			metricNameStr = handlerInfo.NameStr
+		} else {
+			// strip HTTP verb (e.g., "GET /path" -> "/path")
+			endpointCleanStr := handlerEndpointStr
+			parts := strings.Fields(handlerEndpointStr)
+			if len(parts) > 1 {
+				// assume first part is verb, rest is path
+				endpointCleanStr = strings.Join(parts[1:], " ")
+			}
+			
+			// sanitize for Prometheus metric name (replace special chars, lowercase)
+			endpointCleanStr = strings.ReplaceAll(endpointCleanStr, "/", "_")
+			endpointCleanStr = strings.ReplaceAll(endpointCleanStr, " ", "_")
+			endpointCleanStr = strings.ToLower(endpointCleanStr)
+			
+			metricNameStr = endpointCleanStr
+		}
+		
+		nameStr := fmt.Sprintf("gf_rpc__handler_reqs_num__%s_%s", pServiceNameStr, metricNameStr)
 		
 		pRuntimeSys.LogNewFun("DEBUG", `registering handler metric...`, map[string]interface{}{
 			"handler_endpoint": handlerEndpointStr,
+			"handler_name":     handlerInfo.NameStr,
 			"metric_name":      nameStr,
 		})
 
@@ -109,9 +152,23 @@ func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 			Name: nameStr,
 			Help: "handler number of requests",
 		})
-		prometheus.MustRegister(handlerReqsNumCounter)
+		
+		// Register - returns error if metric already registered, allowing us to reuse existing metrics.
+		//            this is needed because MetricsCreateForHandlers() can be called multiple times
+		//            with the same metrics group (e.g., for v1 and v2 handlers), and we want to
+		//            reuse shared counters (auth session, CORS) rather than fail on duplicate registration
+		err := prometheus.Register(handlerReqsNumCounter)
+		if err != nil {
+			// metric already registered, try to get existing one
+			if are, ok := err.(prometheus.AlreadyRegisteredError); ok {
+				handlerReqsNumCounter = are.ExistingCollector.(prometheus.Counter)
+			} else {
+				// some other error, panic
+				panic(err)
+			}
+		}
 
-
+		// store by path string (key used for lookup in handler)
 		handlersCountersMap[handlerEndpointStr] = handlerReqsNumCounter
 	}
 
@@ -119,13 +176,27 @@ func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 		Name: fmt.Sprintf("gf_rpc__handler_auth_session_invalid_num__%s_%s", pServiceNameStr, pMetricsGroupNameStr), 
 		Help: "number of invalid auth session requests received",
 	})
-	prometheus.MustRegister(handlersAuthSessionInvalidCounter)
+	err := prometheus.Register(handlersAuthSessionInvalidCounter)
+	if err != nil {
+		if are, ok := err.(prometheus.AlreadyRegisteredError); ok {
+			handlersAuthSessionInvalidCounter = are.ExistingCollector.(prometheus.Counter)
+		} else {
+			panic(err)
+		}
+	}
 
 	handlersAuthSessionCORScounter := prometheus.NewCounter(prometheus.CounterOpts{
 		Name: fmt.Sprintf("gf_rpc__handler_auth_session_cors_num__%s_%s", pServiceNameStr, pMetricsGroupNameStr), 
 		Help: "number of CORS (cross-domain) auth session requests received",
 	})
-	prometheus.MustRegister(handlersAuthSessionCORScounter)
+	err = prometheus.Register(handlersAuthSessionCORScounter)
+	if err != nil {
+		if are, ok := err.(prometheus.AlreadyRegisteredError); ok {
+			handlersAuthSessionCORScounter = are.ExistingCollector.(prometheus.Counter)
+		} else {
+			panic(err)
+		}
+	}
 
 	metrics := &GFmetrics{
 		HandlersCountersMap:               handlersCountersMap,
