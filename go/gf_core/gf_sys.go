@@ -37,6 +37,12 @@ import (
 
 type RuntimeSys struct {
 
+	//---------------------------
+	// CONFIG
+	Config *GFconfig
+
+	//---------------------------
+	//
 	AppNameStr	   string
 	ServiceNameStr string
 	EnvStr         string
@@ -81,8 +87,10 @@ type RuntimeSys struct {
 
 //-------------------------------------------------
 // PLUGINS
+//-------------------------------------------------
+// EXTERNAL_BOOT_PLUGINS
 
-type GFpluginConfigLoadCallback func(*GFconfig, *RuntimeSys) (*GFconfig, *GFerror)
+type GFpluginConfigLoadCallback  func(*GFconfig, *RuntimeSys) (*GFconfig, *GFerror)
 
 // special plugins that run at startup, and need a lot less infra setup to run
 type ExternalBootPlugins struct {
@@ -94,11 +102,16 @@ type ExternalBootPlugins struct {
 	//---------------------------
 }
 
+//-------------------------------------------------
+// EXTERNAL_PLUGINS
+
+type GFpluginIdentitySSOcallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) (*string, bool, *GFerror)
+
 type ExternalPlugins struct {
 
 	//---------------------------
 	// RPC_HANDLERS
-	RPChandlersGetCallback func(*http.ServeMux, *RuntimeSys) ([]HTTPhandlerInfo, *GFerror)
+	RPChandlersGetCallback func(*http.ServeMux, *RuntimeSys) ([]HTTPhandlerInfo, []HTTPhandlerV2info, *GFerror)
 	RPCreqPreProcessCallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) (bool, *GFerror)
 
 	// CORS_DOMAINS - domains that are allowed to access the API, beyond the domain
@@ -107,6 +120,9 @@ type ExternalPlugins struct {
 
 	//---------------------------
 	// IDENTITY
+
+	// SSO - for SSO handling
+	IdentitySSOcallback GFpluginIdentitySSOcallback
 
 	// for custom validation of general sessions
 	IdentitySessionValidateCallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) (bool, *GF_ID, *GF_ID, *GFerror)
@@ -133,14 +149,5 @@ type ExternalPlugins struct {
 	// called on every sending of email in the system
 	EmailSendingCallback func(string, string, string, string, *RuntimeSys) *GFerror
 
-	//---------------------------
-	/*
-	// NFT
-	// get metadata on defined fetchers
-	NFTgetFetchersMetaCallback func() map[string]map[string]interface{}
-
-	// fetch NFTs for a particular owner account using a particular fetcher (with name)
-	NFTfetchForOwnerAddressCallback func(string, string, *RuntimeSys) *GFerror
-	*/
 	//---------------------------
 }

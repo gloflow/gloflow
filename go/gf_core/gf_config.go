@@ -32,7 +32,7 @@ type GFconfig struct {
 	// ENVIRONMENT
 	EnvStr string `mapstructure:"env"`
 
-	// DOMAINS - where this gf_solo instance is reachable on
+	// DOMAINS - PRIMARY_DOMAIN - where this gf_solo instance is reachable on
 	DomainBaseStr      string `mapstructure:"domain_base"`
 	DomainAdminBaseStr string `mapstructure:"domain_admin_base"`
 

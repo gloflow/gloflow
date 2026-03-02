@@ -111,35 +111,35 @@ func bindEnvVars() {
 		panic(err)
 	}
 
-	// ENV
+	// PORT
 	err = viper.BindEnv("port", "GF_PORT")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
 
-	// ENV
+	// PORT_ADMIN
 	err = viper.BindEnv("port", "GF_PORT_ADMIN")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
 
-	// ENV
+	// PORT_METRICS
 	err = viper.BindEnv("port_metrics", "GF_PORT_METRICS")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
 
-	// ENV
+	// MONGODB_HOST
 	err = viper.BindEnv("mongodb_host", "GF_MONGODB_HOST")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
 
-	// ENV
+	// MONGODB_DB_NAME
 	err = viper.BindEnv("mongodb_db_name", "GF_MONGODB_DB_NAME")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
@@ -149,28 +149,28 @@ func bindEnvVars() {
 	//--------------------
 	// SQL
 	//--------------------
-	// ENV
+	// GF_SQL_USER_NAME
 	err = viper.BindEnv("sql_user_name", "GF_SQL_USER_NAME")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
 
-	// ENV
+	// GF_SQL_PASS
 	err = viper.BindEnv("sql_pass", "GF_SQL_PASS")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
 
-	// ENV
+	// GF_SQL_HOST
 	err = viper.BindEnv("sql_host", "GF_SQL_HOST")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
 
-	// ENV
+	// GF_SQL_DB_NAME
 	err = viper.BindEnv("sql_db_name", "GF_SQL_DB_NAME")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
@@ -178,42 +178,43 @@ func bindEnvVars() {
 	}
 
 	//--------------------
-	// ENV
+	// GF_SENTRY_ENDPOINT
 	err = viper.BindEnv("sentry_endpoint", "GF_SENTRY_ENDPOINT")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
 
-	// ENV
+	// GF_AUTH_SUBSYSTEM_TYPE
 	err = viper.BindEnv("auth_subsystem_type", "GF_AUTH_SUBSYSTEM_TYPE")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
 
-	// ENV
+	// GF_ADMIN_MFA_SECRET_KEY_BASE32
 	err = viper.BindEnv("admin_mfa_secret_key_base32", "GF_ADMIN_MFA_SECRET_KEY_BASE32")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
 
-	// ENV
+	// GF_ADMIN_EMAIL
 	err = viper.BindEnv("admin_email", "GF_ADMIN_EMAIL")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
 
-	// ENV
+	//--------------------
+	// GF_DOMAIN_BASE
 	err = viper.BindEnv("domain_base", "GF_DOMAIN_BASE")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
 
-	// ENV
+	// GF_DOMAIN_ADMIN_BASE
 	err = viper.BindEnv("domain_admin_base", "GF_DOMAIN_ADMIN_BASE")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
