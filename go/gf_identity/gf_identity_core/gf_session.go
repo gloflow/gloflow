@@ -26,8 +26,9 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
+	spew "github.com/davecgh/go-spew/spew"
 )
- 
+
 //---------------------------------------------------
 
 type GFsession struct {
@@ -35,12 +36,12 @@ type GFsession struct {
 	DeletedBool       bool
 	CreationUNIXtimeF float64
 	UserID            gf_core.GF_ID
-	
+
 	// marked as true once the login completes (once Auth0 initial auth returns the user to the GF system).
 	// if the login_callback handler is called and this login_complete is already marked as true,
 	// the http transaction will be immediatelly aborted.
 	LoginCompleteBool bool
-	
+
 	// user can specify which page then want to be redirect to after login,
 	// if they dont want to use the default GF successful-login url.
 	LoginSuccessRedirectURLstr string
@@ -70,11 +71,62 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 	pAuthLoginURLstr        *string,
 	pAuthRedirectOnFailBool bool,
 	pCtx                    context.Context,
-	pRuntimeSys             *gf_core.RuntimeSys) (bool, *gf_core.GF_ID, *gf_core.GF_ID, *gf_core.GFerror) {
+	pRuntimeSys             *gf_core.RuntimeSys) (validBool bool, userID *gf_core.GF_ID, sessionID *gf_core.GF_ID, gfErr *gf_core.GFerror) {
+
+	domainStr := pReq.Host
+
+	//---------------------
+	// SSO
+	// IMPORTANT!! - dont run SSO check for requests on the base domain,
+	//               user are just going through the normal auth flow.
+	// so not verifying that.
+
+	spew.Dump(pRuntimeSys.Config)
+
+	if domainStr != pRuntimeSys.Config.DomainBaseStr &&
+		pRuntimeSys.ExternalPlugins != nil &&
+		pRuntimeSys.ExternalPlugins.IdentitySSOcallback != nil {
+
+		var redirectUrlStr *string
+		var authCredsPresentBool bool
+
+		//-------------------------
+		// PLUGIN
+		redirectUrlStr, authCredsPresentBool, gfErr = pRuntimeSys.ExternalPlugins.IdentitySSOcallback(pReq,
+			pResp,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return false, nil, nil, gfErr
+		}
+
+		// IMPORTANT!! - in the SSO check of a request, auth creds were found. in this case the request
+		//               should continue through the request validation pipeline, for downstream validation.
+		if authCredsPresentBool {
+
+			// do nothing, pass this request downstream, it has a token, no need to redirect to base domain.
+
+		}  else {
+
+			//-------------------------
+			// HTTP_REDIRECT - redirect user to SSO url
+			if redirectUrlStr != nil {
+				http.Redirect(pResp,
+					pReq,
+					*redirectUrlStr,
+					301)
+			}
+
+			//-------------------------
+
+			return false, nil, nil, nil
+		}
+	}
+
 
 	//-------------------------
 	// SESSION_VALIDATE
-	validBool, userID, sessionID, gfErr := SessionValidateWithPlugins(pReq,
+	validBool, userID, sessionID, gfErr = SessionValidateWithPlugins(pReq,
 		pResp,
 		pKeyServerInfo,
 		pAuthSubsystemTypeStr,
@@ -98,7 +150,7 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 					pReq,
 					*pAuthLoginURLstr,
 					301)
-					
+
 				//-------------------------
 			}
 		}
@@ -114,9 +166,9 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 				pReq,
 				*pAuthLoginURLstr,
 				301)
-			}
 
 			//-------------------------
+		}
 
 		return false, nil, nil, nil
 	}
@@ -131,12 +183,8 @@ func SessionValidateWithPlugins(pReq *http.Request,
 	pKeyServerInfo        *GFkeyServerInfo,
 	pAuthSubsystemTypeStr string,
 	pCtx                  context.Context,
-	pRuntimeSys           *gf_core.RuntimeSys) (bool, *gf_core.GF_ID, *gf_core.GF_ID, *gf_core.GFerror) {
+	pRuntimeSys           *gf_core.RuntimeSys) (validBool bool, userID *gf_core.GF_ID, sessionID *gf_core.GF_ID, gfErr *gf_core.GFerror) {
 
-	var validBool bool
-	var userID    *gf_core.GF_ID
-	var sessionID *gf_core.GF_ID
-	var gfErr     *gf_core.GFerror
 
 	//---------------------
 	// API_KEY_VALIDATE
@@ -145,7 +193,8 @@ func SessionValidateWithPlugins(pReq *http.Request,
 	// check if an API key is supplied; if not supplied Get() will return ""
 	if apiKeyStr := pReq.Header.Get(GF_IDENTITY_API_KEY_HEADER); apiKeyStr != "" {
 
-		if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.IdentitySessionValidateApiKeyCallback != nil {
+		if pRuntimeSys.ExternalPlugins != nil &&
+			pRuntimeSys.ExternalPlugins.IdentitySessionValidateApiKeyCallback != nil {
 
 			validBool, userID, gfErr = pRuntimeSys.ExternalPlugins.IdentitySessionValidateApiKeyCallback(apiKeyStr,
 				pReq,
@@ -154,8 +203,10 @@ func SessionValidateWithPlugins(pReq *http.Request,
 			if gfErr != nil {
 				return false, nil, nil, gfErr
 			}
-			
+
 		} else {
+
+			// if there is not  API key validation plugin than for now the session is just returned invalid
 			return false, nil, nil, nil
 		}
 
@@ -164,7 +215,7 @@ func SessionValidateWithPlugins(pReq *http.Request,
 
 	// PLUGIN - use custom session validation if provided
 
-	} else if pRuntimeSys.ExternalPlugins != nil && 
+	} else if pRuntimeSys.ExternalPlugins != nil &&
 		pRuntimeSys.ExternalPlugins.IdentitySessionValidateCallback != nil {
 
 		validBool, userID, sessionID, gfErr = pRuntimeSys.ExternalPlugins.IdentitySessionValidateCallback(pReq,
@@ -176,9 +227,10 @@ func SessionValidateWithPlugins(pReq *http.Request,
 			return false, nil, nil, gfErr
 		}
 
-	// INTERNAL - use built-in session validation
+	//---------------------
+	// INTERNAL - DEFAULT - use built-in session validation
 	} else {
-		
+
 		validBool, userID, sessionID, gfErr = SessionValidate(pReq,
 			pKeyServerInfo,
 			pAuthSubsystemTypeStr,
@@ -186,7 +238,7 @@ func SessionValidateWithPlugins(pReq *http.Request,
 			pRuntimeSys)
 	}
 
-	//---------------------------------------------------
+	//---------------------
 
 	return validBool, userID, sessionID, nil
 }
@@ -207,12 +259,12 @@ func SessionValidate(pReq *http.Request,
 	if gfErr != nil {
 		return sessionValidBool, nil, nil, gfErr
 	}
-	
+
 	if !foundBool {
-		
+
 		/*
 		IMPORTANT!! - return a false validity and not an error, since missing
-		    JWT in request is not an abnormal situation (an error), and 
+		    JWT in request is not an abnormal situation (an error), and
 		    it means that the user is not authenticated yet.
 		*/
 		return sessionValidBool, nil, nil, nil
@@ -226,18 +278,18 @@ func SessionValidate(pReq *http.Request,
 
 		/*
 		IMPORTANT!! - return a false validity and not an error, since missing
-		    session_id in request is not an abnormal situation (an error), and 
+		    session_id in request is not an abnormal situation (an error), and
 		    it means that the user is not authenticated yet.
 		*/
 		return sessionValidBool, nil, nil, nil
 	}
 
 	//---------------------
-	
+
 	var userID *gf_core.GF_ID
 
 	switch pAuthSubsystemTypeStr {
-	
+
 	//---------------------
 	// AUTH0
 	case GF_AUTH_SUBSYSTEM_TYPE__AUTH0:
@@ -249,7 +301,7 @@ func SessionValidate(pReq *http.Request,
 		if gfErr != nil {
 			return sessionValidBool, nil, nil, gfErr
 		}
-		
+
 		userIDfromAuth0, gfErr := gf_auth0.JWTvalidateToken(jwtTokenStr, publicKey, pRuntimeSys)
 		if gfErr != nil {
 			return sessionValidBool, nil, nil, gfErr
@@ -305,7 +357,7 @@ func SessionCreate(pUserID *gf_core.GF_ID,
 	//---------------------
 	// SESSION_ID
 	sessionID := GenerateSessionID()
-	
+
 	//---------------------
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
@@ -348,7 +400,7 @@ func SessionCreate(pUserID *gf_core.GF_ID,
 
 	/*
 	with auth0 auth method only login_attept is created initially with session_id only.
-	after auth0 logs the user in only then is the login_attempt updated with user info. 
+	after auth0 logs the user in only then is the login_attempt updated with user info.
 	*/
 	userTypeStr := "standard"
 	_, gfErr = loginAttempCreateWithSession(sessionID, userTypeStr, pCtx, pRuntimeSys)
@@ -404,7 +456,7 @@ func CreateSessionIDcookie(pSessionIDstr string,
 	pDomainStr          *string,
 	pSameSiteStrictBool bool,
 	pResp               http.ResponseWriter) {
-	
+
 	sessionTTLhoursInt, _ := GetSessionTTL()
 
 	cookieNameStr := "gf_sess"
@@ -465,7 +517,7 @@ func GetSessionTTL() (int, int64) {
 	sessionTTLhoursInt := 24 * 30 // 1 month
 
 	//---------------------
-	
+
 	sessionTTLsecondsInt := int64(60*60*sessionTTLhoursInt)
 	return sessionTTLhoursInt, sessionTTLsecondsInt
 }

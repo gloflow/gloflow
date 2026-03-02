@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_core
 
 import (
+	
 	"time"
 	"context"
 	"strings"
@@ -27,7 +28,7 @@ import (
 	"crypto/rsa"
 	"github.com/golang-jwt/jwt"
 	"github.com/gloflow/gloflow/go/gf_core"
-	// "github.com/davecgh/go-spew/spew"
+	spew "github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
@@ -242,6 +243,11 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 
 	var userID gf_core.GF_ID
 
+	// DEBUG
+	if pRuntimeSys.DebugBool {
+		spew.Dump(jwtToken.Claims)
+	}
+
 	if userIdentifierFromClaimStr, ok := jwtToken.Claims.(jwt.MapClaims)["sub"]; ok {
 		userIdentifierStr := userIdentifierFromClaimStr.(string)
 		userID = gf_core.GF_ID(userIdentifierStr)
@@ -287,10 +293,18 @@ func GetJWTtokenFromRequest(pReq *http.Request,
 			jwtTokenFoundInHeaderBool = true
 		}
 
+		// safely truncate token for logging
+		var authTokenDisplayStr string
+		if len(authTokenStr) > 20 {
+			authTokenDisplayStr = authTokenStr[:10] + "..." + authTokenStr[len(authTokenStr)-10:]
+		} else {
+			authTokenDisplayStr = authTokenStr
+		}
+
 		pRuntimeSys.LogNewFun("DEBUG", `"Authorization" header getting from request...`,
 			map[string]interface{}{
 				"jwt_token_found": jwtTokenFoundInHeaderBool,
-				"auth_token_str": authTokenStr[:10] + "..." + authTokenStr[len(authTokenStr)-10:],
+				"auth_token_str": authTokenDisplayStr,
 			})
 
 		if !jwtTokenFoundInHeaderBool {
@@ -306,10 +320,16 @@ func GetJWTtokenFromRequest(pReq *http.Request,
 		// AUTHORIZATION_HEADER - standard Oauth2 header symbol.
 		cookieNameStr := "Authorization"
 
-		jwtTokenFoundInCookieBool, cookieValueStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq, pRuntimeSys)
-
 		pRuntimeSys.LogNewFun("DEBUG", `"Authorization" cookie getting from request...`,
 			map[string]interface{}{
+				"cookie_name": cookieNameStr,
+			})
+
+		jwtTokenFoundInCookieBool, cookieValueStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq, pRuntimeSys)
+
+		pRuntimeSys.LogNewFun("DEBUG", `"Authorization" cookie from request...`,
+			map[string]interface{}{
+				"cookie_name": cookieNameStr,
 				"jwt_token_found": jwtTokenFoundInCookieBool,
 			})
 
