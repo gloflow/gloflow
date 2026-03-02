@@ -59,7 +59,7 @@ func initHandlers(pAuthSubsystemTypeStr string,
 		"/v1/tags/all",
 	}
 	metricsGroupNameStr := "main"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_tagger", handlers_endpoints_lst, pRuntimeSys)
+	metrics := gf_rpc_lib.MetricsCreateForHandlersFromEndpoints(metricsGroupNameStr, "gf_tagger", handlers_endpoints_lst, pRuntimeSys)
 	
 	//---------------------
 	// RPC_HANDLER_RUNTIME

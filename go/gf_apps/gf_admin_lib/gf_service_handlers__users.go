@@ -50,7 +50,7 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 		"/v1/admin/users/resend_confirm_email",
 	}
 	metricsGroupNameStr := "users"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_admin", handlersEndpointsLst, pRuntimeSys)
+	metrics := gf_rpc_lib.MetricsCreateForHandlersFromEndpoints(metricsGroupNameStr, "gf_admin", handlersEndpointsLst, pRuntimeSys)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
