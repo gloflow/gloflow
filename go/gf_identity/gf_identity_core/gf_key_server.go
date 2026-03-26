@@ -235,7 +235,6 @@ func ksJWTgetKeysPipeline(pCtx context.Context,
 		jwtPrivateKeyPEMbase64str := secretMap["private_key"].(string)
 		jwtPublicKeyPEMbase64str := secretMap["public_key"].(string)
 
-		fmt.Println(jwtPublicKeyPEMbase64str)
 
 		// decode base64-encoded PEM strings
 		jwtPublicKeyPEMbytes, err := base64.StdEncoding.DecodeString(jwtPublicKeyPEMbase64str)

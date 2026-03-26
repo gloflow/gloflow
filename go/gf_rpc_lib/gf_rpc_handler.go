@@ -627,15 +627,18 @@ func finalizeHandler(pPathStr string,
 	// TRACE
 	pSpanRoot.Finish()
 
+	/*
 	if pStoreRunBool {
 		go func() {
 			StoreRPChandlerRun(pPathStr, pStartTimeUNIXf, pEndTimeUNIXf, pRuntimeSys)
 		}()
 	}
+	*/
 }
 
 //-------------------------------------------------
 
+/*
 func StoreRPChandlerRun(pHandlerURLstr string,
 	pStartTimeUNIXf float64,
 	pEndTimeUNIXf   float64,
@@ -670,3 +673,4 @@ func StoreRPChandlerRun(pHandlerURLstr string,
 
 	return nil
 }
+*/
