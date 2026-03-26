@@ -1,6 +1,6 @@
 module github.com/gloflow/gloflow
 
-go 1.19
+go 1.25
 
 require (
 	github.com/MicahParks/keyfunc v1.9.0

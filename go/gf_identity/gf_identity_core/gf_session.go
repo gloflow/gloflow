@@ -56,7 +56,7 @@ type GFsession struct {
 	AuthMethodStr        *string
 
 	// USER_ID_IDP - user ID in the IDP system (google, github, etc.)
-	UserIDidp *gf_core.GF_ID
+	UserIDfromIdp *gf_core.GF_ID
 
 	// USER_AGENT - user agent string of the browser/client
 	UserAgent *string
@@ -349,7 +349,7 @@ func SessionCreate(pUserID *gf_core.GF_ID,
 	pLoginSuccessRedirectURLstr *string,
 	pAuthSubsystemTypeStr       string,
 	pAuthMethodStr			    *string,
-	pUserIDidp                  *gf_core.GF_ID,
+	pUserIDfromIdp              *gf_core.GF_ID,
 	pUserAgentStr               *string,
 	pCtx                        context.Context,
 	pRuntimeSys                 *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
@@ -372,7 +372,7 @@ func SessionCreate(pUserID *gf_core.GF_ID,
 
 		AuthSubsystemTypeStr: pAuthSubsystemTypeStr,
 		AuthMethodStr:        pAuthMethodStr,
-		UserIDidp:            pUserIDidp,
+		UserIDfromIdp:        pUserIDfromIdp,
 	}
 
 	// with Auth0 the userID is only known after the login completes, and the session

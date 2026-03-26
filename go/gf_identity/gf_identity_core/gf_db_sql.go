@@ -109,7 +109,7 @@ func dbSQLcreateNewSession(pSession *GFsession,
 		pSession.AuthSubsystemTypeStr,
 		pSession.AuthMethodStr,
 
-		pSession.UserIDidp,
+		pSession.UserIDfromIdp,
 		pSession.UserAgent)
 
 	if err != nil {
