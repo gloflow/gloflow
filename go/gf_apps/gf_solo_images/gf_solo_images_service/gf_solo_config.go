@@ -54,7 +54,7 @@ type GFconfig struct {
 	MongoDBnameStr string `mapstructure:"mongodb_db_name"`
 
 	// SENTRY_ENDPOINT
-	SentryEndpointStr string `mapstructure:"sentry_endpoint"`
+	SentryDSNstr string `mapstructure:"sentry_endpoint"`
 
 	//--------------------
 	// IDENTITY
@@ -91,14 +91,14 @@ func ConfigInit(pConfigDirPathStr string,
 	pConfigFileNameStr string) (*GFconfig, error) {
 
 	configNameStr := strings.Split(pConfigFileNameStr, ".")[0] // viper expects just the file name, without extension
-	
+
 	// FILE
 	viper.AddConfigPath(pConfigDirPathStr)
 	viper.SetConfigName(configNameStr)
-	
+
 	//--------------------
 	// ENV_VARS
-	// all config members that have their mapstructure name for Viper config, 
+	// all config members that have their mapstructure name for Viper config,
 	// also have a corresponding ENV var name thats generated for them by
 	// upper-casing their name.
 	//--------------------
@@ -107,9 +107,9 @@ func ConfigInit(pConfigDirPathStr string,
 	viper.SetEnvPrefix("GF")
 
 	// IMPORTANT!! - enable Viper parsing ENV vars.
-	
+
 	viper.AutomaticEnv()
-	
+
 	//--------------------
 
 	// LOAD

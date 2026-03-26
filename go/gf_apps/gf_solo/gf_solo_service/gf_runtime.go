@@ -78,19 +78,19 @@ func RuntimeGet(pConfigPathStr string,
 
 	//--------------------
 	// SENTRY - ERROR_REPORTING
-	if config.SentryEndpointStr != "" {
+	if config.SentryDSNstr != "" {
 
 		fmt.Println("Initializing Sentry error reporting...")
 
-		sentryEndpointStr := config.SentryEndpointStr
-		runtimeSys.SentryDSNstr = sentryEndpointStr
+		sentryDSNstr := config.SentryDSNstr
+		runtimeSys.SentryDSNstr = sentryDSNstr
 		runtimeSys.ErrorsSendToMongodbBool = true // enable it for error reporting
 
 		sentrySampleRateDefaultF := 1.0
 		sentryTracingRateForHandlersMap := map[string]float64{
 
 		}
-		err := gf_core.ErrorInitSentry(sentryEndpointStr,
+		err := gf_core.ErrorInitSentry(sentryDSNstr,
 			sentryTracingRateForHandlersMap,
 			sentrySampleRateDefaultF)
 		if err != nil {

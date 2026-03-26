@@ -51,8 +51,8 @@ type GFconfig struct {
 	MongoHostStr   string `mapstructure:"mongodb_host"`
 	MongoDBnameStr string `mapstructure:"mongodb_db_name"`
 
-	// SENTRY_ENDPOINT
-	SentryEndpointStr string `mapstructure:"sentry_endpoint"`
+	// SENTRY_DSN
+	SentryDSNstr string `mapstructure:"sentry_dsn"`
 
 	// TEMPLATES
 	TemplatesPathsMap map[string]string `mapstructure:"templates_paths"`

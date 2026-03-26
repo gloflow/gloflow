@@ -211,9 +211,9 @@ func RuntimeGet(pConfigPathStr string,
 
 	//--------------------
 	// SENTRY - ERROR_REPORTING
-	if config.SentryEndpointStr != "" {
+	if config.SentryDSNstr != "" {
 
-		sentryEndpointStr := config.SentryEndpointStr
+		sentryEndpointStr := config.SentryDSNstr
 		sentrySampleRateDefaultF := 1.0
 		sentryTracingRateForHandlersMap := map[string]float64{
 
@@ -243,7 +243,7 @@ func RuntimeGet(pConfigPathStr string,
 		ExternalPlugins: pExternalPlugins,
 
 		// SENTRY_DSN
-		SentryDSNstr: config.SentryEndpointStr,
+		SentryDSNstr: config.SentryDSNstr,
 	}
 
 	//--------------------

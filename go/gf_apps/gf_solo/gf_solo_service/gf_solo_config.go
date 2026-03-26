@@ -178,8 +178,8 @@ func bindEnvVars() {
 	}
 
 	//--------------------
-	// GF_SENTRY_ENDPOINT
-	err = viper.BindEnv("sentry_endpoint", "GF_SENTRY_ENDPOINT")
+	// SENTRY_DSN
+	err = viper.BindEnv("sentry_dsn", "SENTRY_DSN")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
