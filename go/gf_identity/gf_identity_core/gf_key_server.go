@@ -23,12 +23,14 @@ import (
 	"fmt"
 	"context"
 	"crypto/rsa"
+	"encoding/base64"
 	"time"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
+	// spew "github.com/davecgh/go-spew/spew"
+	gf_core "github.com/gloflow/gloflow/go/gf_core"
+	gf_auth0 "github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 )
 
 //---------------------------------------------------
@@ -96,6 +98,18 @@ func ksClientJWTgetSigningKey(pAuthSubsystemTypeStr string,
 	pKeyServerInfo.GetJWTsigningKeyCh <- req
 
 	privateKey := <- responseCh
+
+	// check if the key server returned nil (unsupported auth subsystem type)
+	if privateKey == nil {
+		gfErr := gf_core.ErrorCreate("key server returned nil signing key - unsupported auth subsystem type for JWT signing",
+			"jwt_signing_key_unsupported_auth_type",
+			map[string]interface{}{
+				"auth_subsystem_type_str": pAuthSubsystemTypeStr,
+			},
+			nil, "gf_identity_core", pRuntimeSys)
+		return nil, gfErr
+	}
+
 	return privateKey, nil
 }
 
@@ -115,7 +129,7 @@ func KSinit(pAuth0initBool bool,
 	//                   placed it independently.
 	//                   this key is always fetched/generated, regardless if Auth0 is
 	//                   activated or not, since even with Auth0 activated the Ethereum
-	//                   auth method is available.     
+	//                   auth method is available.
 	ctx := context.Background()
 	publicKey, privateKey, gfErr := ksJWTgetKeysPipeline(ctx, pRuntimeSys)
 	if gfErr != nil {
@@ -144,7 +158,7 @@ func KSinit(pAuth0initBool bool,
 	go func() {
 		for {
 			select {
-			
+
 			// VALIDATION
 			case req := <- getJWTvalidationKeyCh:
 
@@ -162,7 +176,9 @@ func KSinit(pAuth0initBool bool,
 
 				case GF_AUTH_SUBSYSTEM_TYPE__AUTH0:
 					req.responseCh <- auth0publicKey
-				} 
+				default:
+					req.responseCh <- publicKey
+				}
 
 			// SIGNING
 			case req := <- getJWTsigningKeyCh:
@@ -170,15 +186,7 @@ func KSinit(pAuth0initBool bool,
 				pRuntimeSys.LogNewFun("DEBUG", "key_server - received request for JWT signing key",
 						map[string]interface{}{"auth_subsystem_type_str": req.authSubsystemTypeStr,})
 
-				// signing using keys managed by key_server are only done for "userpass" and "eth" auth methods
-				if req.authSubsystemTypeStr == GF_AUTH_SUBSYSTEM_TYPE__USERPASS ||
-					req.authSubsystemTypeStr == GF_AUTH_SUBSYSTEM_TYPE__ETH {
-
-					req.responseCh <- privateKey
-				} else {
-					// unsupported auth_subsystem_type
-					req.responseCh <- nil
-				}
+				req.responseCh <- privateKey
 			}
 		}
 	}()
@@ -197,17 +205,69 @@ func KSinit(pAuth0initBool bool,
 func ksJWTgetKeysPipeline(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*rsa.PublicKey, *rsa.PrivateKey, *gf_core.GFerror) {
 
+	//------------------------
+	// FROM_SECRETS
 	// if a secrets "get" callback is specified we're making an assumption
 	// that the user has setup some sort of secrets store, and that there is a
 	// JWT signing secret in there that can be used...
 	// therefore there's no need to create it in the DB from scratch.
-	// ADD!! - have a more robust was (flag) for checking if there is a 
+	// ADD!! - have a more robust was (flag) for checking if there is a
 	//         secret store setup for JWT secret fetching.
-	if pRuntimeSys.ExternalPlugins != nil && 
+
+	if pRuntimeSys.ExternalPlugins != nil &&
 		pRuntimeSys.ExternalPlugins.SecretGetCallback != nil {
 
+
+
+
+		secretNameStr := fmt.Sprintf("gf_jwt_keys_%s", pRuntimeSys.EnvStr)
+
+		pRuntimeSys.LogNewFun("DEBUG", "fetching jwt keys via secrets plugin...",
+			map[string]interface{}{
+				"secret_name": secretNameStr,
+			})
+
+		secretMap, gfErr := pRuntimeSys.ExternalPlugins.SecretGetCallback(secretNameStr, pRuntimeSys)
+		if gfErr != nil {
+			return nil, nil, gfErr
+		}
+
+		jwtPrivateKeyPEMbase64str := secretMap["private_key"].(string)
+		jwtPublicKeyPEMbase64str := secretMap["public_key"].(string)
+
+		fmt.Println(jwtPublicKeyPEMbase64str)
+
+		// decode base64-encoded PEM strings
+		jwtPublicKeyPEMbytes, err := base64.StdEncoding.DecodeString(jwtPublicKeyPEMbase64str)
+		if err != nil {
+			gfErr := gf_core.ErrorCreate("failed to decode base64-encoded public key PEM from secrets",
+				"base64_decode_error",
+				map[string]interface{}{},
+				err, "gf_identity_core", pRuntimeSys)
+			return nil, nil, gfErr
+		}
+		jwtPublicKeyPEMstr := string(jwtPublicKeyPEMbytes)
+
+		jwtPrivateKeyPEMbytes, err := base64.StdEncoding.DecodeString(jwtPrivateKeyPEMbase64str)
+		if err != nil {
+			gfErr := gf_core.ErrorCreate("failed to decode base64-encoded private key PEM from secrets",
+				"base64_decode_error",
+				map[string]interface{}{},
+				err, "gf_identity_core", pRuntimeSys)
+			return nil, nil, gfErr
+		}
+		jwtPrivateKeyPEMstr := string(jwtPrivateKeyPEMbytes)
+
+		publicKey, privateKey, gfErr := gf_core.CryptoParseKeysFromPEM(jwtPublicKeyPEMstr, jwtPrivateKeyPEMstr, pRuntimeSys)
+		if gfErr != nil {
+			return nil, nil, gfErr
+		}
+		return publicKey, privateKey, nil
+
+	//------------------------
+	// FROM_DB
 	} else {
-		
+
 		existsBool, gfErr := ksDBjwtExistsSecret(pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return nil, nil, gfErr
@@ -235,6 +295,7 @@ func ksJWTgetKeysPipeline(pCtx context.Context,
 		}
 	}
 
+	//------------------------
 	return nil, nil, nil
 }
 
@@ -242,7 +303,7 @@ func ksJWTgetKeysPipeline(pCtx context.Context,
 
 // generate and store in the DB the secret key thats used
 // to sign new JWT tokens. this is only done if the user is self-hosting
-// and doesnt have want to use a secrets store where they place the secret 
+// and doesnt have want to use a secrets store where they place the secret
 // separatelly from GF (and GF only fetches it from the secret store).
 // this is also done only once on startup when that secret is detected
 // not to exist.
@@ -265,7 +326,7 @@ func ksJWTgenerateKeys(pCtx context.Context,
 		IDstr:             IDstr,
 		DeletedBool:       false,
 		CreationUNIXtimeF: creationUNIXtimeF,
-		
+
 		PublicKeyPEMstr:   GFjwtPublicKeyPEMval(pubKeyPEMstr),
 		PrivateKeyPEMstr:  GFjwtPrivateKeyPEMval(privKeyPEMstr),
 	}
@@ -288,7 +349,7 @@ func ksJWTgenerateKeys(pCtx context.Context,
 
 func ksJWTgetKeysFromStore(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*rsa.PublicKey, *rsa.PrivateKey, *gf_core.GFerror) {
-	
+
 
 	pRuntimeSys.LogNewFun("DEBUG", "getting JWT keys (private/public RSA keys)...", nil)
 
@@ -350,7 +411,7 @@ func ksJWTgetKeysFromStore(pCtx context.Context,
 func ksDBcreateJWTsecret(pJWTsecret *GFjwtSecret,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	
+
 	collNameStr := "gf_auth_jwt_secret"
 
 	gfErr := gf_core.MongoInsert(pJWTsecret,
@@ -376,7 +437,7 @@ func ksDBgetJWTsecret(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFjwtSecret, *gf_core.GFerror) {
 
 	findOpts := options.FindOne()
-	
+
 	jwtSecret := GFjwtSecret{}
 	collNameStr := "gf_auth_jwt_secret"
 	err := pRuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx, bson.M{

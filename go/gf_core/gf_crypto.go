@@ -53,7 +53,7 @@ func CryptoGenerateKeysAsPEM() (string, string) {
 	pubKey, privKey := CryptoGenerateKeys()
 	pubKeyPEMstr, privKeyPEMstr := CryptoConvertKeysToPEM(privKey, pubKey)
 
-	return pubKeyPEMstr, privKeyPEMstr 
+	return pubKeyPEMstr, privKeyPEMstr
 }
 
 //-------------------------------------------------
@@ -61,7 +61,7 @@ func CryptoGenerateKeysAsPEM() (string, string) {
 // generate RSA private/public keys (4096 bit)
 func CryptoGenerateKeys() (*rsa.PublicKey, *rsa.PrivateKey) {
     privkey, _ := rsa.GenerateKey(rand.Reader, 4096)
-    return &privkey.PublicKey, privkey 
+    return &privkey.PublicKey, privkey
 }
 
 //-------------------------------------------------
@@ -72,7 +72,7 @@ func CryptoGenerateKeys() (*rsa.PublicKey, *rsa.PrivateKey) {
 func CryptoParseKeysFromPEM(pPublicKeyPEMstr string,
 	pPrivateKeyPEMstr string,
 	pRuntimeSys       *RuntimeSys) (*rsa.PublicKey, *rsa.PrivateKey, *GFerror) {
-	
+
 	//------------------------
 	// find the next PEM formatted block (certificate, private key etc) in the input
     pubBlock, _ := pem.Decode([]byte(pPublicKeyPEMstr))
@@ -84,13 +84,29 @@ func CryptoParseKeysFromPEM(pPublicKeyPEMstr string,
 		return nil, nil, gfErr
     }
 
+    // try PKCS#1 format first (BEGIN RSA PUBLIC KEY)
     publicKey, err := x509.ParsePKCS1PublicKey(pubBlock.Bytes)
     if err != nil {
-        gfErr := ErrorCreate("failed to parse a x509 formated public-key from a PEM block",
-			"crypto_x509_parse",
-			map[string]interface{}{},
-			err, "gf_core", pRuntimeSys)
-		return nil, nil, gfErr
+        // if PKCS#1 fails, try PKIX/SPKI format (BEGIN PUBLIC KEY)
+        publicKeyInterface, err := x509.ParsePKIXPublicKey(pubBlock.Bytes)
+        if err != nil {
+            gfErr := ErrorCreate("failed to parse a x509 formated public-key from a PEM block (tried both PKCS#1 and PKIX)",
+                "crypto_x509_parse",
+                map[string]interface{}{},
+                err, "gf_core", pRuntimeSys)
+            return nil, nil, gfErr
+        }
+
+        // PKIX can contain various key types, ensure it's RSA
+        var ok bool
+        publicKey, ok = publicKeyInterface.(*rsa.PublicKey)
+        if !ok {
+            gfErr := ErrorCreate("PKIX public key is not an RSA key",
+                "crypto_key_type_invalid",
+                map[string]interface{}{},
+                nil, "gf_core", pRuntimeSys)
+            return nil, nil, gfErr
+        }
     }
 
 	//------------------------
@@ -104,13 +120,29 @@ func CryptoParseKeysFromPEM(pPublicKeyPEMstr string,
 		return nil, nil, gfErr
     }
 
+    // try PKCS#1 format first (BEGIN RSA PRIVATE KEY)
     privateKey, err := x509.ParsePKCS1PrivateKey(privBlock.Bytes)
     if err != nil {
-        gfErr := ErrorCreate("failed to parse a x509 formated private-key from a PEM block",
-			"crypto_x509_parse",
-			map[string]interface{}{},
-			err, "gf_core", pRuntimeSys)
-		return nil, nil, gfErr
+        // if PKCS#1 fails, try PKCS#8 format (BEGIN PRIVATE KEY)
+        privateKeyInterface, err := x509.ParsePKCS8PrivateKey(privBlock.Bytes)
+        if err != nil {
+            gfErr := ErrorCreate("failed to parse a x509 formated private-key from a PEM block (tried both PKCS#1 and PKCS#8)",
+                "crypto_x509_parse",
+                map[string]interface{}{},
+                err, "gf_core", pRuntimeSys)
+            return nil, nil, gfErr
+        }
+
+        // PKCS#8 can contain various key types, ensure it's RSA
+        var ok bool
+        privateKey, ok = privateKeyInterface.(*rsa.PrivateKey)
+        if !ok {
+            gfErr := ErrorCreate("PKCS#8 private key is not an RSA key",
+                "crypto_key_type_invalid",
+                map[string]interface{}{},
+                nil, "gf_core", pRuntimeSys)
+            return nil, nil, gfErr
+        }
     }
 
 	//------------------------
@@ -125,7 +157,7 @@ func CryptoConvertKeysToPEM(pPrivateKey *rsa.PrivateKey,
 
 	//------------------------
 	// PUBLIC_KEY
-	
+
 	pubKeyPEMstr := CryptoConvertPubKeyToPEM(pPublicKey)
 	//------------------------
 	// PRIVATE_KEY
