@@ -255,7 +255,8 @@ func SessionValidate(pReq *http.Request,
 
 	//---------------------
 	// JWT
-	jwtTokenStr, foundBool, gfErr := GetJWTtokenFromRequest(pReq, false, pRuntimeSys)
+	// looks for JWT token first in request cookies, and then in the Authorization header.
+	jwtTokenStr, foundBool, _, gfErr := GetJWTtokenFromRequest(pReq, pRuntimeSys)
 	if gfErr != nil {
 		return sessionValidBool, nil, nil, gfErr
 	}

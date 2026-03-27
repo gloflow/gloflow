@@ -319,7 +319,8 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 				//------------------
 				// INPUT
 
-				jwtTokenStr, foundBool, gfErr := gf_identity_core.GetJWTtokenFromRequest(pReq, false, pRuntimeSys)
+				// looks for JWT token first in request cookies, and then in the Authorization header.
+				jwtTokenStr, foundBool, _, gfErr := gf_identity_core.GetJWTtokenFromRequest(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

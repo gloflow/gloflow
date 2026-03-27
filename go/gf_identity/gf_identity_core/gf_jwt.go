@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_core
 
 import (
-	
+
 	"time"
 	"context"
 	"strings"
@@ -34,6 +34,11 @@ import (
 //---------------------------------------------------
 
 type GFjwtTokenVal string
+
+const (
+	JWT_FOUND_IN_HEADER string = "header"
+	JWT_FOUND_IN_COOKIE string = "cookie"
+)
 
 //---------------------------------------------------
 // GENERATE
@@ -217,7 +222,7 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 		// Check if the error is specifically a token expiration error
 		if validationErr, ok := err.(*jwt.ValidationError); ok {
 			if validationErr.Errors&jwt.ValidationErrorExpired != 0 {
-				
+
 				expiredBool = true
 				return false, expiredBool, nil, nil
 			}
@@ -274,17 +279,34 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 //-------------------------------------------------------------
 
 // extract JWT token from a http request and return it as a string
+// Checks cookie first, then header if not found in cookie
 func GetJWTtokenFromRequest(pReq *http.Request,
-	pLookInHeaderForJWTbool bool,
-	pRuntimeSys             *gf_core.RuntimeSys) (string, bool, *gf_core.GFerror) {
-	
-	var authTokenStr string
-	var jwtTokenFoundBool bool
+	pRuntimeSys *gf_core.RuntimeSys) (authTokenStr string, jwtTokenFoundBool bool, jwtTokenFoundInStr string, gfErr *gf_core.GFerror) {
 
 	//-------------------------
-	// HEADER
-	if pLookInHeaderForJWTbool {
+	// COOKIE - try cookie first
+	cookieNameStr := "Authorization"
 
+	pRuntimeSys.LogNewFun("DEBUG", `"Authorization" cookie getting from request...`,
+		map[string]interface{}{
+			"cookie_name": cookieNameStr,
+		})
+
+	jwtTokenFoundInCookieBool, cookieValueStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq, pRuntimeSys)
+
+	pRuntimeSys.LogNewFun("DEBUG", `"Authorization" cookie from request...`,
+		map[string]interface{}{
+			"cookie_name": cookieNameStr,
+			"jwt_token_found": jwtTokenFoundInCookieBool,
+		})
+
+	if jwtTokenFoundInCookieBool {
+		authTokenStr = cookieValueStr
+		jwtTokenFoundBool = jwtTokenFoundInCookieBool
+		jwtTokenFoundInStr = JWT_FOUND_IN_COOKIE
+	} else {
+		//-------------------------
+		// HEADER - if not found in cookie, try header
 		headerNameStr := "Authorization"
 
 		authTokenStr = pReq.Header.Get(headerNameStr)
@@ -308,37 +330,11 @@ func GetJWTtokenFromRequest(pReq *http.Request,
 			})
 
 		if !jwtTokenFoundInHeaderBool {
-			return "", jwtTokenFoundInHeaderBool, nil
+			return "", jwtTokenFoundInHeaderBool, jwtTokenFoundInStr, nil
 		}
 
 		jwtTokenFoundBool = jwtTokenFoundInHeaderBool
-
-	//-------------------------
-	// COOKIE
-	} else {
-
-		// AUTHORIZATION_HEADER - standard Oauth2 header symbol.
-		cookieNameStr := "Authorization"
-
-		pRuntimeSys.LogNewFun("DEBUG", `"Authorization" cookie getting from request...`,
-			map[string]interface{}{
-				"cookie_name": cookieNameStr,
-			})
-
-		jwtTokenFoundInCookieBool, cookieValueStr := gf_core.HTTPgetCookieFromReq(cookieNameStr, pReq, pRuntimeSys)
-
-		pRuntimeSys.LogNewFun("DEBUG", `"Authorization" cookie from request...`,
-			map[string]interface{}{
-				"cookie_name": cookieNameStr,
-				"jwt_token_found": jwtTokenFoundInCookieBool,
-			})
-
-		if !jwtTokenFoundInCookieBool {
-			return "", jwtTokenFoundInCookieBool, nil
-		}
-
-		authTokenStr = cookieValueStr
-		jwtTokenFoundBool = jwtTokenFoundInCookieBool
+		jwtTokenFoundInStr = JWT_FOUND_IN_HEADER
 	}
 
 	//-------------------------
@@ -353,8 +349,8 @@ func GetJWTtokenFromRequest(pReq *http.Request,
 				"auth_token_str": authTokenStr,
 			},
 			nil, "gf_identity_core", pRuntimeSys)
-		return "", jwtTokenFoundBool, gfErr
+		return "", jwtTokenFoundBool, jwtTokenFoundInStr, gfErr
     }
 
-    return authPartsLst[1], jwtTokenFoundBool, nil
+    return authPartsLst[1], jwtTokenFoundBool, jwtTokenFoundInStr, nil
 }
