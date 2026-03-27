@@ -415,6 +415,29 @@ func SessionCreate(pUserID *gf_core.GF_ID,
 }
 
 //---------------------------------------------------
+
+func GetSessionIDfromReq(pReq *http.Request,
+	pRuntimeSys *gf_core.RuntimeSys) (*gf_core.GF_ID, bool) {
+
+	// CHECK_COOKIE
+	sessCookieNameStr := "gf_sess"
+	existsBool, valStr := gf_core.HTTPgetCookieFromReq(sessCookieNameStr, pReq, pRuntimeSys)
+
+	// CHECK_HEADER
+	// if cookie is not present, check for session ID in header
+	if !existsBool || valStr == "" {
+		sessHeaderNameStr := "gf_sess"
+		valStr = pReq.Header.Get(sessHeaderNameStr)
+		if valStr != "" {
+			existsBool = true
+		}
+	}
+
+	sessionID := gf_core.GF_ID(valStr)
+	return &sessionID, existsBool
+}
+
+//---------------------------------------------------
 // COOKIES
 //---------------------------------------------------
 
@@ -480,18 +503,6 @@ func DeleteCookies(pDomainForAuthCookiesStr string,
 
 	jwtCookieNameStr := "Authorization"
 	gf_core.HTTPdeleteCookieOnResp(jwtCookieNameStr, pDomainForAuthCookiesStr, pResp)
-}
-
-//---------------------------------------------------
-
-func GetSessionIDfromReq(pReq *http.Request,
-	pRuntimeSys *gf_core.RuntimeSys) (*gf_core.GF_ID, bool) {
-
-	sessCookieNameStr := "gf_sess"
-	existsBool, valStr := gf_core.HTTPgetCookieFromReq(sessCookieNameStr, pReq, pRuntimeSys)
-
-	sessionID := gf_core.GF_ID(valStr)
-	return &sessionID, existsBool
 }
 
 //---------------------------------------------------

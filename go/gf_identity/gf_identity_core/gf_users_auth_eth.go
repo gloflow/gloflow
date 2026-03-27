@@ -195,9 +195,12 @@ func ETHpipelineLogin(pInput *GFethInputLogin,
 	// JWT
 	userIdentifierStr    := string(userID)
 	authSubsystemTypeStr := GF_AUTH_SUBSYSTEM_TYPE__ETH
+	_, jwtTokenTTLsecInt := GetSessionTTL()
+	
 	jwtTokenVal, gfErr   := JWTpipelineGenerate(userIdentifierStr,
 		authSubsystemTypeStr,
 		pInput.AudienceStr,
+		jwtTokenTTLsecInt,
 		pKeyServerInfo,
 		pCtx,
 		pRuntimeSys)

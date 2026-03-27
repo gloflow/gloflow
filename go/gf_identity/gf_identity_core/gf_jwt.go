@@ -47,6 +47,7 @@ const (
 func JWTpipelineGenerate(pUserIdentifierStr string,
 	pAuthSubsystemTypeStr string,
 	pAudienceStr          string,
+	pTTLsecInt            int64,
 	pKeyServerInfo        *GFkeyServerInfo,
 	pCtx                  context.Context,
 	pRuntimeSys           *gf_core.RuntimeSys) (*GFjwtTokenVal, *gf_core.GFerror) {
@@ -64,6 +65,7 @@ func JWTpipelineGenerate(pUserIdentifierStr string,
 	tokenValStr, gfErr := jwtGenerate(pUserIdentifierStr,
 		signingKey,
 		pAudienceStr,
+		pTTLsecInt,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -80,6 +82,7 @@ func JWTpipelineGenerate(pUserIdentifierStr string,
 func jwtGenerate(pUserIdentifierStr string,
 	pSigningKey  *rsa.PrivateKey,
 	pAudienceStr string,
+	pTTLsecInt   int64,
 	pCtx         context.Context,
 	pRuntimeSys  *gf_core.RuntimeSys) (*GFjwtTokenVal, *gf_core.GFerror) {
 
@@ -87,9 +90,8 @@ func jwtGenerate(pUserIdentifierStr string,
 		"user_identifier_str": pUserIdentifierStr,})
 
 	issuerStr := "gf"
-	_, jwtTokenTTLsecInt  := GetSessionTTL()
 	creationUNIXtimeF     := float64(time.Now().UnixNano())/1000000000.0
-	expirationUNIXtimeInt := int64(creationUNIXtimeF) + jwtTokenTTLsecInt
+	expirationUNIXtimeInt := int64(creationUNIXtimeF) + pTTLsecInt
 
 	//----------------------
 	// CLAIMS

@@ -214,10 +214,12 @@ func UserpassPipelineLoginFinalize(pInput *GFuserpassInputLoginFinalize,
 	// JWT
 	userIdentifierStr := string(userID)
 	authSubsystemTypeStr := GF_AUTH_SUBSYSTEM_TYPE__USERPASS
-	
+	_, jwtTokenTTLsecInt := GetSessionTTL()
+
 	JWTtokenVal, gfErr := JWTpipelineGenerate(userIdentifierStr,
 		authSubsystemTypeStr,
 		pInput.AudienceStr,
+		jwtTokenTTLsecInt,
 		pKeyServerInfo,
 		pCtx,
 		pRuntimeSys)
