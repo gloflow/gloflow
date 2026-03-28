@@ -44,6 +44,9 @@ func RuntimeGet(pConfigPathStr string,
 		LogFun:         pLogFun,
 		LogNewFun:      pLogNewFun,
 
+		// VALIDATOR
+		Validator: gf_core.ValidateInit(),
+
 		// EXTERNAL_PLUGINS
 		ExternalPlugins: pExternalPlugins,
 	}
