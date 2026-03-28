@@ -203,8 +203,8 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			map[string]interface{}{
 				"path":                     pathStr,
 				"valid":                    validBool,
-				"user_id":                  userID,
-				"session_id":               sessionID,
+				"*user_id":                  userID,
+				"*session_id":               sessionID,
 				"auth_redirect_on_failure": authRedirectOnFailBool,
 				"auth_subsystem_type":      pHandlerRuntime.AuthSubsystemTypeStr,
 			})
@@ -245,6 +245,13 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			ctxAuth   := context.WithValue(ctxUserID, "gf_session_id", string(*sessionID))
 
 			//-----------------------
+
+			pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> session valid...`,
+				map[string]interface{}{
+					"path":        pathStr,
+					"user_id":     *userID,
+					"session_id":  string(*sessionID),
+				})
 
 			// session is valid, no need to interupt the handler from further execution
 			exitReqBool = false

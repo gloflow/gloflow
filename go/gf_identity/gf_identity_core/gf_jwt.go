@@ -87,7 +87,7 @@ func jwtGenerate(pUserIdentifierStr string,
 	pRuntimeSys  *gf_core.RuntimeSys) (*GFjwtTokenVal, *gf_core.GFerror) {
 
 	pRuntimeSys.LogNewFun("DEBUG", "JWT generated for user", map[string]interface{}{
-		"user_identifier_str": pUserIdentifierStr,})
+		"user_identifier": pUserIdentifierStr,})
 
 	issuerStr := "gf"
 	creationUNIXtimeF     := float64(time.Now().UnixNano())/1000000000.0
@@ -148,7 +148,7 @@ func jwtGenerate(pUserIdentifierStr string,
 		gfErr := gf_core.ErrorCreate("failed to sign JWT token for user",
 			"crypto_jwt_sign_token_error",
 			map[string]interface{}{
-				"user_identifier_str": pUserIdentifierStr,
+				"user_identifier": pUserIdentifierStr,
 			},
 			err, "gf_identity_core", pRuntimeSys)
 		return nil, gfErr
@@ -193,8 +193,8 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 		gfErr := gf_core.ErrorCreate("JWT token supplied for validation is invalid",
 			"crypto_jwt_verify_token_invalid_error",
 			map[string]interface{}{
-				"jwt_token_val_str":       pJWTtokenVal,
-				"auth_subsystem_type_str": pAuthSubsystemTypeStr,
+				"jwt_token_val":       pJWTtokenVal,
+				"auth_subsystem_type": pAuthSubsystemTypeStr,
 			},
 			nil, "gf_identity_core", pRuntimeSys)
 		return nil, gfErr
@@ -233,7 +233,7 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 		gfErr := gf_core.ErrorCreate("failed to verify a JWT token",
 			"crypto_jwt_verify_token_error",
 			map[string]interface{}{
-				"jwt_token_val_str": pJWTtokenVal,
+				"jwt_token_val": pJWTtokenVal,
 			},
 			err, "gf_identity_core", pRuntimeSys)
 		return false, expiredBool, nil, gfErr
@@ -262,7 +262,7 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 		gfErr := gf_core.ErrorCreate("validated JWT token is missing an expected 'sub' claim",
 			"crypto_jwt_verify_token_error",
 			map[string]interface{}{
-				"jwt_token_val_str": pJWTtokenVal,
+				"jwt_token_val": pJWTtokenVal,
 			},
 			err, "gf_identity_core", pRuntimeSys)
 		return false, expiredBool, nil, gfErr
@@ -328,7 +328,7 @@ func GetJWTtokenFromRequest(pReq *http.Request,
 		pRuntimeSys.LogNewFun("DEBUG", `"Authorization" header getting from request...`,
 			map[string]interface{}{
 				"jwt_token_found": jwtTokenFoundInHeaderBool,
-				"auth_token_str": authTokenDisplayStr,
+				"auth_token": authTokenDisplayStr,
 			})
 
 		if !jwtTokenFoundInHeaderBool {
@@ -347,8 +347,8 @@ func GetJWTtokenFromRequest(pReq *http.Request,
 		gfErr := gf_core.ErrorCreate("Authorization cookie is not in a valid format (not composed of 2 components, starting with 'Bearer ...')",
 			"http_cookie",
 			map[string]interface{}{
-				"path_str":        pReq.URL.Path,
-				"auth_token_str": authTokenStr,
+				"path":       pReq.URL.Path,
+				"auth_token": authTokenStr,
 			},
 			nil, "gf_identity_core", pRuntimeSys)
 		return "", jwtTokenFoundBool, jwtTokenFoundInStr, gfErr

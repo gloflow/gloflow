@@ -28,7 +28,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	// spew "github.com/davecgh/go-spew/spew"
 	gf_core "github.com/gloflow/gloflow/go/gf_core"
 	gf_auth0 "github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 )
@@ -164,7 +163,7 @@ func KSinit(pAuth0initBool bool,
 
 				pRuntimeSys.LogNewFun("DEBUG", "key_server - received request for JWT validation key...",
 					map[string]interface{}{
-						"auth_subsystem_type_str": req.authSubsystemTypeStr,
+						"auth_subsystem_type": req.authSubsystemTypeStr,
 					})
 
 				switch req.authSubsystemTypeStr {
@@ -184,7 +183,7 @@ func KSinit(pAuth0initBool bool,
 			case req := <- getJWTsigningKeyCh:
 
 				pRuntimeSys.LogNewFun("DEBUG", "key_server - received request for JWT signing key",
-						map[string]interface{}{"auth_subsystem_type_str": req.authSubsystemTypeStr,})
+						map[string]interface{}{"auth_subsystem_type": req.authSubsystemTypeStr,})
 
 				req.responseCh <- privateKey
 			}
@@ -362,7 +361,7 @@ func ksJWTgetKeysFromStore(pCtx context.Context,
 		secretNameStr := fmt.Sprintf("gf_jwt_keypair_%s", pRuntimeSys.EnvStr)
 
 		pRuntimeSys.LogNewFun("DEBUG", "getting keys from secrets store", map[string]interface{}{
-			"secret_name_str": secretNameStr,
+			"secret_name": secretNameStr,
 		})
 
 		// SECRET_GET
@@ -416,8 +415,8 @@ func ksDBcreateJWTsecret(pJWTsecret *GFjwtSecret,
 	gfErr := gf_core.MongoInsert(pJWTsecret,
 		collNameStr,
 		map[string]interface{}{
-			"id_str":             pJWTsecret.IDstr,
-			"caller_err_msg_str": "failed to create jwt_secret in the DB",
+			"id":             pJWTsecret.IDstr,
+			"caller_err_msg": "failed to create jwt_secret in the DB",
 		},
 		pCtx,
 		pRuntimeSys)
