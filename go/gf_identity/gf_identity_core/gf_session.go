@@ -315,13 +315,18 @@ func SessionValidate(pReq *http.Request,
 	case GF_AUTH_SUBSYSTEM_TYPE__USERPASS:
 
 		// JWT_VALIDATE
-		userIDfromGF, gfErr := JWTpipelineValidate(GFjwtTokenVal(jwtTokenStr),
+		userIDfromGF, jwtExpiredBool, gfErr := JWTpipelineValidate(GFjwtTokenVal(jwtTokenStr),
 			pAuthSubsystemTypeStr,
 			pKeyServerInfo,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
 			return sessionValidBool, nil, nil, gfErr
+		}
+
+		if jwtExpiredBool {
+			sessionValidBool = false
+			return sessionValidBool, nil, nil, nil
 		}
 
 		userID = userIDfromGF
@@ -376,7 +381,8 @@ func SessionCreate(pUserID *gf_core.GF_ID,
 		UserIDfromIdp:        pUserIDfromIdp,
 	}
 
-	// with Auth0 the userID is only known after the login completes, and the session
+	// GF    - for GF auth method the userID is known at the login start, so it is set in the session record from the start.
+	// AUTH0 - userID is only known after the login completes, and the session
 	// record is updated then. session is created initially without userID at the login start.
 	if pUserID != nil {
 		session.UserID = *pUserID

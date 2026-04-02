@@ -81,11 +81,12 @@ func dbSQLcreateNewSession(pSession *GFsession,
 
 			auth_subsystem_type,
 			auth_method,
+			user_id,
 			user_id_idp,
 
 			user_agent
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
 	`
 
 	// serializing the profile map to JSON to store in the database
@@ -109,6 +110,7 @@ func dbSQLcreateNewSession(pSession *GFsession,
 		pSession.AuthSubsystemTypeStr,
 		pSession.AuthMethodStr,
 
+		pSession.UserID,
 		pSession.UserIDfromIdp,
 		pSession.UserAgent)
 

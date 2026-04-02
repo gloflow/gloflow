@@ -166,28 +166,36 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 	pAuthSubsystemTypeStr string,
 	pKeyServerInfo        *GFkeyServerInfo,
 	pCtx                  context.Context,
-	pRuntimeSys           *gf_core.RuntimeSys) (*gf_core.GF_ID, *gf_core.GFerror) {
+	pRuntimeSys           *gf_core.RuntimeSys) (*gf_core.GF_ID, bool, *gf_core.GFerror) {
 
 	pRuntimeSys.LogNewFun("DEBUG", "validating JWT token...", map[string]interface{}{
 		"auth_subsystem_type": pAuthSubsystemTypeStr,
 	})
+
+	jwtExpiredBool := false
 
 	// KEY_SERVER
 	publicKey, gfErr := KSclientJWTgetValidationKey(pAuthSubsystemTypeStr,
 		pKeyServerInfo,
 		pRuntimeSys)
 	if gfErr != nil {
-		return nil, gfErr
+		return nil, jwtExpiredBool, gfErr
 	}
 
 	// VALIDATE
-	validBool, _, userID, gfErr := JWTvalidate(pJWTtokenVal,
+	validBool, expiredBool, userID, gfErr := JWTvalidate(pJWTtokenVal,
 		publicKey,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
-		return nil, gfErr
+		return nil, jwtExpiredBool, gfErr
 	}
+
+	if expiredBool {
+		jwtExpiredBool = true
+		return nil, jwtExpiredBool, gfErr
+	}
+
 
 	if !validBool {
 		gfErr := gf_core.ErrorCreate("JWT token supplied for validation is invalid",
@@ -197,10 +205,10 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 				"auth_subsystem_type": pAuthSubsystemTypeStr,
 			},
 			nil, "gf_identity_core", pRuntimeSys)
-		return nil, gfErr
+		return nil, jwtExpiredBool, gfErr
 	}
 
-	return userID, nil
+	return userID, jwtExpiredBool, nil
 }
 
 //---------------------------------------------------
