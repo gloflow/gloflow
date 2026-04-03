@@ -38,7 +38,7 @@ import (
 func InitSoloService(pHTTPmux *http.ServeMux,
 	pServiceInfo *gf_images_core.GFserviceInfo,
 	pConfig      *gf_images_core.GFconfig,
-	pRuntimeSys  *gf_core.RuntimeSys) gf_images_jobs_core.JobsMngr {
+	pRuntimeSys  *gf_core.RuntimeSys) ([]gf_core.HTTPhandlerInfo, gf_images_jobs_core.JobsMngr) {
 
 	//-------------
 	// METRICS
@@ -102,7 +102,7 @@ func InitSoloService(pHTTPmux *http.ServeMux,
 	}
 
 	// flows__templates_dir_path_str := pServiceInfo.Templates_dir_paths_map["flows_str"]
-	gfErr = gf_images_flows.InitHandlers(pServiceInfo.AuthSubsystemTypeStr,
+	handlersLst, gfErr := gf_images_flows.InitHandlers(pServiceInfo.AuthSubsystemTypeStr,
 		pServiceInfo.AuthLoginURLstr,
 		pServiceInfo.KeyServer,
 		pHTTPmux,
@@ -143,5 +143,5 @@ func InitSoloService(pHTTPmux *http.ServeMux,
 
 	//------------------------
 
-	return jobsMngrCh
+	return handlersLst, jobsMngrCh
 }

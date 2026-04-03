@@ -47,6 +47,7 @@ func InitService(pHTTPmux *http.ServeMux,
 
 	//-------------
 	// METRICS
+	metricsGroupNameStr := "gf_solo__images_rpc_handlers"
 	metrics := gf_images_core.MetricsCreate("gf_images")
 	
 	//------------------------
@@ -116,7 +117,7 @@ func InitService(pHTTPmux *http.ServeMux,
 	}
 
 	// flows__templates_dir_path_str := pServiceInfo.Templates_dir_paths_map["flows_str"]
-	gfErr = gf_images_flows.InitHandlers(pServiceInfo.AuthSubsystemTypeStr,
+	flowsHandlersLst, gfErr := gf_images_flows.InitHandlers(pServiceInfo.AuthSubsystemTypeStr,
 		pServiceInfo.AuthLoginURLstr,
 		pServiceInfo.KeyServer,
 		pHTTPmux,
@@ -167,6 +168,16 @@ func InitService(pHTTPmux *http.ServeMux,
 	}
 
 	//------------------------
+	// register handlers. this is for new style handler definitions that all image handlers should migrate to.
+	gf_rpc_lib.CreateHandlersHTTP(flowsHandlersLst,
+		pHTTPmux,
+		pServiceInfo.AuthSubsystemTypeStr,
+		pServiceInfo.AuthLoginURLstr,
+		pServiceInfo.KeyServer,
+		metricsGroupNameStr,
+		pRuntimeSys)
+
+	//------------------------
 	
 	// STATIC_FILE SERVING
 	staticFilesURLbaseStr := "/images"
@@ -178,6 +189,7 @@ func InitService(pHTTPmux *http.ServeMux,
 
 	//------------------------
 
+	
 	return jobsMngrCh
 }
 

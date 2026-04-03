@@ -37,13 +37,13 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	pHTTPmux           *http.ServeMux,
 	pTemplatesPathsMap map[string]string,
 	pJobsMngrCh        chan gf_images_jobs_core.JobMsg,
-	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys        *gf_core.RuntimeSys) ([]gf_core.HTTPhandlerInfo, *gf_core.GFerror) {
 
 	//---------------------
 	// TEMPLATES
 	templates, gfErr := tmplLoad(pTemplatesPathsMap, pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return nil, gfErr
 	}
 
 	//---------------------
@@ -52,8 +52,12 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		"/v1/images/flows/all",
 		"/v1/images/flows/add_img",
 		"/v1/images/flows/imgs_exist",
+
+		// LEGACY!!
 		"/images/flows/browser",
 		"/images/flows/browser_page",
+
+		"/v1/images/flows/browser_page",
 	}
 	metricsGroupNameStr := "flows"
 	metrics := gf_rpc_lib.MetricsCreateForHandlersFromEndpoints(metricsGroupNameStr, "gf_images", handlersEndpointsLst, pRuntimeSys)
@@ -271,11 +275,20 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	//-------------------------------------------------
 	// GET_BROWSER_PAGE (slice of posts data series)
 
+	// LEGACY!!
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/browser_page",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
 
+				dataMap, gfErr := flowsBrowserPage(pCtx, pResp, pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				return dataMap, nil
+				
+				/*
 				pagesLst, pagesUserNamesLst, gfErr := pipelineGetPage(pReq, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
@@ -290,6 +303,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 				return dataMap, nil
 				
 				//------------------
+				*/
 			}
 			return nil, nil
 		},
@@ -299,7 +313,50 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		nil,
 		pRuntimeSys)
 
+
+	handlerFlowsBrowserPage := gf_core.HTTPhandlerInfo{
+		AuthBool: false,
+		PathStr:  "GET /v1/images/flows/browser_page",
+
+		HandlerFun: func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+			dataMap, gfErr := flowsBrowserPage(pCtx, pResp, pReq, pRuntimeSys)
+			if gfErr != nil {
+				return nil, gfErr
+			}
+
+			return dataMap, nil
+		},
+	}
+
 	//-------------------------------------------------
 
-	return nil
+	handlersInfoLst := []gf_core.HTTPhandlerInfo{
+		handlerFlowsBrowserPage,
+	}
+
+	return handlersInfoLst, nil
 }
+
+//-------------------------------------------------
+
+func flowsBrowserPage(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request,
+	pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
+
+	pagesLst, pagesUserNamesLst, gfErr := pipelineGetPage(pReq, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	//--------------------
+	// OUTPUT
+	dataMap := map[string]interface{}{
+		"pages_lst":            pagesLst,
+		"pages_user_names_lst": pagesUserNamesLst,
+	}
+	return dataMap, nil
+	
+	//------------------
+}
+
+//-------------------------------------------------

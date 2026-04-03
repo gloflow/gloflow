@@ -99,6 +99,7 @@ func DBgetAll(pUseMongoBool bool,
 	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
+	/*
 	// MONGO
 	var mongoResultsLst []map[string]interface{}
 	if pUseMongoBool {
@@ -109,6 +110,7 @@ func DBgetAll(pUseMongoBool bool,
 			return nil, gfErr
 		}
 	}
+	*/
 
 	// SQL
 	sqlResultsLst, gfErr := DBsqlGetAll(pCtx, pRuntimeSys)
@@ -125,6 +127,7 @@ func DBgetAll(pUseMongoBool bool,
 		mergedMap[flowNameStr] = countInt
 	}
 
+	/*
 	if pUseMongoBool {
 		for _, resultMap := range mongoResultsLst {
 			
@@ -140,7 +143,8 @@ func DBgetAll(pUseMongoBool bool,
 			}
 		}
 	}
-
+	*/
+	
 	//-------------------
 	// convert to list
 
