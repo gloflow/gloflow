@@ -79,6 +79,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		"/v1/images/get",
 		"/v1/images/upload_init",
 		"/v1/images/upload_complete",
+
+		// LEGACY!! - remove
 		"/images/c",
 	}
 	metricsGroupNameStr := "main"

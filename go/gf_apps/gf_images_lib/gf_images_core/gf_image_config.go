@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_core
 
 import (
+	"os"
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -163,6 +164,35 @@ func ConfigGet(pConfigPathStr string,
 	// IPFS
 	config.UseNewStorageEngineBool = pUseNewStorageEngineBool
 	config.IPFSnodeHostStr         = pIPFSnodeHostStr
+
+	//------------------------
+	// CREATE_LOCAL_DIRS - ensure all configured local directories exist
+	
+	localDirsToCreateLst := []string{
+		config.ImagesStoreLocalDirPathStr,
+		config.ImagesThumbnailsStoreLocalDirPathStr,
+		config.VideoStoreLocalDirPathStr,
+	}
+
+	for _, dirPathStr := range localDirsToCreateLst {
+		if dirPathStr != "" {
+			// Check if directory exists
+			if _, err := os.Stat(dirPathStr); os.IsNotExist(err) {
+				// Directory doesn't exist, create it with 0755 permissions
+				pRuntimeSys.LogFun("INFO", "creating local directory: "+dirPathStr)
+				err := os.MkdirAll(dirPathStr, 0755)
+				if err != nil {
+					gfErr := gf_core.ErrorCreate("failed to create local directory for images storage",
+						"directory_create_error",
+						map[string]interface{}{
+							"dir_path": dirPathStr,
+						},
+						err, "gf_images_core", pRuntimeSys)
+					return nil, gfErr
+				}
+			}
+		}
+	}
 
 	//------------------------
 	

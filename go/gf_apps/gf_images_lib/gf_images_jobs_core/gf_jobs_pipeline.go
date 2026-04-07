@@ -72,13 +72,19 @@ func pipelineProcessExternVideo(pVideoIDstr gf_images_core.GFimageID,
 	// FIX!! - this should be passed in from outside this function
 	metaMap := map[string]interface{}{}
 
+	// Ensure we use /tmp if no thumbnails dir path is configured
+	thumbsLocalDirPathStr := pImagesThumbsLocalDirPathStr
+	if thumbsLocalDirPathStr == "" || thumbsLocalDirPathStr == "/" {
+		thumbsLocalDirPathStr = "/tmp"
+	}
+
 	imageThumbs, gfErr := jobTransform(pVideoIDstr,
 		pFlowsNamesLst,
 		pVideoSourceURLstr,
 		pOriginPageURLstr,
 		metaMap,
 		imageLocalFilePathStr,
-		pImagesThumbsLocalDirPathStr,
+		thumbsLocalDirPathStr,
 		pPluginsPyDirPathStr,
 		pJobRuntime,
 		pRuntimeSys)
@@ -133,8 +139,22 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 	//-----------------------
 	// GET_IMAGE_FROM_FS
 
+	pRuntimeSys.LogNewFun("DEBUG", "processing uploaded image...", map[string]interface{}{
+		"image_id": pImageIDstr,
+		"s3_file_path": pS3filePathStr,
+		"images_store_local_dir_path": pImagesStoreLocalDirPathStr,
+		"images_thumbs_local_dir_path": pImagesThumbsLocalDirPathStr,
+		"flows_names": pFlowsNamesLst,
+	})
+
+	// Ensure we use /tmp if no local dir path is configured
+	localDirPathStr := pImagesStoreLocalDirPathStr
+	if localDirPathStr == "" || localDirPathStr == "/" {
+		localDirPathStr = "/tmp"
+	}
+
 	imageLocalFilePathStr := fmt.Sprintf("%s/%s",
-		pImagesStoreLocalDirPathStr,
+		localDirPathStr,
 		filepath.Base(pS3filePathStr))
 	
 	// NEW_STORAGE
@@ -179,13 +199,19 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 	//-----------------------
 	// TRANSFORM_IMAGE
 	
+	// Ensure we use /tmp if no thumbnails dir path is configured
+	thumbsLocalDirPathStr := pImagesThumbsLocalDirPathStr
+	if thumbsLocalDirPathStr == "" || thumbsLocalDirPathStr == "/" {
+		thumbsLocalDirPathStr = "/tmp"
+	}
+	
 	imageThumbs, gfErr := jobTransform(pImageIDstr,
 		pFlowsNamesLst,
 		"", // p_image_source_url_str,
 		"", // p_image_origin_page_url_str,
 		pMetaMap,
 		imageLocalFilePathStr,
-		pImagesThumbsLocalDirPathStr,
+		thumbsLocalDirPathStr,
 		pPluginsPyDirPathStr,
 		pJobRuntime,
 		pRuntimeSys)
@@ -346,13 +372,19 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	// FIX!! - this should be passed in from outside this function
 	metaMap := map[string]interface{}{}
 
+	// Ensure we use /tmp if no thumbnails dir path is configured
+	thumbsLocalDirPathStr := pImagesThumbsLocalDirPathStr
+	if thumbsLocalDirPathStr == "" || thumbsLocalDirPathStr == "/" {
+		thumbsLocalDirPathStr = "/tmp"
+	}
+
 	imageThumbs, gfErr := jobTransform(pImageIDstr,
 		pFlowsNamesLst,
 		pImageSourceURLstr,
 		pOriginPageURLstr,
 		metaMap,
 		imageLocalFilePathStr,
-		pImagesThumbsLocalDirPathStr,
+		thumbsLocalDirPathStr,
 		pPluginsPyDirPathStr,
 		pJobRuntime,
 		pRuntimeSys)

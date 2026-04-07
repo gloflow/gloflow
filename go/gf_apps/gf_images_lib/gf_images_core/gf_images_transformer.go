@@ -88,6 +88,11 @@ func TransformImage(pImageIDstr GFimageID,
 	// PY_PLUGINS
 	// runs the Py VM in a new process, spawned via a new go-routine
 	
+	pRuntimeSys.LogNewFun("DEBUG", "running Py image plugins...", map[string]interface{}{
+		"image_local_file_path": pImageLocalFilePathStr,
+		"plugins_py_dir_path":   pPluginsPyDirPathStr,
+	})
+
 	gf_images_plugins.RunPyImagePlugins(pImageLocalFilePathStr,
 		pPluginsPyDirPathStr,
 		pPluginsMetrics,
