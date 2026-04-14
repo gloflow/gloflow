@@ -465,6 +465,26 @@ def login(p_docker_user_str,
 	if "Cannot connect to the Docker daemon" in stderr_str:
 		exit(1)
 
+	# ECR_TIMEOUT - provide helpful diagnostic information
+	if "Client.Timeout exceeded" in stderr_str or "request canceled" in stderr_str:
+		print(f"")
+		print(f"{fg('red')}{'=' * 70}{attr(0)}")
+		print(f"{fg('red')}ERROR: Docker login to ECR timed out{attr(0)}")
+		print(f"")
+		print(f"{fg('yellow')}Possible causes:{attr(0)}")
+		print(f"  1. Network connectivity issue - check internet connection")
+		print(f"  2. AWS credentials expired - run: aws ecr get-login-password")
+		print(f"  3. Docker daemon timeout - try restarting Docker")
+		print(f"  4. VPN/proxy blocking ECR access")
+		print(f"")
+		print(f"{fg('cyan')}Troubleshooting steps:{attr(0)}")
+		print(f"  • Test ECR connectivity: curl -I https://{p_host_str}/v2/")
+		print(f"  • Verify AWS credentials: aws sts get-caller-identity")
+		print(f"  • Check Docker is running: docker ps")
+		print(f"  • Restart Docker daemon: sudo systemctl restart docker")
+		print(f"{fg('red')}{'=' * 70}{attr(0)}")
+		print(f"")
+
 	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
     #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
 	#               in other scenarious its acceptable for this command to fail, and we want the caller
