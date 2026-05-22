@@ -135,7 +135,7 @@ func DBsqlConnect(pDBnameStr string,
 
 	for retriesInt := 0; retriesInt < maxRetriesInt; retriesInt++ {
 
-		pRuntimeSys.LogNewFun("INFO", "attempt - connecting to SQL DB...", nil)
+		pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("attempt - connecting to SQL DB... host: %s, db: %s", pDBhostStr, pDBnameStr), nil)
 		db, err = sql.Open("postgres", dbDSNuriStr)
 		if err == nil {
 
@@ -165,6 +165,69 @@ func DBsqlConnect(pDBnameStr string,
 	}
 
 	//-----------------------
+	// CONFIGURE CONNECTION POOL
+	//
+	// Without these settings, the Go SQL driver can open unlimited connections to the database,
+	// which can exhaust the available connection slots on the PostgreSQL server (especially on
+	// AWS RDS where non-superuser connections are limited, typically to ~80-100 on small instances).
+	//
+	// These settings work together to prevent connection exhaustion while maintaining performance:
+
+	// SetMaxOpenConns(25):
+	// - Hard limit on the total number of open connections (both in-use and idle)
+	// - When this limit is reached, new DB operations will BLOCK and wait for a connection to become available
+	// - Runtime behavior:
+	//   * If 25 connections are already open and a 26th query is attempted, it will wait
+	//   * The wait has no timeout by default - it blocks until a connection is freed
+	//   * This prevents the "remaining connection slots are reserved" error from PostgreSQL
+	// - Tuning considerations:
+	//   * Too low: requests will block waiting for connections, degrading performance
+	//   * Too high: can exhaust DB server connection limit, especially with multiple app instances
+	//   * Rule of thumb: (DB max_connections - reserved) / number_of_app_instances
+	//   * For RDS with max_connections=100, reserved=22, and 2 instances: (100-22)/2 = 39 per instance
+	//   * Set to 25 as a conservative default that works across different deployment sizes
+	db.SetMaxOpenConns(25)
+
+	// SetMaxIdleConns(5):
+	// - Maximum number of connections kept open in the idle pool (not actively executing queries)
+	// - Runtime behavior:
+	//   * When a query finishes, the connection is returned to the idle pool
+	//   * If idle pool is at capacity (5), the oldest idle connection is closed
+	//   * Idle connections are ready to use immediately (no connection handshake overhead)
+	// - Impact on connection accumulation:
+	//   * Prevents keeping too many idle connections open unnecessarily
+	//   * If all 25 connections are created but only 5 are needed for normal load,
+	//     the extra 20 will be closed after they become idle
+	//   * This allows the pool to shrink during low-traffic periods
+	// - Tuning considerations:
+	//   * Too low: frequent connection creation/destruction overhead during traffic spikes
+	//   * Too high: wastes DB server resources with idle connections
+	//   * Should be >= expected concurrent query load during normal operation
+	//   * Set to 5 to handle moderate concurrent load while being resource-efficient
+	db.SetMaxIdleConns(5)
+
+	// SetConnMaxLifetime(5 * time.Minute):
+	// - Maximum amount of time a connection can be reused before it's closed and recreated
+	// - Runtime behavior:
+	//   * Connection age is tracked from when it was first created
+	//   * After 5 minutes, even if the connection is idle and healthy, it will be closed
+	//   * The next query needing a connection will create a fresh one
+	//   * This happens lazily - connections aren't proactively closed at exactly 5 minutes
+	// - Impact on connection accumulation:
+	//   * Prevents indefinite connection accumulation from long-lived processes
+	//   * Ensures connections are periodically recycled, avoiding:
+	//     - Stale connections that the DB server might have closed
+	//     - Connections affected by network issues or DB server restarts
+	//     - Connections holding onto resources (memory, prepared statements) indefinitely
+	// - Tuning considerations:
+	//   * Too low: excessive connection churn, overhead from frequent reconnections
+	//   * Too high: stale connections, potential issues with DB server connection resets
+	//   * Should be less than DB server's connection timeout settings
+	//   * 5 minutes is a good balance - short enough to prevent staleness, long enough to avoid churn
+	// - Special consideration for RDS:
+	//   * AWS RDS may forcibly close idle connections after a timeout (default 8 hours)
+	//   * This setting ensures our connections are refreshed well before RDS times them out
+	db.SetConnMaxLifetime(5 * time.Minute)
 
 	fmt.Println("connected to SQL DB...")
 

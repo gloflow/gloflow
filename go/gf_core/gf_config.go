@@ -31,6 +31,9 @@ type GFconfig struct {
 
 	// ENVIRONMENT
 	EnvStr string `mapstructure:"env"`
+	
+	// DEPLOYMENT_TS - Unix timestamp of when this instance was deployed
+	DeploymentTimestampStr string `mapstructure:"deployment_ts"`
 
 	// DOMAINS - PRIMARY_DOMAIN - where this gf_solo instance is reachable on
 	DomainBaseStr      string `mapstructure:"domain_base"`
