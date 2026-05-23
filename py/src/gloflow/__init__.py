@@ -5,10 +5,11 @@ from gf_apps.gf_images.gf_images_core   import gf_image_db_sql, gf_image
 from gf_observe import gf_extern_load
 from gf_ml import gf_llm_core
 from gf_extern_services.gf_aws import gf_aws_ec2, gf_aws_s3, gf_aws_secrets, gf_aws_route53
-from gf_extern_services.gf_google import gf_google_sheets
 
 print("gloflow...")
 version = "0.1.18"
+
+__all__ = ['db', 'core', 'images', 'observe', 'ml', 'extern', 'version']
 
 #-------------------------
 # EXPORT_API
@@ -51,4 +52,3 @@ class extern():
     aws_s3  = gf_aws_s3
     aws_secrets = gf_aws_secrets
     aws_route53 = gf_aws_route53
-    gcp_sheets  = gf_google_sheets
