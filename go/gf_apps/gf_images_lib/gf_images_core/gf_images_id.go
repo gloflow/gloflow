@@ -20,11 +20,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_core
 
 import (
+	"crypto/md5"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"net/url"
 	"time"
-	"crypto/md5"
-	"encoding/hex"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -81,4 +82,23 @@ func CreateImageID(pImageURIstr string,
 	
 	gfImageIDstr := GFimageID(hex_str)
 	return gfImageIDstr
+}
+
+//-------------------------------------------------------------
+// GenerateImageIDfromFile - Generate GF image ID from file content hash
+
+func GenerateImageIDfromFile(pFileBytes []byte, pRuntimeSys *gf_core.RuntimeSys) string {
+	// Use SHA256 hash of file content
+	hash := sha256.Sum256(pFileBytes)
+	hashStr := hex.EncodeToString(hash[:])[:16] // First 16 chars
+
+	// Format: img_<hash>
+	imageIDstr := fmt.Sprintf("img_%s", hashStr)
+
+	pRuntimeSys.LogNewFun("INFO", "Generated image ID", map[string]interface{}{
+		"image_id": imageIDstr,
+		"hash":     hashStr,
+	})
+
+	return imageIDstr
 }
