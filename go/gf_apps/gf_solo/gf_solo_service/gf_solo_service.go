@@ -305,10 +305,6 @@ func Run(pConfig *gf_core.GFconfig,
 		pRuntimeSys)
 
 	//-------------
-	// GF_ML
-	gf_ml_lib.InitService(gfSoloHTTPmux, pRuntimeSys)
-
-	//-------------
 	// GF_WEB3
 
 	web3Config := &gf_eth_core.GF_config{
