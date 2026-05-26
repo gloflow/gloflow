@@ -83,6 +83,12 @@ type RuntimeSys struct {
 
 	// IDENTITY
 	IdentitySubsystemTypeStr string
+
+	// IMAGES_JOBS
+	// JobsMngrCh is the channel for sending messages to the gf_images jobs manager.
+	// This is used by MCP tools and other subsystems that need to add images to flows.
+	// Type: chan gf_images_jobs_core.JobMsg (stored as interface{} to avoid import cycle)
+	JobsMngrCh interface{}
 }
 
 //-------------------------------------------------

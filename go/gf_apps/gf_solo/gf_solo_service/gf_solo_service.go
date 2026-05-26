@@ -37,7 +37,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_landing_page_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_analytics_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_web3_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	"github.com/gloflow/gloflow/gf_lang/go/gf_lang_server/gf_lang_service"
@@ -266,6 +265,14 @@ func Run(pConfig *gf_core.GFconfig,
 		imagesConfig,
 		pRuntimeSys)
 
+	// Store JobsMngrCh in RuntimeSys for MCP tools and other subsystems
+	// This enables flow integration for trader plots and other image operations
+	pRuntimeSys.JobsMngrCh = imagesJobsMngrCh
+	pRuntimeSys.LogNewFun("INFO", "JobsMngrCh stored in RuntimeSys", map[string]interface{}{
+		"jobs_mngr_ch_nil": imagesJobsMngrCh == nil,
+		"runtime_sys_ptr":  fmt.Sprintf("%p", pRuntimeSys),
+	})
+
 	//-------------
 	// GF_ANALYTICS
 
@@ -351,6 +358,10 @@ func Run(pConfig *gf_core.GFconfig,
 
 		//-------------
 		// USER_RPC_HANDLERS
+		pRuntimeSys.LogNewFun("INFO", "Calling plugins RPChandlersGetCallback", map[string]interface{}{
+			"runtime_sys_ptr": fmt.Sprintf("%p", pRuntimeSys),
+			"jobs_mngr_ch":    pRuntimeSys.JobsMngrCh,
+		})
 		handlersLst, handlersV2lst, gfErr := pRuntimeSys.ExternalPlugins.RPChandlersGetCallback(gfSoloHTTPmux, pRuntimeSys)
 		if gfErr != nil {
 
