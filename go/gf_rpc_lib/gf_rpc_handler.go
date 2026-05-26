@@ -571,7 +571,7 @@ func getHandler(pAuthBool bool,
 		ctxRoot := spanRoot.Context()
 
 		//------------------
-		// PLUGIN - run request pre-process callback
+		// HOOKS - run request pre-process callback
 		if pRuntimeSys.ExternalHooks != nil && pRuntimeSys.ExternalHooks.RPCreqPreProcessCallback != nil {
 
 			continueBool, gfErr := pRuntimeSys.ExternalHooks.RPCreqPreProcessCallback(pReq, pResp, ctxRoot, pRuntimeSys)

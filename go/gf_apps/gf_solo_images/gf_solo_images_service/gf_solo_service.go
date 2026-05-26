@@ -158,7 +158,7 @@ func Run(pConfig *GFconfig,
 	pRuntimeSys.Metrics = coreMetrics
 
 	//-------------
-	// PLUGIN - register external http handlers
+	// HOOKS - register external http handlers
 
 	if pRuntimeSys.ExternalHooks != nil && pRuntimeSys.ExternalHooks.RPChandlersGetCallback != nil {
 
@@ -172,7 +172,7 @@ func Run(pConfig *GFconfig,
 		//-------------
 
 		authSubsystemTypeStr := pConfig.AuthSubsystemTypeStr
-		metricsGroupNameStr  := "gf_solo_images__plugin_rpc_handlers"
+		metricsGroupNameStr  := "gf_solo_images__hooks_rpc_handlers"
 
 		gf_rpc_lib.CreateHandlersHTTP(metricsGroupNameStr,
 			handlersLst,
@@ -239,7 +239,7 @@ func RuntimeGet(pConfigPathStr string,
 		// SENTRY - enable it for error reporting
 		ErrorsSendToSentryBool: true,
 
-		// EXTERNAL_PLUGINS
+		// EXTERNAL_HOOKS
 		ExternalHooks: pExternalHooks,
 
 		// SENTRY_DSN

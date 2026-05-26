@@ -74,9 +74,9 @@ func UsersEmailPipelineVerify(pEmailAddressStr string,
 	senderAddressStr := fmt.Sprintf("gf-email-confirm@%s", pDomainBaseStr)
 
 	//------------------------
-	// PLUGIN
+	// HOOKS
 	//------------------------
-	// EMAIL_PLUGIN
+	// EMAIL_HOOKS
 	gfErr = pRuntimeSys.ExternalHooks.EmailSendingCallback(pEmailAddressStr,
 		senderAddressStr,
 		msgSubjectStr,

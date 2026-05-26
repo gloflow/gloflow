@@ -67,7 +67,7 @@ type RuntimeSys struct {
 
 	Validator *validator.Validate
 
-	// PLUGINS
+	// HOOKS
 	ExternalBootHook *ExternalBootHook
 	ExternalHooks    *ExternalHooks
 

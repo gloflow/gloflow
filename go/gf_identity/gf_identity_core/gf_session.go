@@ -91,7 +91,7 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 		var authCredsPresentBool bool
 
 		//-------------------------
-		// PLUGIN
+		// HOOKS
 		redirectUrlStr, authCredsPresentBool, gfErr = pRuntimeSys.ExternalHooks.IdentitySSOcallback(pReq,
 			pResp,
 			pCtx,
@@ -126,7 +126,7 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 
 	//-------------------------
 	// SESSION_VALIDATE
-	validBool, userID, sessionID, gfErr = SessionValidateWithPlugins(pReq,
+	validBool, userID, sessionID, gfErr = SessionValidateWithHooks(pReq,
 		pResp,
 		pKeyServerInfo,
 		pAuthSubsystemTypeStr,
@@ -178,7 +178,7 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 
 //---------------------------------------------------
 
-func SessionValidateWithPlugins(pReq *http.Request,
+func SessionValidateWithHooks(pReq *http.Request,
 	pResp                 http.ResponseWriter,
 	pKeyServerInfo        *GFkeyServerInfo,
 	pAuthSubsystemTypeStr string,
@@ -188,7 +188,7 @@ func SessionValidateWithPlugins(pReq *http.Request,
 
 	//---------------------
 	// API_KEY_VALIDATE
-	// PLUGIN - use custom session validation for api keys if provided
+	// HOOKS - use custom session validation for api keys if provided
 
 	// check if an API key is supplied; if not supplied Get() will return ""
 	if apiKeyStr := pReq.Header.Get(GF_IDENTITY_API_KEY_HEADER); apiKeyStr != "" {
@@ -213,7 +213,7 @@ func SessionValidateWithPlugins(pReq *http.Request,
 	//---------------------
 	// SESSION_VALIDATE
 
-	// PLUGIN - use custom session validation if provided
+	// HOOKS - use custom session validation if provided
 
 	} else if pRuntimeSys.ExternalHooks != nil &&
 		pRuntimeSys.ExternalHooks.IdentitySessionValidateCallback != nil {

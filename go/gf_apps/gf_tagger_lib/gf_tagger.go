@@ -398,7 +398,7 @@ func exportObjectsWithTag(pTagStr string,
 			return nil, gfErr
 		}
 
-		// PLUGIN
+		// HOOKS
 		metadataFilterDefinedBool := false
 		if pRuntimeSys.ExternalHooks != nil && pRuntimeSys.ExternalHooks.ImageFilterMetadataCallback != nil {
 			metadataFilterDefinedBool = true
