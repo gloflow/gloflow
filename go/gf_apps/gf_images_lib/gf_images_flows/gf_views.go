@@ -156,9 +156,9 @@ func renderTemplate(pFlowNameStr string,
 	pUserID                  gf_core.GF_ID,
 	pRuntimeSys              *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
-	// PLUGIN
+	// HOOK
 	metadataFilterDefinedBool := false
-	if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback != nil {
+	if pRuntimeSys.ExternalHooks != nil && pRuntimeSys.ExternalHooks.ImageFilterMetadataCallback != nil {
 		metadataFilterDefinedBool = true
 	}
 
@@ -173,7 +173,7 @@ func renderTemplate(pFlowNameStr string,
 			// META
 			var filteredMetaJSONstr string
 			if metadataFilterDefinedBool {
-				filteredMetaMap := pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback(image.MetaMap)
+				filteredMetaMap := pRuntimeSys.ExternalHooks.ImageFilterMetadataCallback(image.MetaMap)
 				metaJSONbytesLst, _ := json.Marshal(filteredMetaMap)
 				filteredMetaJSONstr = string(metaJSONbytesLst)
 			}

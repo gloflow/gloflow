@@ -213,8 +213,8 @@ func ksJWTgetKeysPipeline(pCtx context.Context,
 	// ADD!! - have a more robust was (flag) for checking if there is a
 	//         secret store setup for JWT secret fetching.
 
-	if pRuntimeSys.ExternalPlugins != nil &&
-		pRuntimeSys.ExternalPlugins.SecretGetCallback != nil {
+	if pRuntimeSys.ExternalHooks != nil &&
+		pRuntimeSys.ExternalHooks.SecretGetCallback != nil {
 
 
 
@@ -226,7 +226,7 @@ func ksJWTgetKeysPipeline(pCtx context.Context,
 				"secret_name": secretNameStr,
 			})
 
-		secretMap, gfErr := pRuntimeSys.ExternalPlugins.SecretGetCallback(secretNameStr, pRuntimeSys)
+		secretMap, gfErr := pRuntimeSys.ExternalHooks.SecretGetCallback(secretNameStr, pRuntimeSys)
 		if gfErr != nil {
 			return nil, nil, gfErr
 		}
@@ -355,8 +355,8 @@ func ksJWTgetKeysFromStore(pCtx context.Context,
 	var jwtPublicKeyPEMvalStr string  // for JWT Validation
 
 	// SECRETS_STORE
-	if pRuntimeSys.ExternalPlugins != nil &&
-		pRuntimeSys.ExternalPlugins.SecretGetCallback != nil {
+	if pRuntimeSys.ExternalHooks != nil &&
+		pRuntimeSys.ExternalHooks.SecretGetCallback != nil {
 
 		secretNameStr := fmt.Sprintf("gf_jwt_keypair_%s", pRuntimeSys.EnvStr)
 
@@ -365,7 +365,7 @@ func ksJWTgetKeysFromStore(pCtx context.Context,
 		})
 
 		// SECRET_GET
-		secretMap, gfErr := pRuntimeSys.ExternalPlugins.SecretGetCallback(secretNameStr,
+		secretMap, gfErr := pRuntimeSys.ExternalHooks.SecretGetCallback(secretNameStr,
 			pRuntimeSys)
 		if gfErr != nil {
 			return nil, nil, gfErr

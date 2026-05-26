@@ -351,10 +351,18 @@ func Run(pConfig *gf_core.GFconfig,
 	coreMetrics := gf_core.MetricsInit("/metrics", portMetricsInt)
 	pRuntimeSys.Metrics = coreMetrics
 
+
+	//-------------
+	// APP_RUNTIME
+
+	appsRuntime := &GFappsRuntime{
+		ImagesJobsMngrCh: imagesJobsMngrCh,
+	}
+
 	//-------------
 	// PLUGIN - register extern http handlers
 
-	if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.RPChandlersGetCallback != nil {
+	if pRuntimeSys.ExternalHooks != nil && pRuntimeSys.ExternalHooks.RPChandlersGetCallback != nil {
 
 		//-------------
 		// USER_RPC_HANDLERS
@@ -362,7 +370,9 @@ func Run(pConfig *gf_core.GFconfig,
 			"runtime_sys_ptr": fmt.Sprintf("%p", pRuntimeSys),
 			"jobs_mngr_ch":    pRuntimeSys.JobsMngrCh,
 		})
-		handlersLst, handlersV2lst, gfErr := pRuntimeSys.ExternalPlugins.RPChandlersGetCallback(gfSoloHTTPmux, pRuntimeSys)
+		handlersLst, handlersV2lst, gfErr := pRuntimeSys.ExternalHooks.RPChandlersGetCallback(appsRuntime,
+			gfSoloHTTPmux,
+			pRuntimeSys)
 		if gfErr != nil {
 
 			return

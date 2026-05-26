@@ -42,7 +42,7 @@ type RuntimeSys struct {
 	Config *GFconfig
 
 	//---------------------------
-	//
+	
 	AppNameStr	   string
 	ServiceNameStr string
 	EnvStr         string
@@ -53,6 +53,9 @@ type RuntimeSys struct {
 	// DB
 	SQLdb      *sql.DB
 	SQLdsnStr  string
+
+	// DEPRECATED!!
+	// REMOVE!! mongo!!
 	Mongo_db   *mongo.Database
 	Mongo_coll *mongo.Collection // main mongodb collection to use when none is specified
 
@@ -65,8 +68,8 @@ type RuntimeSys struct {
 	Validator *validator.Validate
 
 	// PLUGINS
-	ExternalBootPlugins *ExternalBootPlugins
-	ExternalPlugins     *ExternalPlugins
+	ExternalBootHook *ExternalBootHook
+	ExternalHooks    *ExternalHooks
 
 	Metrics *GFmetrics
 
@@ -83,23 +86,17 @@ type RuntimeSys struct {
 
 	// IDENTITY
 	IdentitySubsystemTypeStr string
-
-	// IMAGES_JOBS
-	// JobsMngrCh is the channel for sending messages to the gf_images jobs manager.
-	// This is used by MCP tools and other subsystems that need to add images to flows.
-	// Type: chan gf_images_jobs_core.JobMsg (stored as interface{} to avoid import cycle)
-	JobsMngrCh interface{}
 }
 
 //-------------------------------------------------
-// PLUGINS
+// HOOKS
 //-------------------------------------------------
-// EXTERNAL_BOOT_PLUGINS
+// EXTERNAL_BOOT_HOOKS
 
-type GFpluginConfigLoadCallback  func(*GFconfig, *RuntimeSys) (*GFconfig, *GFerror)
+type GFpluginConfigLoadCallback func(*GFconfig, *RuntimeSys) (*GFconfig, *GFerror)
 
-// special plugins that run at startup, and need a lot less infra setup to run
-type ExternalBootPlugins struct {
+// special hooks that run at startup, and need a lot less infra setup to run
+type ExternalBootHooks struct {
 	//---------------------------
 	// CONFIG
 
@@ -109,11 +106,11 @@ type ExternalBootPlugins struct {
 }
 
 //-------------------------------------------------
-// EXTERNAL_PLUGINS
+// EXTERNAL_HOOKS
 
-type GFpluginIdentitySSOcallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) (*string, bool, *GFerror)
+type GFhookIdentitySSOcallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) (*string, bool, *GFerror)
 
-type ExternalPlugins struct {
+type ExternalHooks struct {
 
 	//---------------------------
 	// RPC_HANDLERS
@@ -128,7 +125,7 @@ type ExternalPlugins struct {
 	// IDENTITY
 
 	// SSO - for SSO handling
-	IdentitySSOcallback GFpluginIdentitySSOcallback
+	IdentitySSOcallback GFhookIdentitySSOcallback
 
 	// for custom validation of general sessions
 	IdentitySessionValidateCallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) (bool, *GF_ID, *GF_ID, *GFerror)

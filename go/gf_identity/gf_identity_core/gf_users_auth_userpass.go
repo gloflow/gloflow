@@ -395,7 +395,7 @@ func UserpassPipelineCreate(pInput *GFuserpassInputCreate,
 
 	// SECRETS_STORE
 	if pServiceInfo.EnableUserCredsInSecretsStoreBool && 
-		pRuntimeSys.ExternalPlugins.SecretCreateCallback != nil {
+		pRuntimeSys.ExternalHooks.SecretCreateCallback != nil {
 
 		secretNameStr := fmt.Sprintf("gf_user_creds@%s", userNameStr)
 		secretDescriptionStr := fmt.Sprintf("user creds for a particular user")
@@ -410,7 +410,7 @@ func UserpassPipelineCreate(pInput *GFuserpassInputCreate,
 		}
 
 		// SECRET_STORE__USER_CREDS_CREATE
-		gfErr := pRuntimeSys.ExternalPlugins.SecretCreateCallback(secretNameStr,
+		gfErr := pRuntimeSys.ExternalHooks.SecretCreateCallback(secretNameStr,
 			userCredsMap,
 			secretDescriptionStr,
 			pRuntimeSys)
@@ -474,12 +474,12 @@ func UserpassVerifyPass(pUserNameStr GFuserName,
 
 	// SECRETS_STORE
 	if pServiceInfo.EnableUserCredsInSecretsStoreBool && 
-		pRuntimeSys.ExternalPlugins.SecretGetCallback != nil {
+		pRuntimeSys.ExternalHooks.SecretGetCallback != nil {
 
 		secretNameStr := fmt.Sprintf("gf_user_creds@%s", pUserNameStr)
 
 		// SECRET_GET
-		secretMap, gfErr := pRuntimeSys.ExternalPlugins.SecretGetCallback(secretNameStr,
+		secretMap, gfErr := pRuntimeSys.ExternalHooks.SecretGetCallback(secretNameStr,
 			pRuntimeSys)
 		if gfErr != nil {
 			return false, gfErr

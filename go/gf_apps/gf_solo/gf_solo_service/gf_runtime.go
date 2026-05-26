@@ -31,10 +31,10 @@ import (
 
 //-------------------------------------------------
 func RuntimeGet(pConfigPathStr string,
-	pBootPlugins     *gf_core.ExternalBootPlugins,
-	pExternalPlugins *gf_core.ExternalPlugins,
-	pLogFun          func(string, string),
-	pLogNewFun       gf_core.GFlogFun) (*gf_core.RuntimeSys, *gf_core.GFconfig, error) {
+	pBootHooks     *gf_core.ExternalBootHook,
+	pExternalHooks *gf_core.ExternalHooks,
+	pLogFun        func(string, string),
+	pLogNewFun     gf_core.GFlogFun) (*gf_core.RuntimeSys, *gf_core.GFconfig, error) {
 
 	//--------------------
 	// RUNTIME_SYS
@@ -47,8 +47,8 @@ func RuntimeGet(pConfigPathStr string,
 		// VALIDATOR
 		Validator: gf_core.ValidateInit(),
 
-		// EXTERNAL_PLUGINS
-		ExternalPlugins: pExternalPlugins,
+		// EXTERNAL_HOOKS
+		ExternalHooks: pExternalHooks,
 	}
 
 	//--------------------
@@ -56,15 +56,15 @@ func RuntimeGet(pConfigPathStr string,
 	configDirPathStr := path.Dir(pConfigPathStr)  // "./../config/"
 	configNameStr    := path.Base(pConfigPathStr) // "gf_solo"
 
-	// PLUGIN
-	var pluginConfigLoadCallbackFun gf_core.GFpluginConfigLoadCallback
-	if pBootPlugins != nil {
-		pluginConfigLoadCallbackFun = pBootPlugins.ConfigLoadCallback
+	// HOOK
+	var hookConfigLoadCallbackFun gf_core.GFhookConfigLoadCallback
+	if pBootHooks != nil {
+		hookConfigLoadCallbackFun = pBootHooks.ConfigLoadCallback
 	}
 
 	config, err := ConfigInit(configDirPathStr,
 		configNameStr,
-		pluginConfigLoadCallbackFun,
+		hookConfigLoadCallbackFun,
 		runtimeSys)
 	if err != nil {
 		fmt.Println(err)

@@ -30,8 +30,8 @@ import (
 
 //-------------------------------------------------
 
-func CmdsInit(pExternalBootPlugins *gf_core.ExternalBootPlugins,
-	pExternalPlugins *gf_core.ExternalPlugins,
+func CmdsInit(pExternalBootHooks *gf_core.ExternalBootHooks,
+	pExternalHooks *gf_core.ExternalHooks,
 	pConfig           *gf_core.GFconfig,
 	pExternRuntimeSys *gf_core.RuntimeSys) *cobra.Command {
 
@@ -77,8 +77,8 @@ func CmdsInit(pExternalBootPlugins *gf_core.ExternalBootPlugins,
 
 			if pExternRuntimeSys == nil {
 				runtimeSys, config, err := RuntimeGet(cliConfigPathStr,
-					pExternalBootPlugins,
-					pExternalPlugins,
+					pExternalBootHooks,
+					pExternalHooks,
 					logFun,
 					logNewFun)
 				if err != nil {

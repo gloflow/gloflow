@@ -28,11 +28,11 @@ import (
 
 func main() {
 
-	externalPlugins := &gf_core.ExternalPlugins{
+	externalHooks := &gf_core.ExternalHooks{
 
 	}
 
-	cmdBase := gf_solo_service.CmdsInit(nil, externalPlugins, nil, nil)
+	cmdBase := gf_solo_service.CmdsInit(nil, externalHooks, nil, nil)
 	err := cmdBase.Execute()
 	if err != nil {
 		panic(err)

@@ -84,15 +84,15 @@ func SessionValidateOrRedirectToLogin(pReq *http.Request,
 	spew.Dump(pRuntimeSys.Config)
 
 	if domainStr != pRuntimeSys.Config.DomainBaseStr &&
-		pRuntimeSys.ExternalPlugins != nil &&
-		pRuntimeSys.ExternalPlugins.IdentitySSOcallback != nil {
+		pRuntimeSys.ExternalHooks != nil &&
+		pRuntimeSys.ExternalHooks.IdentitySSOcallback != nil {
 
 		var redirectUrlStr *string
 		var authCredsPresentBool bool
 
 		//-------------------------
 		// PLUGIN
-		redirectUrlStr, authCredsPresentBool, gfErr = pRuntimeSys.ExternalPlugins.IdentitySSOcallback(pReq,
+		redirectUrlStr, authCredsPresentBool, gfErr = pRuntimeSys.ExternalHooks.IdentitySSOcallback(pReq,
 			pResp,
 			pCtx,
 			pRuntimeSys)
@@ -193,10 +193,10 @@ func SessionValidateWithPlugins(pReq *http.Request,
 	// check if an API key is supplied; if not supplied Get() will return ""
 	if apiKeyStr := pReq.Header.Get(GF_IDENTITY_API_KEY_HEADER); apiKeyStr != "" {
 
-		if pRuntimeSys.ExternalPlugins != nil &&
-			pRuntimeSys.ExternalPlugins.IdentitySessionValidateApiKeyCallback != nil {
+		if pRuntimeSys.ExternalHooks != nil &&
+			pRuntimeSys.ExternalHooks.IdentitySessionValidateApiKeyCallback != nil {
 
-			validBool, userID, gfErr = pRuntimeSys.ExternalPlugins.IdentitySessionValidateApiKeyCallback(apiKeyStr,
+			validBool, userID, gfErr = pRuntimeSys.ExternalHooks.IdentitySessionValidateApiKeyCallback(apiKeyStr,
 				pReq,
 				pCtx,
 				pRuntimeSys)
@@ -215,10 +215,10 @@ func SessionValidateWithPlugins(pReq *http.Request,
 
 	// PLUGIN - use custom session validation if provided
 
-	} else if pRuntimeSys.ExternalPlugins != nil &&
-		pRuntimeSys.ExternalPlugins.IdentitySessionValidateCallback != nil {
+	} else if pRuntimeSys.ExternalHooks != nil &&
+		pRuntimeSys.ExternalHooks.IdentitySessionValidateCallback != nil {
 
-		validBool, userID, sessionID, gfErr = pRuntimeSys.ExternalPlugins.IdentitySessionValidateCallback(pReq,
+		validBool, userID, sessionID, gfErr = pRuntimeSys.ExternalHooks.IdentitySessionValidateCallback(pReq,
 			pResp,
 			pCtx,
 			pRuntimeSys)

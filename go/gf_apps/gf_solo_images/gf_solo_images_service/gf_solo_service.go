@@ -160,11 +160,11 @@ func Run(pConfig *GFconfig,
 	//-------------
 	// PLUGIN - register external http handlers
 
-	if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.RPChandlersGetCallback != nil {
+	if pRuntimeSys.ExternalHooks != nil && pRuntimeSys.ExternalHooks.RPChandlersGetCallback != nil {
 
 		//-------------
 		// USER_RPC_HANDLERS
-		handlersLst, gfErr := pRuntimeSys.ExternalPlugins.RPChandlersGetCallback(pRuntimeSys)
+		handlersLst, gfErr := pRuntimeSys.ExternalHooks.RPChandlersGetCallback(pRuntimeSys)
 		if gfErr != nil {
 			return
 		}
@@ -193,9 +193,9 @@ func Run(pConfig *GFconfig,
 //-------------------------------------------------
 
 func RuntimeGet(pConfigPathStr string,
-	pExternalPlugins *gf_core.ExternalPlugins,
-	pLogFun          func(string, string),
-	pLogNewFun       gf_core.GFlogFun) (*gf_core.RuntimeSys, *GFconfig, error) {
+	pExternalHooks *gf_core.ExternalHooks,
+	pLogFun        func(string, string),
+	pLogNewFun     gf_core.GFlogFun) (*gf_core.RuntimeSys, *GFconfig, error) {
 
 	//--------------------
 	// CONFIG
@@ -240,7 +240,7 @@ func RuntimeGet(pConfigPathStr string,
 		ErrorsSendToSentryBool: true,
 
 		// EXTERNAL_PLUGINS
-		ExternalPlugins: pExternalPlugins,
+		ExternalHooks: pExternalHooks,
 
 		// SENTRY_DSN
 		SentryDSNstr: config.SentryDSNstr,

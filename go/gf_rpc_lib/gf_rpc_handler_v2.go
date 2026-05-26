@@ -213,13 +213,13 @@ func CreateHandlerV2http(pNameStr string, // optional name for handler (used for
 
 		//-----------------------
 
-		if pRuntimeSys.ExternalPlugins != nil &&
-			pRuntimeSys.ExternalPlugins.CORSoriginDomainsLst != nil {
+		if pRuntimeSys.ExternalHooks != nil &&
+			pRuntimeSys.ExternalHooks.CORSoriginDomainsLst != nil {
 
 			originStr := pReq.Header.Get("Origin")
 
 			// check if the origin domain is in the list of allowed domains
-			if gf_core.StringInList(originStr, pRuntimeSys.ExternalPlugins.CORSoriginDomainsLst) {
+			if gf_core.StringInList(originStr, pRuntimeSys.ExternalHooks.CORSoriginDomainsLst) {
 
 				pResp.Header().Set("Access-Control-Allow-Origin", originStr)
 				pResp.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
@@ -490,9 +490,9 @@ func getHandlerV2(pNameStr string,
 
 		//------------------
 		// PLUGIN - run request pre-process callback
-		if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.RPCreqPreProcessCallback != nil {
+		if pRuntimeSys.ExternalHooks != nil && pRuntimeSys.ExternalHooks.RPCreqPreProcessCallback != nil {
 
-			continueBool, gfErr := pRuntimeSys.ExternalPlugins.RPCreqPreProcessCallback(pReq, pResp, ctxRoot, pRuntimeSys)
+			continueBool, gfErr := pRuntimeSys.ExternalHooks.RPCreqPreProcessCallback(pReq, pResp, ctxRoot, pRuntimeSys)
 			if gfErr != nil {
 				ErrorInHandler(pPathStr,
 					fmt.Sprintf("handler %s failed", pPathStr),

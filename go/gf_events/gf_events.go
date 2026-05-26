@@ -36,7 +36,7 @@ func EmitApp(pEventAppTypeStr string,
 	go func() {
 
 		// CALLBACK
-		pRuntimeSys.ExternalPlugins.EventCallback(pEventAppTypeStr,
+		pRuntimeSys.ExternalHooks.EventCallback(pEventAppTypeStr,
 			pMetaMap,
 			pEventAppStr,
 			pUserID,

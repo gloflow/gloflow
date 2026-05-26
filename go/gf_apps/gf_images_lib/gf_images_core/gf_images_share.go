@@ -126,11 +126,11 @@ func SharePipeline(pInput *GFshareInput,
 	}
 
 	//------------------------
-	// PLUGIN - email sending
+	// HOOK - email sending
 
 	emailGFtypeStr := "image_sharing"
 	
-	gfErr = pRuntimeSys.ExternalPlugins.EmailSendingCallback(pInput.EmailAddressStr,
+	gfErr = pRuntimeSys.ExternalHooks.EmailSendingCallback(pInput.EmailAddressStr,
 		senderAddressStr,
 		pInput.EmailSubjectStr,
 		emailGFtypeStr,

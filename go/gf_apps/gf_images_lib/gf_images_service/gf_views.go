@@ -47,8 +47,8 @@ func renderImageViewPage(pImageID gf_images_core.GFimageID,
 
 	// PLUGIN - filter image metadata for display/rendering in a template
 	var filteredMetaJSONstr string
-	if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback != nil {
-		filteredMetaMap := pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback(image.MetaMap)
+	if pRuntimeSys.ExternalHooks != nil && pRuntimeSys.ExternalHooks.ImageFilterMetadataCallback != nil {
+		filteredMetaMap := pRuntimeSys.ExternalHooks.ImageFilterMetadataCallback(image.MetaMap)
 		metaJSONbytesLst, _ := json.Marshal(filteredMetaMap)
 		filteredMetaJSONstr = string(metaJSONbytesLst)
 	}

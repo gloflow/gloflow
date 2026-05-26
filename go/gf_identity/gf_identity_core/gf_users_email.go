@@ -77,7 +77,7 @@ func UsersEmailPipelineVerify(pEmailAddressStr string,
 	// PLUGIN
 	//------------------------
 	// EMAIL_PLUGIN
-	gfErr = pRuntimeSys.ExternalPlugins.EmailSendingCallback(pEmailAddressStr,
+	gfErr = pRuntimeSys.ExternalHooks.EmailSendingCallback(pEmailAddressStr,
 		senderAddressStr,
 		msgSubjectStr,
 		"email_address_confirmation",
