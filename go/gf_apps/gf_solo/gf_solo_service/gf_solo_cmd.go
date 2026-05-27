@@ -31,7 +31,8 @@ import (
 //-------------------------------------------------
 
 func CmdsInit(pExternalBootHooks *gf_core.ExternalBootHooks,
-	pExternalHooks *gf_core.ExternalHooks,
+	pExternalHooks    *gf_core.ExternalHooks,
+	pAppHooks         *GFappHooks,
 	pConfig           *gf_core.GFconfig,
 	pExternRuntimeSys *gf_core.RuntimeSys) *cobra.Command {
 
@@ -97,7 +98,7 @@ func CmdsInit(pExternalBootHooks *gf_core.ExternalBootHooks,
 			}
 
 			// RUN_SERVICE
-			Run(resolvedConfig, resolvedRuntimeSys)
+			Run(resolvedConfig, pAppHooks, resolvedRuntimeSys)
 		},
 	}
 

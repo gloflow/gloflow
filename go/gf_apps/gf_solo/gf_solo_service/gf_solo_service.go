@@ -47,6 +47,7 @@ import (
 //-------------------------------------------------
 
 func Run(pConfig *gf_core.GFconfig,
+	pAppHooks   *GFappHooks,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	yellow := color.New(color.BgYellow).Add(color.FgBlack).SprintFunc()
@@ -266,12 +267,12 @@ func Run(pConfig *gf_core.GFconfig,
 		pRuntimeSys)
 
 	// Store JobsMngrCh in RuntimeSys for MCP tools and other subsystems
-	// This enables flow integration for trader plots and other image operations
 	pRuntimeSys.JobsMngrCh = imagesJobsMngrCh
-	pRuntimeSys.LogNewFun("INFO", "JobsMngrCh stored in RuntimeSys", map[string]interface{}{
-		"jobs_mngr_ch_nil": imagesJobsMngrCh == nil,
-		"runtime_sys_ptr":  fmt.Sprintf("%p", pRuntimeSys),
-	})
+
+	// HOOKS
+	if pAppHooks != nil && pAppHooks.ImagesInitCompleteCallback != nil {
+		pAppHooks.ImagesInitCompleteCallback(imagesJobsMngrCh)
+	}
 
 	//-------------
 	// GF_ANALYTICS
@@ -353,14 +354,7 @@ func Run(pConfig *gf_core.GFconfig,
 
 
 	//-------------
-	// APP_RUNTIME
-
-	appsRuntime := &GFappsRuntime{
-		ImagesJobsMngrCh: imagesJobsMngrCh,
-	}
-
-	//-------------
-	// PLUGIN - register extern http handlers
+	// HOOK - register extern http handlers
 
 	if pRuntimeSys.ExternalHooks != nil && pRuntimeSys.ExternalHooks.RPChandlersGetCallback != nil {
 
@@ -368,10 +362,8 @@ func Run(pConfig *gf_core.GFconfig,
 		// USER_RPC_HANDLERS
 		pRuntimeSys.LogNewFun("INFO", "Calling plugins RPChandlersGetCallback", map[string]interface{}{
 			"runtime_sys_ptr": fmt.Sprintf("%p", pRuntimeSys),
-			"jobs_mngr_ch":    pRuntimeSys.JobsMngrCh,
 		})
-		handlersLst, handlersV2lst, gfErr := pRuntimeSys.ExternalHooks.RPChandlersGetCallback(appsRuntime,
-			gfSoloHTTPmux,
+		handlersLst, handlersV2lst, gfErr := pRuntimeSys.ExternalHooks.RPChandlersGetCallback(gfSoloHTTPmux,
 			pRuntimeSys)
 		if gfErr != nil {
 

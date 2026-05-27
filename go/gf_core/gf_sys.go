@@ -68,8 +68,8 @@ type RuntimeSys struct {
 	Validator *validator.Validate
 
 	// HOOKS
-	ExternalBootHook *ExternalBootHook
-	ExternalHooks    *ExternalHooks
+	ExternalBootHooks *ExternalBootHooks
+	ExternalHooks     *ExternalHooks
 
 	Metrics *GFmetrics
 

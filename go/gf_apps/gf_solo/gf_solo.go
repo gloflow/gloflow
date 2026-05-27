@@ -32,7 +32,11 @@ func main() {
 
 	}
 
-	cmdBase := gf_solo_service.CmdsInit(nil, externalHooks, nil, nil)
+	appHooks := &gf_solo_service.pAppHooks{
+
+	}
+
+	cmdBase := gf_solo_service.CmdsInit(nil, externalHooks, appHooks, nil, nil)
 	err := cmdBase.Execute()
 	if err != nil {
 		panic(err)

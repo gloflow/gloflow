@@ -31,7 +31,7 @@ import (
 
 //-------------------------------------------------
 func RuntimeGet(pConfigPathStr string,
-	pBootHooks     *gf_core.ExternalBootHook,
+	pBootHooks     *gf_core.ExternalBootHooks,
 	pExternalHooks *gf_core.ExternalHooks,
 	pLogFun        func(string, string),
 	pLogNewFun     gf_core.GFlogFun) (*gf_core.RuntimeSys, *gf_core.GFconfig, error) {
