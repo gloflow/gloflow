@@ -38,9 +38,9 @@ configs are loaded from:
 - via CLI args
 */
 func ConfigInit(pConfigDirPathStr string,
-	pConfigFileNameStr   string,
-	pConfigLoadPluginFun gf_core.GFpluginConfigLoadCallback,
-	pRuntimeSys          *gf_core.RuntimeSys) (*gf_core.GFconfig, error) {
+	pConfigFileNameStr string,
+	pConfigLoadHookFun gf_core.GFhookConfigLoadCallback,
+	pRuntimeSys        *gf_core.RuntimeSys) (*gf_core.GFconfig, error) {
 
 	configNameStr := strings.Split(pConfigFileNameStr, ".")[0] // viper expects just the file name, without extension
 
@@ -83,14 +83,14 @@ func ConfigInit(pConfigDirPathStr string,
 	}
 
 	// IMPORTANT!! - Environment is ciritical param for all subsequent potential config loading,
-	//               in pConfigLoadPluginFun, so setting it here right away.
+	//               in pConfigLoadHookFun, so setting it here right away.
 	//               when config is loaded, either via ENV vars or from config file, the Env value is found out.
 	pRuntimeSys.EnvStr = config.EnvStr
 
 	// PLUGIN - allows users to specify a custom function to load additional configs
 	//          external to GF core
-	if pConfigLoadPluginFun != nil {
-		newConfig, gfErr := pConfigLoadPluginFun(config, pRuntimeSys)
+	if pConfigLoadHookFun != nil {
+		newConfig, gfErr := pConfigLoadHookFun(config, pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr.Error
 		}

@@ -25,5 +25,5 @@ import (
 )
 
 type GFappHooks struct {
-	ImagesInitCompleteCallback func(gf_images_jobs_core.JobsMngr)
+	ImagesInitCompleteCallback func(*gf_images_jobs_core.JobsMngr)
 }

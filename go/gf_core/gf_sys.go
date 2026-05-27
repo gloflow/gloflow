@@ -93,14 +93,14 @@ type RuntimeSys struct {
 //-------------------------------------------------
 // EXTERNAL_BOOT_HOOKS
 
-type GFpluginConfigLoadCallback func(*GFconfig, *RuntimeSys) (*GFconfig, *GFerror)
+type GFhookConfigLoadCallback func(*GFconfig, *RuntimeSys) (*GFconfig, *GFerror)
 
 // special hooks that run at startup, and need a lot less infra setup to run
 type ExternalBootHooks struct {
 	//---------------------------
 	// CONFIG
 
-	ConfigLoadCallback GFpluginConfigLoadCallback
+	ConfigLoadCallback GFhookConfigLoadCallback
 
 	//---------------------------
 }

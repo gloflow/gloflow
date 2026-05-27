@@ -266,12 +266,9 @@ func Run(pConfig *gf_core.GFconfig,
 		imagesConfig,
 		pRuntimeSys)
 
-	// Store JobsMngrCh in RuntimeSys for MCP tools and other subsystems
-	pRuntimeSys.JobsMngrCh = imagesJobsMngrCh
-
 	// HOOKS
 	if pAppHooks != nil && pAppHooks.ImagesInitCompleteCallback != nil {
-		pAppHooks.ImagesInitCompleteCallback(imagesJobsMngrCh)
+		pAppHooks.ImagesInitCompleteCallback(&imagesJobsMngrCh)
 	}
 
 	//-------------
