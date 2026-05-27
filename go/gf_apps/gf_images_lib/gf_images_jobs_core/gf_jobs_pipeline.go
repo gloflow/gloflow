@@ -489,13 +489,108 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 //-------------------------------------------------
 // PIPELINE__PROCESS_LOCAL_IMAGE
 
-func pipelineProcessLocalImage(pFlowsNamesLst []string,
-	pS3info              *gf_aws.GFs3Info,
-	pPluginsPyDirPathStr string,
-	pStorage             *gf_images_storage.GFimageStorage,
-	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GFerror {
+func pipelineProcessLocalImage(pImageIDstr gf_images_core.GFimageID,
+	pImageLocalFilePathStr       string,
+	pMetaMap                     map[string]interface{},
+	pImagesThumbsLocalDirPathStr string,
+	pFlowsNamesLst               []string,
+	pPluginsPyDirPathStr         string,
+	pStorage                     *gf_images_storage.GFimageStorage,
+	pJobRuntime                  *GFjobRuntime,
+	pRuntimeSys                  *gf_core.RuntimeSys) *gf_core.GFerror {
 
+	pRuntimeSys.LogNewFun("DEBUG", "processing local image...", map[string]interface{}{
+		"image_id":                    pImageIDstr,
+		"image_local_file_path":       pImageLocalFilePathStr,
+		"images_thumbs_local_dir_path": pImagesThumbsLocalDirPathStr,
+		"flows_names":                 pFlowsNamesLst,
+	})
 
+	//-----------------------
+	// TRANSFORM_IMAGE
+	
+	// Ensure we use /tmp if no thumbnails dir path is configured
+	thumbsLocalDirPathStr := pImagesThumbsLocalDirPathStr
+	if thumbsLocalDirPathStr == "" || thumbsLocalDirPathStr == "/" {
+		thumbsLocalDirPathStr = "/tmp"
+	}
+
+	imageThumbs, gfErr := jobTransform(pImageIDstr,
+		pFlowsNamesLst,
+		"", // p_image_source_url_str - no URL for local images
+		"", // p_image_origin_page_url_str - no origin page for local images
+		pMetaMap,
+		pImageLocalFilePathStr,
+		thumbsLocalDirPathStr,
+		pPluginsPyDirPathStr,
+		pJobRuntime,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//-----------------------
+	// SAVE_IMAGE TO FS
+
+	//--------------------
+	// IMAGE_FULLSIZE_STORE
+
+	imageFileNameStr := fmt.Sprintf("%s%s", pImageIDstr, filepath.Ext(pImageLocalFilePathStr))
+
+	op := &gf_images_storage.GFputFromLocalOpDef{
+		ImageSourceLocalFilePathStr: pImageLocalFilePathStr,
+		ImageTargetFilePathStr:      imageFileNameStr,
+	}
+	if pStorage.TypeStr == "s3" {
+		// For local images, use the uploads target bucket (similar to uploaded images)
+		op.S3bucketNameStr = pStorage.S3.UploadsTargetS3bucketNameStr
+	}
+	gfErr = gf_images_storage.FilePutFromLocal(op, pStorage, pRuntimeSys)
+	if gfErr != nil {
+		error_type_str := "local_image_store_error"
+		jobErrorSend(error_type_str, gfErr,
+			"", // no source URL for local images
+			pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
+		return gfErr
+	}
+
+	//--------------------
+	// THUMBS_STORE
+
+	gfErr = gf_images_core.StoreThumbnails(imageThumbs,
+		pStorage,
+		pRuntimeSys)
+	if gfErr != nil {
+		error_type_str := "local_image_thumbs_store_error"
+		jobErrorSend(error_type_str, gfErr,
+			"", // no source URL for local images
+			pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
+		return gfErr
+	}
+
+	//--------------------
+	// PERSIST
+
+	update_msg := JobUpdateMsg{
+		Name_str:             "image_persist",
+		Type_str:             JOB_UPDATE_TYPE__OK,
+		ImageIDstr:           pImageIDstr,
+		Image_source_url_str: "", // no source URL for local images
+	}
+	pJobRuntime.job_updates_ch <- update_msg
+
+	//-----------------------
+	// DONE
+	update_msg = JobUpdateMsg{
+		Name_str:             "image_done",
+		Type_str:             JOB_UPDATE_TYPE__COMPLETED,
+		ImageIDstr:           pImageIDstr,
+		Image_source_url_str: "", // no source URL for local images
+		Image_thumbs:         imageThumbs,
+	}
+	pJobRuntime.job_updates_ch <- update_msg
+
+	//-----------------------
 
 	return nil
 }

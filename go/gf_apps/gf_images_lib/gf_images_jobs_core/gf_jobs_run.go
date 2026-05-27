@@ -83,10 +83,26 @@ func runJobLocalImages(pImagesToProcessLst []GFimageLocalToProcess,
 		
 		fmt.Println(imageToProcess)
 
-		gfErr := pipelineProcessLocalImage(pFlowsNamesLst,
-			pS3info,
+		imageLocalFilePathStr := imageToProcess.LocalFilePathStr
+
+		// GENERATE_IMAGE_ID - generate ID from local file path
+		imageIDstr, gfErr := gf_images_core.CreateIDfromURL(imageLocalFilePathStr, pRuntimeSys)
+		if gfErr != nil {
+			gfErrorsLst = append(gfErrorsLst, gfErr)
+			continue
+		}
+
+		// FIX!! - this should be passed in from outside this function
+		metaMap := map[string]interface{}{}
+
+		gfErr = pipelineProcessLocalImage(imageIDstr,
+			imageLocalFilePathStr,
+			metaMap,
+			pImagesThumbnailsStoreLocalDirPathStr,
+			pFlowsNamesLst,
 			pPluginsPyDirPathStr,
 			pStorage,
+			pJobRuntime,
 			pRuntimeSys)
 		if gfErr != nil {
 			gfErrorsLst = append(gfErrorsLst, gfErr)
