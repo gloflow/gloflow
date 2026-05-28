@@ -1,0 +1,102 @@
+/*
+MIT License
+
+Copyright (c) 2019 Ivan Trajkovic
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+package gf_core
+
+
+//-------------------------------------------------
+// HOOKS
+//-------------------------------------------------
+// EXTERNAL_BOOT_HOOKS
+
+type GFhookConfigLoadCallback func(*GFconfig, *RuntimeSys) (*GFconfig, *GFerror)
+
+// special hooks that run at startup, and need a lot less infra setup to run
+type ExternalBootHooks struct {
+	//---------------------------
+	// CONFIG
+
+	ConfigLoadCallback GFhookConfigLoadCallback
+
+	//---------------------------
+}
+
+//-------------------------------------------------
+// EXTERNAL_HOOKS
+
+type GFhookIdentitySSOcallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) (*string, bool, *GFerror)
+
+type ExternalHooks struct {
+
+	//---------------------------
+	// RPC_HANDLERS
+	RPChandlersGetCallback func(*http.ServeMux, *RuntimeSys) ([]HTTPhandlerInfo, []HTTPhandlerV2info, *GFerror)
+	RPCreqPreProcessCallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) (bool, *GFerror)
+
+	// CORS_DOMAINS - domains that are allowed to access the API, beyond the domain
+	// 			  	  that the API is hosted on.
+	CORSoriginDomainsLst []string
+
+	//---------------------------
+	// IDENTITY
+
+	// SSO - for SSO handling
+	IdentitySSOcallback GFhookIdentitySSOcallback
+
+	// for custom validation of general sessions
+	IdentitySessionValidateCallback func(*http.Request, http.ResponseWriter, context.Context, *RuntimeSys) (bool, *GF_ID, *GF_ID, *GFerror)
+
+	// for custom validation of API keys
+	IdentitySessionValidateApiKeyCallback func(string, *http.Request, context.Context, *RuntimeSys) (bool, *GF_ID, *GFerror)
+
+	//---------------------------
+	// IMAGES
+	ImageFilterMetadataCallback func(map[string]interface{}) map[string]interface{}
+
+	//---------------------------
+	// EVENTS
+	EventCallback func(string, map[string]interface{}, string, GF_ID, *RuntimeSys) *GFerror
+
+	//---------------------------
+	// SECRETS
+	SecretCreateCallback func(string, map[string]interface{}, string, *RuntimeSys) *GFerror
+	SecretGetCallback    func(string, *RuntimeSys) (map[string]interface{}, *GFerror)
+
+	//---------------------------
+	// EMAIL
+
+	// called on every sending of email in the system
+	EmailSendingCallback func(string, string, string, string, *RuntimeSys) *GFerror
+
+	//---------------------------
+}
+
+//-------------------------------------------------
+// POLICY_EXTERNAL_HOOKS
+
+type GFpolicyExternalHooks struct {
+
+}
+
+//-------------------------------------------------
