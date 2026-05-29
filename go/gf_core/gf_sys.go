@@ -25,8 +25,6 @@ SOFTWARE.
 package gf_core
 
 import (
-	"context"
-	"net/http"
 	"database/sql"
 	"go.mongodb.org/mongo-driver/mongo"
 	"github.com/go-playground/validator"
@@ -70,6 +68,7 @@ type RuntimeSys struct {
 	// HOOKS
 	ExternalBootHooks *ExternalBootHooks
 	ExternalHooks     *ExternalHooks
+	PolicyHooks       *GFpolicyExternalHooks
 
 	Metrics *GFmetrics
 

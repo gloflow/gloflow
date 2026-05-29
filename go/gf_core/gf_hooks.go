@@ -24,6 +24,10 @@ SOFTWARE.
 
 package gf_core
 
+import (
+	"context"
+	"net/http"
+)
 
 //-------------------------------------------------
 // HOOKS
@@ -97,6 +101,53 @@ type ExternalHooks struct {
 
 type GFpolicyExternalHooks struct {
 
+	//---------------------------
+	// VerifyCallback checks if user can perform action on resource
+	// Returns: (allowed bool, error)
+	VerifyCallback func(
+		pUserID GF_ID,
+		pResourceID GF_ID,
+		pActionStr string,
+		pCtx context.Context,
+		pRuntimeSys *RuntimeSys,
+	) (bool, *GFerror)
+
+	// CreatePolicyCallback creates a new policy for a resource
+	CreatePolicyCallback func(
+		pResourceID GF_ID,
+		pResourceTypeStr string,
+		pOwnerUserID GF_ID,
+		pCtx context.Context,
+		pRuntimeSys *RuntimeSys,
+	) *GFerror
+
+	// UpdatePolicyCallback updates policy associations (e.g., adding flows)
+	UpdatePolicyCallback func(
+		pUserID GF_ID,
+		pResourceIDsLst []GF_ID,
+		pCtx context.Context,
+		pRuntimeSys *RuntimeSys,
+	) *GFerror
+
+	// AddRoleCallback grants a role to user for a resource
+	AddRoleCallback func(
+		pUserID GF_ID,
+		pResourceID GF_ID,
+		pRoleStr string, // "viewer", "tagger", "editor", "admin"
+		pCtx context.Context,
+		pRuntimeSys *RuntimeSys,
+	) *GFerror
+
+	// RemoveRoleCallback removes a role from user for a resource
+	RemoveRoleCallback func(
+		pUserID GF_ID,
+		pResourceID GF_ID,
+		pRoleStr string,
+		pCtx context.Context,
+		pRuntimeSys *RuntimeSys,
+	) *GFerror
+
+	//---------------------------
 }
 
 //-------------------------------------------------

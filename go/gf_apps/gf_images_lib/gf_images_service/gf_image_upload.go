@@ -21,7 +21,6 @@ package gf_images_service
 
 import (
 	// "fmt"
-	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -52,19 +51,19 @@ type GFimageUploadInfo struct {
 	ImageIDstr        gf_images_core.GFimageID `json:"upload_gf_image_id_str" bson:"upload_gf_image_id_str"`
 	S3filePathStr     string                   `json:"-"                      bson:"s3_file_path_str"` // internal data, dont send to clients
 	FlowsNamesLst     []string                 `json:"flows_names_lst"        bson:"flows_names_lst"`
-	ClientTypeStr     string                   `json:"-"                      bson:"client_type_str"`  // internal data, dont send to clients
+	ClientTypeStr     string                   `json:"-"                      bson:"client_type_str"` // internal data, dont send to clients
 	PresignedURLstr   string                   `json:"presigned_url_str"      bson:"presigned_url_str"`
-	UserID            gf_core.GF_ID            `json:"user_id_str"            bson:"user_id_str"`      // ID of the user starting this upload
+	UserID            gf_core.GF_ID            `json:"user_id_str"            bson:"user_id_str"` // ID of the user starting this upload
 }
 
 type GFimageUploadMetrics struct {
-	Id                 primitive.ObjectID       `bson:"_id,omitempty"`
-	CreationUNIXtimeF  float64                  `bson:"creation_unix_time_f"`
-	ImageIDstr         gf_images_core.GFimageID `bson:"upload_gf_image_id_str"`
-	ClientTypeStr      string                   `bson:"client_type_str"`
-	UploadClientDurationSecF         float64    `bson:"upload_client_duration_sec_f"`
-	UploadClientTransferDurationSecF float64       `bson:"upload_client_transfer_duration_sec_f"`
-	UserID                           gf_core.GF_ID `bson:"user_id_str"` // ID of the user starting this upload
+	Id                               primitive.ObjectID       `bson:"_id,omitempty"`
+	CreationUNIXtimeF                float64                  `bson:"creation_unix_time_f"`
+	ImageIDstr                       gf_images_core.GFimageID `bson:"upload_gf_image_id_str"`
+	ClientTypeStr                    string                   `bson:"client_type_str"`
+	UploadClientDurationSecF         float64                  `bson:"upload_client_duration_sec_f"`
+	UploadClientTransferDurationSecF float64                  `bson:"upload_client_transfer_duration_sec_f"`
+	UserID                           gf_core.GF_ID            `bson:"user_id_str"` // ID of the user starting this upload
 }
 
 //---------------------------------------------------
@@ -74,15 +73,15 @@ type GFimageUploadMetrics struct {
 // for uploading of content to GF.
 func UploadInit(pImageNameStr string,
 	pImageFormatStr string,
-	pFlowsNamesLst  []string,
-	pClientTypeStr  string,
-	pUserID         gf_core.GF_ID,
-	pStorage        *gf_images_storage.GFimageStorage,
-	pS3info         *gf_aws.GFs3Info,
-	pConfig         *gf_images_core.GFconfig,
-	pServiceInfo    *gf_images_core.GFserviceInfo,
-	pCtx            context.Context,
-	pRuntimeSys     *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GFerror) {
+	pFlowsNamesLst []string,
+	pClientTypeStr string,
+	pUserID gf_core.GF_ID,
+	pStorage *gf_images_storage.GFimageStorage,
+	pS3info *gf_aws.GFs3Info,
+	pConfig *gf_images_core.GFconfig,
+	pServiceInfo *gf_images_core.GFserviceInfo,
+	pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GFerror) {
 	
 	//------------------
 	/*
@@ -131,9 +130,9 @@ func UploadInit(pImageNameStr string,
 
 	//------------------
 	// GF_IMAGE_ID
-	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	imageURIstr       := pImageNameStr
-	uploadImageIDstr  := gf_images_core.CreateImageID(imageURIstr, pRuntimeSys)
+	creationUNIXtimeF := float64(time.Now().UnixNano()) / 1000000000.0
+	imageURIstr := pImageNameStr
+	uploadImageIDstr := gf_images_core.CreateImageID(imageURIstr, pRuntimeSys)
 
 	//------------------
 	// PRESIGN_URL

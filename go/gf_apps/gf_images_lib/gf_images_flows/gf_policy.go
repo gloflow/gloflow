@@ -41,13 +41,14 @@ func VerifyPolicy(pOpStr string,
 		return gfErr
 	}
 	for _, flowIDstr := range flowsIDsLst {
-		gfErr = gf_policy.Verify(pOpStr,
-			flowIDstr, // target_resource_id
-			pUserID,
-			pCtx, pRuntimeSys)
+		isOwned, gfErr := DBsqlIsFlowOwnedByUser(flowIDstr, pUserID, pCtx, pRuntimeSys)
 		if gfErr != nil {
-			return gfErr
+			return false
 		}
+		if !isOwned {
+			return false
+}
 	}
-	return nil
+
+	return true
 }

@@ -24,17 +24,17 @@ import (
 	// "encoding/json"
 	"database/sql"
 	// "github.com/lib/pq"
-	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
 
 func dbSQLgetPage(pFlowNameStr string,
 	pCursorStartPositionInt int, // 0
-	pElementsNumInt         int, // 50
-	pCtx                    context.Context,
-	pRuntimeSys             *gf_core.RuntimeSys) ([]*gf_images_core.GFimage, *gf_core.GFerror) {
+	pElementsNumInt int, // 50
+	pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) ([]*gf_images_core.GFimage, *gf_core.GFerror) {
 
 	query := `
 		SELECT
@@ -86,7 +86,6 @@ func dbSQLgetPage(pFlowNameStr string,
 	imagesLst := []*gf_images_core.GFimage{}
 	for rows.Next() {
 
-
 		img, gfErr := gf_images_core.LoadImageFromResult(rows, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
@@ -109,8 +108,8 @@ func dbSQLgetPage(pFlowNameStr string,
 //---------------------------------------------------
 
 func DBgetFlowByName(pFlowNameStr string,
-	pCtx		context.Context,
-	pRuntimeSys	*gf_core.RuntimeSys) (*GFflow, *gf_core.GFerror) {
+	pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFflow, *gf_core.GFerror) {
 
 	sqlStr := `
 		SELECT
@@ -210,7 +209,7 @@ func DBsqlGetAll(pCtx context.Context,
 
 	var resultsLst []map[string]interface{}
 	for rows.Next() {
-		
+
 		var flowNameStr string
 		var countInt int
 
@@ -242,7 +241,7 @@ func DBsqlGetAll(pCtx context.Context,
 // GET_FLOWS_IDS
 
 func DBsqlGetFlowsIDs(pFlowsNamesLst []string,
-	pCtx        context.Context,
+	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]gf_core.GF_ID, *gf_core.GFerror) {
 
 	flowsIDsLst := []gf_core.GF_ID{}
@@ -260,7 +259,7 @@ func DBsqlGetFlowsIDs(pFlowsNamesLst []string,
 // GET_ID
 
 func DBsqlGetID(pFlowNameStr string,
-	pCtx        context.Context,
+	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
 
 	const sqlStr = `SELECT id FROM gf_images_flows WHERE name = $1 LIMIT 1`
@@ -286,7 +285,7 @@ func DBsqlGetID(pFlowNameStr string,
 func DBsqlCreateFlow(pFlowID gf_core.GF_ID,
 	pFlowNameStr string,
 	pOwnerUserID gf_core.GF_ID,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	db := pRuntimeSys.SQLdb
 
@@ -331,7 +330,7 @@ func DBsqlCreateFlow(pFlowID gf_core.GF_ID,
 			err, "gf_images_flows", pRuntimeSys)
 		return gfErr
 	}
-	
+
 	// TX_COMMIT
 	err = tx.Commit()
 	if err != nil {
@@ -345,29 +344,29 @@ func DBsqlCreateFlow(pFlowID gf_core.GF_ID,
 			err, "gf_images_flows", pRuntimeSys)
 		return gfErr
 	}
-	
+
 	return nil
 
 	/*
-	// EDITORS
-	for _, editorID := range pFlow.EditorUserIDs {
-		_, err := tx.Exec(
-			"INSERT INTO gf_images_flows_editors (flow_id, user_id) VALUES ($1, $2)",
-			id,
-			editorID,
-		)
+		// EDITORS
+		for _, editorID := range pFlow.EditorUserIDs {
+			_, err := tx.Exec(
+				"INSERT INTO gf_images_flows_editors (flow_id, user_id) VALUES ($1, $2)",
+				id,
+				editorID,
+			)
 
-		if err != nil {
-			gfErr := gf_core.ErrorCreate("failed create a new images flow in the DB",
-				"sql_row_insert",
-				map[string]interface{}{
-					"flow_name_str": pFlowNameStr,
-					"user_id_str":   pOwnerUserID,
-				},
-				err, "gf_images_flows", pRuntimeSys)
-			return gfErr
+			if err != nil {
+				gfErr := gf_core.ErrorCreate("failed create a new images flow in the DB",
+					"sql_row_insert",
+					map[string]interface{}{
+						"flow_name_str": pFlowNameStr,
+						"user_id_str":   pOwnerUserID,
+					},
+					err, "gf_images_flows", pRuntimeSys)
+				return gfErr
+			}
 		}
-	}
 	*/
 }
 
@@ -455,6 +454,35 @@ func DBsqlCheckFlowExists(pFlowNameStr string,
 		flowID = gf_core.GF_ID("")
 	}
 
-
 	return existsBool, flowID, nil
+}
+
+//---------------------------------------------------
+// IS_FLOW_OWNED_BY_USER
+
+func DBsqlIsFlowOwnedByUser(pFlowID gf_core.GF_ID,
+	pUserID gf_core.GF_ID,
+	pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+
+	const sqlStr = `SELECT owner_user_id_str FROM gf_images_flows WHERE id = $1 LIMIT 1`
+
+	var ownerUserIDstr string
+	err := pRuntimeSys.SQLdb.QueryRowContext(pCtx, sqlStr, string(pFlowID)).Scan(&ownerUserIDstr)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil // Flow not found
+		}
+		gfErr := gf_core.ErrorCreate("failed to check flow ownership",
+			"sql_query_execute",
+			map[string]interface{}{
+				"flow_id": pFlowID,
+				"user_id": pUserID,
+			},
+			err, "gf_images_flows", pRuntimeSys)
+		return false, gfErr
+	}
+
+	isOwned := ownerUserIDstr == string(pUserID)
+	return isOwned, nil
 }
