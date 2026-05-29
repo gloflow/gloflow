@@ -111,9 +111,9 @@ func pipelineCreateDiscoveredFlows(pCtx context.Context,
 	for _, flowMap := range allFlowsLst {
 
 		nameStr := flowMap["_id"].(string)
-		pRuntimeSys.LogNewFun("DEBUG", "creating flow if missing...", map[string]interface{}{"flow_name": nameStr,})
+		pRuntimeSys.LogNewFun("DEBUG", "creating flow if missing...", map[string]interface{}{"flow_name": nameStr})
 
-		_, gfErr := CreateIfMissing([]string{nameStr,},
+		_, gfErr := CreateIfMissing([]string{nameStr},
 			ownerUserID,
 			pCtx,
 			pRuntimeSys)
@@ -164,8 +164,8 @@ func CreateIfMissingWithPolicy(pFlowsNamesLst []string,
 // CREATE_IF_MISSING
 
 func CreateIfMissing(pFlowsNamesLst []string,
-	pUserID     gf_core.GF_ID,
-	pCtx        context.Context,
+	pUserID gf_core.GF_ID,
+	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]gf_core.GF_ID, *gf_core.GFerror) {
 	
 	flowsIDsLst := []gf_core.GF_ID{}
@@ -217,7 +217,7 @@ func PipelineGetAll(pUseMongoBool bool,
 
 	allFlowsLst := []map[string]interface{}{}
 	for _, flowInfoMap := range resultsLst {
-		flowNameStr      := flowInfoMap["name_str"].(string)
+		flowNameStr := flowInfoMap["name_str"].(string)
 		flowImgsCountInt := flowInfoMap["count_int"].(int)
 
 		allFlowsLst = append(allFlowsLst, map[string]interface{}{
@@ -232,7 +232,7 @@ func PipelineGetAll(pUseMongoBool bool,
 // GET_PAGE__PIPELINE
 
 func pipelineGetPage(pReq *http.Request,
-	pCtx        context.Context,
+	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([][]*gf_images_core.GFimage, [][]gf_identity_core.GFuserName, *gf_core.GFerror) {
 
 	//--------------------
@@ -248,13 +248,13 @@ func pipelineGetPage(pReq *http.Request,
 	var err error
 	pageIndexInt := 0 // default
 	if aLst, ok := qsMap["pg_index"]; ok {
-		pageIndex        := aLst[0]
+		pageIndex := aLst[0]
 		pageIndexInt, err = strconv.Atoi(pageIndex) // user supplied value
 		
 		if err != nil {
 			gfErr := gf_core.ErrorCreate("failed to parse integer page_index query string arg",
 				"int_parse_error",
-				map[string]interface{}{"page_index": pageIndex,},
+				map[string]interface{}{"page_index": pageIndex},
 				err, "gf_images_flows", pRuntimeSys)
 			return nil, nil, gfErr
 		}
@@ -269,7 +269,7 @@ func pipelineGetPage(pReq *http.Request,
 		if err != nil {
 			gfErr := gf_core.ErrorCreate("failed to parse integer pg_size query string arg",
 				"int_parse_error",
-				map[string]interface{}{"page_size": pageSize,},
+				map[string]interface{}{"page_size": pageSize},
 				err, "gf_images_flows", pRuntimeSys)
 			return nil, nil, gfErr
 		}
@@ -283,7 +283,7 @@ func pipelineGetPage(pReq *http.Request,
 		if err != nil {
 			gfErr := gf_core.ErrorCreate("failed to parse integer pg_num query string arg",
 				"int_parse_error",
-				map[string]interface{}{"pages_num": pagesNum,},
+				map[string]interface{}{"pages_num": pagesNum},
 				err, "gf_images_flows", pRuntimeSys)
 			return nil, nil, gfErr
 		}
@@ -327,7 +327,7 @@ func pipelineGetPage(pReq *http.Request,
 // RESOLVE_USER_IDS_TO_USER_NAMES
 
 func resolveUserIDsToUserNames(pImagesPagesLst [][]*gf_images_core.GFimage,
-	pCtx        context.Context,
+	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) [][]gf_identity_core.GFuserName {
 
 	pagesUserNamesLst := [][]gf_identity_core.GFuserName{}
@@ -337,7 +337,6 @@ func resolveUserIDsToUserNames(pImagesPagesLst [][]*gf_images_core.GFimage,
 
 		pageUserNamesLst := []gf_identity_core.GFuserName{}
 		for _, image := range pLst {
-			
 			
 			userID := image.UserID
 			var userNameStr gf_identity_core.GFuserName
@@ -362,11 +361,11 @@ func resolveUserIDsToUserNames(pImagesPagesLst [][]*gf_images_core.GFimage,
 // IMAGES_EXIST_CHECK
 
 func imagesExistCheck(pImagesExternURLsLst []string,
-	pFlowNameStr   string,
+	pFlowNameStr string,
 	pClientTypeStr string,
-	pUserID        gf_core.GF_ID,
-	pCtx           context.Context,
-	pRuntimeSys    *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+	pUserID gf_core.GF_ID,
+	pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
 	//-------------------------
 	// IMAGES_EXIST_CHECK
@@ -381,13 +380,12 @@ func imagesExistCheck(pImagesExternURLsLst []string,
 		return nil, gfErr
 	}
 
-
 	//-------------------------
 	// PERSIST IMAGE_EXISTS_CHECK
 
 	go func() {
-		creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-		idStr             := gf_core.GF_ID(fmt.Sprintf("img_exists_check:%f", creationUNIXtimeF))
+		creationUNIXtimeF := float64(time.Now().UnixNano()) / 1000000000.0
+		idStr := gf_core.GF_ID(fmt.Sprintf("img_exists_check:%f", creationUNIXtimeF))
 		
 		check := GFimageExistsCheck{
 			IDstr:               idStr,
@@ -425,12 +423,12 @@ func imagesExistCheck(pImagesExternURLsLst []string,
 
 func AddExternImageWithPolicy(pImageExternURLstr string,
 	pImageOriginPageURLstr string,
-	pFlowsNamesLst         []string,
-	pClientTypeStr         string,
-	pUserID                gf_core.GF_ID,
-	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
-	pCtx                   context.Context,
-	pRuntimeSys            *gf_core.RuntimeSys) (*string, *string, gf_images_core.GFimageID, *gf_core.GFerror) {
+	pFlowsNamesLst []string,
+	pClientTypeStr string,
+	pUserID gf_core.GF_ID,
+	pJobsMngrCh chan gf_images_jobs_core.JobMsg,
+	pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*string, *string, gf_images_core.GFimageID, *gf_core.GFerror) {
 
 	//------------------
 	/*
@@ -450,9 +448,9 @@ func AddExternImageWithPolicy(pImageExternURLstr string,
 	}
 
 	//-------------------------
-	// POLICY_VERIFY - raises error if policy rejects the op
+	// POLICY_VERIFY
 	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
-	gfErr = VerifyPolicy(opStr,
+	allowed := VerifyPolicy(opStr,
 		pFlowsNamesLst,
 		pUserID, pCtx, pRuntimeSys)
 	if gfErr != nil {
@@ -481,11 +479,11 @@ func AddExternImageWithPolicy(pImageExternURLstr string,
 
 func AddExternImages(pImagesExternURLsLst []string,
 	pImagesOriginPagesURLsStr []string,
-	pFlowsNamesLst            []string,
-	pClientTypeStr            string,
-	pUserID                   gf_core.GF_ID,
-	pJobsMngrCh               chan gf_images_jobs_core.JobMsg,
-	pRuntimeSys               *gf_core.RuntimeSys) (*string, []*string, []gf_images_core.GFimageID, *gf_core.GFerror) {
+	pFlowsNamesLst []string,
+	pClientTypeStr string,
+	pUserID gf_core.GF_ID,
+	pJobsMngrCh chan gf_images_jobs_core.JobMsg,
+	pRuntimeSys *gf_core.RuntimeSys) (*string, []*string, []gf_images_core.GFimageID, *gf_core.GFerror) {
 
 	//------------------
 	imagesURLsToProcessLst := []gf_images_jobs_core.GFimageExternToProcess{}
@@ -515,13 +513,12 @@ func AddExternImages(pImagesExternURLsLst []string,
 
 	//------------------
 
-	imagesIDsLst                   := []gf_images_core.GFimageID{}
+	imagesIDsLst := []gf_images_core.GFimageID{}
 	imagesThumbSmallRelativeURLlst := []*string{}
 
-	for i:=0; i < len(jobExpectedOutputsLst); i++ {	
-		imageIDstr               := gf_images_core.GFimageID(jobExpectedOutputsLst[i].Image_id_str)
+	for i := 0; i < len(jobExpectedOutputsLst); i++ {
+		imageIDstr := gf_images_core.GFimageID(jobExpectedOutputsLst[i].Image_id_str)
 		thumbSmallRelativeURLstr := jobExpectedOutputsLst[i].Thumbnail_small_relative_url_str
-
 
 		imagesIDsLst = append(imagesIDsLst, imageIDstr)
 		imagesThumbSmallRelativeURLlst = append(imagesThumbSmallRelativeURLlst, &thumbSmallRelativeURLstr)
@@ -535,12 +532,12 @@ func AddExternImages(pImagesExternURLsLst []string,
 
 func AddExternImage(pImageExternURLstr string,
 	pImageOriginPageURLstr string,
-	pFlowsNamesLst         []string,
-	pClientTypeStr         string,
-	pUserIDstr             gf_core.GF_ID,
-	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
-	pCtx                   context.Context,
-	pRuntimeSys            *gf_core.RuntimeSys) (*string, *string, gf_images_core.GFimageID, *gf_core.GFerror) {
+	pFlowsNamesLst []string,
+	pClientTypeStr string,
+	pUserIDstr gf_core.GF_ID,
+	pJobsMngrCh chan gf_images_jobs_core.JobMsg,
+	pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*string, *string, gf_images_core.GFimageID, *gf_core.GFerror) {
 
 	//------------------
 	// FLOWS
@@ -590,7 +587,7 @@ func AddExternImage(pImageExternURLstr string,
 
 	//------------------
 
-	imageIDstr                       := gf_images_core.GFimageID(jobExpectedOutputsLst[0].Image_id_str)
+	imageIDstr := gf_images_core.GFimageID(jobExpectedOutputsLst[0].Image_id_str)
 	thumbnail_small_relative_url_str := jobExpectedOutputsLst[0].Thumbnail_small_relative_url_str
 
 	return &runningJob.IDstr, &thumbnail_small_relative_url_str, imageIDstr, nil
@@ -601,14 +598,11 @@ func AddExternImage(pImageExternURLstr string,
 
 func Create(pFlowNameStr string,
 	pOwnerUserIDstr gf_core.GF_ID,
-	pCtx            context.Context,
-	pRuntimeSys     *gf_core.RuntimeSys) (*GFflow, *gf_core.GFerror) {
+	pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFflow, *gf_core.GFerror) {
 
-	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	idStr             := gf_core.GF_ID(fmt.Sprintf("img_flow:%f", creationUNIXtimeF))
-	
-
-
+	creationUNIXtimeF := float64(time.Now().UnixNano()) / 1000000000.0
+	idStr := gf_core.GF_ID(fmt.Sprintf("img_flow:%f", creationUNIXtimeF))
 
 	flow := &GFflow{
 		IDstr:             idStr,
@@ -622,7 +616,6 @@ func Create(pFlowNameStr string,
 
 	// SQL
 	if pRuntimeSys.SQLdb != nil {
-
 
 		gfErr := DBsqlCreateFlow(idStr,
 			pFlowNameStr,

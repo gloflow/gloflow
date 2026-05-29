@@ -25,7 +25,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_identity/gf_policy"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 )
 
@@ -58,14 +57,6 @@ func InitService(pTemplatesPathsMap map[string]string,
 	}
 
 	keyServerInfo, gfErr := gf_identity_core.KSinit(auth0initBool, pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
-	
-	//------------------------
-	// POLICIES
-
-	gfErr = gf_policy.DBsqlCreateTables(pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

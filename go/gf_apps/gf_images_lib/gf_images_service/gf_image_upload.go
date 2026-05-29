@@ -137,11 +137,11 @@ func UploadInit(pImageNameStr string,
 	//------------------
 	// PRESIGN_URL
 
-	var presignedURLstr   string
+	var presignedURLstr string
 	var targetFilePathStr string
 
 	// NEW_STORAGE
-	if  pConfig.UseNewStorageEngineBool {
+	if pConfig.UseNewStorageEngineBool {
 
 		imageFileNameStr := gf_images_core.ImageGetFilepathFromID(uploadImageIDstr, normalizedFormatStr)
 		targetFilePathStr = imageFileNameStr
@@ -183,7 +183,7 @@ func UploadInit(pImageNameStr string,
 	}
 
 	pRuntimeSys.LogNewFun("DEBUG", "S3 presigned URL generated", map[string]interface{}{
-		"presigned_url_str": presignedURLstr,})
+		"presigned_url_str": presignedURLstr})
 	
 	//------------------
 	
@@ -232,17 +232,15 @@ func UploadInit(pImageNameStr string,
 // the upload operation.
 func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
 	pFlowsNamesLst []string,
-	pMetaMap       map[string]interface{},
-	pUserID        gf_core.GF_ID,
-	pJobsMngrCh    chan gf_images_jobs_core.JobMsg,
-	pServiceInfo   *gf_images_core.GFserviceInfo,
-	pCtx           context.Context,
-	pRuntimeSys    *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
+	pMetaMap map[string]interface{},
+	pUserID gf_core.GF_ID,
+	pJobsMngrCh chan gf_images_jobs_core.JobMsg,
+	pServiceInfo *gf_images_core.GFserviceInfo,
+	pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
 	
 	//------------------
 	// POLICY_VERIFY - verify user is allowed to upload an image into the specified flows.
-	//                 raises error if policy rejects the op.
-	//
 	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
 	gfErr := gf_images_flows.VerifyPolicy(opStr,
 		pFlowsNamesLst,
@@ -301,12 +299,12 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
 //---------------------------------------------------
 
 func UploadMetricsCreate(pUploadImageIDstr gf_images_core.GFimageID,
-	pClientTypeStr  string,
+	pClientTypeStr string,
 	pMetricsDataMap map[string]interface{},
-	pUserID         gf_core.GF_ID,
-	pMetrics        *gf_images_core.GFmetrics,
-	pCtx            context.Context,
-	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
+	pUserID gf_core.GF_ID,
+	pMetrics *gf_images_core.GFmetrics,
+	pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	// VALIDATE
 	if _, ok := pMetricsDataMap["upload_client_duration_sec_f"]; !ok {
@@ -332,12 +330,11 @@ func UploadMetricsCreate(pUploadImageIDstr gf_images_core.GFimageID,
 	uploadClientDurationSecF := pMetricsDataMap["upload_client_duration_sec_f"].(float64)
 	uploadClientTransferDurationSecF := pMetricsDataMap["upload_client_transfer_duration_sec_f"].(float64)
 
-
-	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	metrics := &GFimageUploadMetrics {
-		CreationUNIXtimeF:  creationUNIXtimeF,
-		ImageIDstr:         pUploadImageIDstr,
-		ClientTypeStr:      pClientTypeStr,
+	creationUNIXtimeF := float64(time.Now().UnixNano()) / 1000000000.0
+	metrics := &GFimageUploadMetrics{
+		CreationUNIXtimeF:                creationUNIXtimeF,
+		ImageIDstr:                       pUploadImageIDstr,
+		ClientTypeStr:                    pClientTypeStr,
 		UploadClientDurationSecF:         uploadClientDurationSecF,
 		UploadClientTransferDurationSecF: uploadClientTransferDurationSecF,
 		UserID:                           pUserID,
@@ -350,7 +347,6 @@ func UploadMetricsCreate(pUploadImageIDstr gf_images_core.GFimageID,
 	if gfErr != nil {
 		return gfErr
 	}
-
 
 	if pMetrics != nil {
 		pMetrics.ImageUploadClientDurationGauge.Set(uploadClientDurationSecF)
@@ -365,12 +361,11 @@ func UploadMetricsCreate(pUploadImageIDstr gf_images_core.GFimageID,
 //---------------------------------------------------
 
 func dbUploadMetricsCreate(pUploadMetrics *GFimageUploadMetrics,
-	pCtx        context.Context,
+	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-
 	collNameStr := "gf_images_upload_metrics"
-	gfErr       := gf_core.MongoInsert(pUploadMetrics,
+	gfErr := gf_core.MongoInsert(pUploadMetrics,
 		collNameStr,
 		map[string]interface{}{
 			"upload_image_id_str": pUploadMetrics.ImageIDstr,
@@ -389,11 +384,11 @@ func dbUploadMetricsCreate(pUploadMetrics *GFimageUploadMetrics,
 //---------------------------------------------------
 
 func dbPutUploadInfo(pUploadInfo *GFimageUploadInfo,
-	pCtx        context.Context,
+	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	collNameStr := "gf_images_upload_info"
-	gfErr       := gf_core.MongoInsert(pUploadInfo,
+	gfErr := gf_core.MongoInsert(pUploadInfo,
 		collNameStr,
 		map[string]interface{}{
 			"user_id":             pUploadInfo.UserID,
@@ -413,8 +408,8 @@ func dbPutUploadInfo(pUploadInfo *GFimageUploadInfo,
 //---------------------------------------------------
 
 func dbGetUploadInfo(pUploadImageIDstr gf_images_core.GFimageID,
-	pUserID     gf_core.GF_ID,
-	pCtx        context.Context,
+	pUserID gf_core.GF_ID,
+	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GFerror) {
 
 	var uploadInfo GFimageUploadInfo
@@ -452,7 +447,6 @@ func dbGetUploadInfo(pUploadImageIDstr gf_images_core.GFimageID,
 				"user_id":                pUserID,
 				"upload_user_id":         uploadInfo.UserID,
 				"upload_gf_image_id_str": pUploadImageIDstr,
-			
 			},
 			err, "gf_images_service", pRuntimeSys)
 		return nil, gfErr

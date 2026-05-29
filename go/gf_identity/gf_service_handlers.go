@@ -26,7 +26,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_identity/gf_policy"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -137,62 +136,6 @@ func initHandlers(pAuthLoginURLstr string,
 				}
 				return outputMap, nil
 			}
-			return nil, nil
-		},
-		rpcHandlerRuntime,
-		pRuntimeSys)
-		
-	//---------------------
-	// POLICY
-	//---------------------
-	// POLICY_UPDATE
-	// AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/policy/update",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
-
-			if pReq.Method == "POST" {
-
-				//---------------------
-				// INPUT
-
-				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
-
-				inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr
-				}
-
-				var targetResourceIDstr gf_core.GF_ID
-				if targetResourceIDinputStr, ok := inputMap["target_resource_id_str"]; ok {
-					targetResourceIDstr = gf_core.GF_ID(targetResourceIDinputStr.(string))
-				}
-
-				var polidyIDstr gf_core.GF_ID
-				if polidyIDinputStr, ok := inputMap["policy_id_str"]; ok {
-					polidyIDstr = gf_core.GF_ID(polidyIDinputStr.(string))
-				}
-
-				//---------------------
-
-				
-				output, gfErr := gf_policy.PipelineUpdate(targetResourceIDstr, polidyIDstr, userIDstr, pCtx, pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr
-				}
-
-				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
-				gf_core.HTTPdisableCachingOfResponse(pResp)
-
-				//---------------------
-				// OUTPUT
-				dataMap := map[string]interface{}{
-					"policy_exists_bool": output.PolicyExistsBool,
-				}
-				return dataMap, nil
-
-				//---------------------
-			}
-
 			return nil, nil
 		},
 		rpcHandlerRuntime,
