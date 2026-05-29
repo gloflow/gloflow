@@ -38,6 +38,7 @@ type GFhookConfigLoadCallback func(*GFconfig, *RuntimeSys) (*GFconfig, *GFerror)
 
 // special hooks that run at startup, and need a lot less infra setup to run
 type ExternalBootHooks struct {
+	
 	//---------------------------
 	// CONFIG
 
@@ -102,12 +103,13 @@ type ExternalHooks struct {
 type GFpolicyExternalHooks struct {
 
 	//---------------------------
-	// VerifyCallback checks if user can perform action on resource
-	// Returns: (allowed bool, error)
+	// VerifyCallback checks if user can perform GF operation on resource
+	// Returns: (allowed bool, GFerror)
 	VerifyCallback func(
 		pUserID GF_ID,
 		pResourceID GF_ID,
-		pActionStr string,
+		pResourceTypeStr string,
+		pGFopStr string,
 		pCtx context.Context,
 		pRuntimeSys *RuntimeSys,
 	) (bool, *GFerror)
@@ -121,10 +123,11 @@ type GFpolicyExternalHooks struct {
 		pRuntimeSys *RuntimeSys,
 	) *GFerror
 
-	// UpdatePolicyCallback updates policy associations (e.g., adding flows)
+	// UpdatePolicyCallback updates policy associations (e.g., adding/removing resources)
 	UpdatePolicyCallback func(
 		pUserID GF_ID,
 		pResourceIDsLst []GF_ID,
+		pResourceTypeStr string,
 		pCtx context.Context,
 		pRuntimeSys *RuntimeSys,
 	) *GFerror

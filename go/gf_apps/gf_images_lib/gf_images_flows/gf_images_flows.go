@@ -36,7 +36,7 @@ import (
 
 //-------------------------------------------------
 // IMPORTANT!! - image_flow's are ordered sequences of images, that the user creates and then
-//               over time adds images to it... 
+//               over time adds images to it...
 
 type GFflow struct {
 	Vstr              string
@@ -94,7 +94,7 @@ TEMPORARY - this is mainly needed while flows are held as a property of images
 // in the main GF DB if they dont already exist.
 func pipelineCreateDiscoveredFlows(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	
+
 	// get all flows from the current Mongodb
 	allFlowsLst, gfErr := DBmongoGetAll(pCtx, pRuntimeSys)
 	if gfErr != nil {
@@ -128,8 +128,8 @@ func pipelineCreateDiscoveredFlows(pCtx context.Context,
 //-------------------------------------------------
 
 func CreateIfMissingWithPolicy(pFlowsNamesLst []string,
-	pUserID     gf_core.GF_ID,
-	pCtx        context.Context,
+	pUserID gf_core.GF_ID,
+	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//----------------------
@@ -150,9 +150,13 @@ func CreateIfMissingWithPolicy(pFlowsNamesLst []string,
 		return gfErr
 	}
 
-	gfErr = gf_policy.UpdateWithNewFlows(flowsIDsLst, pUserID, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
+	// Use hook-based policy update if available
+	if pRuntimeSys != nil && pRuntimeSys.PolicyHooks != nil &&
+		pRuntimeSys.PolicyHooks.UpdatePolicyCallback != nil {
+		gfErr = pRuntimeSys.PolicyHooks.UpdatePolicyCallback(pUserID, flowsIDsLst, "flow", pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
 	}
 
 	//----------------------
@@ -167,7 +171,7 @@ func CreateIfMissing(pFlowsNamesLst []string,
 	pUserID gf_core.GF_ID,
 	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]gf_core.GF_ID, *gf_core.GFerror) {
-	
+
 	flowsIDsLst := []gf_core.GF_ID{}
 	for _, flowNameStr := range pFlowsNamesLst {
 
@@ -212,7 +216,7 @@ func PipelineGetAll(pUseMongoBool bool,
 	if gfErr != nil {
 		return nil, gfErr
 	}
-	
+
 	//-----------------------------
 
 	allFlowsLst := []map[string]interface{}{}
@@ -250,7 +254,7 @@ func pipelineGetPage(pReq *http.Request,
 	if aLst, ok := qsMap["pg_index"]; ok {
 		pageIndex := aLst[0]
 		pageIndexInt, err = strconv.Atoi(pageIndex) // user supplied value
-		
+
 		if err != nil {
 			gfErr := gf_core.ErrorCreate("failed to parse integer page_index query string arg",
 				"int_parse_error",
@@ -262,9 +266,9 @@ func pipelineGetPage(pReq *http.Request,
 
 	pageSizeInt := 10 // default
 	if aLst, ok := qsMap["pg_size"]; ok {
-		
+
 		pageSize := aLst[0]
-		
+
 		pageSizeInt, err = strconv.Atoi(pageSize) // user supplied value
 		if err != nil {
 			gfErr := gf_core.ErrorCreate("failed to parse integer pg_size query string arg",
@@ -317,7 +321,7 @@ func pipelineGetPage(pReq *http.Request,
 	}
 
 	//------------------
-	
+
 	pagesUserNamesLst := resolveUserIDsToUserNames(imagesPagesLst, pCtx, pRuntimeSys)
 
 	return imagesPagesLst, pagesUserNamesLst, nil
@@ -332,12 +336,12 @@ func resolveUserIDsToUserNames(pImagesPagesLst [][]*gf_images_core.GFimage,
 
 	pagesUserNamesLst := [][]gf_identity_core.GFuserName{}
 	usernamesCacheMap := map[gf_core.GF_ID]gf_identity_core.GFuserName{}
-	
+
 	for _, pLst := range pImagesPagesLst {
 
 		pageUserNamesLst := []gf_identity_core.GFuserName{}
 		for _, image := range pLst {
-			
+
 			userID := image.UserID
 			var userNameStr gf_identity_core.GFuserName
 
@@ -347,7 +351,7 @@ func resolveUserIDsToUserNames(pImagesPagesLst [][]*gf_images_core.GFimage,
 			} else {
 
 				resolvedUserNameStr := gf_identity_core.ResolveUserName(userID, pCtx, pRuntimeSys)
-				userNameStr               = resolvedUserNameStr
+				userNameStr = resolvedUserNameStr
 				usernamesCacheMap[userID] = resolvedUserNameStr
 			}
 			pageUserNamesLst = append(pageUserNamesLst, userNameStr)
@@ -366,7 +370,7 @@ func imagesExistCheck(pImagesExternURLsLst []string,
 	pUserID gf_core.GF_ID,
 	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
-	
+
 	//-------------------------
 	// IMAGES_EXIST_CHECK
 
@@ -386,7 +390,7 @@ func imagesExistCheck(pImagesExternURLsLst []string,
 	go func() {
 		creationUNIXtimeF := float64(time.Now().UnixNano()) / 1000000000.0
 		idStr := gf_core.GF_ID(fmt.Sprintf("img_exists_check:%f", creationUNIXtimeF))
-		
+
 		check := GFimageExistsCheck{
 			IDstr:               idStr,
 			Tstr:                "img_exists_check",
@@ -450,10 +454,21 @@ func AddExternImageWithPolicy(pImageExternURLstr string,
 	//-------------------------
 	// POLICY_VERIFY
 	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
-	allowed := VerifyPolicy(opStr,
+	allowed, gfErr := VerifyPolicy(opStr,
 		pFlowsNamesLst,
 		pUserID, pCtx, pRuntimeSys)
 	if gfErr != nil {
+		return nil, nil, gf_images_core.GFimageID(""), gfErr
+	}
+	if !allowed {
+		gfErr := gf_core.ErrorCreate("policy verification failed - operation not allowed",
+			"policy__op_denied",
+			map[string]interface{}{
+				"user_id": pUserID,
+				"flows":   pFlowsNamesLst,
+				"action":  "write",
+			},
+			nil, "gf_images_flows", pRuntimeSys)
 		return nil, nil, gf_images_core.GFimageID(""), gfErr
 	}
 
@@ -491,14 +506,14 @@ func AddExternImages(pImagesExternURLsLst []string,
 
 		imageExternURLstr := pImagesExternURLsLst[i]
 		imageOriginPageURLstr := pImagesOriginPagesURLsStr[i]
-		
+
 		image := gf_images_jobs_core.GFimageExternToProcess{
 			SourceURLstr:     imageExternURLstr,
 			OriginPageURLstr: imageOriginPageURLstr,
 		}
 		imagesURLsToProcessLst = append(imagesURLsToProcessLst, image)
 	}
-	
+
 	// GF_IMAGES_JOBS_CLIENT
 	runningJob, jobExpectedOutputsLst, gfErr := gf_images_jobs_client.RunExternImages(pClientTypeStr,
 		imagesURLsToProcessLst,
@@ -545,14 +560,14 @@ func AddExternImage(pImageExternURLstr string,
 	// and if it doesnt create it first, before processing images.
 
 	for _, flowNameStr := range pFlowsNamesLst {
-		
+
 		// check flow exists
 		existsBool, _, gfErr := DBsqlCheckFlowExists(flowNameStr, pRuntimeSys)
 		if gfErr != nil {
 			return nil, nil, gf_images_core.GFimageID(""), gfErr
 		}
 
-		// if it doesnt exist, create it... 
+		// if it doesnt exist, create it...
 		if !existsBool {
 
 			// FLOW_CREATE
@@ -567,12 +582,12 @@ func AddExternImage(pImageExternURLstr string,
 
 	//------------------
 	imagesURLsToProcessLst := []gf_images_jobs_core.GFimageExternToProcess{
-			{
-				SourceURLstr:     pImageExternURLstr,
-				OriginPageURLstr: pImageOriginPageURLstr,
-			},
-		}
-	
+		{
+			SourceURLstr:     pImageExternURLstr,
+			OriginPageURLstr: pImageOriginPageURLstr,
+		},
+	}
+
 	// GF_IMAGES_JOBS_CLIENT
 	runningJob, jobExpectedOutputsLst, gfErr := gf_images_jobs_client.RunExternImages(pClientTypeStr,
 		imagesURLsToProcessLst,
@@ -614,43 +629,31 @@ func Create(pFlowNameStr string,
 	//------------------
 	// DB
 
-	// SQL
-	if pRuntimeSys.SQLdb != nil {
+	gfErr := DBsqlCreateFlow(idStr,
+		pFlowNameStr,
+		pOwnerUserIDstr,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
 
-		gfErr := DBsqlCreateFlow(idStr,
-			pFlowNameStr,
-			pOwnerUserIDstr,
-			pRuntimeSys)
-		if gfErr != nil {
-			return nil, gfErr
-		}
+	//------------------
+	// POLICY_CREATE
 
-
-	// MONGODB
-	} else {
-		collNameStr := pRuntimeSys.Mongo_coll.Name()
-		gfErr := gf_core.MongoInsert(flow,
-			collNameStr,
-			map[string]interface{}{
-				"images_flow_name_str": pFlowNameStr,
-				"caller_err_msg_str":   "failed to insert a image Flow into the DB",
-			},
+	// Use hook-based policy creation if available
+	if pRuntimeSys != nil && pRuntimeSys.PolicyHooks != nil &&
+		pRuntimeSys.PolicyHooks.CreatePolicyCallback != nil {
+		resourceIDStr := gf_core.GF_ID(idStr)
+		gfErr := pRuntimeSys.PolicyHooks.CreatePolicyCallback(
+			resourceIDStr,
+			"flow",
+			gf_core.GF_ID(pOwnerUserIDstr),
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}
 	}
-	
-	//------------------
-	// POLICY_CREATE
-	
-	/*
-	gfErr = gf_policy.PipelineCreate(idStr, pOwnerUserIDstr, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
-	*/
 
 	//------------------
 

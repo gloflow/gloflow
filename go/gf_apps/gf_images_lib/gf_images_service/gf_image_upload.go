@@ -21,6 +21,7 @@ package gf_images_service
 
 import (
 	// "fmt"
+	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -82,14 +83,14 @@ func UploadInit(pImageNameStr string,
 	pServiceInfo *gf_images_core.GFserviceInfo,
 	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GFerror) {
-	
+
 	//------------------
 	/*
-	CREATE_FLOWS - check if flows to which this image is being added exist,
-		and create if its missing.
-		if flow doesnt exist it is assigned to this user. if it does exist
-		nothing happens, and subsequent policy verification will check if
-		user is allowed to add images to the flow.
+		CREATE_FLOWS - check if flows to which this image is being added exist,
+			and create if its missing.
+			if flow doesnt exist it is assigned to this user. if it does exist
+			nothing happens, and subsequent policy verification will check if
+			user is allowed to add images to the flow.
 	*/
 
 	gfErr := gf_images_flows.CreateIfMissingWithPolicy(pFlowsNamesLst,
@@ -102,13 +103,22 @@ func UploadInit(pImageNameStr string,
 
 	//------------------
 	// POLICY_VERIFY - verify user is allowed to upload an image into the specified flows.
-	//                 raises error if policy rejects the op.
-	
 	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
-	gfErr = gf_images_flows.VerifyPolicy(opStr,
+	allowed, gfErr := gf_images_flows.VerifyPolicy(opStr,
 		pFlowsNamesLst,
 		pUserID, pCtx, pRuntimeSys)
 	if gfErr != nil {
+		return nil, gfErr
+	}
+	if !allowed {
+		gfErr := gf_core.ErrorCreate("policy verification failed - operation not allowed",
+			"policy__op_denied",
+			map[string]interface{}{
+				"user_id": pUserID,
+				"flows":   pFlowsNamesLst,
+				"action":  "write",
+			},
+			nil, "gf_image_upload", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -184,9 +194,9 @@ func UploadInit(pImageNameStr string,
 
 	pRuntimeSys.LogNewFun("DEBUG", "S3 presigned URL generated", map[string]interface{}{
 		"presigned_url_str": presignedURLstr})
-	
+
 	//------------------
-	
+
 	uploadInfo := &GFimageUploadInfo{
 		Tstr:              "img_upload_info",
 		CreationUNIXtimeF: creationUNIXtimeF,
@@ -238,14 +248,25 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
 	pServiceInfo *gf_images_core.GFserviceInfo,
 	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
-	
+
 	//------------------
 	// POLICY_VERIFY - verify user is allowed to upload an image into the specified flows.
 	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
-	gfErr := gf_images_flows.VerifyPolicy(opStr,
+	allowed, gfErr := gf_images_flows.VerifyPolicy(opStr,
 		pFlowsNamesLst,
 		pUserID, pCtx, pRuntimeSys)
 	if gfErr != nil {
+		return nil, gfErr
+	}
+	if !allowed {
+		gfErr := gf_core.ErrorCreate("policy verification failed - operation not allowed",
+			"policy__op_denied",
+			map[string]interface{}{
+				"user_id": pUserID,
+				"flows":   pFlowsNamesLst,
+				"action":  "write",
+			},
+			nil, "gf_image_upload", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -256,7 +277,7 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
 	if gfErr != nil {
 		return nil, gfErr
 	}
-	
+
 	imageToProcessLst := []gf_images_jobs_core.GFimageUploadedToProcess{
 		{
 			GFimageIDstr:  pUploadImageIDstr,
@@ -276,7 +297,7 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
 	if gfErr != nil {
 		return nil, gfErr
 	}
-	
+
 	//------------------------
 	// EVENT
 	if pServiceInfo.EnableEventsAppBool {
@@ -305,7 +326,7 @@ func UploadMetricsCreate(pUploadImageIDstr gf_images_core.GFimageID,
 	pMetrics *gf_images_core.GFmetrics,
 	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	
+
 	// VALIDATE
 	if _, ok := pMetricsDataMap["upload_client_duration_sec_f"]; !ok {
 		gfErr := gf_core.MongoHandleError("image upload metrics data is missing the 'upload_client_duration_sec_f' key",
@@ -373,7 +394,7 @@ func dbUploadMetricsCreate(pUploadMetrics *GFimageUploadMetrics,
 		},
 		pCtx,
 		pRuntimeSys)
-	
+
 	if gfErr != nil {
 		return gfErr
 	}
@@ -386,7 +407,7 @@ func dbUploadMetricsCreate(pUploadMetrics *GFimageUploadMetrics,
 func dbPutUploadInfo(pUploadInfo *GFimageUploadInfo,
 	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	
+
 	collNameStr := "gf_images_upload_info"
 	gfErr := gf_core.MongoInsert(pUploadInfo,
 		collNameStr,
@@ -397,7 +418,7 @@ func dbPutUploadInfo(pUploadInfo *GFimageUploadInfo,
 		},
 		pCtx,
 		pRuntimeSys)
-	
+
 	if gfErr != nil {
 		return gfErr
 	}
@@ -414,9 +435,9 @@ func dbGetUploadInfo(pUploadImageIDstr gf_images_core.GFimageID,
 
 	var uploadInfo GFimageUploadInfo
 	err := pRuntimeSys.Mongo_db.Collection("gf_images_upload_info").FindOne(pCtx, bson.M{
-			"t":                      "img_upload_info",
-			"upload_gf_image_id_str": pUploadImageIDstr,
-		}).Decode(&uploadInfo)
+		"t":                      "img_upload_info",
+		"upload_gf_image_id_str": pUploadImageIDstr,
+	}).Decode(&uploadInfo)
 
 	if err == mongo.ErrNoDocuments {
 		gfErr := gf_core.MongoHandleError("image_upload_info does not exist in mongodb",
