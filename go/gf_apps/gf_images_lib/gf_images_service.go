@@ -31,7 +31,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_storage"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_service"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_image_editor"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_flows"
@@ -59,18 +58,8 @@ func InitService(pHTTPmux *http.ServeMux,
 	}
 
 	//-------------
-	// DB_INDEXES
-	// IMPORTANT!! - make sure mongo has indexes build for relevant queries
-	// gf_images_service.DBmongoIndexInit(pRuntimeSys)
-
-	//-------------
 	// S3
-	// REMOVE!! - usage of AWS creds here, they should be discovered
-	//            by the AWS client from the environment.
-	s3Info, gfErr := gf_aws.S3init(// pServiceInfo.AWS_access_key_id_str,
-		// pServiceInfo.AWS_secret_access_key_str,
-		// pServiceInfo.AWS_token_str,
-		pRuntimeSys)
+	s3Info, gfErr := gf_aws.S3init(pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
@@ -79,8 +68,8 @@ func InitService(pHTTPmux *http.ServeMux,
 	// IMAGE_STORAGE
 
 	storageConfig := &gf_images_storage.GFimageStorageConfig{
-		TypesToProvisionLst:          []string{"s3", "ipfs"},
-		IPFSnodeHostStr:              pConfig.IPFSnodeHostStr,
+		TypesToProvisionLst:          []string{"s3",},
+		// IPFSnodeHostStr:              pConfig.IPFSnodeHostStr,
 		ThumbsS3bucketNameStr:        pConfig.ImagesFlowToS3bucketMap["general"],
 		UploadsSourceS3bucketNameStr: pConfig.Uploaded_images_s3_bucket_str,
 		UploadsTargetS3bucketNameStr: pConfig.ImagesFlowToS3bucketMap["general"],
@@ -116,7 +105,6 @@ func InitService(pHTTPmux *http.ServeMux,
 		panic(gfErr.Error)
 	}
 
-	// flows__templates_dir_path_str := pServiceInfo.Templates_dir_paths_map["flows_str"]
 	flowsHandlersLst, gfErr := gf_images_flows.InitHandlers(pServiceInfo.AuthSubsystemTypeStr,
 		pServiceInfo.AuthLoginURLstr,
 		pServiceInfo.KeyServer,
@@ -134,19 +122,6 @@ func InitService(pHTTPmux *http.ServeMux,
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
-
-	/*
-	gf_gif_lib.Init_img_to_gif_migration(*p_images_store_local_dir_path_str,
-		*p_images_main_s3_bucket_name_str,
-		s3_client,
-		s3_uploader, // s3_client,
-		mongodb_coll,
-		pLogFun)
-	*/
-
-	//-------------
-	// IMAGE_EDITOR
-	gf_image_editor.InitHandlers(pHTTPmux, pRuntimeSys)
 	
 	//-------------
 	// HANDLERS
@@ -189,7 +164,6 @@ func InitService(pHTTPmux *http.ServeMux,
 
 	//------------------------
 
-	
 	return jobsMngrCh
 }
 
