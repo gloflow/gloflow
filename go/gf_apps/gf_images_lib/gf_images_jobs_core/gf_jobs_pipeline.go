@@ -611,6 +611,10 @@ func jobTransform(pImageIDstr gf_images_core.GFimageID,
 	// TRANSFORM
 	ctx := context.Background()
 
+	pRuntimeSys.LogNewFun("DEBUG", "transforming image...", map[string]interface{}{
+		"image_id": pImageIDstr,
+	})
+
 	_, imageThumbs, gfErr := gf_images_core.TransformImage(pImageIDstr,
 		pJobRuntime.job_client_type_str,
 		pFlowsNamesLst,
@@ -632,6 +636,10 @@ func jobTransform(pImageIDstr gf_images_core.GFimageID,
 			pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
 		return nil, gfErr
 	}
+
+	pRuntimeSys.LogNewFun("DEBUG", "transforming image OK...", map[string]interface{}{
+		"image_id": pImageIDstr,
+	})
 
 	updateMsg := JobUpdateMsg{
 		Name_str:             "image_transform",

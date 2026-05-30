@@ -581,7 +581,7 @@ func DBsqlCreateTables(pCtx context.Context,
 		user_id           TEXT,
 
 		-- ---------------
-		-- "gchrome_ext"|"gf_crawl_images"|"gf_image_editor"
+		-- "gchrome_ext"|etc.
 		client_type VARCHAR(255),
 
 		title TEXT,

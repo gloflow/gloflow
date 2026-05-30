@@ -38,7 +38,7 @@ type GFimage struct {
 	UserID               gf_core.GF_ID `json:"user_id_str"          bson:"user_id_str"`
 
 	//---------------
-	ClientTypeStr        string        `json:"-"                    bson:"client_type_str"` // "gchrome_ext"|"gf_crawl_images"|"gf_image_editor"
+	ClientTypeStr        string        `json:"-"                    bson:"client_type_str"` // "gchrome_ext"|etc.
 	TitleStr             string        `json:"title_str"            bson:"title_str"`
 	FlowsNamesLst        []string      `json:"flows_names_lst"      bson:"flows_names_lst"` // image can bellong to multiple flows
 

@@ -109,6 +109,14 @@ func Init(pConfig *GFimageStorageConfig,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFimageStorage, *gf_core.GFerror) {
 
 	storage := &GFimageStorage{}
+
+	//-------------
+	// IMPORTANT!! - for now the first specified storage type is set as the primary one!!
+	//               even though multiple can be configured to be provisioned.
+	storage.TypeStr = pConfig.TypesToProvisionLst[0]
+
+	//-------------
+
 	for _, storageTypeStr := range pConfig.TypesToProvisionLst {
 		
 		switch storageTypeStr {
@@ -123,6 +131,7 @@ func Init(pConfig *GFimageStorageConfig,
 				UploadsTargetDirPathStr: pConfig.UploadsTargetDirPathStr,
 				ExternImagesDirPathStr:  pConfig.ExternImagesDirPathStr,
 			}
+
 			storage.Local = localStorage
 
 		//-------------
@@ -140,6 +149,7 @@ func Init(pConfig *GFimageStorageConfig,
 				UploadsSourceS3bucketNameStr: pConfig.UploadsSourceS3bucketNameStr,
 				UploadsTargetS3bucketNameStr: pConfig.UploadsTargetS3bucketNameStr,
 			}
+
 			storage.S3 = S3storage
 
 		//-------------
@@ -155,6 +165,7 @@ func Init(pConfig *GFimageStorageConfig,
 			IPFSstorage := &GFstorageIPFS{
 				Shell: ipfsShell,
 			}
+
 			storage.IPFS = IPFSstorage
 
 		//-------------
@@ -171,6 +182,11 @@ func FilePutFromLocal(pOpDef *GFputFromLocalOpDef,
 	pStorage    *GFimageStorage,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
+
+	pRuntimeSys.LogNewFun("DEBUG", "image storage - put file...", map[string]interface{}{
+		"storage_type": pStorage.TypeStr,
+	})
+	
 	switch pStorage.TypeStr {
 
 	// LOCAL
@@ -190,6 +206,13 @@ func FilePutFromLocal(pOpDef *GFputFromLocalOpDef,
 
 	// S3
 	case "s3":
+
+		pRuntimeSys.LogNewFun("DEBUG", "image storage - uploading local file to s3...", map[string]interface{}{
+			"local_file": pOpDef.ImageSourceLocalFilePathStr,
+			"s3_bucket_name": pOpDef.S3bucketNameStr,
+			"s3_key": pOpDef.ImageTargetFilePathStr,
+		})
+		
 		_, gfErr := gf_aws.S3putFile(pOpDef.ImageSourceLocalFilePathStr,
 			pOpDef.ImageTargetFilePathStr,
 			pOpDef.S3bucketNameStr,

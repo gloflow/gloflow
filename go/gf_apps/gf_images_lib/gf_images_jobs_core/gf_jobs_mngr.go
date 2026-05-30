@@ -169,6 +169,12 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 	
 	
 
+	pRuntimeSys.LogNewFun("DEBUG", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", nil)
+	pRuntimeSys.LogNewFun("DEBUG", "image storage config...", map[string]interface{}{
+		"type": pImageStorage.TypeStr,
+	})
+	
+
 
 
 	// IMPORTANT!! - start jobs_mngr as an independent goroutine of the HTTP handlers at
