@@ -49,8 +49,6 @@ func getDefs() map[string][]string {
 
 		"viewing": []string{
 			GF_POLICY_OP__FLOW_GET,
-			GF_POLICY_OP__PLOT_GET,
-			GF_POLICY_OP__PLOT_LIST,
 		},
 
 		"tagging": []string{
@@ -65,12 +63,10 @@ func getDefs() map[string][]string {
 		"editing": []string{
 			GF_POLICY_OP__FLOW_ADD_IMG,
 			GF_POLICY_OP__FLOW_REMOVE_IMG,
-			GF_POLICY_OP__PLOT_UPDATE,
 		},
 
 		"admin": []string{
 			GF_POLICY_OP__FLOW_DELETE,
-			GF_POLICY_OP__PLOT_DELETE,
 		},
 	}
 
