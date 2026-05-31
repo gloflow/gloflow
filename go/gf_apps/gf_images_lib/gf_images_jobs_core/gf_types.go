@@ -1,0 +1,141 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+GloFlow application and media management/publishing platform
+Copyright (C) 2019 Ivan Trajkovic
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+package gf_images_jobs_core
+
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_plugins"
+)
+
+//-------------------------------------------------
+
+type JobsMngr chan JobMsg
+
+type GFjobRunning struct {
+	Id              primitive.ObjectID `bson:"_id,omitempty"`
+	IDstr           string        `bson:"id_str"`
+	T_str           string        `bson:"t"`
+	Client_type_str string        `bson:"client_type_str"`
+	Status_str      string        `bson:"status_str"` // "running"|"complete"
+	Start_time_f    float64       `bson:"start_time_f"`
+	End_time_f      float64       `bson:"end_time_f"`
+
+	// LEGACY!! - update "images_to_process_lst" to "images_extern_to_process_lst" in the DB (bson)
+	Images_extern_to_process_lst   []GFimageExternToProcess   `bson:"images_to_process_lst"`
+	Images_uploaded_to_process_lst []GFimageUploadedToProcess `bson:"images_uploaded_to_process_lst"`
+	
+	Errors_lst     []JobError        `bson:"errors_lst"`
+	job_updates_ch chan JobUpdateMsg `bson:"-"`
+
+	// user that submited the job
+	UserID gf_core.GF_ID `bson:"user_id"`
+}
+
+type GFjobRuntime struct {
+	job_id_str              string
+	job_client_type_str     string
+	job_updates_ch          chan JobUpdateMsg
+	useNewStorageEngineBool bool
+	metricsPlugins          *gf_images_plugins.GFmetrics
+	userID                  gf_core.GF_ID
+}
+
+//------------------------
+// IMAGES_TO_PROCESS
+
+type GFimageExternToProcess struct {
+	SourceURLstr     string `bson:"source_url_str"` // FIX!! - rename this to Origin_url_str to be consistent with other origin_url naming
+	OriginPageURLstr string `bson:"origin_page_url_str"`
+}
+
+type GFimageUploadedToProcess struct {
+	GFimageIDstr  gf_images_core.GFimageID
+	S3filePathStr string                 // path to image in S3 in a bucket that it was originally uploaded to by client
+	MetaMap       map[string]interface{} // metadata user might include for this image
+}
+
+type GFimageLocalToProcess struct {
+	LocalFilePathStr string
+}
+
+type GFimageClassificationToProcess struct {
+	GFimageIDstr gf_images_core.GFimageID
+}
+
+//------------------------
+// JOB_MSGS
+
+type JobMsg struct {
+	JobIDstr        string // if its an existing job. for new jobs the mngr creates a new job ID
+	UserID          gf_core.GF_ID
+	Client_type_str string // type of client that is sending this message to the Job manager
+	CmdStr          string // "start_job" | "get_running_job_ids"
+	
+	Job_init_ch    chan *GFjobRunning // used by clients for receiving outputs of job initialization by jobs_mngr
+	Job_updates_ch chan JobUpdateMsg  // used by jobs_mngr to send job_updates to
+
+	//------------------------
+	// RESPONSE_CH - channel passed by the client, which is to be used for the response.
+	//		used as a general mechanism for clients to receive responses from the jobs_mngr
+	//		after the job has been processed.
+	ResponseCh chan interface{}
+
+	//------------------------
+
+	Images_extern_to_process_lst   []GFimageExternToProcess
+	Images_uploaded_to_process_lst []GFimageUploadedToProcess
+	Images_local_to_process_lst    []GFimageLocalToProcess
+	ImagesToClassifyLst            []GFimageClassificationToProcess
+
+	// FLOW_NAMES
+	Flows_names_lst []string
+}
+
+type JobUpdateMsg struct {
+	Name_str             string                        `json:"name_str"`
+	Type_str             job_update_type_val           `json:"type_str"`             // "ok" | "error" | "complete"
+	ImageIDstr           gf_images_core.GFimageID      `json:"image_id_str"`
+	Image_source_url_str string                        `json:"image_source_url_str"`
+	Err_str              string                        `json:"err_str,omitempty"`    // if the update indicates an error, this is its value
+	Image_thumbs         *gf_images_core.GFimageThumbs `json:"-"`
+}
+
+//------------------------
+// JOBS_LIFECYCLE
+
+type GF_jobs_lifecycle_callbacks struct {
+	Job_type__transform_imgs__fun func() *gf_core.GFerror
+	Job_type__uploaded_imgs__fun  func() *gf_core.GFerror
+}
+
+//------------------------
+
+type job_status_val string
+const JOB_STATUS__FAILED         job_status_val = "failed"
+const JOB_STATUS__FAILED_PARTIAL job_status_val = "failed_partial"
+const JOB_STATUS__COMPLETED      job_status_val = "completed"
+
+type job_update_type_val string
+const JOB_UPDATE_TYPE__OK        job_update_type_val = "ok"
+const JOB_UPDATE_TYPE__ERROR     job_update_type_val = "error"
+const JOB_UPDATE_TYPE__COMPLETED job_update_type_val = "completed"

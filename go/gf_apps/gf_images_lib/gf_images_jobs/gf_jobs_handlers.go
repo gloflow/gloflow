@@ -107,6 +107,7 @@ func InitHandlers(pMux *http.ServeMux,
 				runningJob, jobExpectedOutputsLst, gfErr := gf_images_jobs_client.RunExternImages(clientTypeStr,
 					imagesToProcessLst,
 					flowsNamesLst,
+					false, // pWaitForCompletionBool
 					userID,
 					pJobsMngrCh,
 					pRuntimeSys)

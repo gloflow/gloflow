@@ -256,6 +256,7 @@ func process_external_images__in_process(pPostElementsMap map[string]*gf_publish
 	runningJob, outputsLst, gfErr := gf_images_jobs_client.RunExternImages(pImageJobClientTypeStr,
 		imagesToProcessLst,
 		flows_names_lst,
+		false, // pWaitForCompletionBool
 		pUserID,
 		pImagesJobsMngr,
 		pRuntimeSys)

@@ -290,6 +290,7 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
 	runningJob, gfErr := gf_images_jobs_client.RunUploadedImages(uploadInfo.ClientTypeStr,
 		imageToProcessLst,
 		uploadInfo.FlowsNamesLst,
+		false, // pWaitForCompletionBool
 		pUserID,
 		pJobsMngrCh,
 		pRuntimeSys)

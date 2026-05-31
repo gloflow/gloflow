@@ -21,67 +21,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_jobs_client
 
 import (
-	"fmt"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
 
-// called "expected" because jobs are long-running processes, and they might fail at various stages
-// of their processing. in that case some of these result values will be satisfied, others will not.
-type GFjobExpectedOutput struct {
-	Image_id_str                      gf_images_core.GFimageID `json:"image_id_str"`
-	Image_source_url_str              string                   `json:"image_source_url_str"`
-	Thumbnail_small_relative_url_str  string                   `json:"thumbnail_small_relative_url_str"`
-	Thumbnail_medium_relative_url_str string                   `json:"thumbnail_medium_relative_url_str"`
-	Thumbnail_large_relative_url_str  string                   `json:"thumbnail_large_relative_url_str"`
-}
-
-//-------------------------------------------------
-
-func RunClassifyImages(pClientTypeStr string,
-	pImagesToProcessLst []gf_images_jobs_core.GFimageClassificationToProcess,
-	pUserID             gf_core.GF_ID,
-	pJobsMngrCh         gf_images_jobs_core.JobsMngr,
-	pRuntimeSys         *gf_core.RuntimeSys) ([]string, *gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
-
-	jobCmdStr    := "start_job_classify_imgs"
-	jobInitCh    := make(chan *gf_images_jobs_core.GFjobRunning)
-	jobUpdatesCh := make(chan gf_images_jobs_core.JobUpdateMsg, 10)
-	responseCh := make(chan interface{})
-
-	jobMsg := gf_images_jobs_core.JobMsg{
-		UserID:              pUserID,
-		Client_type_str:     pClientTypeStr,
-		CmdStr:             jobCmdStr,
-		Job_init_ch:         jobInitCh,
-		Job_updates_ch:      jobUpdatesCh,
-		ResponseCh:          responseCh,
-		ImagesToClassifyLst: pImagesToProcessLst,
-	}
-
-	// SEND_MSG
-	pJobsMngrCh <- jobMsg
-
-	// RECEIVE_MSG - get running_job info back from jobs_mngr
-	runningJob := <- jobInitCh
-
-
-
-
-	classes := <- responseCh
-	classesStrLst, _ := classes.([]string)
-
-	return classesStrLst, runningJob, nil
-}
-
-//-------------------------------------------------
 func RunLocalImgs(pClientTypeStr string,
 	pImagesToProcessLst []gf_images_jobs_core.GFimageLocalToProcess,
 	pFlowsNamesLst      []string,
+	pWaitForCompletionBool bool,
 	pUserID             gf_core.GF_ID,
 	pJobsMngrCh         gf_images_jobs_core.JobsMngr,
 	pRuntimeSys         *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, []*GFjobExpectedOutput, *gf_core.GFerror) {
@@ -123,6 +73,12 @@ func RunLocalImgs(pClientTypeStr string,
 	}
 
 	//-----------------
+	// WAIT_FOR_COMPLETION
+	if pWaitForCompletionBool {
+		waitForJobCompletion(jobUpdatesCh, len(pImagesToProcessLst), "Image", pRuntimeSys)
+	}
+
+	//-----------------
 
 	return runningJob, jobExpectedOutputsLst, nil
 }
@@ -132,6 +88,7 @@ func RunLocalImgs(pClientTypeStr string,
 func RunUploadedImages(pClientTypeStr string,
 	pImagesToProcessLst []gf_images_jobs_core.GFimageUploadedToProcess,
 	pFlowsNamesLst      []string,
+	pWaitForCompletionBool bool,
 	pUserID             gf_core.GF_ID,
 	pJobsMngrCh         gf_images_jobs_core.JobsMngr,
 	pRuntimeSys         *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
@@ -156,6 +113,14 @@ func RunUploadedImages(pClientTypeStr string,
 	// RECEIVE_MSG - get running_job info back from jobs_mngr
 	runningJob := <- job_init_ch
 
+	//-----------------
+	// WAIT_FOR_COMPLETION
+	if pWaitForCompletionBool {
+		waitForJobCompletion(job_updates_ch, len(pImagesToProcessLst), "Image", pRuntimeSys)
+	}
+
+	//-----------------
+
 	return runningJob, nil
 }
 
@@ -165,6 +130,7 @@ func RunUploadedImages(pClientTypeStr string,
 func RunExternImages(pClientTypeStr string,
 	pImagesExternToProcessLst []gf_images_jobs_core.GFimageExternToProcess,
 	pFlowsNamesLst            []string,
+	pWaitForCompletionBool    bool,
 	pUserID                   gf_core.GF_ID,
 	pJobsMngrCh               gf_images_jobs_core.JobsMngr,
 	pRuntimeSys               *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, []*GFjobExpectedOutput, *gf_core.GFerror) {
@@ -208,83 +174,59 @@ func RunExternImages(pClientTypeStr string,
 	}
 
 	//-----------------
+	// WAIT_FOR_COMPLETION
+	if pWaitForCompletionBool {
+		waitForJobCompletion(jobUpdatesCh, len(pImagesExternToProcessLst), "Image", pRuntimeSys)
+	}
+
+	//-----------------
 	return runningJob, jobExpectedOutputsLst, nil
 }
 
 //-------------------------------------------------
-// GET_JOB_UPDATE_CH
 
-func GetJobUpdateCh(pJobIDstr string,
-	pJobsMngrCh gf_images_jobs_core.JobsMngr,
-	pRuntimeSys *gf_core.RuntimeSys) chan gf_images_jobs_core.JobUpdateMsg {
+func RunClassifyImages(pClientTypeStr string,
+	pImagesToProcessLst []gf_images_jobs_core.GFimageClassificationToProcess,
+	pWaitForCompletionBool bool,
+	pUserID             gf_core.GF_ID,
+	pJobsMngrCh         gf_images_jobs_core.JobsMngr,
+	pRuntimeSys         *gf_core.RuntimeSys) ([]string, *gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
 
+	jobCmdStr    := "start_job_classify_imgs"
+	jobInitCh    := make(chan *gf_images_jobs_core.GFjobRunning)
+	jobUpdatesCh := make(chan gf_images_jobs_core.JobUpdateMsg, 10)
 	responseCh := make(chan interface{})
-	defer close(responseCh)
 
-	jobCmdStr := "get_job_update_ch"
-	jobMsg    := gf_images_jobs_core.JobMsg{
-		JobIDstr:   pJobIDstr,
-		CmdStr:     jobCmdStr,
-		ResponseCh: responseCh,
+	jobMsg := gf_images_jobs_core.JobMsg{
+		UserID:              pUserID,
+		Client_type_str:     pClientTypeStr,
+		CmdStr:             jobCmdStr,
+		Job_init_ch:         jobInitCh,
+		Job_updates_ch:      jobUpdatesCh,
+		ResponseCh:          responseCh,
+		ImagesToClassifyLst: pImagesToProcessLst,
 	}
 
+	// SEND_MSG
 	pJobsMngrCh <- jobMsg
 
-	response        := <- responseCh
-	jobUpdatesCh, _ := response.(chan gf_images_jobs_core.JobUpdateMsg)
+	// RECEIVE_MSG - get running_job info back from jobs_mngr
+	runningJob := <- jobInitCh
 
-	return jobUpdatesCh
-}
+	classes := <- responseCh
+	classesStrLst, _ := classes.([]string)
 
-//-------------------------------------------------
-
-func CleanupJob(pJobIDstr string,
-	pJobsMngrCh gf_images_jobs_core.JobsMngr,
-	pRuntimeSys *gf_core.RuntimeSys) {
-
-	jobCmdStr := "cleanup_job"
-	jobMsg    := gf_images_jobs_core.JobMsg{
-		JobIDstr: pJobIDstr,
-		CmdStr:    jobCmdStr,
-	}
-
-	pJobsMngrCh <- jobMsg
-}
-
-//-------------------------------------------------
-// VAR
-//-------------------------------------------------
-
-func getJobExpectedOutput(pImagesSourceURIsLst []string,
-	pRuntimeSys *gf_core.RuntimeSys) ([]*GFjobExpectedOutput, *gf_core.GFerror) {
-
-	jobExpectedOutputsLst := []*GFjobExpectedOutput{}
-
-	for _, imgSourceURLstr := range pImagesSourceURIsLst {
-
-		//--------------
-		// IMAGE_ID
-		imageIDstr, gfErr := gf_images_core.CreateIDfromURL(imgSourceURLstr, pRuntimeSys)
-		if gfErr != nil {
-			return nil, gfErr
-		}
-
-		//--------------
-
-		// all thumbs are stored as jpeg's
-		thumbsExtStr := "jpeg"
-		
-		output := &GFjobExpectedOutput{
-			Image_id_str:                      imageIDstr,
-			Image_source_url_str:              imgSourceURLstr,
-			Thumbnail_small_relative_url_str : fmt.Sprintf("/images/d/thumbnails/%s_thumb_small.%s",  imageIDstr, thumbsExtStr),
-			Thumbnail_medium_relative_url_str: fmt.Sprintf("/images/d/thumbnails/%s_thumb_medium.%s", imageIDstr, thumbsExtStr),
-			Thumbnail_large_relative_url_str:  fmt.Sprintf("/images/d/thumbnails/%s_thumb_large.%s",  imageIDstr, thumbsExtStr),
-		}
-		jobExpectedOutputsLst = append(jobExpectedOutputsLst, output)
+	//-----------------
+	// WAIT_FOR_COMPLETION
+	// Note: RunClassifyImages already waits for the response channel, 
+	// but we add explicit waiting logic for consistency
+	if pWaitForCompletionBool {
+		waitForJobCompletion(jobUpdatesCh, len(pImagesToProcessLst), "Image classification", pRuntimeSys)
 	}
 
 	//-----------------
 
-	return jobExpectedOutputsLst, nil
+	return classesStrLst, runningJob, nil
 }
+
+//-------------------------------------------------

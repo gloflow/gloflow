@@ -518,6 +518,7 @@ func AddExternImages(pImagesExternURLsLst []string,
 	runningJob, jobExpectedOutputsLst, gfErr := gf_images_jobs_client.RunExternImages(pClientTypeStr,
 		imagesURLsToProcessLst,
 		pFlowsNamesLst,
+		false, // pWaitForCompletionBool
 		pUserID,
 		pJobsMngrCh,
 		pRuntimeSys)
@@ -592,6 +593,7 @@ func AddExternImage(pImageExternURLstr string,
 	runningJob, jobExpectedOutputsLst, gfErr := gf_images_jobs_client.RunExternImages(pClientTypeStr,
 		imagesURLsToProcessLst,
 		pFlowsNamesLst,
+		false, // pWaitForCompletionBool
 		pUserIDstr,
 		pJobsMngrCh,
 		pRuntimeSys)

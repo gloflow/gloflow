@@ -62,6 +62,7 @@ func ImageClassify(pInput *GFimageClassifyInput,
 
 	classesLst, runningJob, gfErr := gf_images_jobs_client.RunClassifyImages(pInput.ClientTypeStr,
 		imagesToProcessLst,
+		false, // pWaitForCompletionBool
 		pUserID,
 		pJobsMngrCh,
 		pRuntimeSys)
