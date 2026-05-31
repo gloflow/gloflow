@@ -41,23 +41,77 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		top: 40px;
 
 		width: 10%;
-		overflow: hidden;
+		min-width: 250px;
+		max-width: 400px;
 
-		input {
-			border:           none;
-			background-color: #c8c8c8;
-			width:          100%;
-			max-width:      400px;
-			padding-top:    10px;
-			padding-bottom: 10px;
-			padding-left:   8px;
-			padding-right:  0px;
+		.input_wrapper {
+			position: relative;
+			width: 100%;
+			display: flex;
+			align-items: center;
 
+			input {
+				border:           none;
+				background-color: #c8c8c8;
+				width:          100%;
+				padding-top:    10px;
+				padding-bottom: 10px;
+				padding-left:   8px;
+				padding-right:  35px;
+
+				border-radius: 6px;
+
+				&:focus,
+				&:active {
+					outline: none;
+				}
+			}
+
+			.dropdown_arrow {
+				position: absolute;
+				right: 10px;
+				cursor: pointer;
+				color: #666;
+				font-size: 12px;
+				user-select: none;
+				padding: 5px;
+
+				&:hover {
+					color: #000;
+				}
+			}
+		}
+
+		#flows_autocomplete {
+			position: absolute;
+			top: 45px;
+			width: 100%;
+			max-height: 300px;
+			overflow-y: auto;
+			background-color: white;
+			border: 1px solid #ccc;
 			border-radius: 6px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			z-index: 100;
 
-			&:focus,
-			&:active {
-				outline: none;
+			.flow_suggestion {
+				padding: 10px 12px;
+				cursor: pointer;
+				border-bottom: 1px solid #f0f0f0;
+				font-size: 14px;
+				color: #333;
+
+				&:last-child {
+					border-bottom: none;
+				}
+
+				&:hover {
+					background-color: #f5f5f5;
+				}
+
+				&:active {
+					background-color: #e8e8e8;
+				}
 			}
 		}
 	}
@@ -170,6 +224,25 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		}
 	}
 
+	#upload_spinner {
+		position: absolute;
+		bottom: 80px;
+		width: 500px;
+		height: 51px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		.spinner {
+			width: 24px;
+			height: 24px;
+			border: 3px solid rgba(255, 255, 255, 0.3);
+			border-top-color: white;
+			border-radius: 50%;
+			animation: gf-upload-spin 0.8s linear infinite;
+		}
+	}
+
 	#status_msgs {
 		position: absolute;
 		bottom: 190px;
@@ -185,4 +258,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	}
 }
 
+//------------------------------------------------------------
+// SPINNER_ANIMATION
+@keyframes gf-upload-spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
 //------------------------------------------------------------

@@ -72,12 +72,17 @@ export function init(p_flow_name_str :string,
 						// VIEW_IMAGE
 						gf_upload__view_img(img_data_str,
 							p_flow_name_str,
+							p_target_full_host_str,
 
 							//-------------------------------------------------
 							// UPLOAD_ACTIVATE_FUN
 							async (p_image_name_str :string,
 							p_flows_names_lst        :string[],
 							p_on_upload_complete_fun :Function)=>{
+
+								// Show spinner
+								$("#upload_image_dialog #upload_spinner").show();
+								$("#upload_image_dialog #upload_btn").hide();
 
 								// UPLOAD_IMAGE
 								let upload_gf_image_id_str :string;	
@@ -90,9 +95,14 @@ export function init(p_flow_name_str :string,
 								} catch (p_error_map: any) {
 									const error_str: string = p_error_map["error_msg_str"];
 									add_error_status_msg(error_str);
+									// Hide spinner on error
+									$("#upload_image_dialog #upload_spinner").hide();
+									$("#upload_image_dialog #upload_btn").show();
 									return;
 								}
 
+								// Hide spinner on success
+								$("#upload_image_dialog #upload_spinner").hide();
 								p_on_upload_complete_fun();
 								p_on_upload_fun(upload_gf_image_id_str);
 							});
@@ -134,6 +144,7 @@ function add_error_status_msg(p_error_msg_str :string) {
 //-------------------------------------------------
 function gf_upload__view_img(p_img_data_str :string,
 	p_default_flow_name_str :string,
+	p_target_full_host_str  :string,
 	p_upload_activate_fun   :Function) {
 	
 
@@ -149,18 +160,29 @@ function gf_upload__view_img(p_img_data_str :string,
 		// first image
 		if ($("#upload_image_dialog").length == 0) {
 
+			// Read saved flow names from localStorage, fallback to default
+			const saved_flows_str = localStorage.getItem("gf:upload_flows_names_str");
+			const flow_name_str = saved_flows_str || p_default_flow_name_str;
+
 			const dialog = $(`
 				<div id="upload_image_dialog" class="gf_center">
 					<div id="background"></div>
 
 					<div id="upload_image_flow_name_input" class="gf_center">
-						<input placeholder="flow name" value="${p_default_flow_name_str}"></input>
+						<div class="input_wrapper">
+							<input placeholder="flow name" value="${flow_name_str}"></input>
+							<div class="dropdown_arrow">▼</div>
+						</div>
+						<div id="flows_autocomplete" style="display: none;"></div>
 					</div>
 					
 					<div id="upload_images">
 					</div>
 					
 					<div id="upload_btn">upload image</div>
+					<div id="upload_spinner" style="display: none;">
+						<div class="spinner"></div>
+					</div>
 					<div id="status_msgs"></div>
 
 				</div>`)[0];
@@ -179,11 +201,11 @@ function gf_upload__view_img(p_img_data_str :string,
 		//-------------------------------
 		// MULTI_IMAGE_UPLOAD - additional images upload at a time
 		else {
-			const dialog         = $("#upload_image_dialog");
-			const new_img_id_int = parseInt($(dialog).find(".target_upload_image").last().attr("id")) + 1 // increment by one from last elements id/index
+			const dialog_jquery  = $("#upload_image_dialog");
+			const new_img_id_int = parseInt($(dialog_jquery).find(".target_upload_image").last().attr("id")) + 1 // increment by one from last elements id/index
 			
 			/*
-			$(dialog).find("#upload_images_panel #images").append(`
+			$(dialog_jquery).find("#upload_images_panel #images").append(`
 				<div class="image">
 					<div class"remove_btn">
 						<img src="https://assetspub.gloflow.com/assets/gf_sys/gf_close_btn.svg" draggable="false"></img>
@@ -197,11 +219,11 @@ function gf_upload__view_img(p_img_data_str :string,
 			*/
 
 			const new_image_element = append_image(new_img_id_int, p_img_data_str);
-			$(dialog).find("#upload_images").append(new_image_element);
+			$(dialog_jquery).find("#upload_images").append(new_image_element);
 
-			$(dialog).find("#upload_btn").text("upload images");
+			$(dialog_jquery).find("#upload_btn").text("upload images");
 			
-			return dialog;
+			return dialog_jquery[0];
 		}
 
 		//-------------------------------
@@ -257,6 +279,10 @@ function gf_upload__view_img(p_img_data_str :string,
 	}
 
 	//-------------------------------------------------
+	// FLOWS_AUTOCOMPLETE
+	setup_flows_autocomplete(img_dialog, p_target_full_host_str);
+
+	//-------------------------------------------------
 
 	// ?????
 	const this_image = $(img_dialog).find("#upload_images_panel").last();
@@ -281,10 +307,6 @@ function gf_upload__view_img(p_img_data_str :string,
 			flows_lst.push(image_flow_name_str);
 		}
 		else {
-
-			
-			
-
 			// Handle both comma and space separated flow names
 			const separators = /[,\s]+/;
 			
@@ -295,9 +317,10 @@ function gf_upload__view_img(p_img_data_str :string,
 					flows_lst.push(p_flow_name_str.trim());
 				}
 			});
+		}
 
-
-			// LOCAL_STORAGE - set the flow name in local storage for next time
+		// LOCAL_STORAGE - save the flow name(s) in local storage for next time
+		if (flows_lst.length > 0) {
 			localStorage.setItem("gf:upload_flows_names_str", flows_lst.join(","));
 		}
 		
@@ -589,4 +612,128 @@ function gf_base64_to_blob(p_base64_str :string, p_mime_type_str :string)  {
 	// https://developer.mozilla.org/en-US/docs/Web/API/Blob
 	const blob = new Blob(byte_arrays_lst, {type: p_mime_type_str});
 	return blob;
+}
+
+//-------------------------------------------------
+// FLOWS_AUTOCOMPLETE
+function setup_flows_autocomplete(p_dialog :HTMLElement, p_target_full_host_str :string) {
+
+	const input_element = $(p_dialog).find("#upload_image_flow_name_input input");
+	const autocomplete_element = $(p_dialog).find("#flows_autocomplete");
+	const dropdown_arrow = $(p_dialog).find(".dropdown_arrow");
+
+	let all_flows_lst :string[] = [];
+	let autocomplete_visible_bool = false;
+
+	//-------------------------------------------------
+	// FETCH_FLOWS
+	async function fetch_flows() {
+		const url_str = `${p_target_full_host_str}/v1/images/flows/all`;
+		try {
+			const response = await $.get(url_str);
+			if (response["status"] == "OK") {
+				const flows_data_lst = response["data"]["all_flows_lst"] || [];
+				// Extract flow names from the objects
+				all_flows_lst = flows_data_lst.map((flow_obj: any) => flow_obj["flow_name_str"]);
+			}
+		} catch (error) {
+			console.error("Failed to fetch flows:", error);
+		}
+	}
+
+	//-------------------------------------------------
+	// SHOW_AUTOCOMPLETE
+	function show_autocomplete(p_filter_str :string = "") {
+		let filtered_flows_lst = all_flows_lst;
+
+		if (p_filter_str.trim().length > 0) {
+			const filter_lower = p_filter_str.toLowerCase();
+			filtered_flows_lst = all_flows_lst.filter(flow => 
+				flow.toLowerCase().includes(filter_lower)
+			);
+		}
+
+		// Clear previous suggestions
+		$(autocomplete_element).empty();
+
+		if (filtered_flows_lst.length === 0) {
+			$(autocomplete_element).hide();
+			autocomplete_visible_bool = false;
+			return;
+		}
+
+		// Display up to 10 suggestions
+		const display_flows_lst = filtered_flows_lst.slice(0, 10);
+		display_flows_lst.forEach(flow_name => {
+			const suggestion_element = $(`<div class="flow_suggestion">${flow_name}</div>`);
+			
+			$(suggestion_element).on("click", () => {
+				$(input_element).val(flow_name);
+				$(autocomplete_element).hide();
+				autocomplete_visible_bool = false;
+			});
+
+			$(autocomplete_element).append(suggestion_element);
+		});
+
+		$(autocomplete_element).show();
+		autocomplete_visible_bool = true;
+	}
+
+	//-------------------------------------------------
+	// HIDE_AUTOCOMPLETE
+	function hide_autocomplete() {
+		$(autocomplete_element).hide();
+		autocomplete_visible_bool = false;
+	}
+
+	//-------------------------------------------------
+	// EVENT_HANDLERS
+
+	// Fetch flows on first interaction
+	let flows_fetched_bool = false;
+
+	// Dropdown arrow click - fetch and show all flows
+	$(dropdown_arrow).on("click", async () => {
+		if (!flows_fetched_bool) {
+			await fetch_flows();
+			flows_fetched_bool = true;
+		}
+
+		if (autocomplete_visible_bool) {
+			hide_autocomplete();
+		} else {
+			show_autocomplete();
+		}
+	});
+
+	// Input field - filter as user types
+	$(input_element).on("input", async () => {
+		if (!flows_fetched_bool) {
+			await fetch_flows();
+			flows_fetched_bool = true;
+		}
+
+		const input_value = $(input_element).val() as string;
+		show_autocomplete(input_value);
+	});
+
+	// Focus - show autocomplete
+	$(input_element).on("focus", async () => {
+		if (!flows_fetched_bool) {
+			await fetch_flows();
+			flows_fetched_bool = true;
+		}
+		const input_value = $(input_element).val() as string;
+		show_autocomplete(input_value);
+	});
+
+	// Click outside - hide autocomplete
+	$(document).on("click", (e) => {
+		if (!$(e.target).closest("#upload_image_flow_name_input").length) {
+			hide_autocomplete();
+		}
+	});
+
+	//-------------------------------------------------
 }
