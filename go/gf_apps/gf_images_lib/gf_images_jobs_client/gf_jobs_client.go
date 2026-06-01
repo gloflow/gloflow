@@ -67,7 +67,15 @@ func RunLocalImgs(pClientTypeStr string,
 		imagesLocalPathsLst = append(imagesLocalPathsLst, imageToProcess.LocalFilePathStr)
 	}
 
-	jobExpectedOutputsLst, gfErr := getJobExpectedOutput(imagesLocalPathsLst, pRuntimeSys)
+	//-----------------
+	// COLLECT_GENERATED_IDS
+	// Collect image IDs as they are generated (happens immediately before processing)
+	generatedImageIDsLst := collectGeneratedImageIDs(jobUpdatesCh, imagesLocalPathsLst, pRuntimeSys)
+
+	//-----------------
+	// GET_JOB_EXPECTED_OUTPUT
+	// Use the generated IDs that were created at pipeline start
+	jobExpectedOutputsLst, gfErr := getJobExpectedOutput(imagesLocalPathsLst, generatedImageIDsLst, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
@@ -75,7 +83,7 @@ func RunLocalImgs(pClientTypeStr string,
 	//-----------------
 	// WAIT_FOR_COMPLETION
 	if pWaitForCompletionBool {
-		waitForJobCompletion(jobUpdatesCh, len(pImagesToProcessLst), "Image", pRuntimeSys)
+		_ = waitForJobCompletion(jobUpdatesCh, len(pImagesToProcessLst), "Image", pRuntimeSys)
 	}
 
 	//-----------------
@@ -116,7 +124,7 @@ func RunUploadedImages(pClientTypeStr string,
 	//-----------------
 	// WAIT_FOR_COMPLETION
 	if pWaitForCompletionBool {
-		waitForJobCompletion(job_updates_ch, len(pImagesToProcessLst), "Image", pRuntimeSys)
+		_ = waitForJobCompletion(job_updates_ch, len(pImagesToProcessLst), "Image", pRuntimeSys)
 	}
 
 	//-----------------
@@ -168,7 +176,15 @@ func RunExternImages(pClientTypeStr string,
 		imagesSourceURLsLst = append(imagesSourceURLsLst, imageToProcess.SourceURLstr)
 	}
 
-	jobExpectedOutputsLst, gfErr := getJobExpectedOutput(imagesSourceURLsLst, pRuntimeSys)
+	//-----------------
+	// COLLECT_GENERATED_IDS
+	// Collect image IDs as they are generated (happens immediately before processing)
+	generatedImageIDsLst := collectGeneratedImageIDs(jobUpdatesCh, imagesSourceURLsLst, pRuntimeSys)
+
+	//-----------------
+	// GET_JOB_EXPECTED_OUTPUT
+	// Use the generated IDs that were created at pipeline start
+	jobExpectedOutputsLst, gfErr := getJobExpectedOutput(imagesSourceURLsLst, generatedImageIDsLst, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
@@ -176,7 +192,7 @@ func RunExternImages(pClientTypeStr string,
 	//-----------------
 	// WAIT_FOR_COMPLETION
 	if pWaitForCompletionBool {
-		waitForJobCompletion(jobUpdatesCh, len(pImagesExternToProcessLst), "Image", pRuntimeSys)
+		_ = waitForJobCompletion(jobUpdatesCh, len(pImagesExternToProcessLst), "Image", pRuntimeSys)
 	}
 
 	//-----------------
@@ -221,7 +237,7 @@ func RunClassifyImages(pClientTypeStr string,
 	// Note: RunClassifyImages already waits for the response channel, 
 	// but we add explicit waiting logic for consistency
 	if pWaitForCompletionBool {
-		waitForJobCompletion(jobUpdatesCh, len(pImagesToProcessLst), "Image classification", pRuntimeSys)
+		_ = waitForJobCompletion(jobUpdatesCh, len(pImagesToProcessLst), "Image classification", pRuntimeSys)
 	}
 
 	//-----------------

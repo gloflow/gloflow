@@ -67,6 +67,16 @@ func CreateIDfromURL(pImageURLstr string,
 
 //---------------------------------------------------
 // CREATES_ID
+// 
+// Generate image ID based on URI + timestamp.
+// Timestamp is intentional to handle dynamic content:
+// - Same URI can serve different images (CDN optimization, A/B tests, updates)
+// - Device-specific versions (@2x, webp vs jpg)
+// - Geo-blocking, personalization
+// 
+// IMPORTANT: This function should only be called ONCE per image processing pipeline.
+// The generated ID must be propagated through the entire pipeline to avoid
+// double ID generation bugs.
 
 func CreateImageID(pImageURIstr string,
 	pRuntimeSys *gf_core.RuntimeSys) GFimageID {

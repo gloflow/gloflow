@@ -28,6 +28,56 @@ import (
 )
 
 //-------------------------------------------------
+// COLLECT_GENERATED_IMAGE_IDS
+//
+// Collects image IDs as they are generated at the start of the processing pipeline.
+// This happens synchronously before actual image processing begins.
+// Maps source URIs to their generated IDs to maintain correct ordering.
+//
+// Parameters:
+//   - pJobUpdatesCh: channel to receive job updates from the job manager
+//   - pSourceURIsLst: list of source URIs/paths in the order they were submitted
+//   - pRuntimeSys: runtime system for logging
+//
+// Returns:
+//   - List of generated image IDs in the same order as pSourceURIsLst
+func collectGeneratedImageIDs(pJobUpdatesCh chan gf_images_jobs_core.JobUpdateMsg,
+	pSourceURIsLst []string,
+	pRuntimeSys *gf_core.RuntimeSys) []gf_images_core.GFimageID {
+	
+	pTotalImages := len(pSourceURIsLst)
+	
+	// Map source URI -> generated ID
+	uriToIDmap := make(map[string]gf_images_core.GFimageID)
+	
+	for len(uriToIDmap) < pTotalImages {
+		update := <- pJobUpdatesCh
+		
+		if update.Type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__ID_GENERATED {
+			sourceURIstr := update.Image_source_url_str
+			uriToIDmap[sourceURIstr] = update.ImageIDstr
+			pRuntimeSys.LogFun("INFO", fmt.Sprintf("Image ID generated %d/%d: %s -> %s", 
+				len(uriToIDmap), pTotalImages, sourceURIstr, update.ImageIDstr))
+		}
+		// Ignore other message types during ID collection phase
+	}
+	
+	// Build ordered list matching input order
+	generatedImageIDsLst := make([]gf_images_core.GFimageID, pTotalImages)
+	for i, sourceURIstr := range pSourceURIsLst {
+		if imageID, exists := uriToIDmap[sourceURIstr]; exists {
+			generatedImageIDsLst[i] = imageID
+		} else {
+			pRuntimeSys.LogFun("ERROR", fmt.Sprintf("No generated ID found for source URI: %s", sourceURIstr))
+			generatedImageIDsLst[i] = gf_images_core.GFimageID("") // shouldn't happen
+		}
+	}
+	
+	pRuntimeSys.LogFun("INFO", fmt.Sprintf("All %d image IDs collected and ordered", pTotalImages))
+	return generatedImageIDsLst
+}
+
+//-------------------------------------------------
 // WAIT_FOR_JOB_COMPLETION
 //
 // Waits for job completion by reading from the job updates channel
@@ -38,18 +88,23 @@ import (
 //   - pTotalImages: total number of images expected to complete
 //   - pJobTypeStr: type of job for logging (e.g., "Image", "Image classification")
 //   - pRuntimeSys: runtime system for logging
+//
+// Returns:
+//   - List of actual image IDs from completed processing (in order of completion)
 func waitForJobCompletion(pJobUpdatesCh chan gf_images_jobs_core.JobUpdateMsg,
 	pTotalImages int,
 	pJobTypeStr string,
-	pRuntimeSys *gf_core.RuntimeSys) {
+	pRuntimeSys *gf_core.RuntimeSys) []gf_images_core.GFimageID {
 	
 	completedCount := 0
+	processedImageIDs := []gf_images_core.GFimageID{}
 	
 	for completedCount < pTotalImages {
 		update := <- pJobUpdatesCh
 		
 		if update.Type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__COMPLETED {
 			completedCount++
+			processedImageIDs = append(processedImageIDs, update.ImageIDstr)
 			pRuntimeSys.LogFun("INFO", fmt.Sprintf("%s %d/%d completed: %s", pJobTypeStr, completedCount, pTotalImages, update.ImageIDstr))
 		} else if update.Type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__ERROR {
 			pRuntimeSys.LogFun("ERROR", fmt.Sprintf("%s processing error: %s - %s", pJobTypeStr, update.ImageIDstr, update.Err_str))
@@ -57,6 +112,7 @@ func waitForJobCompletion(pJobUpdatesCh chan gf_images_jobs_core.JobUpdateMsg,
 	}
 	
 	pRuntimeSys.LogFun("INFO", fmt.Sprintf("All %d %ss completed processing", pTotalImages, pJobTypeStr))
+	return processedImageIDs
 }
 
 //-------------------------------------------------
@@ -101,19 +157,33 @@ func CleanupJob(pJobIDstr string,
 
 //-------------------------------------------------
 
+// getJobExpectedOutput - Build expected output structures for processed images.
+//
+// IMPORTANT: pGeneratedImageIDsLst MUST be provided from collectGeneratedImageIDs().
+// These are the actual IDs generated at pipeline start. Never regenerate IDs here
+// as timestamp-based ID generation will produce different IDs.
 func getJobExpectedOutput(pImagesSourceURIsLst []string,
+	pGeneratedImageIDsLst []gf_images_core.GFimageID,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFjobExpectedOutput, *gf_core.GFerror) {
+
+	if len(pGeneratedImageIDsLst) != len(pImagesSourceURIsLst) {
+		gfErr := gf_core.ErrorCreate("image IDs count doesn't match source URIs count",
+			"verify_error",
+			map[string]interface{}{
+				"ids_count":  len(pGeneratedImageIDsLst),
+				"uris_count": len(pImagesSourceURIsLst),
+			},
+			nil, "gf_images_jobs_client", pRuntimeSys)
+		return nil, gfErr
+	}
 
 	jobExpectedOutputsLst := []*GFjobExpectedOutput{}
 
-	for _, imgSourceURLstr := range pImagesSourceURIsLst {
+	for i, imgSourceURLstr := range pImagesSourceURIsLst {
 
 		//--------------
-		// IMAGE_ID
-		imageIDstr, gfErr := gf_images_core.CreateIDfromURL(imgSourceURLstr, pRuntimeSys)
-		if gfErr != nil {
-			return nil, gfErr
-		}
+		// IMAGE_ID - use the ID generated at pipeline start
+		imageIDstr := pGeneratedImageIDsLst[i]
 
 		//--------------
 

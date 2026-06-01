@@ -139,3 +139,4 @@ type job_update_type_val string
 const JOB_UPDATE_TYPE__OK        job_update_type_val = "ok"
 const JOB_UPDATE_TYPE__ERROR     job_update_type_val = "error"
 const JOB_UPDATE_TYPE__COMPLETED job_update_type_val = "completed"
+const JOB_UPDATE_TYPE__ID_GENERATED job_update_type_val = "id_generated" // sent immediately when image ID is generated

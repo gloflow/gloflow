@@ -92,6 +92,15 @@ func runJobLocalImages(pImagesToProcessLst []GFimageLocalToProcess,
 			continue
 		}
 
+		// SEND_ID_GENERATED_UPDATE - notify client of generated ID immediately
+		idGeneratedMsg := JobUpdateMsg{
+			Name_str:             "image_id_generated",
+			Type_str:             JOB_UPDATE_TYPE__ID_GENERATED,
+			ImageIDstr:           imageIDstr,
+			Image_source_url_str: imageLocalFilePathStr,
+		}
+		pJobRuntime.job_updates_ch <- idGeneratedMsg
+
 		// FIX!! - this should be passed in from outside this function
 		metaMap := map[string]interface{}{}
 
@@ -218,6 +227,15 @@ func runJobExternImages(pImagesToProcessLst []GFimageExternToProcess,
 			gfErrorsLst = append(gfErrorsLst, gfErr)
 			continue
 		}
+
+		// SEND_ID_GENERATED_UPDATE - notify client of generated ID immediately
+		idGeneratedMsg := JobUpdateMsg{
+			Name_str:             "image_id_generated",
+			Type_str:             JOB_UPDATE_TYPE__ID_GENERATED,
+			ImageIDstr:           imageIDstr,
+			Image_source_url_str: sourceURLstr,
+		}
+		pJobRuntime.job_updates_ch <- idGeneratedMsg
 		
 		//--------------
 		
