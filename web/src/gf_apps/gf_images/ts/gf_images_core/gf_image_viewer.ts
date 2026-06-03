@@ -76,6 +76,7 @@ export function init(p_image_element :HTMLElement,
 		const image_container_element = $(image_view_element).find("#image_container")[0];
 		const flows_names_element     = $(image_view_element).find("#flows_names")[0];
 		const tags_element            = $(image_view_element).find("#tags")[0];
+		const image_details_element   = $(image_view_element).find("#image_details")[0];
 
 		p_flows_names_lst.forEach((p_flow_name_str :string)=>{
 			$(flows_names_element).append(`
@@ -93,6 +94,18 @@ export function init(p_image_element :HTMLElement,
 
 		// position the image vertically where the user has scrolled to
 		$(image_view_element).css("top", `${$(window).scrollTop()}px`);
+
+		//----------------------
+		// SHOW/HIDE IMAGE_DETAILS ON HOVER
+		$(image_view_element).find("#main").on("mouseover", ()=>{
+			$(image_details_element).css("opacity", "1");
+			$(image_details_element).css("pointer-events", "auto");
+		});
+
+		$(image_view_element).find("#main").on("mouseout", ()=>{
+			$(image_details_element).css("opacity", "0");
+			$(image_details_element).css("pointer-events", "none");
+		});
 
 		//----------------------
 		// IMPORTANT!! - turn off vertical scrolling while viewing the image
