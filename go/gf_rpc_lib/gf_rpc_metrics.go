@@ -132,10 +132,24 @@ func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 				endpointCleanStr = strings.Join(parts[1:], " ")
 			}
 			
-			// sanitize for Prometheus metric name (replace special chars, lowercase)
+			// sanitize for Prometheus metric name
+			// Prometheus metric names must match [a-zA-Z_:][a-zA-Z0-9_:]*
+			// so we replace invalid characters with underscores
 			endpointCleanStr = strings.ReplaceAll(endpointCleanStr, "/", "_")
 			endpointCleanStr = strings.ReplaceAll(endpointCleanStr, " ", "_")
+			endpointCleanStr = strings.ReplaceAll(endpointCleanStr, "{}", "_")  // replace path parameters
+			endpointCleanStr = strings.ReplaceAll(endpointCleanStr, "{", "_")   // replace opening brace
+			endpointCleanStr = strings.ReplaceAll(endpointCleanStr, "}", "_")   // replace closing brace
+			endpointCleanStr = strings.ReplaceAll(endpointCleanStr, "-", "_")   // replace hyphens
+			endpointCleanStr = strings.ReplaceAll(endpointCleanStr, ".", "_")   // replace dots
+			endpointCleanStr = strings.ReplaceAll(endpointCleanStr, ":", "_")   // replace colons
+			// remove multiple consecutive underscores
+			for strings.Contains(endpointCleanStr, "__") {
+				endpointCleanStr = strings.ReplaceAll(endpointCleanStr, "__", "_")
+			}
 			endpointCleanStr = strings.ToLower(endpointCleanStr)
+			// remove leading/trailing underscores
+			endpointCleanStr = strings.Trim(endpointCleanStr, "_")
 			
 			metricNameStr = endpointCleanStr
 		}
@@ -147,6 +161,14 @@ func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 			"handler_name":     handlerInfo.NameStr,
 			"metric_name":      nameStr,
 		})
+
+		// SKIP METRICS if disabled for this handler
+		if handlerInfo.DisableMetricsBool {
+			pRuntimeSys.LogNewFun("DEBUG", `skipping metrics registration (disabled for handler)`, map[string]interface{}{
+				"handler_endpoint": handlerEndpointStr,
+			})
+			continue
+		}
 
 		handlerReqsNumCounter := prometheus.NewCounter(prometheus.CounterOpts{
 			Name: nameStr,

@@ -63,11 +63,12 @@ type HTTPhandlerInfo struct {
 
 type HTTPhandlerV2 func(context.Context, http.ResponseWriter, *http.Request) (map[string]interface{}, *GFerror)
 type HTTPhandlerV2info struct {
-	NameStr    string   // optional name for the handler (used for metrics naming)
-	AuthStr    string   // AUTH_REQUIRED, AUTH_OPTIONAL, AUTH_NONE
-	PathStr    string
-	DomainsLst []string // if nil, handler will be registered for the main domain only
-	HandlerFun HTTPhandlerV2
+	NameStr            string   // optional name for the handler (used for metrics naming)
+	AuthStr            string   // AUTH_REQUIRED, AUTH_OPTIONAL, AUTH_NONE
+	PathStr            string
+	DomainsLst         []string // if nil, handler will be registered for the main domain only
+	HandlerFun         HTTPhandlerV2
+	DisableMetricsBool bool     // if true, metrics will not be created for this handler
 }
 
 //---------------------------------------------------
