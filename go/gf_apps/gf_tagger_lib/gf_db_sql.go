@@ -23,6 +23,7 @@ import (
 	"context"
 
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib/gf_bookmarks"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/lib/pq"
 )
@@ -247,6 +248,19 @@ func dbSQLcreateTables(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 			err, "gf_tagger_lib", pRuntimeSys)
 		return gfErr
 	}
+
+	//--------------------------------
+	// BOOKMARKS - create bookmarks tables
+
+	pRuntimeSys.LogNewFun("INFO", "initializing Bookmarks DB...", nil)
+
+	gfErr := gf_bookmarks.DBsqlCreateTables(pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//--------------------------------
+	// NOTE: Notes DB initialization is now handled in gloflow_emergence/gf_tagger_int/gf_init.go
 
 	return nil
 }

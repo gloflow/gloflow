@@ -85,15 +85,15 @@ func PipelineGet(p_input *GFbookmarkInputGet,
 	pRuntimeSys              *gf_core.RuntimeSys) (*GFbookmarkOutputGet, *gf_core.GFerror) {
 
 	//------------------------
-	// DB
-	bookmarksLst, gfErr := dbMongoGetAllBookmarks(p_input.User_id_str,
+	// DB - HYBRID READ (SQL + Mongo with deduplication)
+	bookmarksLst, gfErr := dbGetAllBookmarks(p_input.User_id_str,
 		p_ctx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
-	//------------------------
+	//-----------------------
 
 	var output *GFbookmarkOutputGet
 
@@ -182,8 +182,8 @@ func PipelineCreate(p_input *GFbookmarkInputCreate,
 		Tags_lst:        p_input.Tags_lst,
 	}
 
-	// DB
-	gfErr = dbMongoCreateBookmark(bookmark, pCtx, pRuntimeSys)
+	// DB - Write to SQL only (new data goes to SQL)
+	gfErr = dbSQLcreateBookmark(bookmark, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -266,7 +266,7 @@ func pipelineScreenshot(pURLstr string,
 
 	//-----------------
 	// DB_UPDATE - updated bookmark with screenshot image information
-	gfErr = dbMongoUpdateBookmarkScreenshot(pBookmarkIDstr,
+	gfErr = dbSQLupdateBookmarkScreenshot(pBookmarkIDstr,
 		screenshot_image_id_str,
 		screenshot_image_thumbnail_small_url_str,
 		pCtx,

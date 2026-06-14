@@ -24,9 +24,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
+/*
+// DEPRECATED - Bookmarks now write to SQL only
+// These functions are kept for reading legacy MongoDB data during hybrid reads
+// Once all MongoDB bookmarks are migrated to SQL, these can be removed
 //---------------------------------------------------
 
 func dbMongoCreateBookmark(p_bookmark *GFbookmark,
@@ -85,6 +88,7 @@ func dbMongoUpdateBookmarkScreenshot(p_bookmark_id_str gf_core.GF_ID,
 
 	return nil
 }
+*/
 
 //---------------------------------------------------
 
@@ -130,3 +134,43 @@ func dbMongoGetAllBookmarks(p_user_id_str gf_core.GF_ID,
 
 	return bookmarks_lst, nil
 }
+
+//---------------------------------------------------
+
+/*
+// DEPRECATED - Use DBsqlUpdateBookmark() instead
+// Bookmarks now write to SQL only
+func DBmongoUpdateBookmark(pBookmarkIDstr gf_core.GF_ID,
+	pUserIDstr gf_core.GF_ID,
+	pDescriptionStr string,
+	pTagsLst []string,
+	pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	coll := pRuntimeSys.Mongo_db.Collection("gf_bookmarks")
+	_, err := coll.UpdateOne(pCtx, bson.M{
+		"id_str":       pBookmarkIDstr,
+		"user_id_str": pUserIDstr,
+	},
+	bson.M{
+		"$set": bson.M{
+			"description_str": pDescriptionStr,
+			"tags_lst":        pTagsLst,
+		},
+	},
+	)
+
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to update bookmark",
+			"mongodb_update_error",
+			map[string]interface{}{
+				"bookmark_id_str": pBookmarkIDstr,
+				"user_id_str":     pUserIDstr,
+			},
+			err, "gf_tagger_lib", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
+*/

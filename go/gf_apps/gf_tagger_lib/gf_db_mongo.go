@@ -279,6 +279,7 @@ func dbMongoGetObjectsWithTag(pTagStr string,
 
 /*
 //---------------------------------------------------
+// DEPRECATED - Notes have been migrated to gf_notes_lib with SQL-only operations
 // POSTS
 //---------------------------------------------------
 

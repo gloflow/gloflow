@@ -29,6 +29,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib/gf_tagger_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib/gf_bookmarks"
+
 )
 
 //-------------------------------------------------
@@ -60,7 +61,7 @@ func initHandlers(pAuthSubsystemTypeStr string,
 	}
 	metricsGroupNameStr := "main"
 	metrics := gf_rpc_lib.MetricsCreateForHandlersFromEndpoints(metricsGroupNameStr, "gf_tagger", handlers_endpoints_lst, pRuntimeSys)
-	
+
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
@@ -155,13 +156,13 @@ func initHandlers(pAuthSubsystemTypeStr string,
 
 			//------------------
 			// INPUT
-			
+
 			qs_map := pReq.URL.Query()
 
 			// response_format_str - "j"(for json) | "h"(for html)
 			response_format_str := gf_rpc_lib.GetResponseFormat(qs_map, pRuntimeSys)
 
-			
+
 			input := &gf_bookmarks.GFbookmarkInputGet{
 				Response_format_str: response_format_str,
 				User_id_str:         "anonymous",
@@ -179,13 +180,13 @@ func initHandlers(pAuthSubsystemTypeStr string,
 			}
 
 
-			switch response_format_str { 
+			switch response_format_str {
 			case "json":
 				dataMap := map[string]interface{}{
 					"bookmarks_lst": output.Bookmarks_lst,
 				}
 				return dataMap, nil
-		
+
 			case "html":
 
 				pResp.Write([]byte(output.TemplateRenderedStr))
@@ -203,69 +204,14 @@ func initHandlers(pAuthSubsystemTypeStr string,
 		pRuntimeSys)
 
 	//---------------------
-	// NOTES
+	// NOTE: Notes HTTP handlers have been moved to gloflow_emergence/gf_tagger_int/gf_notes_lib/gf_handlers.go
 	//---------------------
-	// CREATE
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/notes/create",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
-			if pReq.Method == "POST" {
-
-				//------------
-				// INPUT
-				iMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr
-				}
-
-				//------------
-	
-				gfErr = notesPipelineAdd(iMap, pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr
-				}
-				
-				dataMap := map[string]interface{}{}
-				return dataMap, nil
-			}
-
-			return nil, nil
-		},
-		pHTTPmux,
-		metrics,
-		true, // pStoreRunBool
-		nil,
-		pRuntimeSys)
-
-	//---------------------
-	// GET_NOTES
-
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/notes/get",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
-
-			if pReq.Method == "GET" {
-
-				notesLst, gfErr := notesPipelineGet(pReq, pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr 
-				}
-
-				dataMap := map[string]interface{}{"notes_lst": notesLst,}
-				return dataMap, nil
-			}
-
-			return nil, nil
-		},
-		pHTTPmux,
-		metrics,
-		true, // pStoreRunBool
-		nil,
-		pRuntimeSys)
 
 	//---------------------
 	// TAGS
 	//---------------------
 	// ADD_TAGS
-	
+
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/tags/create",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
@@ -294,12 +240,12 @@ func initHandlers(pAuthSubsystemTypeStr string,
 				dataMap := map[string]interface{}{}
 				return dataMap, nil
 			}
-			
+
 			return nil, nil
 		},
 		rpcHandlerRuntime,
 		pRuntimeSys)
-	
+
 	//---------------------
 	// GET_OBJECTS_WITH_TAG
 
@@ -308,7 +254,7 @@ func initHandlers(pAuthSubsystemTypeStr string,
 
 			if pReq.Method == "GET" {
 
-				objectsWithTagLst, abortReasonMap, gfErr := tagsPipelineGetObjects(pReq, pResp, 
+				objectsWithTagLst, abortReasonMap, gfErr := tagsPipelineGetObjects(pReq, pResp,
 					gfTemplates.TagObjects,
 					gfTemplates.TagObjectsSubtemplatesNamesLst,
 					pCtx,
