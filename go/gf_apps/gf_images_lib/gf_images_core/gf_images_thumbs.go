@@ -29,6 +29,9 @@ import (
 
 //---------------------------------------------------
 
+//
+// pJPEGqualityInt - OPTIONAL, JPEG encoding quality (1-100) used for all 3
+//                   generated thumbnails. if nil, JPEGqualityDefaultInt is used.
 func CreateThumbnails(pImage image.Image,
 	pImageIDstr                      GFimageID,
 	pImageFormatStr                  string,
@@ -36,6 +39,7 @@ func CreateThumbnails(pImage image.Image,
 	pSmallThumbSizePxInt             int,
 	pMediumThumbSizePxInt            int,
 	pLargeThumbSizePxInt             int,
+	pJPEGqualityInt                  *int,
 	pRuntimeSys                      *gf_core.RuntimeSys) (*GFimageThumbs, *gf_core.GFerror) {
 
 	// determine if the width or height is larger, and get its value
@@ -59,6 +63,7 @@ func CreateThumbnails(pImage image.Image,
 		targetThumbSmallFilePathStr,
 		smallThumbWidthPxInt,
 		smallThumbHeightPxInt,
+		pJPEGqualityInt,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -75,6 +80,7 @@ func CreateThumbnails(pImage image.Image,
 		targetThumbMediumFilePathStr,
 		mediumThumbWidthPxInt,
 		mediumThumbHeightPxInt,
+		pJPEGqualityInt,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -91,6 +97,7 @@ func CreateThumbnails(pImage image.Image,
 		targetThumbLargeFilePathStr,
 		largerThumbWidthPxInt,
 		largerThumbHeightPxInt,
+		pJPEGqualityInt,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr

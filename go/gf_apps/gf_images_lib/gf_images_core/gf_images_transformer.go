@@ -37,6 +37,12 @@ import (
 // pImageOriginPageURLstr - urls of pages (html or some other resource) where the image image_url
 //                          was found. this is valid for gf_chrome_ext image sources.
 //                          its not relevant for direct image uploads from clients.
+//
+// pJPEGqualityInt - OPTIONAL, thumbnails JPEG encoding quality (1-100).
+//                   if nil the package default (JPEGqualityDefaultInt) is used.
+//                   pass a higher value (e.g. JPEGqualityHighInt) for sharper
+//                   thumbnails, useful for infographics/plots where the default
+//                   JPEG compression is too lossy/fuzzy.
 func TransformImage(pImageIDstr GFimageID,
 	pImageClientTypeStr                   string,
 	pImagesFlowsNamesLst                  []string,
@@ -47,6 +53,7 @@ func TransformImage(pImageIDstr GFimageID,
 	pImagesStoreThumbnailsLocalDirPathStr string,
 	pPluginsPyDirPathStr                  string,
 	pPluginsMetrics                       *gf_images_plugins.GFmetrics,
+	pJPEGqualityInt                       *int,
 	pUserID                               gf_core.GF_ID,
 	pCtx                                  context.Context,
 	pRuntimeSys                           *gf_core.RuntimeSys) (*GFimage, *GFimageThumbs, *gf_core.GFerror) {
@@ -65,6 +72,7 @@ func TransformImage(pImageIDstr GFimageID,
 		normalizedExtStr,
 		pImageLocalFilePathStr,
 		pImagesStoreThumbnailsLocalDirPathStr,
+		pJPEGqualityInt,
 		pUserID,
 		pCtx,
 		pRuntimeSys)
@@ -140,6 +148,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	pNormalizedExtStr                  string,
 	pImageLocalFilePathStr             string,
 	pImagesStoreThumbnailsLocalDirPathStr string,
+	pJPEGqualityInt                       *int,
 	pUserID                               gf_core.GF_ID,
 	pCtx                                  context.Context,
 	pRuntimeSys                           *gf_core.RuntimeSys) (*GFimage, *GFimageThumbs, *gf_core.GFerror) {
@@ -170,6 +179,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 		smallThumbMaxSizePxInt,
 		mediumThumbMaxSizePxInt,
 		largeThumbMaxSizePxInt,
+		pJPEGqualityInt,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
@@ -239,10 +249,17 @@ func TransformProcessImage(pImageIDstr GFimageID,
 // OPS
 //---------------------------------------------------
 
+//
+// pJPEGqualityInt - OPTIONAL (nil-able) JPEG encoding quality (1-100).
+//                   if nil, JPEGqualityDefaultInt is used (matches previous
+//                   behavior of passing nil *jpeg.Options, which defaults to
+//                   jpeg.DefaultQuality). pass a higher explicit value for
+//                   sharper/less-compressed output (e.g. infographics/plots).
 func resizeImage(pImg image.Image,
 	pImageOutputPathStr string,
 	pWidthPxInt         int,
 	pHeightPxInt        int,
+	pJPEGqualityInt     *int,
 	pRuntimeSys         *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	m := resize.Resize(uint(pWidthPxInt), uint(pHeightPxInt), pImg, resize.Lanczos3)
@@ -264,8 +281,14 @@ func resizeImage(pImg image.Image,
 	// png.Encode(out_png, m)
 
 	// IMPORTANT!! - using JPEG instead of PNG, because JPEG compression was made for photographic images,
-	//               and so for these kinds of images it comes out with much smaller file size.	
-	jpeg.Encode(out, m, nil)
+	//               and so for these kinds of images it comes out with much smaller file size.
+
+	jpegQualityInt := JPEGqualityDefaultInt
+	if pJPEGqualityInt != nil {
+		jpegQualityInt = *pJPEGqualityInt
+	}
+	jpegOptions := &jpeg.Options{Quality: jpegQualityInt}
+	jpeg.Encode(out, m, jpegOptions)
 	
 	//--------------------------
 	return nil

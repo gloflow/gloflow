@@ -28,10 +28,15 @@ import (
 
 //-------------------------------------------------
 
+//
+// pJPEGqualityInt - OPTIONAL, explicit JPEG encoding quality (1-100) applied to
+//                   all thumbnails (small/medium/large) generated for these images.
+//                   if nil, gf_images_core.JPEGqualityDefaultInt is used.
 func RunLocalImgs(pClientTypeStr string,
 	pImagesToProcessLst []gf_images_jobs_core.GFimageLocalToProcess,
 	pFlowsNamesLst      []string,
 	pWaitForCompletionBool bool,
+	pJPEGqualityInt     *int,
 	pUserID             gf_core.GF_ID,
 	pJobsMngrCh         gf_images_jobs_core.JobsMngr,
 	pRuntimeSys         *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, []*GFjobExpectedOutput, *gf_core.GFerror) {
@@ -48,6 +53,7 @@ func RunLocalImgs(pClientTypeStr string,
 		Job_updates_ch:              jobUpdatesCh,
 		Images_local_to_process_lst: pImagesToProcessLst,
 		Flows_names_lst:             pFlowsNamesLst,
+		JPEGqualityInt:              pJPEGqualityInt,
 	}
 
 	// SEND_MSG
