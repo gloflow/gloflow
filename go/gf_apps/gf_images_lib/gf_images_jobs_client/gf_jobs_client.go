@@ -22,6 +22,7 @@ package gf_images_jobs_client
 
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -32,11 +33,20 @@ import (
 // pJPEGqualityInt - OPTIONAL, explicit JPEG encoding quality (1-100) applied to
 //                   all thumbnails (small/medium/large) generated for these images.
 //                   if nil, gf_images_core.JPEGqualityDefaultInt is used.
+//                   ignored when pImageOutputFormat is set to PNG.
+//
+// pImageOutputFormat - OPTIONAL, explicit encoding format applied to all
+//                   thumbnails (small/medium/large) generated for these
+//                   images. if nil, gf_images_core.GFimageOutputFormatDefault
+//                   (JPEG) is used. pass a pointer to
+//                   gf_images_core.GFimageOutputFormatPNG for sharp/lossless
+//                   thumbnails, useful for infographics/plots/screenshots.
 func RunLocalImgs(pClientTypeStr string,
 	pImagesToProcessLst []gf_images_jobs_core.GFimageLocalToProcess,
 	pFlowsNamesLst      []string,
 	pWaitForCompletionBool bool,
 	pJPEGqualityInt     *int,
+	pImageOutputFormat  *gf_images_core.GFimageOutputFormat,
 	pUserID             gf_core.GF_ID,
 	pJobsMngrCh         gf_images_jobs_core.JobsMngr,
 	pRuntimeSys         *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, []*GFjobExpectedOutput, *gf_core.GFerror) {
@@ -54,6 +64,7 @@ func RunLocalImgs(pClientTypeStr string,
 		Images_local_to_process_lst: pImagesToProcessLst,
 		Flows_names_lst:             pFlowsNamesLst,
 		JPEGqualityInt:              pJPEGqualityInt,
+		ImageOutputFormat:           pImageOutputFormat,
 	}
 
 	// SEND_MSG

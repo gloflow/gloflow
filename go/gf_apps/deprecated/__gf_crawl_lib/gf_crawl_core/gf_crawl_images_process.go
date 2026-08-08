@@ -274,6 +274,7 @@ func imageProcessBitmap(pPageImage *GFcrawlerPageImage,
 			pPluginsPyDirPathStr,
 			metricsPlugins,
 			nil, // pJPEGqualityInt - use default
+			nil, // pImageOutputFormat - use default
 			pUserID,
 			ctx,
 			pRuntimeSys)

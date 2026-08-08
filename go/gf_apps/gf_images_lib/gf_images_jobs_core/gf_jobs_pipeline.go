@@ -88,6 +88,7 @@ func pipelineProcessExternVideo(pVideoIDstr gf_images_core.GFimageID,
 		pPluginsPyDirPathStr,
 		pJobRuntime,
 		nil, // pJPEGqualityInt - use default
+		nil, // pImageOutputFormat - use default
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
@@ -216,6 +217,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 		pPluginsPyDirPathStr,
 		pJobRuntime,
 		nil, // pJPEGqualityInt - use default
+		nil, // pImageOutputFormat - use default
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
@@ -390,6 +392,7 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 		pPluginsPyDirPathStr,
 		pJobRuntime,
 		nil, // pJPEGqualityInt - use default
+		nil, // pImageOutputFormat - use default
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
@@ -501,6 +504,7 @@ func pipelineProcessLocalImage(pImageIDstr gf_images_core.GFimageID,
 	pStorage                     *gf_images_storage.GFimageStorage,
 	pJobRuntime                  *GFjobRuntime,
 	pJPEGqualityInt              *int,
+	pImageOutputFormat           *gf_images_core.GFimageOutputFormat,
 	pRuntimeSys                  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	pRuntimeSys.LogNewFun("DEBUG", "processing local image...", map[string]interface{}{
@@ -529,6 +533,7 @@ func pipelineProcessLocalImage(pImageIDstr gf_images_core.GFimageID,
 		pPluginsPyDirPathStr,
 		pJobRuntime,
 		pJPEGqualityInt,
+		pImageOutputFormat,
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
@@ -612,6 +617,7 @@ func jobTransform(pImageIDstr gf_images_core.GFimageID,
 	pPluginsPyDirPathStr         string,
 	pJobRuntime                  *GFjobRuntime,
 	pJPEGqualityInt              *int,
+	pImageOutputFormat           *gf_images_core.GFimageOutputFormat,
 	pRuntimeSys                  *gf_core.RuntimeSys) (*gf_images_core.GFimageThumbs, *gf_core.GFerror) {
 
 	// TRANSFORM
@@ -632,6 +638,7 @@ func jobTransform(pImageIDstr gf_images_core.GFimageID,
 		pPluginsPyDirPathStr,
 		pJobRuntime.metricsPlugins,
 		pJPEGqualityInt,
+		pImageOutputFormat,
 		pJobRuntime.userID,
 		ctx,
 		pRuntimeSys)

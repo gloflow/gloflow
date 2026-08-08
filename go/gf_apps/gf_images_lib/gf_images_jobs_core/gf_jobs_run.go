@@ -77,6 +77,7 @@ func runJobLocalImages(pImagesToProcessLst []GFimageLocalToProcess,
 	pStorage                              *gf_images_storage.GFimageStorage,
 	pJobRuntime                           *GFjobRuntime,
 	pJPEGqualityInt                       *int,
+	pImageOutputFormat                    *gf_images_core.GFimageOutputFormat,
 	pRuntimeSys                           *gf_core.RuntimeSys) []*gf_core.GFerror {
 	
 	gfErrorsLst := []*gf_core.GFerror{}
@@ -114,6 +115,7 @@ func runJobLocalImages(pImagesToProcessLst []GFimageLocalToProcess,
 			pStorage,
 			pJobRuntime,
 			pJPEGqualityInt,
+			pImageOutputFormat,
 			pRuntimeSys)
 		if gfErr != nil {
 			gfErrorsLst = append(gfErrorsLst, gfErr)

@@ -74,6 +74,7 @@ func TestImageTransform(pTest *testing.T) {
 		thumbWidthPxInt,
 		thumbHeightPxInt,
 		nil, // pJPEGqualityInt - use default
+		nil, // pOutputFormat - use default
 		runtimeSys)
 
 	if gfErr != nil {

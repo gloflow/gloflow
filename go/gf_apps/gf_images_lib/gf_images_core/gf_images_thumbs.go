@@ -32,6 +32,11 @@ import (
 //
 // pJPEGqualityInt - OPTIONAL, JPEG encoding quality (1-100) used for all 3
 //                   generated thumbnails. if nil, JPEGqualityDefaultInt is used.
+//                   ignored when pOutputFormat is GFimageOutputFormatPNG.
+//
+// pOutputFormat - OPTIONAL, encoding format used for all 3 generated
+//                   thumbnails. if nil, GFimageOutputFormatDefault (JPEG)
+//                   is used, matching prior behavior.
 func CreateThumbnails(pImage image.Image,
 	pImageIDstr                      GFimageID,
 	pImageFormatStr                  string,
@@ -40,15 +45,21 @@ func CreateThumbnails(pImage image.Image,
 	pMediumThumbSizePxInt            int,
 	pLargeThumbSizePxInt             int,
 	pJPEGqualityInt                  *int,
+	pOutputFormat                    *GFimageOutputFormat,
 	pRuntimeSys                      *gf_core.RuntimeSys) (*GFimageThumbs, *gf_core.GFerror) {
 
 	// determine if the width or height is larger, and get its value
 	largerDimensionPxInt, largerDimensionNameStr := GetImageLargerDimension(pImage, pRuntimeSys)
 
-	// IMPORTANT!! - thumbnails are always encoded as JPEG (see resizeImage() in gf_images_transformer.go)
-	//               so we always use .jpeg extension regardless of input image format.
-	//               This ensures filename extension matches actual file content.
-	thumbFormatStr := "jpeg"
+	// IMPORTANT!! - thumbnails are encoded per pOutputFormat (JPEG by default,
+	//               optionally PNG - see resizeImage() in gf_images_transformer.go)
+	//               so the filename extension always matches actual file content
+	//               regardless of the input/original image format.
+	outputFormat := GFimageOutputFormatDefault
+	if pOutputFormat != nil {
+		outputFormat = *pOutputFormat
+	}
+	thumbFormatStr := outputFormat.FileExt()
 
 	//-----------------
 	// SMALL THUMBS
@@ -64,6 +75,7 @@ func CreateThumbnails(pImage image.Image,
 		smallThumbWidthPxInt,
 		smallThumbHeightPxInt,
 		pJPEGqualityInt,
+		pOutputFormat,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -81,6 +93,7 @@ func CreateThumbnails(pImage image.Image,
 		mediumThumbWidthPxInt,
 		mediumThumbHeightPxInt,
 		pJPEGqualityInt,
+		pOutputFormat,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -98,6 +111,7 @@ func CreateThumbnails(pImage image.Image,
 		largerThumbWidthPxInt,
 		largerThumbHeightPxInt,
 		pJPEGqualityInt,
+		pOutputFormat,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr

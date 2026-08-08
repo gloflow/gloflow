@@ -225,6 +225,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 						pImageStorage,
 						jobRuntime,
 						jobMsg.JPEGqualityInt,
+						jobMsg.ImageOutputFormat,
 						pRuntimeSys)
 					
 					//------------------------

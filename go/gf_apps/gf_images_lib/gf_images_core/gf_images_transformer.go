@@ -25,7 +25,7 @@ import (
 	"context"
 	"image"
 	"image/jpeg"
-	// "image/png"
+	"image/png"
 	"github.com/nfnt/resize"
 	"github.com/h2non/bimg"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -42,7 +42,15 @@ import (
 //                   if nil the package default (JPEGqualityDefaultInt) is used.
 //                   pass a higher value (e.g. JPEGqualityHighInt) for sharper
 //                   thumbnails, useful for infographics/plots where the default
-//                   JPEG compression is too lossy/fuzzy.
+//                   JPEG compression is too lossy/fuzzy. ignored when
+//                   pImageOutputFormat is GFimageOutputFormatPNG.
+//
+// pImageOutputFormat - OPTIONAL, encoding format used for generated
+//                   thumbnails (small/medium/large). if nil,
+//                   GFimageOutputFormatDefault (JPEG) is used, matching
+//                   prior behavior. pass a pointer to
+//                   GFimageOutputFormatPNG for sharp/lossless thumbnails,
+//                   useful for infographics/plots/screenshots.
 func TransformImage(pImageIDstr GFimageID,
 	pImageClientTypeStr                   string,
 	pImagesFlowsNamesLst                  []string,
@@ -54,6 +62,7 @@ func TransformImage(pImageIDstr GFimageID,
 	pPluginsPyDirPathStr                  string,
 	pPluginsMetrics                       *gf_images_plugins.GFmetrics,
 	pJPEGqualityInt                       *int,
+	pImageOutputFormat                    *GFimageOutputFormat,
 	pUserID                               gf_core.GF_ID,
 	pCtx                                  context.Context,
 	pRuntimeSys                           *gf_core.RuntimeSys) (*GFimage, *GFimageThumbs, *gf_core.GFerror) {
@@ -73,6 +82,7 @@ func TransformImage(pImageIDstr GFimageID,
 		pImageLocalFilePathStr,
 		pImagesStoreThumbnailsLocalDirPathStr,
 		pJPEGqualityInt,
+		pImageOutputFormat,
 		pUserID,
 		pCtx,
 		pRuntimeSys)
@@ -149,6 +159,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	pImageLocalFilePathStr             string,
 	pImagesStoreThumbnailsLocalDirPathStr string,
 	pJPEGqualityInt                       *int,
+	pImageOutputFormat                    *GFimageOutputFormat,
 	pUserID                               gf_core.GF_ID,
 	pCtx                                  context.Context,
 	pRuntimeSys                           *gf_core.RuntimeSys) (*GFimage, *GFimageThumbs, *gf_core.GFerror) {
@@ -180,6 +191,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 		mediumThumbMaxSizePxInt,
 		largeThumbMaxSizePxInt,
 		pJPEGqualityInt,
+		pImageOutputFormat,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
@@ -255,11 +267,21 @@ func TransformProcessImage(pImageIDstr GFimageID,
 //                   behavior of passing nil *jpeg.Options, which defaults to
 //                   jpeg.DefaultQuality). pass a higher explicit value for
 //                   sharper/less-compressed output (e.g. infographics/plots).
+//                   ignored when pOutputFormat is GFimageOutputFormatPNG.
+//
+// pOutputFormat - OPTIONAL (nil-able) encoding format for the resized
+//                   image. if nil, GFimageOutputFormatDefault (JPEG) is
+//                   used, matching prior behavior (thumbnails always
+//                   JPEG-encoded). pass GFimageOutputFormatPNG for
+//                   sharp/lossless output, e.g. infographics/plots/
+//                   screenshots, where JPEG compression causes visible
+//                   accuracy loss around sharp edges/text.
 func resizeImage(pImg image.Image,
 	pImageOutputPathStr string,
 	pWidthPxInt         int,
 	pHeightPxInt        int,
 	pJPEGqualityInt     *int,
+	pOutputFormat       *GFimageOutputFormat,
 	pRuntimeSys         *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	m := resize.Resize(uint(pWidthPxInt), uint(pHeightPxInt), pImg, resize.Lanczos3)
@@ -275,20 +297,33 @@ func resizeImage(pImg image.Image,
 	defer out.Close()
 
 	//--------------------------
-	// ADD!! - enable a way to set PNG format as a target.
-	//         for very precise vector type images there is significant accuracy loss
-	//         when recoding using JPEG
-	// png.Encode(out_png, m)
 
-	// IMPORTANT!! - using JPEG instead of PNG, because JPEG compression was made for photographic images,
-	//               and so for these kinds of images it comes out with much smaller file size.
-
-	jpegQualityInt := JPEGqualityDefaultInt
-	if pJPEGqualityInt != nil {
-		jpegQualityInt = *pJPEGqualityInt
+	outputFormat := GFimageOutputFormatDefault
+	if pOutputFormat != nil {
+		outputFormat = *pOutputFormat
 	}
-	jpegOptions := &jpeg.Options{Quality: jpegQualityInt}
-	jpeg.Encode(out, m, jpegOptions)
+
+	switch outputFormat {
+	case GFimageOutputFormatPNG:
+
+		// IMPORTANT!! - PNG is lossless, so its used for content (infographics/
+		//               plots/screenshots) where JPEG compression's accuracy loss
+		//               around sharp edges/text is undesirable. results in a
+		//               larger file size than JPEG.
+		png.Encode(out, m)
+
+	default:
+
+		// IMPORTANT!! - using JPEG instead of PNG, because JPEG compression was made for photographic images,
+		//               and so for these kinds of images it comes out with much smaller file size.
+
+		jpegQualityInt := JPEGqualityDefaultInt
+		if pJPEGqualityInt != nil {
+			jpegQualityInt = *pJPEGqualityInt
+		}
+		jpegOptions := &jpeg.Options{Quality: jpegQualityInt}
+		jpeg.Encode(out, m, jpegOptions)
+	}
 	
 	//--------------------------
 	return nil
