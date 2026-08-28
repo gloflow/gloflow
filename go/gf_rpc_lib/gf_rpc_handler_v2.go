@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
@@ -231,7 +232,7 @@ func CreateHandlerV2http(pNameStr string, // optional name for handler (used for
 				if the request includes other (non-simple) headers (Authorization, Content-Type with application/json),
 				its necesary to explicitly allow these headers using the Access-Control-Allow-Headers header.
 				*/
-				pResp.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+				pResp.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
 
 				/*
 				The XMLHttpRequest.withCredentials property is a Boolean that indicates
@@ -335,6 +336,7 @@ func CreateHandlerV2http(pNameStr string, // optional name for handler (used for
 		//-------------------------------------------------
 
 		pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(authHandlerFun))
+		registerCORSpreflightRouteFun(pPathStr, pCORSenabledBool, authHandlerFun, pHandlerRuntime)
 
 	} else {
 
@@ -369,6 +371,14 @@ func CreateHandlerV2http(pNameStr string, // optional name for handler (used for
 					}
 
 					//-----------------------
+
+					CORSfun(pResp, pReq)
+				}
+
+				// handle OPTIONS preflight request - fully handled here, dont invoke appHandlerFun
+				if pReq.Method == http.MethodOptions {
+					CORSfun(pResp, pReq)
+					return
 				}
 			}
 
@@ -377,6 +387,33 @@ func CreateHandlerV2http(pNameStr string, // optional name for handler (used for
 
 		//-------------------------------------------------
 		pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(wrappedHandlerFun))
+		registerCORSpreflightRouteFun(pPathStr, pCORSenabledBool, wrappedHandlerFun, pHandlerRuntime)
+	}
+}
+
+//-------------------------------------------------
+// CORS_PREFLIGHT_ROUTE - IMPORTANT!! - if pPathStr is a Go 1.22+ enhanced ServeMux
+// pattern scoped to an explicit HTTP method (e.g. "GET /path"), the mux's built-in
+// method matching auto-responds 405 to an OPTIONS preflight request without ever
+// invoking pHandlerFun - meaning no CORS headers are ever set on the preflight
+// response. explicitly register the same handler for the OPTIONS method on the
+// same path so preflight requests are routed to pHandlerFun (which itself must
+// short-circuit on http.MethodOptions).
+
+func registerCORSpreflightRouteFun(pPathStr string,
+	pCORSenabledBool bool,
+	pHandlerFun       func(http.ResponseWriter, *http.Request),
+	pHandlerRuntime  *GFrpcHandlerRuntime) {
+
+	if !pCORSenabledBool {
+		return
+	}
+
+	if methodStr, pathOnlyStr, foundBool := strings.Cut(pPathStr, " "); foundBool &&
+		!strings.EqualFold(methodStr, http.MethodOptions) {
+
+		optionsPatternStr := http.MethodOptions + " " + pathOnlyStr
+		pHandlerRuntime.Mux.Handle(optionsPatternStr, http.HandlerFunc(pHandlerFun))
 	}
 }
 

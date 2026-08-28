@@ -28,6 +28,7 @@ import (
 	"fmt"
 	"net/http"
 	"context"
+	"strings"
 	"time"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -311,7 +312,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 				if the request includes other (non-simple) headers (Authorization, Content-Type with application/json),
 				its necesary to explicitly allow these headers using the Access-Control-Allow-Headers header.
 				*/
-				pResp.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+				pResp.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
 
 				/*
 				The XMLHttpRequest.withCredentials property is a Boolean that indicates
@@ -467,6 +468,23 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 	}
 
 	pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(topHandlerFun))
+
+	//-------------------------------------------------
+	// CORS_PREFLIGHT_ROUTE - IMPORTANT!! - if pPathStr is a Go 1.22+ enhanced ServeMux
+	// pattern scoped to an explicit HTTP method (e.g. "GET /path"), the mux's built-in
+	// method matching auto-responds 405 to an OPTIONS preflight request without ever
+	// invoking topHandlerFun - meaning handleCORSfun/CORSfun above never runs and no
+	// CORS headers are ever set on the preflight response. explicitly register the
+	// same handler for the OPTIONS method on the same path so preflight requests are
+	// routed to topHandlerFun (which short-circuits via handleCORSfun).
+	if pCORSenabledBool {
+		if methodStr, pathOnlyStr, foundBool := strings.Cut(pPathStr, " "); foundBool &&
+			!strings.EqualFold(methodStr, http.MethodOptions) {
+
+			optionsPatternStr := http.MethodOptions + " " + pathOnlyStr
+			pHandlerRuntime.Mux.Handle(optionsPatternStr, http.HandlerFunc(topHandlerFun))
+		}
+	}
 }
 
 //-------------------------------------------------
