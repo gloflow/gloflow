@@ -67,7 +67,7 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// DELETE
 	// AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/delete",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/admin/users/delete",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -122,7 +122,7 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// GET_ALL
 	// AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/get_all",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/admin/users/get_all",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -162,7 +162,7 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// GET_ALL_INVITE_LIST
 	// AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/get_all_invite_list",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/admin/users/get_all_invite_list",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -202,7 +202,7 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// ADD_TO_INVITE_LIST
 	// AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/add_to_invite_list",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/admin/users/add_to_invite_list",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -253,7 +253,7 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// REMOVE_FROM_INVITE_LIST
 	// AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/remove_from_invite_list",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/admin/users/remove_from_invite_list",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -304,7 +304,7 @@ func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// RESEND_CONFIRM_EMAIL
 	// AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/resend_confirm_email",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/admin/users/resend_confirm_email",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {

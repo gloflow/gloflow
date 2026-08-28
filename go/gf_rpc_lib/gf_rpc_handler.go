@@ -102,6 +102,7 @@ func CreateHandlersHTTP(pHandlersLst []gf_core.HTTPhandlerInfo,
 
 		// CREATE_HANDLER
 		CreateHandlerHTTPwithAuth(handlerDescr.AuthBool,
+			handlerDescr.CORSenabledBool,
 			handlerDescr.PathStr,
 			handlerDescr.HandlerFun,
 			rpcHandlerRuntime,
@@ -130,6 +131,7 @@ func CreateHandlerHTTP(pPathStr string,
 // HTTP_WITH_AUTH
 
 func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication or not
+	pCORSenabledBool bool, // if true, CORS headers/OPTIONS-preflight handling are enabled for this handler (opt-in, per-handler)
 	pPathStr        string,
 	pHandlerFun     gf_core.HTTPhandler,
 	pHandlerRuntime *GFrpcHandlerRuntime,
@@ -328,11 +330,62 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 	}
 
 	//-------------------------------------------------
+	// CORS_AND_PREFLIGHT
+	// IMPORTANT!! - CORS handling here is OPT-IN, per-handler, controlled by pCORSenabledBool
+	//               (set via gf_core.HTTPhandlerInfo.CORSenabledBool). it is NOT applied
+	//               automatically to every handler anymore - only handlers that explicitly
+	//               need cross-origin support (e.g. gf_sso.go's split-origin SSO check/callback
+	//               flow) should set this flag.
+	//
+	//               when enabled, CORS is completely orthogonal to whether a handler requires
+	//               a validated server-side session (pAuthBool). it must run BEFORE any
+	//               session/auth validation - otherwise an OPTIONS preflight request (which
+	//               never carries cookies/credentials) would get redirected to the login url
+	//               instead of receiving the CORS headers the browser is waiting for.
+	//
+	// returns exitReqBool==true if the request was fully handled here (OPTIONS preflight)
+	// and the caller must stop any further processing.
+	handleCORSfun := func(pResp http.ResponseWriter, pReq *http.Request) (exitReqBool bool) {
+
+		if !pCORSenabledBool {
+			return false
+		}
+
+		// if the user has supplied CORS domains, check if the request origin domain is in the list
+		originStr := pReq.Header.Get("Origin")
+		if originStr != "" {
+
+			//-----------------------
+			// METRICS
+			if pHandlerRuntime.MetricsGlobal != nil {
+				pHandlerRuntime.MetricsGlobal.HandlersCORScounter.Inc()
+			}
+
+			//-----------------------
+
+			CORSfun(pResp, pReq)
+		}
+
+		// handle OPTIONS preflight request
+		if pReq.Method == http.MethodOptions {
+
+			CORSfun(pResp, pReq)
+
+			// pResp.WriteHeader(http.StatusNoContent)
+			return true
+		}
+
+		return false
+	}
+
+	//-------------------------------------------------
+
+	var innerHandlerFun func(pResp http.ResponseWriter, pReq *http.Request)
 
 	if pAuthBool {
 
 		//-------------------------------------------------
-		authHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
+		innerHandlerFun = func(pResp http.ResponseWriter, pReq *http.Request) {
 
 			pathStr := pReq.URL.Path
 
@@ -345,6 +398,11 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			}
 
 			//-----------------------
+
+			pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> req headers...`,
+				map[string]interface{}{
+					"headers_str": spew.Sdump(pReq.Header),
+				})
 
 			//-----------------------
 			// VALIDATE_SESSION
@@ -378,41 +436,6 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			*/
 
 			//-----------------------
-			// CORS
-			// if the user has supplied CORS domains, check if the request origin domain is in the list
-
-			// get the origin domain of the request
-			originStr := pReq.Header.Get("Origin")
-
-			pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> req headers...`,
-				map[string]interface{}{
-					"headers_str": spew.Sdump(pReq.Header),
-				})
-
-			if originStr != "" {
-
-				//-----------------------
-				// METRICS
-				if pHandlerRuntime.MetricsGlobal != nil {
-					pHandlerRuntime.MetricsGlobal.HandlersCORScounter.Inc()
-				}
-
-				//-----------------------
-
-				CORSfun(pResp, pReq)
-			}
-
-			//-----------------------
-			// handle OPTIONS preflight request
-			if pReq.Method == http.MethodOptions {
-
-				CORSfun(pResp, pReq)
-
-				// pResp.WriteHeader(http.StatusNoContent)
-				return
-			}
-
-			//-----------------------
 			// APP_HANDLER - external app request handler function, executed with an
 			//               authenticated context.
 
@@ -421,34 +444,29 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 			//-----------------------
 		}
 
-		//-------------------------------------------------
-
-		pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(authHandlerFun))
-
 	} else {
 
 		//-------------------------------------------------
-		wrappedHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
-
-			// CORS
-			originStr := pReq.Header.Get("Origin")
-			if originStr != "" {
-
-				//-----------------------
-				// METRICS
-				if pHandlerRuntime.MetricsGlobal != nil {
-					pHandlerRuntime.MetricsGlobal.HandlersCORScounter.Inc()
-				}
-
-				//-----------------------
-			}
-
+		innerHandlerFun = func(pResp http.ResponseWriter, pReq *http.Request) {
 			appHandlerFun(pResp, pReq)
 		}
-
-		//-------------------------------------------------
-		pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(wrappedHandlerFun))
 	}
+
+	//-------------------------------------------------
+	// TOP_HANDLER - single entry point for every request (auth-required or not).
+	//               CORS/preflight is always resolved first, identically for all
+	//               handlers, before delegating to the auth-specific inner logic.
+
+	topHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
+
+		if exitReqBool := handleCORSfun(pResp, pReq); exitReqBool {
+			return
+		}
+
+		innerHandlerFun(pResp, pReq)
+	}
+
+	pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(topHandlerFun))
 }
 
 //-------------------------------------------------

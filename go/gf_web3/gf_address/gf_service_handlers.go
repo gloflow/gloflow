@@ -60,7 +60,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 	//---------------------
 	// ADDRESS_GET_ALL
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/web3/address/get_all",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/web3/address/get_all",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "GET" {
 
@@ -99,7 +99,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 	//---------------------
 	// ADDRESS_ADD
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/web3/address/add",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/web3/address/add",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "POST" {
 

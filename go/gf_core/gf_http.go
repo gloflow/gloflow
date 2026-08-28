@@ -56,9 +56,10 @@ type Gf_http_fetch struct {
 
 type HTTPhandler func(context.Context, http.ResponseWriter, *http.Request) (map[string]interface{}, *GFerror)
 type HTTPhandlerInfo struct {
-	AuthBool   bool
-	PathStr    string
-	HandlerFun HTTPhandler
+	AuthBool        bool
+	PathStr         string
+	HandlerFun      HTTPhandler
+	CORSenabledBool bool // if true, CORS headers/OPTIONS-preflight handling are enabled for this handler. opt-in per-handler, disabled by default.
 }
 
 type HTTPhandlerV2 func(context.Context, http.ResponseWriter, *http.Request) (map[string]interface{}, *GFerror)
@@ -69,6 +70,7 @@ type HTTPhandlerV2info struct {
 	DomainsLst         []string // if nil, handler will be registered for the main domain only
 	HandlerFun         HTTPhandlerV2
 	DisableMetricsBool bool     // if true, metrics will not be created for this handler
+	CORSenabledBool    bool     // if true, CORS headers/OPTIONS-preflight handling are enabled for this handler. opt-in per-handler, disabled by default.
 }
 
 //---------------------------------------------------

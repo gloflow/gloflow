@@ -63,7 +63,7 @@ func initHandlersUserpass(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// USERS_LOGIN
 	// NO_AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/userpass/login",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, false, "/v1/identity/userpass/login",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -151,7 +151,7 @@ func initHandlersUserpass(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	// USERS_CREATE
 	// NO_AUTH - unauthenticated users are able to create new users, and do not get logged in automatically on success
 
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/userpass/create",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, false, "/v1/identity/userpass/create",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {

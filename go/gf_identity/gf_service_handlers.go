@@ -62,6 +62,8 @@ func initHandlers(pAuthLoginURLstr string,
 	metricsGroupNameStr := "main"
 	metrics := gf_rpc_lib.MetricsCreateForHandlersFromEndpoints(metricsGroupNameStr, pServiceInfo.NameStr, handlersEndpointsLst, pRuntimeSys)
 
+	corsEnabledBool := true
+
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
@@ -80,7 +82,7 @@ func initHandlers(pAuthLoginURLstr string,
 	//---------------------
 	// LOGGED_IN - used to check efficiently by the front-end if the user is logged in
 	// AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/logged_in",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, corsEnabledBool, "/v1/identity/logged_in",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
@@ -101,7 +103,7 @@ func initHandlers(pAuthLoginURLstr string,
 	//---------------------
 	// USERS_GET_ME
 	// AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/me",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, corsEnabledBool, "/v1/identity/me",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
@@ -146,7 +148,7 @@ func initHandlers(pAuthLoginURLstr string,
 	//---------------------
 	// LOGIN_UI
 	// NO_AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/login_ui",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, corsEnabledBool, "/v1/identity/login_ui",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
@@ -177,7 +179,7 @@ func initHandlers(pAuthLoginURLstr string,
 	// EMAIL_LOGIN
 	// NO_AUTH
 
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/email/logn",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, corsEnabledBool, "/v1/identity/email/logn",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
@@ -204,7 +206,7 @@ func initHandlers(pAuthLoginURLstr string,
 		pRuntimeSys)
 
 	// EMAIL_LOGIN_CONFIRM
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/email/login_confirm",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, corsEnabledBool, "/v1/identity/email/login_confirm",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
@@ -288,7 +290,7 @@ func initHandlers(pAuthLoginURLstr string,
 	//---------------------
 	// EMAIL_CONFIRM
 	// NO_AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/email_confirm",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, corsEnabledBool, "/v1/identity/email_confirm",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
@@ -386,7 +388,7 @@ func initHandlers(pAuthLoginURLstr string,
 	//---------------------
 	// MFA_CONFIRM
 	// NO_AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/mfa_confirm",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, corsEnabledBool, "/v1/identity/mfa_confirm",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -470,7 +472,7 @@ func initHandlers(pAuthLoginURLstr string,
 	// USERS_UPDATE
 	// AUTH - only logged in users can update their own details
 
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/update",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/identity/update",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -522,7 +524,7 @@ func initHandlers(pAuthLoginURLstr string,
 
 	//---------------------
 	// REGISTER_INVITE_EMAIL
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/register_invite_email",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, false, "/v1/identity/register_invite_email",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior

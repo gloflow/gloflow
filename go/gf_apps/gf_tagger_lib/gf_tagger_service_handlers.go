@@ -212,7 +212,7 @@ func initHandlers(pAuthSubsystemTypeStr string,
 	//---------------------
 	// ADD_TAGS
 
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/tags/create",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/tags/create",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {

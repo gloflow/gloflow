@@ -66,7 +66,7 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// USERS_PREFLIGHT
 	// NO_AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/eth/preflight",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, false, "/v1/identity/eth/preflight",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -107,7 +107,7 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// USERS_LOGIN
 	// NO_AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/eth/login",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, false, "/v1/identity/eth/login",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -176,7 +176,7 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// USERS_CREATE
 	// NO_AUTH - unauthenticated users are able to create new users
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/eth/create",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, false, "/v1/identity/eth/create",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {

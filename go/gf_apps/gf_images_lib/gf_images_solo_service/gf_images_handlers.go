@@ -75,6 +75,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	metricsGroupNameStr := "main"
 	metrics := gf_rpc_lib.MetricsCreateForHandlersFromEndpoints(metricsGroupNameStr, "gf_images", handlersEndpointsLst, pRuntimeSys)
 
+	corsEnabledBool := true
+
 	//---------------------
 	// rpcHandlerRuntime
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
@@ -142,79 +144,9 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		pRuntimeSys)
 
 	//---------------------
-	// CLASSIFY_IMAGE
-	
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/classify",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
-
-			if pReq.Method == "POST" {
-
-				//-----------------
-				// INPUT
-
-				iMap, gfErr :=  gf_core.HTTPgetInput(pReq, pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr
-				}
-
-				// USER_ID
-				userID, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
-
-				clientTypeStr := iMap["client_type_str"].(string)
-				
-				// IMAGES_IDS
-				imagesIDsUntypedLst := iMap["images_ids_lst"].([]interface{})
-				imagesIDsLst := []string{}
-				for _, imageIDUntyped := range imagesIDsUntypedLst {
-					imageIDStr := imageIDUntyped.(string)
-					imagesIDsLst = append(imagesIDsLst, imageIDStr)
-				}
-
-				imagesIDsCastedLst := []gf_images_core.GFimageID{}
-				for _, imageIDstr := range imagesIDsLst {
-					imageID := gf_images_core.GFimageID(imageIDstr)
-					imagesIDsCastedLst = append(imagesIDsCastedLst, imageID)
-				}
-
-				
-
-				input := &gf_images_service.GFimageClassifyInput{
-					ClientTypeStr: clientTypeStr,
-					ImagesIDsLst:  imagesIDsCastedLst,
-
-				}
-
-				//-----------------
-				
-				// CLASSIFY
-				classesLst, gfErr := gf_images_service.ImageClassify(input,
-					userID,
-					pJobsMngrCh,
-					pServiceInfo,
-					pCtx,
-					pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr
-				}
-
-				//------------------
-				// OUTPUT
-				dataMap := map[string]interface{}{
-					"classes_lst": classesLst,
-				}
-				return dataMap, nil
-
-				//------------------
-			}
-			return nil, nil
-		},
-		rpcHandlerRuntime,
-		pRuntimeSys)
-
-	//---------------------
 	// SHARE_IMAGE
 	
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/share",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, corsEnabledBool, "/v1/images/share",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -272,7 +204,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 	//---------------------
 	// GET_IMAGE
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/images/get",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, false, "/v1/images/get",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
@@ -319,7 +251,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	//               this is done mainly to save on bandwidth and avoid one extra hop.
 	// AUTH
 
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/upload_init",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, corsEnabledBool, "/v1/images/upload_init",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
@@ -399,7 +331,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	// UPLOAD_COMPLETE - client calls this to get the presigned URL to then upload the image to directly.
 	//                   this is done mainly to save on bandwidth and avoid one extra hop.
 	
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/upload_complete",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, corsEnabledBool, "/v1/images/upload_complete",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -479,7 +411,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	//---------------------
 	// UPLOAD_METRICS - client reports upload metrics from its own perspective
 	
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/upload_metrics",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, corsEnabledBool, "/v1/images/upload_metrics",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {

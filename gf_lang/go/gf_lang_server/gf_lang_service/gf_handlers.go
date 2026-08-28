@@ -59,7 +59,7 @@ func initHandlers(pHTTPmux *http.ServeMux,
 	//---------------------
 	// LANG_RUN
 	// NO_AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/lang/run",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, false, "/v1/lang/run",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {

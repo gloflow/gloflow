@@ -72,7 +72,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// API_TOKEN_GENERATE
 
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/auth0/api_token/generate",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/identity/auth0/api_token/generate",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			//---------------------
@@ -126,7 +126,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 	//---------------------
 	// Auth0 may need to redirect back to the application's Login Initiation endpoint, using OIDC third-party initiated login
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/auth0/login",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, false, "/v1/identity/auth0/login",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
@@ -183,7 +183,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 	//---------------------
 	// user redirected to this URL by Auth0 on successful login
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/auth0/login_callback",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, false, "/v1/identity/auth0/login_callback",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			//------------------
@@ -312,7 +312,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 	//---------------------
 	// this can only be called by authenticated users.
 
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/auth0/login_finalize",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/identity/auth0/login_finalize",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -373,7 +373,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 		pRuntimeSys)
 
 	//---------------------
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/auth0/logout",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/identity/auth0/logout",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
@@ -451,7 +451,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 	//---------------------
 	// user redirected to this URL by Auth0 on successful logout.
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/auth0/logout_callback",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, false, "/v1/identity/auth0/logout_callback",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {

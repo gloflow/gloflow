@@ -50,6 +50,7 @@ func CreateHandlersV2http(pHandlersLst []gf_core.HTTPhandlerV2info,
 		// CREATE_HANDLER
 		CreateHandlerV2http(handlerInfo.NameStr,
 			handlerInfo.AuthStr,
+			handlerInfo.CORSenabledBool,
 			handlerInfo.PathStr,
 			handlerInfo.DomainsLst,
 			handlerInfo.HandlerFun,
@@ -63,6 +64,7 @@ func CreateHandlersV2http(pHandlersLst []gf_core.HTTPhandlerV2info,
 
 func CreateHandlerV2http(pNameStr string, // optional name for handler (used for metrics)
 	pAuthStr string, // if handler uses authentication or not
+	pCORSenabledBool bool, // if true, CORS headers/OPTIONS-preflight handling are enabled for this handler (opt-in, per-handler)
 	pPathStr        string,
 	pDomainsLst     []string,
 	pHandlerFun     gf_core.HTTPhandlerV2,
@@ -284,38 +286,41 @@ func CreateHandlerV2http(pNameStr string, // optional name for handler (used for
 			ctxWithReqID := context.WithValue(ctxAuth, "gf_req_id", reqIDstr)
 
 			//-----------------------
-			// CORS
-			// if the user has supplied CORS domains, check if the request origin domain is in the list
-
-			// get the origin domain of the request
-			originStr := pReq.Header.Get("Origin")
+			// CORS - opt-in per-handler via pCORSenabledBool. if the user has supplied
+			//        CORS domains, check if the request origin domain is in the list.
 
 			pRuntimeSys.LogNewFun("DEBUG", `>>>>>>>>>>>>>>>>> req headers...`,
 				map[string]interface{}{
 					"headers_str": spew.Sdump(pReq.Header),
 				})
 
-			if originStr != "" {
+			if pCORSenabledBool {
 
-				//-----------------------
-				// METRICS
-				if pHandlerRuntime.MetricsGlobal != nil {
-					pHandlerRuntime.MetricsGlobal.HandlersCORScounter.Inc()
+				// get the origin domain of the request
+				originStr := pReq.Header.Get("Origin")
+
+				if originStr != "" {
+
+					//-----------------------
+					// METRICS
+					if pHandlerRuntime.MetricsGlobal != nil {
+						pHandlerRuntime.MetricsGlobal.HandlersCORScounter.Inc()
+					}
+
+					//-----------------------
+
+					CORSfun(pResp, pReq)
 				}
 
 				//-----------------------
+				// handle OPTIONS preflight request
+				if pReq.Method == http.MethodOptions {
 
-				CORSfun(pResp, pReq)
-			}
+					CORSfun(pResp, pReq)
 
-			//-----------------------
-			// handle OPTIONS preflight request
-			if pReq.Method == http.MethodOptions {
-
-				CORSfun(pResp, pReq)
-
-				// pResp.WriteHeader(http.StatusNoContent)
-				return
+					// pResp.WriteHeader(http.StatusNoContent)
+					return
+				}
 			}
 
 			//-----------------------
@@ -351,17 +356,20 @@ func CreateHandlerV2http(pNameStr string, // optional name for handler (used for
 			}
 
 			//-----------------------
-			// CORS
-			originStr := pReq.Header.Get("Origin")
-			if originStr != "" {
+			// CORS - opt-in per-handler via pCORSenabledBool
+			if pCORSenabledBool {
 
-				//-----------------------
-				// METRICS
-				if pHandlerRuntime.MetricsGlobal != nil {
-					pHandlerRuntime.MetricsGlobal.HandlersCORScounter.Inc()
+				originStr := pReq.Header.Get("Origin")
+				if originStr != "" {
+
+					//-----------------------
+					// METRICS
+					if pHandlerRuntime.MetricsGlobal != nil {
+						pHandlerRuntime.MetricsGlobal.HandlersCORScounter.Inc()
+					}
+
+					//-----------------------
 				}
-
-				//-----------------------
 			}
 
 			appHandlerFun(pResp, pReq)

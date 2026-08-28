@@ -62,6 +62,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	metricsGroupNameStr := "flows"
 	metrics := gf_rpc_lib.MetricsCreateForHandlersFromEndpoints(metricsGroupNameStr, "gf_images", handlersEndpointsLst, pRuntimeSys)
 
+	corsEnabledBool := true
+
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
@@ -111,7 +113,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	// ADD_IMAGE
 	// AUTH
 	
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/flows/add_img",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, corsEnabledBool, "/v1/images/flows/add_img",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -171,8 +173,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	// IMAGE_EXISTS_IN_SYSTEM - check if extern image url's exist in the system,
 	//                          if the image url has already been fetched/transformed and gf_image exists for it
 	// AUTH
-
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/flows/imgs_exist",
+	
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, corsEnabledBool, "/v1/images/flows/imgs_exist",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {

@@ -79,7 +79,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// VIZ_GET
 	// AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/home/viz/get",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/home/viz/get",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "GET" {
 
@@ -109,7 +109,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// VIZ_UPDATE
 	// AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/home/viz/update",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/home/viz/update",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "POST" {
 
@@ -140,7 +140,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// VIEW
 	// AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/home/view",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, false, "/v1/home/view",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
