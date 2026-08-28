@@ -28,9 +28,9 @@ export function add_query_param(p_url_str :string, key :string, value :string) {
 
 //-------------------------------------------------
 export function get_current_host() :string {
-	const domain_str   = window.location.hostname;
-	const protocol_str = window.location.protocol;
-	const host_str :string = `${protocol_str}//${domain_str}`;
+	const host_with_port_str = window.location.host;
+	const protocol_str       = window.location.protocol;
+	const host_str :string   = `${protocol_str}//${host_with_port_str}`;
 
 	console.log("gf_host", host_str);
 	return host_str;
