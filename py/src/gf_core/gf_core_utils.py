@@ -107,10 +107,17 @@ def get_self_ip():
 		cmd_str = '''dig -4 TXT +short o-o.myaddr.l.google.com @%s | awk -F'"' '{ print $2}' '''%(target_namespace_server_str)
 		print(cmd_str)
 
-		r           = delegator.run(cmd_str)
-		self_ip_str = r.out.strip()
-		# assert len(self_ip_str.split(".")) == 4
-		return self_ip_str
+		try:
+			r           = delegator.run(cmd_str)
+			self_ip_str = r.out.strip()
+			if not self_ip_str:
+				print("WARNING: DNS method returned empty IP")
+				return ""
+			# assert len(self_ip_str.split(".")) == 4
+			return self_ip_str
+		except Exception as e:
+			print(f"WARNING: DNS method failed: {e}")
+			return ""
 
 	#---------------------------------------------------
 	def extern_service_ipinfoio_method():
@@ -118,18 +125,31 @@ def get_self_ip():
 		#---------------------------------------------------
 		def get_remote():
 
-			cmd_str = "curl http://ipinfo.io"
+			cmd_str = "curl -s http://ipinfo.io"
 			print(cmd_str)
 			
 			r = delegator.run(cmd_str)
 
-			self_ip_str = json.loads(r.out)["ip"]
+			# Handle empty response
+			if not r.out or not r.out.strip():
+				print("WARNING: ipinfo.io returned empty response")
+				return ""
 
-			f=open("self_ip_cache.txt", "w")
-			f.write(self_ip_str)
+			try:
+				response_dict = json.loads(r.out)
+				if "ip" not in response_dict:
+					print(f"WARNING: ipinfo.io response missing 'ip' key: {r.out}")
+					return ""
+				self_ip_str = response_dict["ip"]
 
+				f=open("self_ip_cache.txt", "w")
+				f.write(self_ip_str)
 
-			return self_ip_str
+				return self_ip_str
+			except json.JSONDecodeError as e:
+				print(f"WARNING: Failed to parse ipinfo.io response as JSON: {e}")
+				print(f"Response was: {r.out}")
+				return ""
 
 		#---------------------------------------------------
 
@@ -138,9 +158,16 @@ def get_self_ip():
 		
 	#---------------------------------------------------
 	def extern_service_ifconfigme_method():
-		r = delegator.run("curl ifconfig.me")
-		ip_str = r.out
-		return ip_str
+		try:
+			r = delegator.run("curl -s ifconfig.me")
+			ip_str = r.out.strip()
+			if not ip_str:
+				print("WARNING: ifconfig.me returned empty response")
+				return ""
+			return ip_str
+		except Exception as e:
+			print(f"WARNING: ifconfig.me method failed: {e}")
+			return ""
 
 	#---------------------------------------------------
 	def discover_ip():
@@ -156,13 +183,21 @@ def get_self_ip():
 		print(f"ipinfo.io   - {ipinfo__self_ip_str}")
 		print(f"ifconfig.me - {ifconfigme__self_ip_str}")
 		
-		# some users of this function expect the list of self-ips to be
-		# unique and will cause errors otherwise.
-		ips_no_dups_lst = list(set([
+		# Filter out empty strings (failed discovery attempts)
+		ips_list = [
 			dns__self_ip_str,
 			ipinfo__self_ip_str,
 			ifconfigme__self_ip_str
-		]))
+		]
+		ips_list = [ip for ip in ips_list if ip]  # Remove empty strings
+		
+		# some users of this function expect the list of self-ips to be
+		# unique and will cause errors otherwise.
+		ips_no_dups_lst = list(set(ips_list))
+		
+		if not ips_no_dups_lst:
+			print("ERROR: All IP discovery methods failed!")
+			return [""]
 
 		return ips_no_dups_lst
 	
