@@ -59,7 +59,7 @@ func initHandlers(pStatusServerCh gf_p2p.GFp2pStatusServerCh,
 
 	//-------------------------------------------------
 	// P2P_STATUS
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/p2p/status",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, false, "/v1/p2p/status",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
