@@ -70,6 +70,19 @@ func ErrorInHandler(p_handler_url_path_str string,
 	p_resp         http.ResponseWriter,
 	pRuntimeSys    *gf_core.RuntimeSys) {
 
+	/*
+	IMPORTANT!! - error responses must never be cached by browsers/proxies/CDNs.
+		errors here are frequently transient state-dependent outcomes, most notably failed auth
+		checks (e.g. "unauthorized access" for /v1/identity/logged_in?auth_r=0 when the user is not
+		logged in yet). if such a response is cached, then once the user logs in (same URL, now valid
+		cookies) the client could be served the stale "not authorized" answer and keep showing
+		the user as logged out.
+		failed-auth responses are generated here, before the actual endpoint handler function
+		runs, so the handlers themselves have no chance to set these headers.
+		headers have to be set before the body is written in HTTPrespond().
+	*/
+	gf_core.HTTPdisableCachingOfResponse(p_resp)
+
 	statusStr := "ERROR"
 	dataMap   := map[string]interface{}{
 		"handler_error_user_msg": p_user_msg_str,

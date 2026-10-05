@@ -53,7 +53,20 @@ def init_db_engine(p_db_name_str,
 			"keepalives_idle": 600,
 			"keepalives_interval": 30,
 			"keepalives_count": 3,
-			"application_name": "gloflow"
+			"application_name": "gloflow",
+
+			# explicitly require an encrypted connection (RDS enforces this via
+			# pg_hba.conf), and explicitly disable libpq's default client-cert
+			# discovery (~/.postgresql/postgresql.crt). without this, if $HOME
+			# is misconfigured/inaccessible for the running uid (e.g. a
+			# supervisord-managed process that drops privileges without
+			# resetting HOME), libpq aborts the SSL attempt with a
+			# "Permission denied" error and falls back to a plaintext
+			# connection, which RDS then rejects.
+			"sslmode": "require",
+			"sslcert": "",
+			"sslkey": "",
+			"sslrootcert": "",
 		}
 	)
 	return engine
@@ -85,7 +98,13 @@ def init_db_client(p_db_name_str,
 		keepalives_idle = 600,       # Time before sending keepalives (10 minutes)
 		keepalives_interval = 30,    # Interval between keepalives
 		keepalives_count = 3,        # Number of lost keepalives before disconnect
-		application_name = p_app_name_str)  # For connection identification
+		application_name = p_app_name_str,  # For connection identification
+
+		# see comment in init_db_engine() above re. sslmode/sslcert
+		sslmode = "require",
+		sslcert = "",
+		sslkey = "",
+		sslrootcert = "")
 	print("connect ok...")
 
 	return db_client

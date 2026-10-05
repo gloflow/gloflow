@@ -85,15 +85,35 @@ func initHandlers(pAuthLoginURLstr string,
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, corsEnabledBool, "/v1/identity/logged_in",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
+			/*
+			IMPORTANT!! - disable client/proxy caching of this endpoint's response, to avoid inconsistent behavior.
+
+				this MUST be done before the GET branch below returns. previously the call sat after the
+				"if GET { return }" block, so it was unreachable for GET requests - the only method this
+				endpoint actually serves (the frontend polls it with a GET) - and so GET responses were sent
+				without any Cache-Control headers.
+
+				why this matters: the answer to "is the user logged in" changes over time on the same URL
+				(/v1/identity/logged_in?auth_r=0), e.g. right after the login flow redirects the user back to
+				the page. if the browser (or a CDN/proxy in front, such as Cloudflare) is allowed to reuse a
+				previously stored response, the page can be told "not logged in" even though the user has
+				just logged in (or "logged in" after logout).
+
+				the headers must be set before the response body is written/handler returns, since
+				headers set after that point are ignored.
+
+				note: this only covers the success path where this handler function is actually executed.
+				failed-auth responses are produced earlier in gf_rpc_lib (before this handler runs),
+				and no-cache headers for those are set in gf_rpc_lib.ErrorInHandler().
+			*/
+			gf_core.HTTPdisableCachingOfResponse(pResp)
+
 			if pReq.Method == "GET" {
 				outputMap := map[string]interface{}{
 					"logged_in_bool": true,
 				}
 				return outputMap, nil
 			}
-
-			// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
-			gf_core.HTTPdisableCachingOfResponse(pResp)
 
 			return nil, nil
 		},
