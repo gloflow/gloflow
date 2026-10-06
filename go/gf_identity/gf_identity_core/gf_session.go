@@ -405,16 +405,6 @@ func SessionCreate(pUserID *gf_core.GF_ID,
 		return gf_core.GF_ID(""), gfErr
 	}
 
-	/*
-	with auth0 auth method only login_attept is created initially with session_id only.
-	after auth0 logs the user in only then is the login_attempt updated with user info.
-	*/
-	userTypeStr := "standard"
-	_, gfErr = loginAttempCreateWithSession(sessionID, userTypeStr, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return gf_core.GF_ID(""), gfErr
-	}
-
 	//------------------------
 
 	return sessionID, nil

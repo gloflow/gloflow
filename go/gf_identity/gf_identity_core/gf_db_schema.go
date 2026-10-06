@@ -78,30 +78,6 @@ func DBsqlCreateTables(pCtx context.Context,
 		FOREIGN KEY (user_id) REFERENCES gf_users(id)
 	);
 
-	CREATE TABLE IF NOT EXISTS gf_auth_login_attempts (
-		v                VARCHAR(255),
-		id               TEXT,
-		deleted          BOOLEAN DEFAULT FALSE,
-		creation_time    TIMESTAMP DEFAULT NOW(),
-
-		user_type        VARCHAR(255), -- "admin" or "standard"
-		user_id          TEXT,
-		user_name        VARCHAR(255),
-
-		-- only used for auth0 authentication since initially only the session_id
-		-- is know, and not the user_name/id. that info is only known afterwards
-		-- once the user is redirected back to GF from auth0 dialogs
-		auth_session_id TEXT,
-
-		pass_confirmed   BOOLEAN,
-		email_confirmed  BOOLEAN,
-		mfa_confirmed    BOOLEAN,
-
-		PRIMARY KEY(id),
-		FOREIGN KEY (user_id) REFERENCES gf_users(id),
-		FOREIGN KEY (auth_session_id) REFERENCES gf_auth_session(id)
-	);
-
 	CREATE TABLE IF NOT EXISTS gf_users_invite_list (
 		user_email      TEXT UNIQUE NOT NULL,
 		creation_time   TIMESTAMP DEFAULT NOW(),

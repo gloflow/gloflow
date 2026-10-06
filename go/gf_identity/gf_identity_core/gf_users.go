@@ -119,15 +119,6 @@ type GFuserUpdateOp struct {
 	ProfileImageURLstr *string
 }
 
-type GFloginAttemptUpdateOp struct {
-	UserID             *gf_core.GF_ID
-	UserNameStr        *GFuserName
-	PassConfirmedBool  *bool
-	EmailConfirmedBool *bool
-	MFAconfirmedBool   *bool
-	DeletedBool        *bool
-}
-
 //---------------------------------------------------
 // PIPELINE_CREATE
 

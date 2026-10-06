@@ -95,16 +95,6 @@ func TestAuth0(pTest *testing.T) {
 	})
 
 	//----------------------
-	updateOp := &gf_identity_core.GFloginAttemptUpdateOp{
-		UserID:      &userID,
-		UserNameStr: &userNameStr,
-	}
-	gfErr = gf_identity_core.DBsqlLoginAttemptUpdateBySessionID(sessionID, updateOp, ctx, runtimeSys)
-	if gfErr != nil {
-		pTest.FailNow()
-	}
-
-	//----------------------
 	// LOGOUT
 	_, gfErr = gf_identity_core.LogoutPipeline(sessionID, ctx, runtimeSys)
 	if gfErr != nil {

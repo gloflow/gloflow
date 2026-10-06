@@ -296,8 +296,6 @@ func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListIn
 
 // this function is entered mutliple times for complex logins where not only pass/eth_signature
 // are verified, but where email/mfa have to be confirmed as well.
-// for each of the login stages this function is entered, and the login_attempt record
-// is used to keep track of which stages have completed.
 
 func AdminPipelineLogin(pInput *GFadminInputLogin,
 	pCtx         context.Context,
@@ -396,101 +394,66 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 		pLocalHub)
 
 	//------------------------
-	// LOGIN_ATTEMPT
+	// VERIFY_PASSWORD
 
-	userTypeStr := "admin"
-	loginAttempt, gfErr := gf_identity_core.LoginAttemptGetOrCreate(userNameStr, userTypeStr, pCtx, pRuntimeSys)
+	passValidBool, gfErr := gf_identity_core.UserpassVerifyPass(userNameStr,
+		pInput.PassStr,
+		pServiceInfo,
+		pCtx,
+		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
-	
-	//------------------------
-	// VERIFY_PASSWORD
 
-	// only verify password if the login_attempt didnt mark it yet as complete
-	if !loginAttempt.PassConfirmedBool {
+	if !passValidBool {
+		output.PassValidBool = false
+		return output, nil
+	}
 
-		passValidBool, gfErr := gf_identity_core.UserpassVerifyPass(userNameStr,
-			pInput.PassStr,
-			pServiceInfo,
+	output.PassValidBool = true
+
+	// EVENT
+	if pServiceInfo.EnableEventsAppBool {
+		eventMetaMap := map[string]interface{}{
+			"user_id":     userID,
+			"user_name":   pInput.UserNameStr,
+			"domain_base": pServiceInfo.DomainBaseStr,
+		}
+		gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_LOGIN_PASS_CONFIRMED,
+			eventMetaMap,
+			pRuntimeSys.AppNameStr,
+			userID,
 			pCtx,
 			pRuntimeSys)
-		if gfErr != nil {
-			return nil, gfErr
-		}
-
-		if !passValidBool {
-			output.PassValidBool = false
-			return output, nil
-		} else {
-			output.PassValidBool = true
-
-			//------------------------
-			// UPDATE_LOGIN_ATTEMPT
-			// if password is valid then update the login_attempt 
-			// to indicate that the password has been confirmed
-			updateOp := &gf_identity_core.GFloginAttemptUpdateOp{PassConfirmedBool: &passValidBool}
-			gfErr = gf_identity_core.DBsqlLoginAttemptUpdate(loginAttempt.ID,
-				updateOp,
-				pCtx,
-				pRuntimeSys)
-			if gfErr != nil {
-				return nil, gfErr
-			}
-
-			//------------------------
-
-			// EVENT
-			if pServiceInfo.EnableEventsAppBool {
-				eventMetaMap := map[string]interface{}{
-					"user_id":     userID,
-					"user_name":   pInput.UserNameStr,
-					"domain_base": pServiceInfo.DomainBaseStr,
-				}
-				gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_LOGIN_PASS_CONFIRMED,
-					eventMetaMap,
-					pRuntimeSys.AppNameStr,
-					userID,
-					pCtx,
-					pRuntimeSys)
-			}
-		}
 	}
 
 	//------------------------
 	// EMAIL
 	if pServiceInfo.EnableEmailBool {
 
-		// go through the email verification pipeline if the email
-		// has not yet been confirmed
-		if !loginAttempt.EmailConfirmedBool {
+		gfErr = gf_identity_core.UsersEmailPipelineVerify(pInput.EmailStr,
+			userNameStr,
+			userID,
+			pServiceInfo.DomainBaseStr,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
 
-			gfErr = gf_identity_core.UsersEmailPipelineVerify(pInput.EmailStr,
-				userNameStr,
+		// EVENT
+		if pServiceInfo.EnableEventsAppBool {
+			eventMetaMap := map[string]interface{}{
+				"user_id":     userID,
+				"user_name":   pInput.UserNameStr,
+				"domain_base": pServiceInfo.DomainBaseStr,
+			}
+			gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_LOGIN_EMAIL_VERIFICATION_SENT,
+				eventMetaMap,
+				pRuntimeSys.AppNameStr,
 				userID,
-				pServiceInfo.DomainBaseStr,
 				pCtx,
 				pRuntimeSys)
-			if gfErr != nil {
-				return nil, gfErr
-			}
-
-			// EVENT
-			if pServiceInfo.EnableEventsAppBool {
-				eventMetaMap := map[string]interface{}{
-					"user_id":     userID,
-					"user_name":   pInput.UserNameStr,
-					"domain_base": pServiceInfo.DomainBaseStr,
-				}
-				gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_LOGIN_EMAIL_VERIFICATION_SENT,
-					eventMetaMap,
-					pRuntimeSys.AppNameStr,
-					userID,
-					pCtx,
-					pRuntimeSys)
-			}
-
-			//------------------------
 		}
 	}
 

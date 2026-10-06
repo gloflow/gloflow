@@ -153,7 +153,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		return nil, gfErr
 	}
 
-	if !loginAttemptCheckAgeIsValid(auth0session.CreationUNIXtimeF) {
+	if !sessionCheckAgeIsValid(auth0session.CreationUNIXtimeF) {
 		gfErr := gf_core.ErrorCreate("'state' input argument supplied is invalid, too long has passed since it was created and it has expired",
 			"verify__invalid_value_error",
 			map[string]interface{}{},
@@ -168,8 +168,8 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	// a user can be already logged in, and this redirect (login-callback) by the Auth0 system was done in an already logged in state.
 	if !auth0session.LoginCompleteBool {
 
-		// check max-age of a login_attempt
-		if !loginAttemptCheckAgeIsValid(auth0session.CreationUNIXtimeF) {
+		// check max-age of the login session
+		if !sessionCheckAgeIsValid(auth0session.CreationUNIXtimeF) {
 			gfErr := gf_core.ErrorCreate("'state' input argument supplied is invalid, too long has passed since it was created and it has expired",
 				"verify__invalid_value_error",
 				map[string]interface{}{},
@@ -404,24 +404,6 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	}
 
 	//---------------------
-	/*
-	LOGIN_ATTEMPT
-	on user login success, when all the info on the user is present, update login_attempt in the DB.
-	unlike with GF native userpass/eth auth methods where the login attempt can be created from username
-	right away before creds are checked (even if login ultimately fails), with Auth0 auth method this has to be done
-	at the end since the username is not known right away as the user is navigated to Auth0 systems and only
-	returned to GF on login success.
-	*/ 
-	updateOp := &GFloginAttemptUpdateOp{
-		UserID:      &userID,
-		UserNameStr: &userNameStr,
-	}
-	gfErr = DBsqlLoginAttemptUpdateBySessionID(sessionID, updateOp, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
-
-	//---------------------
 
 	output := &GFauth0outputLoginCallback{
 		JWTtokenStr: JWTtokenStr,
@@ -570,4 +552,18 @@ func Auth0createGFuserIfNone(pBasicUserInfo *GFauth0basicUserInfo,
 	}
 
 	return nil
+}
+
+//---------------------------------------------------
+
+func sessionCheckAgeIsValid(pLoginInitiationUNIXtimeF float64) bool {
+
+	sessionMaxAgeSecondsF := 10*60.0 // 10min
+	currentUNIXtimeF      := float64(time.Now().UnixNano())/1000000000.0
+	ageF                  := currentUNIXtimeF - pLoginInitiationUNIXtimeF
+
+	if ageF > sessionMaxAgeSecondsF {
+		return false
+	}
+	return true
 }

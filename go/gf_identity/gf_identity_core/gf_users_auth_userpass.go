@@ -427,15 +427,6 @@ func UserpassPipelineCreate(pInput *GFuserpassInputCreate,
 	}
 	
 	//------------------------
-	// LOGIN_ATTEMPT
-	// on user creation initiate a login process that completes after the user
-	// confirms their email.
-	_, gfErr = loginAttempCreate(userID, userNameStr, userTypeStr, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
-
-	//------------------------
 	// EMAIL_VERIFY_ADDRESS
 	if pServiceInfo.EnableEmailBool {
 

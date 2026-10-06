@@ -56,38 +56,6 @@ func mfaPipelineConfirm(pInput *GFuserAuthMFAinputConfirm,
 
 	if pInput.ExternHtopValueStr == htopValueStr {
 
-		// get a preexisting login_attempt if one exists and hasnt expired for this user.
-		// if it has then the user will have to restart the login flow
-		// (which will create a new login_attempt).
-		var loginAttempt *gf_identity_core.GFloginAttempt
-		loginAttempt, gfErr = gf_identity_core.LoginAttemptGetIfValid(pInput.UserNameStr,
-			pCtx,
-			pRuntimeSys)
-		if gfErr != nil {
-			return false, gfErr
-		}
-
-		// there is no login_attempt for this user thats active, or it has expired.
-		// do nothing, forcing the user to restart the login process.
-		if loginAttempt == nil {
-			return false, nil
-		}
-
-		//------------------------
-		// UPDATE_LOGIN_ATTEMPT
-		// if password is valid then update the login_attempt 
-		// to indicate that the password has been confirmed
-		mfaConfirmBool := true
-		updateOp := &gf_identity_core.GFloginAttemptUpdateOp{MFAconfirmedBool: &mfaConfirmBool}
-		gfErr = gf_identity_core.DBsqlLoginAttemptUpdate(loginAttempt.ID,
-			updateOp,
-			pCtx,
-			pRuntimeSys)
-		if gfErr != nil {
-			return false, gfErr
-		}
-
-		//------------------------
 		return true, nil
 		
 	} else {

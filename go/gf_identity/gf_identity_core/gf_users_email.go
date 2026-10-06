@@ -162,36 +162,6 @@ func UsersEmailPipelineConfirm(pInput *GFuserHTTPinputEmailConfirm,
 
 		//------------------------
 
-		//------------------------
-		// UPDATE_LOGIN_ATTEMPT
-		// if email is confirmed then update the login_attempt
-
-		// get a preexisting login_attempt if one exists and hasnt expired for this user.
-		// if it has then a new one will have to be created.
-		var loginAttempt *GFloginAttempt
-		loginAttempt, gfErr = LoginAttemptGetIfValid(GFuserName(pInput.UserNameStr),
-			pCtx,
-			pRuntimeSys)
-		if gfErr != nil {
-			return false, "", gfErr
-		}
-
-		if loginAttempt == nil {
-			return false, "login_attempt for this user has not been found in the DB, to mark its email_confirmed flag as true", nil
-		}
-
-		loginEmailConfirmedBool := true
-		updateOp := &GFloginAttemptUpdateOp{EmailConfirmedBool: &loginEmailConfirmedBool}
-		gfErr = DBsqlLoginAttemptUpdate(loginAttempt.ID,
-			updateOp,
-			pCtx,
-			pRuntimeSys)
-		if gfErr != nil {
-			return false, "", gfErr
-		}
-
-		//------------------------
-
 		return true, "", nil
 
 	} else {
