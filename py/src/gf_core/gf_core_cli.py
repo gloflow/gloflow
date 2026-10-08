@@ -38,7 +38,7 @@ def run__view_realtime(p_cmd_lst,
 	# the parent shell process, it will leave a defunct shell process.
 	# CMD also has to be a list here, since its not being passed in as a string
 	# to the child shell.
-	p = subprocess.Popen(p_cmd_lst, shell=False, stdout=subprocess.PIPE, bufsize=1,
+	p = subprocess.Popen(p_cmd_lst, shell=False, stdout=subprocess.PIPE, bufsize=-1,
 		env=p_env_map,
 		cwd=p_cwd_str)
 
@@ -65,7 +65,7 @@ def run(p_cmd_str,
 		shell   = True,
 		stdout  = subprocess.PIPE,
 		stderr  = subprocess.PIPE,
-		bufsize = 1)
+		bufsize = -1) # default buffering. bufsize=1 (line buffering) is not supported for binary mode pipes (RuntimeWarning)
 
 	t_o = threading.Thread(target=read_process_std_stream, args=(p.stdout, "stdout", "green"))
 	t_o.start()
