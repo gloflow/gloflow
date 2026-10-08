@@ -49,7 +49,6 @@ type GF_metrics struct {
 
 	// TX_TRACE
 	Tx_trace__worker_inspector_durration__gauge prometheus.Gauge
-	Tx_trace__py_plugin__plot_durration__gauge  prometheus.Gauge
 	Tx_trace__db_count__gauge                   prometheus.Gauge
 
 	// DB
@@ -134,13 +133,6 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GFerror) {
 			Help:      "how long the tx_trace request takes to the worker_inspector",
 		})
 
-	tx_trace__py_plugin__plot_durration__gauge := prometheus.NewGauge(
-		prometheus.GaugeOpts{
-			Namespace: "gf_eth_mon",
-			Name:      "tx_trace__py_plugin__plot_durration__gauge",
-			Help:      "how long the tx_trace py_plugin plot execution takes",
-		})
-
 	tx_trace__db_count__gauge := prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Namespace: "gf_eth_mon",
@@ -173,7 +165,6 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GFerror) {
 	prometheus.MustRegister(tx__db_count__gauge)
 	prometheus.MustRegister(tx__indexed_num__count)
 	prometheus.MustRegister(tx_trace__worker_inspector_durration__gauge)
-	prometheus.MustRegister(tx_trace__py_plugin__plot_durration__gauge)
 	prometheus.MustRegister(tx_trace__db_count__gauge)
 	prometheus.MustRegister(db_writes_num__new_peer_lifecycle__counter)
 	prometheus.MustRegister(errs_num__counter)
@@ -196,7 +187,6 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GFerror) {
 
 		// TX_TRACE
 		Tx_trace__worker_inspector_durration__gauge: tx_trace__worker_inspector_durration__gauge,
-		Tx_trace__py_plugin__plot_durration__gauge:  tx_trace__py_plugin__plot_durration__gauge,
 		Tx_trace__db_count__gauge:                   tx_trace__db_count__gauge,
 
 		DB__writes_num__new_peer_lifecycle__counter: db_writes_num__new_peer_lifecycle__counter,

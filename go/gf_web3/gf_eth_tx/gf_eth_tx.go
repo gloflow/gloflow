@@ -154,7 +154,6 @@ func Load(p_tx *eth_types.Transaction,
 	p_block_num_int  uint64,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_py_plugins     *gf_eth_core.GF_py_plugins,
 	pRuntimeSys    *gf_core.RuntimeSys) (*GF_eth__tx, *gf_core.GFerror) {
 
 	tx_hash         := p_tx.Hash() // :eth_common.Hash
@@ -329,16 +328,6 @@ func Load(p_tx *eth_types.Transaction,
 
 		//------------------
 
-
-
-		/*// PY_PLUGIN - get info on a new contract
-
-		gfErr = gf_eth_contract.Py__run_plugin__get_contract_info(new_contract_addr_str,
-			p_py_plugins,
-			pRuntimeSys)
-		if gfErr != nil {
-			return nil, gfErr
-		}*/
 
 
 		span__get_new_contract.Finish()

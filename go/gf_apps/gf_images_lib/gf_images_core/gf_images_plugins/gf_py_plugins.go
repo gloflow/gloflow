@@ -19,6 +19,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 package gf_images_plugins
 
+// DISABLED - Go -> Py plugin calls are commented out. The Py code itself (py/src/gf_apps/gf_images/plugins)
+// is kept in place; this may be removed permanently in the future.
+
+/*
 import (
 	"fmt"
 	"time"
@@ -84,3 +88,4 @@ func RunPyImagePlugins(pImageLocalFilePathStr string,
 }
 
 //-------------------------------------------------
+*/

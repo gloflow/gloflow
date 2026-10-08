@@ -145,62 +145,6 @@ func DBmongoTraceWriteBulk(p_txs_traces_lst []*GF_eth__tx_trace,
 
 //-------------------------------------------------
 
-func Trace__plot(p_tx_id_hex_str string,
-	pCtx           context.Context,
-	p_py_plugins   *gf_eth_core.GF_py_plugins,
-	p_metrics      *gf_eth_core.GF_metrics,
-	p_runtime      *gf_eth_core.GF_runtime) (string, *gf_core.GFerror) {
-
-
-
-	//-----------------------
-	// WORKER_INSPECTOR__HOST_PORT
-	host_port_str      := ""
-	start_time__unix_f := float64(time.Now().UnixNano()) / 1000000000.0
-
-	// GET_TRACE
-	gf_tx_trace, gfErr := Trace__get_from_worker_inspector(p_tx_id_hex_str,
-		host_port_str,
-		pCtx,
-		p_runtime.RuntimeSys)
-
-	end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-	// METRICS
-	if p_metrics != nil {
-		delta_time__unix_f := end_time__unix_f - start_time__unix_f
-		p_metrics.Tx_trace__worker_inspector_durration__gauge.Set(delta_time__unix_f)
-	}
-
-	if gfErr != nil {
-		return "", gfErr
-	}
-
-	//-----------------------
-	// PY_PLUGIN__PLOT
-
-	start_time__unix_f = float64(time.Now().UnixNano()) / 1000000000.0
-	plot_svg_str, gfErr := py__run_plugin__plot_tx_trace(p_tx_id_hex_str,
-		gf_tx_trace,
-		p_py_plugins,
-		p_runtime.RuntimeSys)
-	end_time__unix_f = float64(time.Now().UnixNano())/1000000000.0
-	
-	// METRICS
-	if p_metrics != nil {
-		delta_time__unix_f := end_time__unix_f - start_time__unix_f
-		p_metrics.Tx_trace__py_plugin__plot_durration__gauge.Set(delta_time__unix_f)
-	}
-
-	if gfErr != nil {
-		return "", gfErr
-	}
-
-	//-----------------------
-
-	return plot_svg_str, nil
-}
-
 //-------------------------------------------------
 // GET_FROM_WORKER_INSPECTOR
 

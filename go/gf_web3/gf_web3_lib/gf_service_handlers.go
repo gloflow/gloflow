@@ -30,7 +30,6 @@ import (
 	// "github.com/gloflow/gloflow/go/gf_web3/gf_eth_indexer"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_blocks"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_contract"
-	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_tx"
 )
 
 //-------------------------------------------------
@@ -82,52 +81,6 @@ func InitHandlers(
 		},
 		pRuntime.RuntimeSys)
 
-	//---------------------
-	// GET__TX_TRACE_PLOT
-	
-	gf_rpc_lib.CreateHandlerHTTP("/gfethm/v1/tx/trace/plot",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
-
-			spanRoot := sentry.StartSpan(pCtx, "http__master__get_tx_trace_plot", sentry.ContinueFromRequest(pReq))
-			defer spanRoot.Finish()
-
-			//------------------
-			// INPUT
-
-			txHexStr, gfErr := gf_eth_core.Http__get_arg__tx_id_hex(pResp, pReq, pRuntime.RuntimeSys)
-
-			if gfErr != nil {
-				return nil, gfErr
-			}
-
-			//------------------
-			spanPipeline := sentry.StartSpan(spanRoot.Context(), "tx_trace_plot")
-
-			plot_svg_str, gfErr := gf_eth_tx.Trace__plot(txHexStr,
-				spanPipeline.Context(),
-				pRuntime.Py_plugins,
-				pMetrics,
-				pRuntime)
-			
-			spanPipeline.Finish()
-			
-			if gfErr != nil {
-				return nil, gfErr
-			}
-
-			//------------------
-			// OUTPUT
-			dataMap := map[string]interface{}{
-				"plot_svg_str": plot_svg_str,
-			}
-
-			//------------------
-			spanRoot.Finish()
-
-			return dataMap, nil
-		},
-		pRuntime.RuntimeSys)
-		
 	//---------------------
 	// GET__BLOCK
 

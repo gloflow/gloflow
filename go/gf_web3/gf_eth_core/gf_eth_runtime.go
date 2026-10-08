@@ -31,7 +31,6 @@ import (
 
 type GF_runtime struct {
 	Config     *GF_config
-	Py_plugins *GF_py_plugins
 	RuntimeSys *gf_core.RuntimeSys
 	// Influxdb_client *influxdb2.Client
 }
@@ -66,9 +65,6 @@ type GF_config struct {
 	//          mostly used for debugging and testing.
 	Events_consume_bool bool `mapstructure:"events_consume"`
 
-	// PY_PLUGINS
-	Py_plugins_dir_path_str string `mapstructure:"py_plugins_dir_path"`
-
 	// EXTERN_SERVICES
 	AlchemyAPIkeyStr string `mapstructure:"alchemy_api_key"`
 	OpenSeaAPIkeyStr string `mapstructure:"opensea_api_key"`
@@ -82,7 +78,6 @@ func SentryInit(pSentryEndpointURIstr string) {
 	sentrySampleRateDefaultF := 0.5
 	sentryTracingRateForHandlersMap := map[string]float64{
 		"GET /gfethm/v1/block/index":   1.0,
-		"GET /gfethm/v1/tx/trace/plot": 1.0,
 		"GET /gfethm/v1/block":         1.0,
 		"GET /gfethm/v1/miner":         1.0,
 		"GET /gfethm/v1/peers":         1.0,
@@ -120,16 +115,9 @@ func RuntimeGet(pConfig *GF_config,
 	fmt.Printf("mongodb connected...\n")
 
 	//--------------------
-	// PY_PLUGINS
-	plugins_info := &GF_py_plugins{
-		Base_dir_path_str: pConfig.Py_plugins_dir_path_str,
-	}
-
-	//--------------------
 	// RUNTIME
 	runtime := &GF_runtime{
 		Config:     pConfig,
-		Py_plugins: plugins_info,
 		RuntimeSys: pRuntimeSys,
 	}
 

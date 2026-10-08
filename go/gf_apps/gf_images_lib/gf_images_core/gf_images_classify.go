@@ -21,9 +21,9 @@ package gf_images_core
 
 import (
 	"fmt"
-	"time"
+	// "time" // used only by the disabled Py classify call
 	"context"
-	"strings"
+	// "strings" // used only by the disabled Py classify call
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -37,6 +37,11 @@ func RunClassify(pImagesIDsLst []GFimageID,
 	pRuntimeSys   *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 
 
+	// DISABLED - Go -> Py classify call commented out (Py code is kept in place).
+	//             until re-enabled no classes are produced.
+	classesLst := []string{}
+
+	/*
 	// PY
 	classesLst, gfErr := RunPyClassify(pImagesIDsLst,
 		pPyDirPathStr,
@@ -46,8 +51,7 @@ func RunClassify(pImagesIDsLst []GFimageID,
 	if gfErr != nil {
 		return nil, gfErr
 	}
-
-
+	*/
 
 	fmt.Println(classesLst)
 
@@ -57,6 +61,9 @@ func RunClassify(pImagesIDsLst []GFimageID,
 	return classesLst, nil
 }
 
+// DISABLED - Py classify call commented out (Py code is kept in place).
+
+/*
 //---------------------------------------------------
 // PY
 
@@ -127,3 +134,4 @@ func RunPyClassify(pImagesIDsLst []GFimageID,
 }
 
 //-------------------------------------------------
+*/

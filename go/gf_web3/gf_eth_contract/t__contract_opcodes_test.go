@@ -56,19 +56,4 @@ func Test__contract_opcodes(pTest *testing.T) {
 	spew.Dump(gf_tx_trace)
 
 	//--------------------
-	// PLOT
-
-	plugins_info := &GF_py_plugins{
-		Base_dir_path_str: "./../../py/plugins",
-	}
-
-	_, gf_err = py__run_plugin__plot_tx_trace(tx_id_hex_str,
-		gf_tx_trace,
-		plugins_info,
-		runtime.Runtime_sys)
-	if gf_err != nil {
-		pTest.FailNow()
-	}
-
-	//--------------------
 }

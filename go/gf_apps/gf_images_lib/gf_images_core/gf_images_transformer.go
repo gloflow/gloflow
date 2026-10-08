@@ -102,7 +102,8 @@ func TransformImage(pImageIDstr GFimageID,
 		return nil, nil, gfErr
 	}
 
-	//--------------------------
+	// DISABLED - Go -> Py plugin call commented out (Py code is kept in place).
+	/*//--------------------------
 	// PY_PLUGINS
 	// runs the Py VM in a new process, spawned via a new go-routine
 	
@@ -116,6 +117,7 @@ func TransformImage(pImageIDstr GFimageID,
 		pPluginsMetrics,
 		pCtx,
 		pRuntimeSys)
+	*/
 
 	//--------------------------
 

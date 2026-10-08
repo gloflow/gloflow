@@ -364,7 +364,6 @@ func Get_block__from_worker_inspector(p_block_uint uint64,
 func Get__pipeline(p_block_num_uint uint64,
 	pEthRPCclient *ethclient.Client,
 	p_ctx         context.Context,
-	p_py_plugins  *gf_eth_core.GF_py_plugins,
 	pRuntimeSys *gf_core.RuntimeSys) (*GF_eth__block__int, *gf_core.GFerror) {
 
 	//------------------
@@ -469,7 +468,6 @@ func Get__pipeline(p_block_num_uint uint64,
 	txs_lst, _ := Get__txs_pipeline(block,
 		pEthRPCclient,
 		span__get_txs.Context(),
-		p_py_plugins,
 		pRuntimeSys)
 
 	span__get_txs.Finish()
@@ -526,7 +524,6 @@ func Get__pipeline(p_block_num_uint uint64,
 func Get__txs_pipeline(p_block *types.Block,
 	pEthRPCclient *ethclient.Client,
 	p_ctx         context.Context,
-	p_py_plugins  *gf_eth_core.GF_py_plugins,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*gf_eth_tx.GF_eth__tx, []*gf_core.GFerror) {
 
 
@@ -558,7 +555,6 @@ func Get__txs_pipeline(p_block *types.Block,
 				p_block.NumberU64(), // p_block_num_uint,
 				p_ctx,
 				pEthRPCclient,
-				p_py_plugins,
 				pRuntimeSys)
 
 			if gfErr != nil {
