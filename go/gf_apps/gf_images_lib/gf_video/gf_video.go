@@ -21,8 +21,27 @@ package gf_video
 
 import (
 	"fmt"
+	"os/exec"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
+//---------------------------------------------------
+// ffmpeg is not bundled in the service containers, so it has to be checked for
+// before any CLI invocation that depends on it.
+
+func checkFFmpegInstalled(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	_, err := exec.LookPath("ffmpeg")
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("ffmpeg is not installed (or not in PATH), which is required for video operations",
+			"cli_tool_not_installed",
+			map[string]interface{}{"cli_tool": "ffmpeg"},
+			err, "gf_video", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
 
 //---------------------------------------------------
 
@@ -30,6 +49,11 @@ func GetVideoFrameFromURL(pURLstr string,
 	pImageLocalFilePathStr string,
 	pFrameIndexInt         int,
 	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	gfErr := checkFFmpegInstalled(pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
 
 	formatStr := "mjpeg"
 	cmdLst := []string{
@@ -44,7 +68,7 @@ func GetVideoFrameFromURL(pURLstr string,
 
 
 
-	_, _, gfErr := gf_core.CLIrunStandard(cmdLst,
+	_, _, gfErr = gf_core.CLIrunStandard(cmdLst,
 		nil,
 		pRuntimeSys)
 	if gfErr != nil {

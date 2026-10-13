@@ -29,14 +29,6 @@ RUN apt-get install -y \
     libglib2.0 \
     libcairo2-dev
 
-# LIBVIPS - image processing library
-#           dependency for the golang image library "bimg"
-RUN apt-get install -y libvips-dev
-
-#------------
-# FFMPEG - used for video operations, getting frames for videos, etc.
-RUN apt-get install -y ffmpeg
-
 #------------
 
 WORKDIR /home/gf

@@ -20,14 +20,6 @@ RUN apt-get install -y \
 # for container building then remove this.
 RUN apt-get install -y docker.io
 
-# libvips-dev - dependency for golang image processing package "bimg"
-#               used in gf_images app, for image transformations and pipelines.
-RUN apt-get install -y libvips-dev
-
-# ffmpeg - dependency for golang video operations, and needed in tests
-#          to be invoked via CLI
-RUN apt-get install -y ffmpeg
-
 # PY_DEPENDENCIES
 RUN pip3 install \
     delegator.py \

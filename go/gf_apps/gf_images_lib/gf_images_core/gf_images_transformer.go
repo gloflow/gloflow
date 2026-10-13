@@ -20,14 +20,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_core
 
 import (
-	"fmt"
 	"os"
 	"context"
 	"image"
 	"image/jpeg"
 	"image/png"
 	"github.com/nfnt/resize"
-	"github.com/h2non/bimg"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_plugins"
 )
@@ -91,17 +89,6 @@ func TransformImage(pImageIDstr GFimageID,
 	}
 
 
-	//--------------------------
-	// FINISH!! - this processing function uses "bimg", which uses
-	//            and underlying C lib "libvips"
-	gfErr = TransformProcessImageV2(pImageLocalFilePathStr,
-		pUserID,
-		pCtx,
-		pRuntimeSys)
-	if gfErr != nil {
-		return nil, nil, gfErr
-	}
-
 	// DISABLED - Go -> Py plugin call commented out (Py code is kept in place).
 	/*//--------------------------
 	// PY_PLUGINS
@@ -122,31 +109,6 @@ func TransformImage(pImageIDstr GFimageID,
 	//--------------------------
 
 	return gfImage, gfImageThumbs, nil
-}
-
-//---------------------------------------------------
-// V2
-
-func TransformProcessImageV2(pImageLocalFilePathStr string,
-	pUserID     gf_core.GF_ID,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-
-	buffer, err := bimg.Read(pImageLocalFilePathStr)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
-
-	newImage, err := bimg.NewImage(buffer).Convert(bimg.PNG)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
-
-	if bimg.NewImage(newImage).Type() == "png" {
-		fmt.Fprintln(os.Stderr, "The image was converted into png")
-	}
-
-	return nil
 }
 
 //---------------------------------------------------
