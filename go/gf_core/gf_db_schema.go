@@ -46,6 +46,7 @@ func DBsqlCreateErrorsTable(pDB *sql.DB) error {
 		descr_str            TEXT             NOT NULL DEFAULT '',
 		error                TEXT,
 		service_name_str     TEXT             NOT NULL DEFAULT '',
+		env                  TEXT             NOT NULL DEFAULT '',
 		subsystem_name_str   TEXT             NOT NULL DEFAULT '',
 		stack_trace_str      TEXT             NOT NULL DEFAULT '',
 		func_name_str        TEXT             NOT NULL DEFAULT '',
@@ -53,9 +54,13 @@ func DBsqlCreateErrorsTable(pDB *sql.DB) error {
 		line_num_int         INTEGER          NOT NULL DEFAULT 0
 	);
 
+	-- for tables created before the env column existed
+	ALTER TABLE gf_errors ADD COLUMN IF NOT EXISTS env TEXT NOT NULL DEFAULT '';
+
 	CREATE INDEX IF NOT EXISTS gf_errors_creation_time_idx ON gf_errors (creation_unix_time_f DESC);
 	CREATE INDEX IF NOT EXISTS gf_errors_type_idx          ON gf_errors (type_str);
 	CREATE INDEX IF NOT EXISTS gf_errors_subsystem_idx     ON gf_errors (subsystem_name_str);
+	CREATE INDEX IF NOT EXISTS gf_errors_env_idx           ON gf_errors (env);
 	`
 
 	_, err := pDB.Exec(sqlStr)

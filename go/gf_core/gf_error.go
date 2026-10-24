@@ -51,6 +51,7 @@ type GFerror struct {
 	Descr_str            string                 `bson:"descr_str"`
 	Error                error                  `bson:"error"`
 	ServiceNameStr       string                 `bson:"service_name_str"`
+	EnvStr               string                 `bson:"env"`                  // environment the error came from (dev, prod, etc.)
 	Subsystem_name_str   string                 `bson:"subsystem_name_str"`   // major portion of functionality, a particular package, or a logical group of functions
 	Stack_trace_str      string                 `bson:"stack_trace_str"`
 	Function_name_str    string                 `bson:"func_name_str"`
@@ -243,6 +244,7 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 		Descr_str:            errorInternalDescrStr,
 		Error:                pError,
 		ServiceNameStr:       pRuntimeSys.ServiceNameStr,
+		EnvStr:               pRuntimeSys.EnvStr,
 		Subsystem_name_str:   pSubsystemNameStr,
 		Stack_trace_str:      stackTraceStr,
 		Function_name_str:    functionNameStr,
@@ -266,6 +268,7 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 	fmt.Printf("id             - %s\n", yellow(gfErr.Id_str))
 	fmt.Printf("type           - %s\n", yellow(gfErr.Type_str))
 	fmt.Printf("service_name   - %s\n", yellow(gfErr.ServiceNameStr))
+	fmt.Printf("env            - %s\n", yellow(gfErr.EnvStr))
 	fmt.Printf("subsystem_name - %s\n", yellow(gfErr.Subsystem_name_str))
 	fmt.Printf("function_name  - %s\n", yellow(gfErr.Function_name_str))
 	fmt.Printf("data           - %s\n", yellow(gfErr.Data_map))
