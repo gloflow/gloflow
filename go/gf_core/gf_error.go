@@ -30,7 +30,6 @@ import (
 	"time"
 	"strings"
 	"errors"
-	"context"
 	"runtime"
 	"runtime/debug"
 	"github.com/fatih/color"
@@ -283,15 +282,13 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 	}
 
 	//--------------------
-	// DB_PERSIST
-	if pRuntimeSys.ErrorsSendToMongodbBool {
+	// DB_PERSIST - gf_errors SQL table
+	if pRuntimeSys.ErrorsSendToDBbool {
 
-		ctx := context.Background()
-		errsDBcollNameStr := fmt.Sprintf("%s_errors", namesPrefixStr)
-
-		_, err := pRuntimeSys.Mongo_db.Collection(errsDBcollNameStr).InsertOne(ctx, gfErr)
+		err := DBsqlPutError(&gfErr, pRuntimeSys)
 		if err != nil {
-
+			// IMPORTANT!! - dont use ErrorCreate() here, it'd recurse infinitely.
+			fmt.Printf("failed to persist gf_error to SQL gf_errors table - %s\n", err.Error())
 		}
 	}
 

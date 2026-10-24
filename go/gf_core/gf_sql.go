@@ -229,6 +229,20 @@ func DBsqlConnect(pDBnameStr string,
 	//   * This setting ensures our connections are refreshed well before RDS times them out
 	db.SetConnMaxLifetime(5 * time.Minute)
 
+	//-----------------------
+	// SCHEMA - gf_errors table
+	err = DBsqlCreateErrorsTable(db)
+	if err != nil {
+		gfErr := ErrorCreate("failed to create gf_errors SQL table",
+			"sql_query_execute",
+			map[string]interface{}{
+				"db_host_str": pDBhostStr,
+				"db_name_str": pDBnameStr,
+			},
+			err, "gf_core", pRuntimeSys)
+		return nil, "", gfErr
+	}
+
 	fmt.Println("connected to SQL DB...")
 
 	return db, dbDSNuriStr, nil

@@ -87,7 +87,7 @@ func RuntimeGet(pConfigPathStr string,
 
 		sentryDSNstr := config.SentryDSNstr
 		runtimeSys.SentryDSNstr = sentryDSNstr
-		runtimeSys.ErrorsSendToMongodbBool = true // enable it for error reporting
+		runtimeSys.ErrorsSendToDBbool = true // enable it for error reporting
 
 		sentrySampleRateDefaultF := 1.0
 		sentryTracingRateForHandlersMap := map[string]float64{

@@ -58,7 +58,7 @@ type RuntimeSys struct {
 	Mongo_coll *mongo.Collection // main mongodb collection to use when none is specified
 
 	// ERRORS
-	ErrorsSendToMongodbBool bool // if errors should be persisted to Mongodb
+	ErrorsSendToDBbool      bool // if errors should be persisted to the gf_errors SQL table
 	ErrorsSendToSentryBool  bool // if errors should be sent to Sentry service
 
 	NamesPrefixStr string
