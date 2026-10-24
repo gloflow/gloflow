@@ -30,58 +30,13 @@ import (
 )
 
 //---------------------------------------------------
-// HYBRID READ - reads from both SQL and Mongo, deduplicates results
-// Eventually everything will be migrated to SQL
+// GET_ALL - reads from SQL only
 
 func dbGetAllBookmarks(pUserIDstr gf_core.GF_ID,
 	pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFbookmark, *gf_core.GFerror) {
 
-	// Read from SQL
-	sqlBookmarks, gfErr := dbSQLgetAllBookmarks(pUserIDstr, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		// If SQL fails, fall back to Mongo only
-		pRuntimeSys.LogFun("WARN", "failed to read bookmarks from SQL, using Mongo only")
-		return dbMongoGetAllBookmarks(pUserIDstr, pCtx, pRuntimeSys)
-	}
-
-	// Read from Mongo
-	mongoBookmarks, gfErr := dbMongoGetAllBookmarks(pUserIDstr, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		// If Mongo fails, just return SQL results
-		pRuntimeSys.LogFun("WARN", "failed to read bookmarks from Mongo, using SQL only")
-		return sqlBookmarks, nil
-	}
-
-	// Deduplicate by ID (SQL takes precedence)
-	bookmarksMap := make(map[gf_core.GF_ID]*GFbookmark)
-
-	// Add Mongo bookmarks first
-	for _, bookmark := range mongoBookmarks {
-		bookmarksMap[bookmark.Id_str] = bookmark
-	}
-
-	// Add/override with SQL bookmarks (SQL is source of truth for new data)
-	for _, bookmark := range sqlBookmarks {
-		bookmarksMap[bookmark.Id_str] = bookmark
-	}
-
-	// Convert map back to slice, sorted by creation time (descending)
-	var bookmarksLst []*GFbookmark
-	for _, bookmark := range bookmarksMap {
-		bookmarksLst = append(bookmarksLst, bookmark)
-	}
-
-	// Sort by creation time descending
-	for i := 0; i < len(bookmarksLst)-1; i++ {
-		for j := i + 1; j < len(bookmarksLst); j++ {
-			if bookmarksLst[i].Creation_unix_time_f < bookmarksLst[j].Creation_unix_time_f {
-				bookmarksLst[i], bookmarksLst[j] = bookmarksLst[j], bookmarksLst[i]
-			}
-		}
-	}
-
-	return bookmarksLst, nil
+	return dbSQLgetAllBookmarks(pUserIDstr, pCtx, pRuntimeSys)
 }
 
 //---------------------------------------------------
