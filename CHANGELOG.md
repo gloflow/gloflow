@@ -6,6 +6,11 @@ and the project uses [Semantic Versioning](https://semver.org/) (while below 1.0
 Newest entry first; its version must equal the contents of `VERSION`. See [AGENTS.md](AGENTS.md).
 The Go code reports `VERSION` (embedded by the root `gloflow` package, `gloflow.go`) in `gf_core.GetSysReleseInfo`.
 
+## [0.13.1] - 2026-10-31
+
+### Changed
+- `gf_images_jobs_py` (Python extension) upgraded from pyo3/numpy 0.15 to 0.23, so it builds against Python 3.12 and 3.13 (pyo3 0.15 failed with `PyUnicode_READY` not found). The `view_numpy_arr_*` functions now take their arrays read-only; the Python API is otherwise unchanged.
+
 ## [0.13.0] - 2026-10-31
 
 ### Changed

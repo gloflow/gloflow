@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 use pyo3::wrap_pyfunction;
 use pyo3::prelude::*;
-use numpy::{PyArray2, PyArray3, PyArray4};
+use numpy::{PyReadonlyArray2, PyReadonlyArray3, PyReadonlyArray4};
 
 // use numpy::{IntoPyArray, PyArrayDyn};
 // use std::collections::HashMap;
@@ -38,14 +38,14 @@ mod gf_numpy_view;
 // PY_C_API
 //-------------------------------------------------
 #[pymodule]
-fn gf_images_jobs_py(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_wrapped(wrap_pyfunction!(apply_transforms))?;
-    m.add_wrapped(wrap_pyfunction!(create_collage))?;
-    m.add_wrapped(wrap_pyfunction!(view_numpy_arr_2D))?;
-    m.add_wrapped(wrap_pyfunction!(view_numpy_arr_3D))?;
-    m.add_wrapped(wrap_pyfunction!(view_numpy_arr_4D))?;
-    m.add_wrapped(wrap_pyfunction!(generate_ml_dataset))?;
-    // m.add_wrapped(wrap_pyfunction!(view_ml_dataset))?;
+fn gf_images_jobs_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(apply_transforms, m)?)?;
+    m.add_function(wrap_pyfunction!(create_collage, m)?)?;
+    m.add_function(wrap_pyfunction!(view_numpy_arr_2D, m)?)?;
+    m.add_function(wrap_pyfunction!(view_numpy_arr_3D, m)?)?;
+    m.add_function(wrap_pyfunction!(view_numpy_arr_4D, m)?)?;
+    m.add_function(wrap_pyfunction!(generate_ml_dataset, m)?)?;
+    // m.add_function(wrap_pyfunction!(view_ml_dataset, m)?)?;
 
     Ok(())
 }
@@ -89,7 +89,7 @@ fn create_collage(// p_py: Python,
 //-------------------------------------------------
 // VIEW_NUMPY_ARR_2D
 #[pyfunction]
-fn view_numpy_arr_2D(p_numpy_2d_lst: &PyArray2<f64>,
+fn view_numpy_arr_2D(p_numpy_2d_lst: PyReadonlyArray2<f64>,
     p_img_target_file_path_str: String) -> PyResult<()> {
 
     gf_numpy_view::arr_2D(p_numpy_2d_lst,
@@ -101,7 +101,7 @@ fn view_numpy_arr_2D(p_numpy_2d_lst: &PyArray2<f64>,
 //-------------------------------------------------
 // VIEW_NUMPY_ARR_3D
 #[pyfunction]
-fn view_numpy_arr_3D(p_numpy_3d_lst: &PyArray3<f64>,
+fn view_numpy_arr_3D(p_numpy_3d_lst: PyReadonlyArray3<f64>,
     p_img_target_file_path_str: String) -> PyResult<()> {
 
     gf_numpy_view::arr_3D(p_numpy_3d_lst,
@@ -113,7 +113,7 @@ fn view_numpy_arr_3D(p_numpy_3d_lst: &PyArray3<f64>,
 //-------------------------------------------------
 // VIEW_NUMPY_ARR_4D
 #[pyfunction]
-fn view_numpy_arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
+fn view_numpy_arr_4D(p_numpy_4d_lst: PyReadonlyArray4<f64>,
     p_img_target_file_path_str: String,
     p_width_int:       u64,
     p_height_int:      u64,

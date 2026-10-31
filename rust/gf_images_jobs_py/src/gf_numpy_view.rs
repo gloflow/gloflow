@@ -21,27 +21,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 use std::collections::HashMap;
 use image;
-use numpy::{PyArray2, PyArray3, PyArray4};
+use numpy::{PyReadonlyArray2, PyReadonlyArray3, PyReadonlyArray4, PyUntypedArrayMethods};
 
 use gf_core;
 // use gf_images_jobs;
 
 //-------------------------------------------------
 // VIEW_NUMPY_ARR_2D
-pub fn arr_2D(p_numpy_2d_lst: &PyArray2<f64>,
+pub fn arr_2D(p_numpy_2d_lst: PyReadonlyArray2<f64>,
     p_img_target_file_path_str: String) {
 
-    let numpy_shape_lst = p_numpy_2d_lst.shape();
+    let numpy_shape_lst = p_numpy_2d_lst.shape().to_vec();
     let mut img_buff = image::ImageBuffer::new(numpy_shape_lst[0] as u32, numpy_shape_lst[1] as u32);
 
     
     unsafe {
 
-        // unsafe - p_numpy_2d_lst.as_array_mut() is a call to an unsafe function,
+        // unsafe - p_numpy_2d_lst.as_array() is a call to an unsafe function,
         //          so wrapping this in an usafe block.
-        let mut numpy_2d_mut = p_numpy_2d_lst.as_array_mut();
+        let numpy_2d = p_numpy_2d_lst.as_array();
 
-        for ((x, y), val_f) in numpy_2d_mut.indexed_iter_mut() {
+        for ((x, y), val_f) in numpy_2d.indexed_iter() {
             let pixel = img_buff.get_pixel_mut(x as u32, y as u32);
 
             *pixel = image::Rgba([
@@ -56,19 +56,19 @@ pub fn arr_2D(p_numpy_2d_lst: &PyArray2<f64>,
 
 //-------------------------------------------------
 // VIEW_NUMPY_ARR_3D
-pub fn arr_3D(p_numpy_3d_lst: &PyArray3<f64>,
+pub fn arr_3D(p_numpy_3d_lst: PyReadonlyArray3<f64>,
     p_img_target_file_path_str: String) {
 
-    let numpy_shape_lst = p_numpy_3d_lst.shape();
+    let numpy_shape_lst = p_numpy_3d_lst.shape().to_vec();
     assert!(numpy_shape_lst[2] == 3); // on 3rd axis the shape is always 3 (RGB)
 
     let mut img_buff = image::ImageBuffer::new(numpy_shape_lst[0] as u32, numpy_shape_lst[1] as u32);
     
     unsafe {
         
-        // unsafe - p_numpy_3d_lst.as_array_mut() is a call to an unsafe function,
+        // unsafe - p_numpy_3d_lst.as_array() is a call to an unsafe function,
         //          so wrapping this in an usafe block.
-        let arr = p_numpy_3d_lst.as_array_mut();
+        let arr = p_numpy_3d_lst.as_array();
 
         for y in 0..numpy_shape_lst[0] {
 
@@ -96,7 +96,7 @@ pub fn arr_3D(p_numpy_3d_lst: &PyArray3<f64>,
 
 //-------------------------------------------------
 // VIEW_NUMPY_ARR_4D
-pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
+pub fn arr_4D(p_numpy_4d_lst: PyReadonlyArray4<f64>,
     p_img_target_file_path_str: String,
     p_width_int:       u64,
     p_height_int:      u64,
@@ -104,7 +104,7 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
     p_columns_num_int: u32) {
 
 
-    let numpy_shape_lst = p_numpy_4d_lst.shape();
+    let numpy_shape_lst = p_numpy_4d_lst.shape().to_vec();
     assert!(numpy_shape_lst[3] == 3); // on 3rd axis the shape is always 3 (RGB)
 
     // COLLAGE
@@ -122,9 +122,9 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
 
     unsafe {
 
-        // unsafe - p_numpy_4d_lst.as_array_mut() is a call to an unsafe function,
+        // unsafe - p_numpy_4d_lst.as_array() is a call to an unsafe function,
         //          so wrapping this in an usafe block.
-        let numpy_4d_arr = p_numpy_4d_lst.as_array_mut();
+        let numpy_4d_arr = p_numpy_4d_lst.as_array();
 
         let mut img_index_to_collage_coord_map = HashMap::new();
 
