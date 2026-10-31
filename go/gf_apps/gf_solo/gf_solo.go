@@ -32,7 +32,7 @@ func main() {
 
 	}
 
-	appHooks := &gf_solo_service.pAppHooks{
+	appHooks := &gf_solo_service.GFappHooks{
 
 	}
 
