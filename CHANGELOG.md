@@ -6,6 +6,11 @@ and the project uses [Semantic Versioning](https://semver.org/) (while below 1.0
 Newest entry first; its version must equal the contents of `VERSION`. See [AGENTS.md](AGENTS.md).
 The Go code reports `VERSION` (embedded by the root `gloflow` package, `gloflow.go`) in `gf_core.GetSysReleseInfo`.
 
+## [0.13.0] - 2026-10-31
+
+### Changed
+- `gf_ml_shapes` now draws with `tiny-skia` (pure Rust 2D rasterizer) instead of its own scanline fill. Shapes have anti-aliased edges (`ANTI_ALIAS` in `canvas.rs`; `false` gives hard edges) and are centred on a continuous point, so images differ slightly from before, even with the same seed. Regenerate the train and eval sets together.
+
 ## [0.12.0] - 2026-10-31
 
 ### Added
