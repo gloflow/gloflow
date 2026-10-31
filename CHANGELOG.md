@@ -6,6 +6,11 @@ and the project uses [Semantic Versioning](https://semver.org/) (while below 1.0
 Newest entry first; its version must equal the contents of `VERSION`. See [AGENTS.md](AGENTS.md).
 The Go code reports `VERSION` (embedded by the root `gloflow` package, `gloflow.go`) in `gf_core.GetSysReleseInfo`.
 
+## [0.12.0] - 2026-10-31
+
+### Added
+- `run_build_rust.sh --only <crate>`: builds and copies just one crate (`gf_images_jobs`, `gf_images_jobs_py` or `gf_ml_shapes`).
+
 ## [0.11.0] - 2026-11-03
 
 First entry of this changelog. It summarises all the work since 0.10.0 ("nation_genesis", 2022-11), which was only

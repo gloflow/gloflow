@@ -27,10 +27,11 @@ and copy files around; the script does the build and puts the outputs where the 
 
 - Builds `gf_images_jobs`, `gf_images_jobs_py` and `gf_ml_shapes` (`gf_core` is built as a dependency of the first two). Crates are standalone, there is no Cargo workspace.
 - Output goes to `rust/build/`: `libgf_images_jobs.a` / `.so` (used by Go) and `gf_images_jobs_py.so` (Python extension, no `lib` prefix), `gf_ml_shapes` (CLI binary).
-- Options: `--static` (MUSL static build), `--debug`, `--clean`, `--verbose`.
+- Options: `--static` (MUSL static build), `--debug`, `--clean`, `--verbose`, `--only <crate>` (build and copy just that crate, e.g. `--only gf_ml_shapes`).
 - Needs `cargo` (nightly toolchain, see `Dockerfile__gf_builder_rust__ubuntu`). `--static` also needs the `x86_64-unknown-linux-musl` target and `musl-tools`.
-- `gf_ml_shapes`: synthetic shapes image dataset generator for ML training (port of `baby_thinker/data_conv_std/generate_{train,eval}.py`). Pure Rust, only depends on `png`.
-  Run `rust/build/gf_ml_shapes <train|eval> [--out DIR] [--images-per-class N] [--seed N]` from `baby_thinker/` (default `--out data_conv_std`).
+- `gf_ml_shapes`: synthetic shapes image dataset generator for ML training. Pure Rust, only depends on `png`.
+  Run `rust/build/gf_ml_shapes <train|eval> [--out DIR] [--images-per-class N] [--seed N]` (default `--out data_conv_std`).
+  It can be built on its own with `./run_build_rust.sh --only gf_ml_shapes` (e.g. in a container that only has this crate's sources).
   Tests: `cd rust/gf_ml_shapes && cargo test`.
 - If you add a crate or change an output lib, update `run_build_rust.sh`.
 - `rust/deprecated/` is not built.
