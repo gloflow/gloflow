@@ -10,6 +10,7 @@
 # Output (rust/build/):
 #   libgf_images_jobs.a, libgf_images_jobs.so  - for Go (static/dynamic linking)
 #   gf_images_jobs_py.so                       - Python extension (no "lib" prefix)
+#   gf_ml_shapes                               - CLI binary, synthetic shapes dataset generator
 #
 # gf_core is built as a dependency of the other crates.
 
@@ -26,7 +27,7 @@ for arg in "$@"; do
         --debug)   DEBUG=1 ;;
         --clean)   CLEAN=1 ;;
         --verbose) VERBOSE=1 ;;
-        -h|--help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *) echo "unknown option: $arg" >&2; exit 1 ;;
     esac
 done
@@ -67,16 +68,19 @@ build_crate() {
 
 build_crate gf_images_jobs
 build_crate gf_images_jobs_py
+build_crate gf_ml_shapes
 
 echo ">>> COPY libs into $BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
 JOBS_OUT="$RUST_DIR/gf_images_jobs/target/$TARGET_SUBDIR"
 PY_OUT="$RUST_DIR/gf_images_jobs_py/target/$TARGET_SUBDIR"
+SHAPES_OUT="$RUST_DIR/gf_ml_shapes/target/$TARGET_SUBDIR"
 
 cp -v "$JOBS_OUT/libgf_images_jobs.a" "$BUILD_DIR/"
 [ -f "$JOBS_OUT/libgf_images_jobs.so" ] && cp -v "$JOBS_OUT/libgf_images_jobs.so" "$BUILD_DIR/"
 # Python requires extension libs without the "lib" prefix
 cp -v "$PY_OUT/libgf_images_jobs_py.so" "$BUILD_DIR/gf_images_jobs_py.so"
+cp -v "$SHAPES_OUT/gf_ml_shapes" "$BUILD_DIR/"
 
 echo ">>> DONE"

@@ -1,0 +1,18 @@
+[package]
+name    = "gf_ml_shapes"
+version = "0.1.0"
+authors = ["Ivan Trajkovic <ivan.ebiz@gmail.com>"]
+edition = "2021"
+
+# Synthetic "shapes" image dataset generator (port of baby_thinker/data_conv_std/generate_{train,eval}.py).
+# Standalone crate (no Cargo workspace), builds a lib and the "gf_ml_shapes" binary.
+
+[lib]
+name = "gf_ml_shapes"
+
+[[bin]]
+name = "gf_ml_shapes"
+path = "src/main.rs"
+
+[dependencies]
+png = "0.18"
