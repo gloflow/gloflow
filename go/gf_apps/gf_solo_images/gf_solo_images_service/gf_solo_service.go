@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_solo_service
+package gf_solo_images_service
 
 import (
 	"fmt"
@@ -30,17 +30,26 @@ import (
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_identity"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
-	// "github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib"
 	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
 // RUN
+/*
+runs the gf_images solo server. its a standalone server, independent of gf_solo.
+it initializes:
+- gf_identity (JSON auth handlers, key server, no login UI)
+- gf_images (HTTP handlers, jobs manager, flows, storage)
+- prometheus metrics endpoint
+- HTTP handlers supplied by external hooks
+and then blocks serving HTTP.
+*/
 
-func Run(pConfig *GFconfig,
+func Run(pConfig *gf_core.GFconfig,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	yellow := color.New(color.BgYellow).Add(color.FgBlack).SprintFunc()
@@ -48,49 +57,85 @@ func Run(pConfig *GFconfig,
 
 	pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("%s%s", yellow("GF_SOLO_IMAGES"), green("===============")), nil)
 
+	// flush buffered Sentry events on process exit
+	defer sentry.Flush(2 * time.Second)
+
 	// EVENTS
 	enableEventsAppBool := true
 	pRuntimeSys.EnableEventsAppBool = enableEventsAppBool
 
 	//-------------
 	// CONFIG
-	portMetricsInt := 9110
-
 	portInt, err := strconv.Atoi(pConfig.PortStr)
 	if err != nil {
 		panic(err)
 	}
 
-	pRuntimeSys.LogNewFun("DEBUG", "gf_solo service config", nil)
+	portMetricsInt, err := strconv.Atoi(pConfig.PortMetricsStr)
+	if err != nil {
+		pRuntimeSys.LogNewFun("WARN", "invalid or missing port_metrics, using default 9110", nil)
+		portMetricsInt = 9110
+	}
+
+	pRuntimeSys.LogNewFun("DEBUG", "gf_solo_images service config", nil)
 	if gf_core.LogsIsDebugEnabled() {
 		spew.Dump(pConfig)
 	}
 
-
-	authLoginURLstr := "/v1/identity/login_ui"
+	// IMPORTANT!! - pure API server, there is no login page. empty URL means that auth failures
+	//               are returned as errors instead of being redirected.
+	authLoginURLstr := ""
 
 	//-------------
-	user, err := user.Current()
+	currentUser, err := user.Current()
 	if err != nil {
-        panic(err)
-    }
-	fmt.Printf("(%s), dir (%s)\n", user.Username, user.HomeDir)
-
-	// VALIDATOR
-	validator := gf_core.ValidateInit()
-	pRuntimeSys.Validator = validator
+		panic(err)
+	}
+	fmt.Printf("(%s), dir (%s)\n", currentUser.Username, currentUser.HomeDir)
 
 	// HTTP_MUX
-	gfSoloHTTPmux := http.NewServeMux()
+	httpMux := http.NewServeMux()
 
 	// METRICS
-	// metricsRPCglobal := gf_rpc_lib.MetricsCreateGlobal()
+	// start prometheus metrics endpoint, and get core_metrics
+	coreMetrics := gf_core.MetricsInit("/metrics", portMetricsInt)
+	pRuntimeSys.Metrics = coreMetrics
+
+	metricsRPCglobal := gf_rpc_lib.MetricsCreateGlobal()
 
 	//-------------
 	// GF_IDENTITY
-	auth0initBool := false
-	keyServer, gfErr := gf_identity_core.KSinit(auth0initBool, pRuntimeSys)
+	// auth is needed by the images upload/share/flows handlers.
+
+	identityServiceInfo := &gf_identity_core.GFserviceInfo{
+		NameStr: "gf_identity",
+
+		// DOMAINS
+		DomainBaseStr:           pConfig.DomainBaseStr,
+		DomainForAuthCookiesStr: &pConfig.DomainForAuthCookiesStr,
+
+		AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
+		AuthLoginURLstr:                authLoginURLstr,             // on email confirm redirect user to this
+		AuthLoginSuccessRedirectURLstr: "",
+
+		// EVENTS
+		EnableEventsAppBool: enableEventsAppBool,
+
+		// no HTML rendering
+		DisableLoginUIbool: true,
+
+		EnableUserCredsInSecretsStoreBool:     true,
+		EnableEmailBool:                       true,
+		EnableEmailRequireConfirmForLoginBool: true,
+		EnableMFArequireConfirmForLoginBool:   false,
+	}
+	keyServer, gfErr := gf_identity.InitService(nil, // no templates
+		httpMux,
+		metricsRPCglobal,
+		identityServiceInfo,
+		pRuntimeSys)
 	if gfErr != nil {
+		pRuntimeSys.LogNewFun("ERROR", "failed to init gf_identity service", map[string]interface{}{"err": gfErr.Error.Error()})
 		return
 	}
 
@@ -103,13 +148,16 @@ func Run(pConfig *GFconfig,
 		pConfig.IPFSnodeHostStr,
 		pRuntimeSys)
 	if gfErr != nil {
+		pRuntimeSys.LogNewFun("ERROR", "failed to load gf_images config", map[string]interface{}{"err": gfErr.Error.Error()})
 		return
 	}
 
-	gfImagesServiceInfo := &gf_images_core.GFserviceInfo{
+	imagesServiceInfo := &gf_images_core.GFserviceInfo{
+		Port_str:      pConfig.PortStr,
 		DomainBaseStr: pConfig.DomainBaseStr,
-		Mongodb_host_str:                     pConfig.MongoHostStr,
-		Mongodb_db_name_str:                  pConfig.MongoDBnameStr,
+
+		Mongodb_host_str:    pConfig.MongoHostStr,
+		Mongodb_db_name_str: pConfig.MongoDBnameStr,
 
 		ImagesStoreLocalDirPathStr:           imagesConfig.ImagesStoreLocalDirPathStr,
 		ImagesThumbnailsStoreLocalDirPathStr: imagesConfig.ImagesThumbnailsStoreLocalDirPathStr,
@@ -117,16 +165,17 @@ func Run(pConfig *GFconfig,
 		MediaDomainStr:                       imagesConfig.MediaDomainStr,
 		ImagesMainS3bucketNameStr:            imagesConfig.MainS3bucketNameStr,
 
+		ConfigFilePathStr: pConfig.ImagesConfigFilePathStr,
+
 		EmailSharingSenderAddressStr: imagesConfig.EmailSharingSenderAddressStr,
 
 		//-------------------------
-		// AUTH_SUBSYSTEM_TYPE
+		// AUTH
 		AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
 
-		// AUTH
 		// on user trying to access authed endpoint while not logged in, redirect to this
-		// AuthLoginURLstr: authLoginURLstr,
-		KeyServer: keyServer,
+		AuthLoginURLstr: authLoginURLstr,
+		KeyServer:       keyServer,
 
 		//-------------------------
 
@@ -140,22 +189,11 @@ func Run(pConfig *GFconfig,
 		EnableEventsAppBool: enableEventsAppBool,
 	}
 
-	imagesJobsMngrCh := gf_images_lib.InitSoloService(gfSoloHTTPmux,
-		gfImagesServiceInfo,
+	// all images HTTP handlers, jobs manager, flows, gifs, storage
+	_ = gf_images_lib.InitSoloService(httpMux,
+		imagesServiceInfo,
 		imagesConfig,
 		pRuntimeSys)
-
-
-	fmt.Println(imagesJobsMngrCh)
-
-	//-------------
-	// GF_ML
-	// gf_ml_lib.InitService(gfSoloHTTPmux, pRuntimeSys)
-
-	//-------------
-	// METRICS - start prometheus metrics endpoint, and get core_metrics
-	coreMetrics := gf_core.MetricsInit("/metrics", portMetricsInt)
-	pRuntimeSys.Metrics = coreMetrics
 
 	//-------------
 	// HOOKS - register external http handlers
@@ -164,8 +202,10 @@ func Run(pConfig *GFconfig,
 
 		//-------------
 		// USER_RPC_HANDLERS
-		handlersLst, gfErr := pRuntimeSys.ExternalHooks.RPChandlersGetCallback(pRuntimeSys)
+		handlersLst, handlersV2lst, gfErr := pRuntimeSys.ExternalHooks.RPChandlersGetCallback(httpMux,
+			pRuntimeSys)
 		if gfErr != nil {
+			pRuntimeSys.LogNewFun("ERROR", "failed to get RPC handlers from external hooks", map[string]interface{}{"err": gfErr.Error.Error()})
 			return
 		}
 
@@ -174,18 +214,26 @@ func Run(pConfig *GFconfig,
 		authSubsystemTypeStr := pConfig.AuthSubsystemTypeStr
 		metricsGroupNameStr  := "gf_solo_images__hooks_rpc_handlers"
 
-		gf_rpc_lib.CreateHandlersHTTP(metricsGroupNameStr,
-			handlersLst,
-			gfSoloHTTPmux,
+		gf_rpc_lib.CreateHandlersHTTP(handlersLst,
+			httpMux,
 			authSubsystemTypeStr,
 			authLoginURLstr,
 			keyServer,
+			metricsGroupNameStr,
+			pRuntimeSys)
+
+		gf_rpc_lib.CreateHandlersV2http(handlersV2lst,
+			httpMux,
+			authSubsystemTypeStr,
+			authLoginURLstr,
+			keyServer,
+			metricsGroupNameStr,
 			pRuntimeSys)
 	}
 
 	//-------------
 	// SERVER_INIT - blocking
-	gf_rpc_lib.ServerInitWithMux("gf_solo_images", portInt, gfSoloHTTPmux)
+	gf_rpc_lib.ServerInitWithMux("gf_solo_images", portInt, httpMux)
 
 	//-------------
 }
@@ -195,68 +243,77 @@ func Run(pConfig *GFconfig,
 func RuntimeGet(pConfigPathStr string,
 	pExternalHooks *gf_core.ExternalHooks,
 	pLogFun        func(string, string),
-	pLogNewFun     gf_core.GFlogFun) (*gf_core.RuntimeSys, *GFconfig, error) {
+	pLogNewFun     gf_core.GFlogFun) (*gf_core.RuntimeSys, *gf_core.GFconfig, error) {
+
+	//--------------------
+	// RUNTIME_SYS
+	runtimeSys := &gf_core.RuntimeSys{
+		AppNameStr:     "gf_solo_images",
+		ServiceNameStr: "gf_solo_images",
+		LogFun:         pLogFun,
+		LogNewFun:      pLogNewFun,
+
+		// VALIDATOR
+		Validator: gf_core.ValidateInit(),
+
+		// EXTERNAL_HOOKS
+		ExternalHooks: pExternalHooks,
+	}
 
 	//--------------------
 	// CONFIG
-	configDirPathStr := path.Dir(pConfigPathStr)  // "./../config/"
-	configNameStr    := path.Base(pConfigPathStr) // "gf_solo"
+	configDirPathStr := path.Dir(pConfigPathStr)  // "./config/"
+	configNameStr    := path.Base(pConfigPathStr) // "gf_solo_images"
 
-	config, err := ConfigInit(configDirPathStr, configNameStr)
+	config, err := ConfigInit(configDirPathStr, configNameStr, runtimeSys)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("failed to load config")
 		return nil, nil, err
 	}
 
+	// IMPORTANT!! - gf_identity session validation reads runtimeSys.Config, it has to be set.
+	runtimeSys.Config = config
+	runtimeSys.EnvStr = config.EnvStr
+
+	// GF_IDENTITY
+	runtimeSys.IdentitySubsystemTypeStr = config.AuthSubsystemTypeStr
+
 	//--------------------
 	// SENTRY - ERROR_REPORTING
 	if config.SentryDSNstr != "" {
 
-		sentryEndpointStr := config.SentryDSNstr
-		sentrySampleRateDefaultF := 1.0
-		sentryTracingRateForHandlersMap := map[string]float64{
+		fmt.Println("Initializing Sentry error reporting...")
 
-		}
-		err := gf_core.ErrorInitSentry(sentryEndpointStr,
+		runtimeSys.SentryDSNstr           = config.SentryDSNstr
+		runtimeSys.ErrorsSendToDBbool     = true
+		runtimeSys.ErrorsSendToSentryBool = true
+
+		sentrySampleRateDefaultF        := 1.0
+		sentryTracingRateForHandlersMap := map[string]float64{}
+		err := gf_core.ErrorInitSentry(config.SentryDSNstr,
 			sentryTracingRateForHandlersMap,
 			sentrySampleRateDefaultF)
 		if err != nil {
-			panic(err)
+			return nil, nil, err
 		}
-
-		defer sentry.Flush(2 * time.Second)
-	}
-
-	//--------------------
-	// RUNTIME_SYS
-	runtimeSys := &gf_core.RuntimeSys{
-		ServiceNameStr: "gf_solo",
-		EnvStr:         config.EnvStr,
-		LogFun:         pLogFun,
-		LogNewFun:      pLogNewFun,
-
-		// SENTRY - enable it for error reporting
-		ErrorsSendToSentryBool: true,
-
-		// EXTERNAL_HOOKS
-		ExternalHooks: pExternalHooks,
-
-		// SENTRY_DSN
-		SentryDSNstr: config.SentryDSNstr,
 	}
 
 	//--------------------
 	// SQL
 
-	sqlDB, _, gfErr := gf_core.DBsqlConnect(config.SQLdbNameStr,
+	sqlDB, sqlDSNstr, gfErr := gf_core.DBsqlConnect(config.SQLdbNameStr,
 		config.SQLuserNameStr,
 		config.SQLpassStr,
 		config.SQLhostStr,
 		"require", // SSL mode - required for PostgreSQL 18
 		runtimeSys)
+	if gfErr != nil {
+		return nil, nil, gfErr.Error
+	}
 
-	runtimeSys.SQLdb = sqlDB
+	runtimeSys.SQLdb     = sqlDB
+	runtimeSys.SQLdsnStr = sqlDSNstr
 
 	//--------------------
 	// MONGODB

@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_solo_service
+package gf_solo_images_service
 
 import (
 	"os"
@@ -60,8 +60,8 @@ func CmdsInit(pExternalHooks *gf_core.ExternalHooks) *cobra.Command {
 	var cmdStartService *cobra.Command
 	cmdStartService = &cobra.Command{
 		Use:   "service",
-		Short: "start the gf_solo service",
-		Long:  "start the gf_solo service",
+		Short: "start the gf_solo_images service",
+		Long:  "start the gf_solo_images service",
 		Run:   func(pCmd *cobra.Command, pArgs []string) {
 
 			logFun, logNewFun := gf_core.LogsInit()
@@ -81,7 +81,7 @@ func CmdsInit(pExternalHooks *gf_core.ExternalHooks) *cobra.Command {
 	// INFO
 	cmdInfo := &cobra.Command{
 		Use:   "info",
-		Short: "get info on the gf_solo program",
+		Short: "get info on the gf_solo_images program",
 		Run:   func(pCmd *cobra.Command, pArgs []string) {
 
 		},
@@ -111,7 +111,7 @@ func CmdsInit(pExternalHooks *gf_core.ExternalHooks) *cobra.Command {
 
 	//--------------------
 	// CLI_ARGUMENT - CONFIG
-	cliConfigPathDefaultStr := "./config/gf_solo"
+	cliConfigPathDefaultStr := "./config/gf_solo_images"
 	cmdBase.PersistentFlags().StringVarP(&cliConfigPathStr, "config", "", cliConfigPathDefaultStr,
 		"config file path on the local FS")
 
@@ -155,7 +155,7 @@ func CmdsInit(pExternalHooks *gf_core.ExternalHooks) *cobra.Command {
 
 	//--------------------
 	// CLI_ARGUMENT - PORT__METRICS
-	cmdBase.PersistentFlags().String("port_metrics", "METRICS PORT NUMBER",
+	cmdBase.PersistentFlags().String("port_metrics", "9110",
 		"port on which to listen for metrics HTTP traffic")
 	err = viper.BindPFlag("port_metrics", cmdBase.PersistentFlags().Lookup("port_metrics"))
 	if err != nil {
@@ -237,15 +237,15 @@ func CmdsInit(pExternalHooks *gf_core.ExternalHooks) *cobra.Command {
 
 	//--------------------
 	// CLI_ARGUMENT - SENTRY_ENDPOINT
-	cmdBase.PersistentFlags().String("sentry_endpoint", "SENTRY ENDPOINT", "Sentry endpoint to send errors to")
-	err = viper.BindPFlag("sentry_endpoint", cmdBase.PersistentFlags().Lookup("sentry_endpoint"))
+	cmdBase.PersistentFlags().String("sentry_dsn", "", "Sentry DSN to send errors to")
+	err = viper.BindPFlag("sentry_dsn", cmdBase.PersistentFlags().Lookup("sentry_dsn"))
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
 		panic(err)
 	}
 
 	// ENV
-	err = viper.BindEnv("sentry_endpoint", "GF_SENTRY_ENDPOINT")
+	err = viper.BindEnv("sentry_dsn", "SENTRY_DSN")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)

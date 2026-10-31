@@ -80,6 +80,10 @@ type GFserviceInfo struct {
 	//------------------------
 	// FEATURE_FLAGS
 
+	// DISABLE_LOGIN_UI - dont render/serve any HTML (login page templates, static files),
+	//                    for pure API servers. only the JSON API handlers are registered.
+	DisableLoginUIbool bool
+
 	// EVENTS_APP - enable sending of app events from various functions
 	EnableEventsAppBool bool
 

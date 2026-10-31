@@ -2,6 +2,10 @@
 # ENVIRONMENT
 env: dev
 
+# DOMAINS
+domain_base: "localhost"
+# domain_for_auth_cookies: ""
+
 # PORTS
 port:         1900
 port_metrics: 9110
@@ -20,8 +24,12 @@ mongodb_host:    "127.0.0.1:27017"
 mongodb_db_name: "gf"
 
 #--------------------
-# SENTRY_ENDPOINT
-sentry_endpoint: "" # or ENV var
+# SENTRY_DSN
+sentry_dsn: "" # or ENV var
+
+#--------------------
+# AUTH - userpass|auth0
+auth_subsystem_type: "userpass"
 
 #--------------------
 # GF_IMAGES

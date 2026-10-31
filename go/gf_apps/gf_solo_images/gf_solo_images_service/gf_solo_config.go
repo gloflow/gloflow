@@ -17,78 +17,30 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_solo_service
+package gf_solo_images_service
 
 import (
+	"fmt"
 	"strings"
 	"github.com/spf13/viper"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
-
-//-------------------------------------------------------------
-
-type GFconfig struct {
-
-	// ENVIRONMENT
-	EnvStr string `mapstructure:"env"`
-
-	// DOMAINS - where this gf_solo instance is reachable on
-	DomainBaseStr      string `mapstructure:"domain_base"`
-	DomainAdminBaseStr string `mapstructure:"domain_admin_base"`
-
-	// DOMAIN_FOR_AUTH_COOKIES - domain/pattern that is set on the auth cookies to restrict their scope.
-	DomainForAuthCookiesStr string `mapstructure:"domain_for_auth_cookies"`
-
-	// PORTS
-	PortStr        string `mapstructure:"port"`
-	PortAdminStr   string `mapstructure:"port_admin"`
-	PortMetricsStr string `mapstructure:"port_metrics"`
-
-	// SQL
-	SQLuserNameStr string `mapstructure:"sql_user_name"`
-	SQLpassStr     string `mapstructure:"sql_pass"`
-	SQLhostStr     string `mapstructure:"sql_host"`
-	SQLdbNameStr   string `mapstructure:"sql_db_name"`
-
-	// MONGODB - this is the dedicated mongodb DB
-	MongoHostStr   string `mapstructure:"mongodb_host"`
-	MongoDBnameStr string `mapstructure:"mongodb_db_name"`
-
-	// SENTRY_ENDPOINT
-	SentryDSNstr string `mapstructure:"sentry_endpoint"`
-
-	//--------------------
-	// IDENTITY
-	AuthSubsystemTypeStr       string `mapstructure:"auth_subsystem_type"`
-	AdminMFAsecretKeyBase32str string `mapstructure:"admin_mfa_secret_key_base32"`
-	AdminEmailStr              string `mapstructure:"admin_email"`
-
-	//--------------------
-	// GF_IMAGES
-	ImagesConfigFilePathStr string `mapstructure:"images__config_file_path"`
-
-	//--------------------
-	// NEW_STORAGE_ENGINE - flag indicating if the new image storage engine should be used
-	ImagesUseNewStorageEngineBool bool `mapstructure:"images_use_new_storage_engine"`
-
-	// IPFS
-	IPFSnodeHostStr string `mapstructure:"ipfs_node_host"`
-
-	//--------------------
-}
 
 //-------------------------------------------------------------
 // CONFIG_INIT
 
 /*
-load config for gf_solo from all the sources.
+load config for gf_solo_images from all the sources.
 Viper lib is used for config loading.
+the config struct is the shared gf_core.GFconfig (gf_images only uses a subset of its fields).
 configs are loaded from:
 - ENV vars
-- gf_solo.yaml config file
+- config file (gf_solo_images.yaml)
 - via CLI args
 */
 func ConfigInit(pConfigDirPathStr string,
-	pConfigFileNameStr string) (*GFconfig, error) {
+	pConfigFileNameStr string,
+	pRuntimeSys        *gf_core.RuntimeSys) (*gf_core.GFconfig, error) {
 
 	configNameStr := strings.Split(pConfigFileNameStr, ".")[0] // viper expects just the file name, without extension
 
@@ -98,17 +50,13 @@ func ConfigInit(pConfigDirPathStr string,
 
 	//--------------------
 	// ENV_VARS
-	// all config members that have their mapstructure name for Viper config,
-	// also have a corresponding ENV var name thats generated for them by
-	// upper-casing their name.
-	//--------------------
 	// ENV_PREFIX - "GF" becomes "GF_" - prefix expected in all recognized ENV vars.
-
 	viper.SetEnvPrefix("GF")
 
 	// IMPORTANT!! - enable Viper parsing ENV vars.
-
 	viper.AutomaticEnv()
+
+	bindEnvVars()
 
 	//--------------------
 
@@ -119,11 +67,45 @@ func ConfigInit(pConfigDirPathStr string,
 	}
 
 	// CONFIG
-	config := &GFconfig{}
+	config := &gf_core.GFconfig{}
 	err = viper.Unmarshal(config)
 	if err != nil {
 		return nil, err
 	}
 
+	// IMPORTANT!! - env is needed by all subsequent loading/init, so set it right away.
+	pRuntimeSys.EnvStr = config.EnvStr
+
 	return config, nil
+}
+
+//-------------------------------------------------------------
+
+func bindEnvVars() {
+
+	// config key -> ENV var name
+	envVarsMap := map[string]string{
+		"env":                           "GF_ENV",
+		"port":                          "GF_PORT",
+		"port_metrics":                  "GF_PORT_METRICS",
+		"mongodb_host":                  "GF_MONGODB_HOST",
+		"mongodb_db_name":               "GF_MONGODB_DB_NAME",
+		"sql_user_name":                 "GF_SQL_USER_NAME",
+		"sql_pass":                      "GF_SQL_PASS",
+		"sql_host":                      "GF_SQL_HOST",
+		"sql_db_name":                   "GF_SQL_DB_NAME",
+		"sentry_dsn":                    "SENTRY_DSN",
+		"auth_subsystem_type":           "GF_AUTH_SUBSYSTEM_TYPE",
+		"domain_base":                   "GF_DOMAIN_BASE",
+		"domain_for_auth_cookies":       "GF_DOMAIN_FOR_AUTH_COOKIES",
+		"images_use_new_storage_engine": "GF_IMAGES_USE_NEW_STORAGE_ENGINE",
+		"ipfs_node_host":                "GF_IPFS__NODE_HOST",
+	}
+	for keyStr, envVarStr := range envVarsMap {
+		err := viper.BindEnv(keyStr, envVarStr)
+		if err != nil {
+			fmt.Println("failed to bind ENV var to Viper config")
+			panic(err)
+		}
+	}
 }

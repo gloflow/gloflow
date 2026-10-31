@@ -26,7 +26,6 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
@@ -51,13 +50,6 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	pMetrics         *gf_images_core.GFmetrics,
 	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-	//---------------------
-	// TEMPLATES
-	templates, gfErr := templateLoad(pTemplatesPathsMap, pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
-
 	//---------------------
 	// METRICS
 	handlersEndpointsLst := []string{
@@ -171,70 +163,14 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 	
 	//---------------------
 	// VIEW_IMAGE
-	// renders a solo image
-	
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, false, "/images/v/",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
-			if pReq.Method == "GET" {
-
-				//-----------------
-				// INPUT
-
-				pathStr    := pReq.URL.Path
-				imageIDstr := strings.Replace(pathStr, "/images/v/", "", 1)
-				imageID    := gf_images_core.GFimageID(imageIDstr)
-
-				// auth is optional here - if user is logged in, we get the user ID, if not, we proceed as anonymous
-				var userIDfinalStr gf_core.GF_ID
-				userLoggedInBool, userID, gfErr := gf_identity_core.GetUserIDfromReq(pReq,
-					pAuthSubsystemTypeStr,
-					pCtx,
-					pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr
-				}
-				if userLoggedInBool {
-					userIDfinalStr = *userID
-				}
-
-				//-----------------
-				// RENDER_TEMPLATE
-				templateRenderedStr, gfErr := renderImageViewPage(imageID,
-					templates.imagesViewTmpl,
-					templates.imagesViewSubtemplatesNamesLst,
-					userIDfinalStr,
-					pCtx,
-					pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr
-				}
-
-				//-----------------
-				pResp.Write([]byte(templateRenderedStr))
-
-				//------------------
-				// EVENT
-				if pServiceInfo.EnableEventsAppBool {
-					eventMeta := map[string]interface{}{
-						"user_id":  userID,
-						"image_id": imageIDstr,
-						"path":     pathStr,
-					}
-					gf_events.EmitApp(gf_images_core.GF_EVENT_APP__IMAGE_VIEW_PAGE,
-						eventMeta,
-						pRuntimeSys.AppNameStr,
-						userIDfinalStr,
-						pCtx,
-						pRuntimeSys)
-				}
-
-				//------------------
-			}
-
-			return nil, nil
-		},
+	gfErr := InitHandlerImageView(pAuthSubsystemTypeStr,
+		pTemplatesPathsMap,
 		rpcHandlerRuntime,
+		pServiceInfo,
 		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
 
 	//---------------------
 	// SHARE_IMAGE
@@ -466,8 +402,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 				// image metadata (optional)
 				var metaMap map[string]interface{}
-				if metaMap, ok := iMap["meta_map"]; ok {
-					metaMap = metaMap.(map[string]interface{})
+				if m, ok := iMap["meta_map"].(map[string]interface{}); ok {
+					metaMap = m
 				}
 
 				//------------------

@@ -21,7 +21,9 @@ package gf_images_lib
 
 import (
 	"net/http"
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_storage"
@@ -29,22 +31,46 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_flows"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_solo_service"
 	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
 
+/*
+InitSoloService initializes the complete gf_images service, independent of gf_solo.
+it sets up:
+- DB (SQL tables, Mongo indexes)
+- S3 client and image storage
+- images jobs manager and its HTTP handlers
+- images flows (JSON API handlers)
+- GIF HTTP handlers
+- images HTTP handlers (get, share, upload, upload_metrics, browser calc results, health)
+
+its a pure API server: no HTML/template rendering and no static files serving.
+the caller is responsible for starting the HTTP server on the mux.
+*/
 func InitSoloService(pHTTPmux *http.ServeMux,
 	pServiceInfo *gf_images_core.GFserviceInfo,
 	pConfig      *gf_images_core.GFconfig,
-	pRuntimeSys  *gf_core.RuntimeSys) ([]gf_core.HTTPhandlerInfo, gf_images_jobs_core.JobsMngr) {
+	pRuntimeSys  *gf_core.RuntimeSys) gf_images_jobs_core.JobsMngr {
 
 	//-------------
 	// METRICS
+	metricsGroupNameStr := "gf_images_solo__rpc_handlers"
 	metrics := gf_images_core.MetricsCreate("gf_images")
 
 	//-------------
+	// DB
+	ctx := context.Background()
+
+	// SQL - images tables
+	gfErr := gf_images_core.DBsqlCreateTables(ctx, pRuntimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
+
 	// DB_INDEXES
 	// IMPORTANT!! - make sure mongo has indexes build for relevant queries
 	gf_images_service.DBmongoIndexInit(pRuntimeSys)
@@ -53,10 +79,7 @@ func InitSoloService(pHTTPmux *http.ServeMux,
 	// S3
 	// REMOVE!! - usage of AWS creds here, they should be discovered
 	//            by the AWS client from the environment.
-	s3Info, gfErr := gf_aws.S3init(// pServiceInfo.AWS_access_key_id_str,
-		// pServiceInfo.AWS_secret_access_key_str,
-		// pServiceInfo.AWS_token_str,
-		pRuntimeSys)
+	s3Info, gfErr := gf_aws.S3init(pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
@@ -64,8 +87,14 @@ func InitSoloService(pHTTPmux *http.ServeMux,
 	//---------------------
 	// IMAGE_STORAGE
 
+	// S3 is the primary storage. IPFS is provisioned only if a node host is configured.
+	storageTypesLst := []string{"s3"}
+	if pConfig.IPFSnodeHostStr != "" {
+		storageTypesLst = append(storageTypesLst, "ipfs")
+	}
+
 	storageConfig := &gf_images_storage.GFimageStorageConfig{
-		TypesToProvisionLst:          []string{"s3", "ipfs"},
+		TypesToProvisionLst:          storageTypesLst,
 		IPFSnodeHostStr:              pConfig.IPFSnodeHostStr,
 		ThumbsS3bucketNameStr:        pConfig.ImagesFlowToS3bucketMap["general"],
 		UploadsSourceS3bucketNameStr: pConfig.Uploaded_images_s3_bucket_str,
@@ -91,6 +120,7 @@ func InitSoloService(pHTTPmux *http.ServeMux,
 		metrics,
 		pRuntimeSys)
 
+	// extern HTTP handlers for the images jobs manager
 	gf_images_jobs.InitHandlers(pHTTPmux, jobsMngrCh, pRuntimeSys)
 
 	//-------------
@@ -101,14 +131,28 @@ func InitSoloService(pHTTPmux *http.ServeMux,
 		panic(gfErr.Error)
 	}
 
-	// flows__templates_dir_path_str := pServiceInfo.Templates_dir_paths_map["flows_str"]
-	handlersLst, gfErr := gf_images_flows.InitHandlers(pServiceInfo.AuthSubsystemTypeStr,
+	flowsHandlersLst, gfErr := gf_images_flows.InitHandlersAPI(pServiceInfo.AuthSubsystemTypeStr,
 		pServiceInfo.AuthLoginURLstr,
 		pServiceInfo.KeyServer,
 		pHTTPmux,
-		pServiceInfo.TemplatesPathsMap,
 		jobsMngrCh,
 		pRuntimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
+
+	// register flows handlers, which are defined in the new style (handler info structs).
+	gf_rpc_lib.CreateHandlersHTTP(flowsHandlersLst,
+		pHTTPmux,
+		pServiceInfo.AuthSubsystemTypeStr,
+		pServiceInfo.AuthLoginURLstr,
+		pServiceInfo.KeyServer,
+		metricsGroupNameStr,
+		pRuntimeSys)
+
+	//-------------
+	// GIF
+	gfErr = gf_gif_lib.InitHandlers(pHTTPmux, pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
@@ -132,16 +176,6 @@ func InitSoloService(pHTTPmux *http.ServeMux,
 	}
 
 	//------------------------
-	
-	// STATIC_FILE SERVING
-	staticFilesURLbaseStr := "/images"
-	localDirPathStr       := "./static"
-	gf_core.HTTPinitStaticServingWithMux(staticFilesURLbaseStr,
-		localDirPathStr,
-		pHTTPmux,
-		pRuntimeSys)
 
-	//------------------------
-
-	return handlersLst, jobsMngrCh
+	return jobsMngrCh
 }

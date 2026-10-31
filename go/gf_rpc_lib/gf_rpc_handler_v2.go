@@ -104,7 +104,8 @@ func CreateHandlerV2http(pNameStr string, // optional name for handler (used for
 		// AUTH_REDIRECT_ON_FAIL - QS that can toggle if the user should be redirected to the auth login url
 		//                         on failure to validate auth. by default we always redirect, and the user
 		//                         has the ability to turn that behavior off.
-		authRedirectOnFailBool := true
+		// IMPORTANT!! - if no login URL is configured (pure API servers) there is nothing to redirect to.
+		authRedirectOnFailBool := pHandlerRuntime.AuthLoginURLstr != ""
 		valuesMap := pReq.URL.Query()
 		if vLst, ok := valuesMap["auth_r"]; ok {
 			if vLst[0] == "0" {

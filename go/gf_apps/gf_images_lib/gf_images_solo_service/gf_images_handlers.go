@@ -62,6 +62,7 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 			and cannot be versioned, they're permanent. so these handlers dont have /v1 in them (versioning segment). 
 		*/
 		"/images/d/",
+		"/images/c",
 
 		//-------------
 
@@ -70,7 +71,9 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		"/v1/images/get",
 		"/v1/images/upload_init",
 		"/v1/images/upload_complete",
-		"/images/c",
+		"/v1/images/upload_metrics",
+		"/v1/images/healthz",
+		"/v1/images/v1/healthz",
 	}
 	metricsGroupNameStr := "main"
 	metrics := gf_rpc_lib.MetricsCreateForHandlersFromEndpoints(metricsGroupNameStr, "gf_images", handlersEndpointsLst, pRuntimeSys)
@@ -373,8 +376,8 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 				// image metadata (optional)
 				var metaMap map[string]interface{}
-				if metaMap, ok := iMap["meta_map"]; ok {
-					metaMap = metaMap.(map[string]interface{})
+				if m, ok := iMap["meta_map"].(map[string]interface{}); ok {
+					metaMap = m
 				}
 
 				//------------------
@@ -478,9 +481,9 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 		pRuntimeSys)
 
 	//---------------------
-	// IMAGE_JOB_RESULT FROM CLIENT_BROWSER (distributed jobs run on client machines)
+	// IMAGE_JOB_RESULT FROM CLIENT_BROWSER - permanent URL (no /v1), the browser-side JS calc code posts to it. (distributed jobs run on client machines)
 	
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/c",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/c",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -518,6 +521,15 @@ func InitHandlers(pAuthSubsystemTypeStr string,
 
 	//---------------------
 	// HEALTH
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/healthz",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+			return nil, nil
+		},
+		pHTTPmux,
+		nil,   // no metrics for health endpoint
+		false, // pStoreRunBool
+		nil,
+		pRuntimeSys)
 
 	// FIX!! - change to "/v1/images/healthz" but have to also fix infra healthcheck path 
 	//         otherwise service is going to get marked as unhealthy

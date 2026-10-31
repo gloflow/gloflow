@@ -41,7 +41,6 @@ RUN mkdir -p /home/gf/logs
 RUN mkdir -p /home/gf/config
 RUN mkdir -p /home/gf/data
 RUN mkdir -p /home/gf/libs
-RUN mkdir -p /home/gf/static
 
 # used for fetched images, and intermediate processing results
 RUN mkdir -p /home/gf/images
@@ -54,9 +53,6 @@ ADD ./requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
 #------------
-ADD templates templates
-ADD ./static  static
-
 #------------
 # LIBS
 
@@ -73,14 +69,14 @@ ENV LD_LIBRARY_PATH=libs
 
 #------------
 # SERVICES FILES - mainly py files, but other types too
-ADD ./py/gf_apps/gf_images py/gf_apps/gf_images
+ADD ./py/src/gf_apps/gf_images py/src/gf_apps/gf_images
 
 # MAIN
 ADD ./gf_solo_images gf_solo_images
 
 # CONFIG
 ADD ./config/gf_images_config.yaml config/gf_images_config.yaml
-ADD ./config/gf_solo.yaml          config/gf_solo.yaml
+ADD ./config/gf_solo_images.yaml  config/gf_solo_images.yaml
 
 #------------
 # PERMISSIONS
@@ -92,7 +88,7 @@ RUN chgrp -R gf /home/gf
 
 # IMPORTANT!! - certain CI pipelines (github actions) dont preserve file permissions of 
 #               uploaded/downloaded artifacts from previous jobs/stages
-RUN chmod u+x /home/gf/gf_solo
+RUN chmod u+x /home/gf/gf_solo_images
 
 #------------
 USER gf

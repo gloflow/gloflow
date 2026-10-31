@@ -32,7 +32,7 @@ func main() {
 
 	}
 
-	cmdBase := gf_solo_service.CmdsInit(externalHooks)
+	cmdBase := gf_solo_images_service.CmdsInit(externalHooks)
 	err := cmdBase.Execute()
 	if err != nil {
 		panic(err)

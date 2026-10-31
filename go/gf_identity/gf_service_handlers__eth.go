@@ -48,6 +48,12 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
+	// no login page to redirect to in pure API mode
+	authLoginURLstr := "/landing/main"
+	if pServiceInfo.DisableLoginUIbool {
+		authLoginURLstr = ""
+	}
+
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
 		Mux:             pHTTPmux,
 		Metrics:         metrics,
@@ -57,7 +63,7 @@ func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
 		AuthSubsystemTypeStr: pServiceInfo.AuthSubsystemTypeStr,
 		
 		// url redirected too if user not logged in and tries to access auth handler
-		AuthLoginURLstr: "/landing/main",
+		AuthLoginURLstr: authLoginURLstr,
 		AuthKeyServer:   pKeyServer,
 
 		EnableEventsBool: true,

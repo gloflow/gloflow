@@ -62,14 +62,16 @@ func InitService(pTemplatesPathsMap map[string]string,
 	}
 	
 	//------------------------
-	// STATIC FILES SERVING
-	staticFilesURLbaseStr := "/v1/identity"
-	localDirPathStr       := "./static"
+	// STATIC FILES SERVING - used by the login UI
+	if !pServiceInfo.DisableLoginUIbool {
+		staticFilesURLbaseStr := "/v1/identity"
+		localDirPathStr       := "./static"
 
-	gf_core.HTTPinitStaticServingWithMux(staticFilesURLbaseStr,
-		localDirPathStr,
-		pHTTPmux,
-		pRuntimeSys)
+		gf_core.HTTPinitStaticServingWithMux(staticFilesURLbaseStr,
+			localDirPathStr,
+			pHTTPmux,
+			pRuntimeSys)
+	}
 
 	//------------------------
 	// HANDLERS

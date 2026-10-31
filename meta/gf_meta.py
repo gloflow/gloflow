@@ -154,23 +154,22 @@ def get():
                     
                     #------------------------
                     # # TENSORFLOW C_LIBS
-                    # (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow.so",           f"{modd_str}/../build/gf_apps/gf_solo/libs"),
-                    # (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow_framework.so", f"{modd_str}/../build/gf_apps/gf_solo/libs"),
+                    # (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow.so",           f"{modd_str}/../build/gf_apps/gf_solo_images/libs"),
+                    # (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow_framework.so", f"{modd_str}/../build/gf_apps/gf_solo_images/libs"),
 
                     #------------------------
                     # GF_IMAGES
                     
-                    (f"{modd_str}/../rust/build/libgf_images_jobs.so", f"{modd_str}/../build/gf_apps/gf_solo/libs"),
+                    (f"{modd_str}/../rust/build/libgf_images_jobs.so", f"{modd_str}/../build/gf_apps/gf_solo_images/libs"),
 
                     # PY            
-                    (f"{modd_str}/../py/src/gf_apps/gf_images/plugins/gf_images_plugins_main.py", f"{modd_str}/../build/gf_apps/gf_solo/py/src/gf_apps/gf_images/plugins"),
-                    (f"{modd_str}/../py/src/gf_apps/gf_images/gf_images_classify",                f"{modd_str}/../build/gf_apps/gf_solo/py/src/gf_apps/gf_images/gf_images_classify"),
-                    # (f"{modd_str}/../py/gf_apps/gf_images/gf_images_palette/gf_color_palette.py", f"{modd_str}/../build/gf_apps/gf_solo/gf_images/plugins"),
+                    (f"{modd_str}/../py/src/gf_apps/gf_images/plugins/gf_images_plugins_main.py", f"{modd_str}/../build/gf_apps/gf_solo_images/py/src/gf_apps/gf_images/plugins"),
+                    (f"{modd_str}/../py/src/gf_apps/gf_images/gf_images_classify",                f"{modd_str}/../build/gf_apps/gf_solo_images/py/src/gf_apps/gf_images/gf_images_classify"),
+                    # (f"{modd_str}/../py/gf_apps/gf_images/gf_images_palette/gf_color_palette.py", f"{modd_str}/../build/gf_apps/gf_solo_images/gf_images/plugins"),
 
                     #------------------------
 
                     # GF_ML_ADAPTERS
-                    (f"{modd_str}/../py/src/gf_ml/gf_ml_adapters", "%s/../build/gf_apps/gf_solo/py/src/gf_ml/gf_ml_adapters"%(modd_str)),
 
                     # # GF_ML_WORKER
                     # ("%s/../py/gf_ml/gf_ml_worker/gf_ml_data.py"%(modd_str),      "%s/../build/gf_apps/gf_solo/py/py/gf_ml/gf_ml_worker"%(modd_str)),

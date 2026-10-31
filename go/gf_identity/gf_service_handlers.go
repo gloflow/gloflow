@@ -42,9 +42,13 @@ func initHandlers(pAuthLoginURLstr string,
 	//---------------------
 	// TEMPLATES
 
-	gfTemplates, gfErr := templatesLoad(pTemplatesPathsMap, pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
+	var gfTemplates *gfTemplates
+	if !pServiceInfo.DisableLoginUIbool {
+		var gfErr *gf_core.GFerror
+		gfTemplates, gfErr = templatesLoad(pTemplatesPathsMap, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
 	}
 
 	//---------------------
@@ -168,32 +172,34 @@ func initHandlers(pAuthLoginURLstr string,
 	//---------------------
 	// LOGIN_UI
 	// NO_AUTH
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, corsEnabledBool, "/v1/identity/login_ui",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+	if !pServiceInfo.DisableLoginUIbool {
+		gf_rpc_lib.CreateHandlerHTTPwithAuth(false, corsEnabledBool, "/v1/identity/login_ui",
+			func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if pReq.Method == "GET" {
+				if pReq.Method == "GET" {
 
-				templateRenderedStr, gfErr := viewRenderTemplateLogin(pServiceInfo.AuthSubsystemTypeStr,
-					gfTemplates.loginTmpl,
-					gfTemplates.loginSubtemplatesNamesLst,
-					pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr
-				}
+					templateRenderedStr, gfErr := viewRenderTemplateLogin(pServiceInfo.AuthSubsystemTypeStr,
+						gfTemplates.loginTmpl,
+						gfTemplates.loginSubtemplatesNamesLst,
+						pRuntimeSys)
+					if gfErr != nil {
+						return nil, gfErr
+					}
 				
-				pResp.Write([]byte(templateRenderedStr))
+					pResp.Write([]byte(templateRenderedStr))
 
-				// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
-				gf_core.HTTPdisableCachingOfResponse(pResp)
-			}
+					// IMPORTANT!! - disable client caching for this endpoint, to avoid incosistent behavior
+					gf_core.HTTPdisableCachingOfResponse(pResp)
+				}
 
-			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
-			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
-			//               from returning it.
-			return nil, nil
-		},
-		rpcHandlerRuntime,
-		pRuntimeSys)
+				// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
+				//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
+				//               from returning it.
+				return nil, nil
+			},
+			rpcHandlerRuntime,
+			pRuntimeSys)
+	}
 
 	//---------------------
 	// EMAIL_LOGIN
