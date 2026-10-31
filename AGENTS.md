@@ -1,5 +1,25 @@
 # Instructions for coding agents / LLMs
 
+## Versioning and changelog (required for every change)
+
+The version lives in two files at the repo root:
+
+- `VERSION`: the current semantic version, one line, no `v` prefix (e.g. `0.12.0`).
+- `CHANGELOG.md`: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format, newest entry first.
+
+With every change that is committed (code, config defaults, API, schema, build; not pure typo fixes in comments):
+
+1. Pick the new version (semver; while `0.x`): **minor** for new features, behaviour changes or anything breaking
+   (API, DB schema, config, CLI flags); **patch** for bug fixes, refactors, docs and tests. Use `1.0.0` only when the user says so.
+2. Write the new `VERSION`.
+3. Add a new section at the top of `CHANGELOG.md`, directly under the intro: `## [x.y.z] - YYYY-MM-DD` with
+   `### Added` / `### Changed` / `### Fixed` / `### Removed` subsections as needed. Describe what changed for a
+   user/operator in plain words (not the commit message). Never edit or reorder older entries.
+4. Check that `VERSION` is semver and equals the newest changelog entry.
+
+If several changes land in one working session before a commit, use one version bump for the whole commit.
+Do not add an `[Unreleased]` section: the top entry must always match `VERSION`.
+
 ## Building Rust code
 
 Build the Rust crates in `rust/` with `./run_build_rust.sh` (repo root). Do not run `cargo build` by hand

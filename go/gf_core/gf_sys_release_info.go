@@ -19,6 +19,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 package gf_core
 
+import (
+	"github.com/gloflow/gloflow"
+)
+
 //-------------------------------------------------
 
 type SysReleaseInfo struct {
@@ -38,8 +42,9 @@ func GetSysReleseInfo(pRuntimeSys *RuntimeSys) SysReleaseInfo {
 
 	r := SysReleaseInfo{
 		Name_str:        "nation_genesis",
-		Version_str:     "0.10.0.0", // currently deployed version
+		Version_str:     gloflow.Version(), // from the VERSION file in the repo root
         Description_str: `
+Releases from 0.11.0 on are described in CHANGELOG.md (repo root). Older releases:
 0.10.0 (nation_genesis):
     - added first version of a user system (gf_identity)
     - adding first version of p2p system based on libp2p
