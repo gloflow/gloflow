@@ -6,6 +6,14 @@ and the project uses [Semantic Versioning](https://semver.org/) (while below 1.0
 Newest entry first; its version must equal the contents of `VERSION`. See [AGENTS.md](AGENTS.md).
 The Go code reports `VERSION` (embedded by the root `gloflow` package, `gloflow.go`) in `gf_core.GetSysReleseInfo`.
 
+## [0.15.0] - 2026-11-03
+
+### Changed
+- The `POST /v1/a/ue` (user event) handler moved from `go/gf_apps/gf_analytics_lib/` into `gf_solo` itself (`go/gf_apps/gf_solo/gf_solo_service/gf_solo_handlers.go`). The endpoint behaves the same; its metrics are now in group `gf_solo__user_events` (service `gf_solo`) instead of `main`/`gf_analytics`.
+
+### Removed
+- `go/gf_apps/gf_analytics_lib/` (including `gf_analytics_main`). Its remaining setup (the `gf_domains_lib` mongo indexes, domains aggregation and handlers, and the `/a` static files route) now runs directly from `gf_solo` (`gf_solo_service.go`), unchanged. The `analytics__py_stats_dirs` and `analytics__run_indexer` config keys are now unused.
+
 ## [0.14.0] - 2026-11-03
 
 ### Removed

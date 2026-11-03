@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_analytics_lib
+package gf_solo_service
 
 import (
 	"context"
@@ -30,8 +30,7 @@ import (
 
 //-------------------------------------------------
 
-func initHandlers(pTemplatesPathsMap map[string]string,
-	pAuthSubsystemTypeStr string,
+func initHandlers(pAuthSubsystemTypeStr string,
 	pAuthLoginURLstr      string,
 	pKeyServer            *gf_identity_core.GFkeyServerInfo,
 	pRPCglobalMetrics     *gf_rpc_lib.GFglobalMetrics,
@@ -43,8 +42,8 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	handlersEndpointsLst := []string{
 		"/v1/a/ue",
 	}
-	metricsGroupNameStr := "main"
-	metrics := gf_rpc_lib.MetricsCreateForHandlersFromEndpoints(metricsGroupNameStr, "gf_analytics", handlersEndpointsLst, pRuntimeSys)
+	metricsGroupNameStr := "gf_solo__user_events"
+	metrics := gf_rpc_lib.MetricsCreateForHandlersFromEndpoints(metricsGroupNameStr, "gf_solo", handlersEndpointsLst, pRuntimeSys)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

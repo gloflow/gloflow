@@ -35,7 +35,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_landing_page_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_analytics_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_domains_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_web3_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
@@ -272,30 +272,32 @@ func Run(pConfig *gf_core.GFconfig,
 	}
 
 	//-------------
-	// GF_ANALYTICS
+	// HANDLERS - gf_solo own handlers (user events)
 
-	gfAnalyticsServiceInfo := &gf_analytics_lib.GFserviceInfo{
-
-		Media_domain_str:  imagesConfig.MediaDomainStr,
-		Py_stats_dirs_lst: pConfig.AnalyticsPyStatsDirsLst,
-		Run_indexer_bool:  pConfig.AnalyticsRunIndexerBool,
-
-		Templates_paths_map: pConfig.TemplatesPathsMap,
-
-		// IMAGES_STORAGE
-		ImagesUseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
-
-		AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
-		AuthLoginURLstr:      authLoginURLstr, // on email confirm redirect user to this
-		KeyServer:            keyServer,
-
-		// Elasticsearch_host_str: pConfig.ElasticsearchHostStr,
-		// Crawl__config_file_path_str:      pConfig.CrawlConfigFilePathStr,
-		// Crawl__cluster_node_type_str:     pConfig.CrawlClusterNodeTypeStr,
-		// Crawl__images_local_dir_path_str: pConfig.CrawlImagesLocalDirPathStr,
-	}
-	gf_analytics_lib.InitService(gfAnalyticsServiceInfo,
+	gfErr = initHandlers(pConfig.AuthSubsystemTypeStr,
+		authLoginURLstr,
+		keyServer,
 		metricsRPCglobal,
+		gfSoloHTTPmux,
+		pRuntimeSys)
+	if gfErr != nil {
+		return
+	}
+
+	//-------------
+	// GF_DOMAINS
+	gf_domains_lib.DBmongoIndexInit(pRuntimeSys)
+	gf_domains_lib.InitDomainsAggregation(pRuntimeSys)
+	gfErr = gf_domains_lib.InitHandlers(pConfig.TemplatesPathsMap,
+		gfSoloHTTPmux,
+		pRuntimeSys)
+	if gfErr != nil {
+		return
+	}
+
+	// STATIC FILES SERVING (used by gf_domains pages)
+	gf_core.HTTPinitStaticServingWithMux("/a",
+		"./static",
 		gfSoloHTTPmux,
 		pRuntimeSys)
 
