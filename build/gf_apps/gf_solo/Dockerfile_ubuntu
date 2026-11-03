@@ -73,12 +73,6 @@ ADD ./static  static
 
 ADD ./libs libs
 
-# TENSORFLOW LIB
-# HACK!! - tensorflow wants to load libtensorflow_framework.so.1 even though libtensorflow_framework.so
-#          is present. so just doing a quick solution of making a copy here via Dockerfile. 
-#          see to move this into some more appropriate place (lib preparation stage).
-# RUN cp libs/libtensorflow_framework.so libs/libtensorflow_framework.so.1
-
 # C_LIBS - so that the libs can be loaded by linker/gf_solo
 ENV LD_LIBRARY_PATH=libs
 
@@ -86,7 +80,6 @@ ENV LD_LIBRARY_PATH=libs
 # SERVICES FILES - mainly py files, but other types too
 ADD ./py/src/gf_apps/gf_images py/src/gf_apps/gf_images
 # ADD ./gf_analytics gf_analytics
-# ADD ./gf_ml_worker gf_ml_worker
 
 # MAIN
 ADD ./gf_solo gf_solo

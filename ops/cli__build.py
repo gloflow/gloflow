@@ -333,7 +333,6 @@ deprecated:
 		help = '''
 - '''+fg('yellow')+'gf_solo'+attr(0)+'''
 - '''+fg('yellow')+'gf_solo_images'+attr(0)+'''
-- '''+fg('yellow')+'gf_ml_worker'+attr(0)+'''
 - '''+fg('yellow')+'gf_builder_web'+attr(0)+'''
 - '''+fg('yellow')+'gf_builder_go_ubuntu'+attr(0)+'''
 - '''+fg('yellow')+'gf_builder_rust_ubuntu'+attr(0)+'''

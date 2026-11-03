@@ -94,11 +94,6 @@ def get():
                 "copy_to_dir_lst": [
                     
                     #------------------------
-                    # # TENSORFLOW C_LIBS
-                    # (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow.so",           f"{modd_str}/../build/gf_apps/gf_solo/libs"),
-                    # (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow_framework.so", f"{modd_str}/../build/gf_apps/gf_solo/libs"),
-
-                    #------------------------
                     # GF_IMAGES
                     
                     (f"{modd_str}/../rust/build/libgf_images_jobs.so", f"{modd_str}/../build/gf_apps/gf_solo/libs"),
@@ -113,18 +108,6 @@ def get():
                     # GF_ML_ADAPTERS
                     (f"{modd_str}/../py/src/gf_ml/gf_ml_adapters", "%s/../build/gf_apps/gf_solo/py/src/gf_ml/gf_ml_adapters"%(modd_str)),
 
-                    # # GF_ML_WORKER
-                    # ("%s/../py/gf_ml/gf_ml_worker/gf_ml_data.py"%(modd_str),      "%s/../build/gf_apps/gf_solo/py/py/gf_ml/gf_ml_worker"%(modd_str)),
-                    # ("%s/../py/gf_ml/gf_ml_worker/gf_plot.py"%(modd_str),         "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
-                    # ("%s/../py/gf_ml/gf_ml_worker/gf_simple_model.py"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
-                    # ("%s/../py/gf_ml/gf_ml_worker/requirements.txt"%(modd_str),   "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
-
-                    #------------------------
-                    # C_LIBS
-                    # gf_images_jobs_py.so - gf_images_jobs Rust Python extension
-                    # libtensorflow.so     - TensorFlow C lib
-                    ("%s/../rust/build/gf_images_jobs_py.so"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
-                    
                     #------------------------
                     # GF_ANALYTICS - PY
                     # ("%s/../go/gf_stats/py/cli_stats.py"%(modd_str),             "%s/../build/gf_apps/gf_solo/gf_analytics/py"%(modd_str)),
@@ -153,11 +136,6 @@ def get():
                 "copy_to_dir_lst": [
                     
                     #------------------------
-                    # # TENSORFLOW C_LIBS
-                    # (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow.so",           f"{modd_str}/../build/gf_apps/gf_solo_images/libs"),
-                    # (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow_framework.so", f"{modd_str}/../build/gf_apps/gf_solo_images/libs"),
-
-                    #------------------------
                     # GF_IMAGES
                     
                     (f"{modd_str}/../rust/build/libgf_images_jobs.so", f"{modd_str}/../build/gf_apps/gf_solo_images/libs"),
@@ -167,50 +145,6 @@ def get():
                     (f"{modd_str}/../py/src/gf_apps/gf_images/gf_images_classify",                f"{modd_str}/../build/gf_apps/gf_solo_images/py/src/gf_apps/gf_images/gf_images_classify"),
                     # (f"{modd_str}/../py/gf_apps/gf_images/gf_images_palette/gf_color_palette.py", f"{modd_str}/../build/gf_apps/gf_solo_images/gf_images/plugins"),
 
-                    #------------------------
-
-                    # GF_ML_ADAPTERS
-
-                    # # GF_ML_WORKER
-                    # ("%s/../py/gf_ml/gf_ml_worker/gf_ml_data.py"%(modd_str),      "%s/../build/gf_apps/gf_solo/py/py/gf_ml/gf_ml_worker"%(modd_str)),
-                    # ("%s/../py/gf_ml/gf_ml_worker/gf_plot.py"%(modd_str),         "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
-                    # ("%s/../py/gf_ml/gf_ml_worker/gf_simple_model.py"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
-                    # ("%s/../py/gf_ml/gf_ml_worker/requirements.txt"%(modd_str),   "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
-
-                    #------------------------
-                    # C_LIBS
-                    # gf_images_jobs_py.so - gf_images_jobs Rust Python extension
-                    # libtensorflow.so     - TensorFlow C lib
-                    ("%s/../rust/build/gf_images_jobs_py.so"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
-                    
-                    #------------------------
-                ]
-            },
-
-            #------------------------
-            # GF_ML_WORKER
-            "gf_ml_worker": {
-                "type_str":             "main_py",
-                "version_str":          "latest",
-                "service_name_str":     "gf_ml_worker",
-                "service_base_dir_str": "%s/../build/gf_apps/gf_ml_worker"%(modd_str),
-                "copy_to_dir_lst": [
-                    ("%s/../py/src/gf_apps/gf_ml_worker/gf_ml_data.py"%(modd_str),      "%s/../build/gf_apps/gf_ml_worker/py/src"%(modd_str)),
-                    ("%s/../py/src/gf_apps/gf_ml_worker/gf_plot.py"%(modd_str),         "%s/../build/gf_apps/gf_ml_worker/py/src"%(modd_str)),
-                    ("%s/../py/src/gf_apps/gf_ml_worker/gf_simple_model.py"%(modd_str), "%s/../build/gf_apps/gf_ml_worker/py/src"%(modd_str)),
-                    ("%s/../py/src/gf_apps/gf_ml_worker/requirements.txt"%(modd_str),   "%s/../build/gf_apps/gf_ml_worker/py/src"%(modd_str)),
-
-                    #------------------------
-                    # C_LIBS
-                    #------------------------
-                    # gf_images_jobs_py.so - gf_images_jobs Rust Python extension
-                    ("%s/../rust/build/gf_images_jobs_py.so"%(modd_str), "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str)),
-
-                    # libtensorflow.so - TensorFlow C lib
-                    # ("%s/../rust/build/libtensorflow.so"%(modd_str),           "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str)),
-                    # ("%s/../rust/build/libtensorflow_framework.so"%(modd_str), "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str))
-
-                    #------------------------
                 ]
             },
 

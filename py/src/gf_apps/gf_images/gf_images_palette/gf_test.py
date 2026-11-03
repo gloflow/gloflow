@@ -26,12 +26,12 @@ def main(p_test_bool=True):
 	# TEST
 	if p_test_bool:
 		test_image_paths_lst = [
-			'./../../gf_ml_worker/test/data/input/1234cd19517b939d3eb726c817985fe4_thumb_medium.jpeg',
-			'./../../gf_ml_worker/test/data/input/canvas.png',
-			"./../../gf_ml_worker/test/data/input/4b14ca75070ac78323cf2ddef077ae92_thumb_medium.jpeg",
-			"./../../gf_ml_worker/test/data/input/4838df39722bc2d681b67bf739f29357_thumb_small.jpeg",
-			"./../../gf_ml_worker/test/data/input/1234cd19517b939d3eb726c817985fe4_thumb_medium.jpeg",
-			"./../../gf_ml_worker/test/data/input/3a61e7d68fb17198e8dc0476cc862ddd_thumb_small.jpeg",
+			'./test/data/input/1234cd19517b939d3eb726c817985fe4_thumb_medium.jpeg',
+			'./test/data/input/canvas.png',
+			"./test/data/input/4b14ca75070ac78323cf2ddef077ae92_thumb_medium.jpeg",
+			"./test/data/input/4838df39722bc2d681b67bf739f29357_thumb_small.jpeg",
+			"./test/data/input/1234cd19517b939d3eb726c817985fe4_thumb_medium.jpeg",
+			"./test/data/input/3a61e7d68fb17198e8dc0476cc862ddd_thumb_small.jpeg",
 		]
 
 

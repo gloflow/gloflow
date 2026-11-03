@@ -6,6 +6,15 @@ and the project uses [Semantic Versioning](https://semver.org/) (while below 1.0
 Newest entry first; its version must equal the contents of `VERSION`. See [AGENTS.md](AGENTS.md).
 The Go code reports `VERSION` (embedded by the root `gloflow` package, `gloflow.go`) in `gf_core.GetSysReleseInfo`.
 
+## [0.14.0] - 2026-11-03
+
+### Removed
+- `py/src/gf_ml/deprecated/` (the `__gf_ml_worker` TensorFlow/Keras CIFAR-10 experiment, its tests and generated data). The palette test's input images moved to `py/src/gf_apps/gf_images/gf_images_palette/test/data/input/`.
+- The `gf_ml_worker` app from the build (`meta/gf_meta.py`) and from `ops/cli__build.py`, so `-app gf_ml_worker` no longer works. Its tracked output `build/gf_apps/gf_ml_worker/` is deleted.
+- Packing of `gf_images_jobs_py.so` (Python extension) into the `gf_solo` and `gf_solo_images` builds, removed for now. The Rust code is expected to be used directly by the Go code. The `rust/build/` output is unchanged.
+- Commented-out TensorFlow and ML worker lines in `meta/gf_meta.py` and in the `gf_solo` and `gf_solo_images` `Dockerfile_ubuntu` files.
+- `build/gf_apps/gf_solo/deprecated/__Dockerfile_alpine`.
+
 ## [0.13.1] - 2026-10-31
 
 ### Changed
