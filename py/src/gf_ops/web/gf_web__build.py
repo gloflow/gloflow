@@ -19,6 +19,7 @@ import os, sys
 modd_str = os.path.abspath(os.path.dirname(__file__))
 
 import os
+import shutil
 from colored import fg, bg, attr
 from bs4 import BeautifulSoup
 
@@ -53,6 +54,67 @@ def run_in_cont(p_app_str,
 	p.wait()
 
 #---------------------------------------------------
+# CHECK_BUILD_DEPS
+# checks that the CLI tools needed for the web build are installed (in PATH).
+# if some are missing it prints install instructions for Ubuntu.
+# returns True if all tools are installed.
+def check_build_deps():
+
+	# tool name (binary in PATH) -> npm package that provides it
+	tools_map = {
+		"tsc":      "typescript",
+		"sass":     "sass",
+		"uglifyjs": "uglify-js",
+	}
+
+	missing_lst = [t for t in tools_map.keys() if shutil.which(t) == None]
+
+	for t in tools_map.keys():
+		if t in missing_lst:
+			print(f"{fg('red')}MISSING{attr(0)}   {t}")
+		else:
+			print(f"{fg('green')}OK{attr(0)}        {t}")
+
+	if len(missing_lst) == 0:
+		return True
+
+	print("")
+	print(f"{fg('red')}ERROR!!{attr(0)} - missing web build tools: {', '.join(missing_lst)}")
+
+	npm_install_str = "npm install -g %s"%(" ".join([tools_map[t] for t in missing_lst]))
+	have_npm_bool   = shutil.which("npm") != None
+
+	# install instructions per OS, as (title, [commands]).
+	# nodejs/npm is only included if its not installed yet.
+	ubuntu_lst = []
+	if not have_npm_bool:
+		ubuntu_lst = [
+			"sudo apt-get update && sudo apt-get install -y curl",
+			"curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -",
+			"sudo apt-get install -y nodejs",
+		]
+	macos_lst   = [] if have_npm_bool else ["brew install node"]
+	windows_lst = [] if have_npm_bool else ["winget install OpenJS.NodeJS.LTS", "(restart the terminal so that node/npm are in PATH)"]
+
+	os_instructions_lst = [
+		("linux",  "Ubuntu",  ubuntu_lst  + [f"sudo {npm_install_str}"]),
+		("darwin", "macOS",   macos_lst   + [npm_install_str]),
+		("win",    "Windows", windows_lst + [npm_install_str]),
+	]
+
+	for prefix_str, os_name_str, cmds_lst in os_instructions_lst:
+		this_os_str = "  (this system)" if sys.platform.startswith(prefix_str) else ""
+		print("")
+		print(f"{fg('yellow')}{os_name_str}{attr(0)}{this_os_str}:")
+		for c_str in cmds_lst:
+			print(f"  {c_str}")
+
+	print("")
+	print("or build in the container: ./run_build_web.sh --in-cont")
+	print("")
+	return False
+
+#---------------------------------------------------
 def build(p_apps_names_lst,
 	p_apps_meta_map,
 	p_log_fun,
@@ -60,6 +122,9 @@ def build(p_apps_names_lst,
 	assert isinstance(p_apps_names_lst, list)
 	assert len(p_apps_names_lst) > 0
 	assert isinstance(p_apps_meta_map, dict)
+
+	if not check_build_deps():
+		sys.exit(1)
 
 	#---------------------------------------------------
 	def individual_page(p_page_name_str, p_page_info_map):

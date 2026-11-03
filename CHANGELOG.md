@@ -6,6 +6,11 @@ and the project uses [Semantic Versioning](https://semver.org/) (while below 1.0
 Newest entry first; its version must equal the contents of `VERSION`. See [AGENTS.md](AGENTS.md).
 The Go code reports `VERSION` (embedded by the root `gloflow` package, `gloflow.go`) in `gf_core.GetSysReleseInfo`.
 
+## [0.17.0] - 2026-11-03
+
+### Added
+- Web build (`gf_web__build.build`) now checks for the tools it needs (`tsc`, `sass`, `uglifyjs`) before building. If some are missing it stops and prints install instructions for Ubuntu, macOS and Windows.
+
 ## [0.16.0] - 2026-11-03
 
 ### Added
