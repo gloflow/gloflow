@@ -6,6 +6,11 @@ and the project uses [Semantic Versioning](https://semver.org/) (while below 1.0
 Newest entry first; its version must equal the contents of `VERSION`. See [AGENTS.md](AGENTS.md).
 The Go code reports `VERSION` (embedded by the root `gloflow` package, `gloflow.go`) in `gf_core.GetSysReleseInfo`.
 
+## [0.16.0] - 2026-11-03
+
+### Added
+- `run_build_web.sh`: builds the web code of the user UI (`gf_solo` pages) via `ops/cli__build.py -run=build_web`. Supports `--in-cont`, `--page <name>` and `--app <name>`.
+
 ## [0.15.0] - 2026-11-03
 
 ### Changed

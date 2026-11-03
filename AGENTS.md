@@ -20,6 +20,14 @@ With every change that is committed (code, config defaults, API, schema, build; 
 If several changes land in one working session before a commit, use one version bump for the whole commit.
 Do not add an `[Unreleased]` section: the top entry must always match `VERSION`.
 
+## Building web code
+
+Build the web code (ts/js/css/html) of the user UI with `./run_build_web.sh` (repo root); it calls `ops/cli__build.py -run=build_web`.
+
+- Default app is `gf_solo` (pages of all apps). Output goes to `web/build/gf_apps/gf_solo/` (and per-app dirs under `web/build/`).
+- Options: `--in-cont` (build in the `gf_builder_web` container, needs docker), `--page <name>` (one page only), `--app <name>`.
+- Host builds need `tsc`, `sass` and `uglifyjs` in PATH.
+
 ## Building Rust code
 
 Build the Rust crates in `rust/` with `./run_build_rust.sh` (repo root). Do not run `cargo build` by hand
