@@ -6,6 +6,11 @@ and the project uses [Semantic Versioning](https://semver.org/) (while below 1.0
 Newest entry first; its version must equal the contents of `VERSION`. See [AGENTS.md](AGENTS.md).
 The Go code reports `VERSION` (embedded by the root `gloflow` package, `gloflow.go`) in `gf_core.GetSysReleseInfo`.
 
+## [0.17.1] - 2026-11-03
+
+### Changed
+- The web build tool check also detects tools that npm installed but whose npm global bin dir is not in `PATH` (ex. nvm), and prints how to add it. `run_build_web.sh` no longer has its own (less helpful) tool check; the Python check runs instead.
+
 ## [0.17.0] - 2026-11-03
 
 ### Added

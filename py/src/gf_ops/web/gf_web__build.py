@@ -20,6 +20,7 @@ modd_str = os.path.abspath(os.path.dirname(__file__))
 
 import os
 import shutil
+import subprocess
 from colored import fg, bg, attr
 from bs4 import BeautifulSoup
 
@@ -54,6 +55,26 @@ def run_in_cont(p_app_str,
 	p.wait()
 
 #---------------------------------------------------
+# NPM_GLOBAL_BIN_DIR
+# returns the dir where "npm install -g" puts executables, or None if npm is not available.
+def npm_global_bin_dir():
+	npm_path_str = shutil.which("npm")
+	if npm_path_str == None:
+		return None
+	try:
+		out_str = subprocess.run([npm_path_str, "prefix", "-g"],
+			capture_output=True, text=True, timeout=20).stdout.strip()
+	except Exception:
+		return None
+	if out_str == "":
+		return None
+
+	# on windows executables are in the prefix dir itself, on unix in prefix/bin
+	if sys.platform.startswith("win"):
+		return out_str
+	return os.path.join(out_str, "bin")
+
+#---------------------------------------------------
 # CHECK_BUILD_DEPS
 # checks that the CLI tools needed for the web build are installed (in PATH).
 # if some are missing it prints install instructions for Ubuntu.
@@ -80,6 +101,27 @@ def check_build_deps():
 
 	print("")
 	print(f"{fg('red')}ERROR!!{attr(0)} - missing web build tools: {', '.join(missing_lst)}")
+
+	# the tools may be installed by npm already, but npm's global bin dir is not in PATH.
+	# (ex. with nvm or a custom npm prefix)
+	npm_bin_dir_str = npm_global_bin_dir()
+	if npm_bin_dir_str != None:
+		exts_lst  = ["", ".cmd"] if sys.platform.startswith("win") else [""]
+		not_in_path_lst = [t for t in missing_lst
+			if any(os.path.isfile(os.path.join(npm_bin_dir_str, t + e)) for e in exts_lst)]
+
+		if len(not_in_path_lst) > 0:
+			print("")
+			print(f"{fg('yellow')}installed by npm but NOT in PATH:{attr(0)} {', '.join(not_in_path_lst)}")
+			print(f"  npm global bin dir: {npm_bin_dir_str}")
+			if sys.platform.startswith("win"):
+				print(f"  add it to PATH (Windows: System Properties > Environment Variables), then restart the terminal")
+			else:
+				print(f'  export PATH="{npm_bin_dir_str}:$PATH"   # add this to ~/.bashrc or ~/.zshrc to make it permanent')
+			missing_lst = [t for t in missing_lst if t not in not_in_path_lst]
+			if len(missing_lst) == 0:
+				print("")
+				return False
 
 	npm_install_str = "npm install -g %s"%(" ".join([tools_map[t] for t in missing_lst]))
 	have_npm_bool   = shutil.which("npm") != None
@@ -109,6 +151,9 @@ def check_build_deps():
 		for c_str in cmds_lst:
 			print(f"  {c_str}")
 
+	print("")
+	print("after installing, check that the tools are in PATH:")
+	print("  %s"%("where " if sys.platform.startswith("win") else "command -v ") + " ".join(tools_map.keys()))
 	print("")
 	print("or build in the container: ./run_build_web.sh --in-cont")
 	print("")

@@ -34,11 +34,8 @@ ARGS=(-run=build_web "-app=$APP")
 [ "$IN_CONT" = 1 ] || ARGS+=(-build_outof_cont)
 [ -z "$PAGE" ] || ARGS+=("-page_name=$PAGE")
 
-if [ "$IN_CONT" = 0 ]; then
-    for tool in tsc sass uglifyjs; do
-        command -v "$tool" >/dev/null 2>&1 || { echo "ERROR!! - '$tool' not found in PATH (or use --in-cont)." >&2; exit 1; }
-    done
-fi
+# host builds: the tools (tsc, sass, uglifyjs) are checked by the python build (gf_web__build.check_build_deps),
+# which prints install instructions (Ubuntu/macOS/Windows) and PATH hints if some are missing.
 
 echo ">>> BUILD WEB $APP${PAGE:+ (page $PAGE)}"
 python3 "$CLI" "${ARGS[@]}"
