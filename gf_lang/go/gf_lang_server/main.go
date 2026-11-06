@@ -21,6 +21,7 @@ package main
 
 import (
 	"os"
+	"strconv"
 	"fmt"
 	"net/http"
 	"context"
@@ -232,7 +233,10 @@ func main() {
 	serviceInfo := &gf_lang_service.GFserviceInfo{
 		NameStr: "gf_lang_server",
 	}
-	config := &gf_lang_service.GFconfig{}
+	config := &gf_lang_service.GFconfig{
+		DashboardDirStr: "./../../build/",
+		ExamplesDirStr:  "./../../examples/",
+	}
 
 	HTTPmux := http.NewServeMux()
 	gfErr = gf_lang_service.InitService(HTTPmux,
@@ -245,7 +249,15 @@ func main() {
 
 	//-------------
 	// SERVER_INIT - blocking
+	// the port can be overridden with the GF_LANG_PORT ENV var
 	langPortInt := 5010
+	if portStr := os.Getenv("GF_LANG_PORT"); portStr != "" {
+		p, err := strconv.Atoi(portStr)
+		if err != nil {
+			panic(fmt.Sprintf("GF_LANG_PORT is not a number: %s", portStr))
+		}
+		langPortInt = p
+	}
 	gf_rpc_lib.ServerInitWithMux("gf_lang_server", langPortInt, HTTPmux)
 
 	//-------------

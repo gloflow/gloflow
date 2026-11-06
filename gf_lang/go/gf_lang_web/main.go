@@ -38,7 +38,16 @@ func main() {
 	//-------------------------------------------------
 	// JS_API
 	//-------------------------------------------------
-	jsLangRunFun := func(pThis js.Value, p []js.Value) interface{} {
+	// returns "" on success, or an error message string.
+	// panics (ex. a JS exception in an extern_api function) are recovered and returned as errors,
+	// since a panic would otherwise kill the whole WASM instance and make all later calls fail.
+	jsLangRunFun := func(pThis js.Value, p []js.Value) (resultStr interface{}) {
+
+		defer func() {
+			if r := recover(); r != nil {
+				resultStr = fmt.Sprintf("%v", r)
+			}
+		}()
 
 		fmt.Println("LANG RUN")
 
@@ -57,14 +66,12 @@ func main() {
 			loadedExternAPI)
 		
 		if err != nil {
-			panic(err)
+			return err.Error()
 		}
-
 
 		debugView(programsDebugLst)
 
-		outputStr := "gf_output"
-		return js.ValueOf(outputStr)
+		return ""
 	}
 
 	//-------------------------------------------------

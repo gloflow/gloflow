@@ -6,6 +6,20 @@ and the project uses [Semantic Versioning](https://semver.org/) (while below 1.0
 Newest entry first; its version must equal the contents of `VERSION`. See [AGENTS.md](AGENTS.md).
 The Go code reports `VERSION` (embedded by the root `gloflow` package, `gloflow.go`) in `gf_core.GetSysReleseInfo`.
 
+## [0.19.0] - 2026-11-07
+
+### Added
+- gf_lang dev dashboard (`gf_lang/dashboard/`, TS + SCSS, no frameworks): an editable, syntax highlighted gf code pane (with a picker for the programs in `gf_lang/examples/`) next to a live render of the program (Go WASM interpreter driving the three.js engine). `Ctrl+Enter` runs the code; parse and run errors are shown in the toolbar. The gf_lang server serves it at `http://localhost:5010/` and lists the examples at `GET /v1/lang/examples`.
+- `run_gf_lang_server.sh`: builds and starts the gf_lang server and prints the dashboard URL. The port can be set with the `GF_LANG_PORT` ENV var (default 5010).
+- `run_build_gf_lang.sh` builds the dashboard too (needs `sass`); `--skip-dashboard` skips it.
+
+### Changed
+- The WASM `gf_lang_run` returns an error message string ("" on success) instead of panicking, so a failing program no longer kills the interpreter instance.
+- The three.js engine `init()` accepts an optional container element (sized to it and following its size) and the engine API has a `dispose_fun`, so it can be re-initialized in a page. Calls without a container behave as before.
+
+### Fixed
+- `run_build_gf_lang.sh` failed when copying `wasm_exec.js` on repeated runs (the copy in `gf_lang/build/` is read-only).
+
 ## [0.18.0] - 2026-11-07
 
 ### Added

@@ -44,5 +44,7 @@ func InitService(pHTTPmux *http.ServeMux,
 		return gfErr
 	}
 
+	initDashboard(pHTTPmux, pConfig, pRuntimeSys)
+
 	return nil
 }

@@ -22,5 +22,6 @@ package gf_lang_service
 //-------------------------------------------------
 
 type GFconfig struct {
-
+	DashboardDirStr string // built dashboard web files (gf_lang/build)
+	ExamplesDirStr  string // example .gf programs (gf_lang/examples)
 }

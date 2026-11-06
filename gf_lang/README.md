@@ -75,6 +75,24 @@ foo@bar:~$ cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" build/
 
 ---
 
+# dev dashboard
+the smallest possible IDE: gf code (editable, syntax highlighted) on the left, the rendered program on the right.
+a dropdown above the code picks any of the example programs in `examples/` (*.gf).
+
+```console
+foo@bar:~$ ./run_build_gf_lang.sh      # in the gloflow root - builds the dashboard into gf_lang/build/ (needs tsc, sass)
+foo@bar:~$ ./run_gf_lang_server.sh     # serves it
+```
+the browser URL is:
+> http://localhost:5010/
+
+`Ctrl+Enter` (or the Run button) runs the code in the editor. The sources are in `dashboard/` (TS + SCSS, no frameworks):
+`ts/gf_syntax.ts` is the whole syntax highlighter (a regex tokenizer, no library),
+`ts/dashboard.ts` the rest. The interpreter is the Go WASM build (`go/gf_lang_web`),
+the render is the same three.js engine (`ts/engine/`) as the test page below.
+
+---
+
 # start local web server to test
 start it in project root - gloflow
 serves the necessary compiled files and other web code from the GF project

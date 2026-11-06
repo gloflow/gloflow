@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>gf_lang dashboard</title>
+	<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<div class="pane left">
+	<div class="toolbar">
+		<select id="examples"></select>
+		<button id="run" title="Ctrl+Enter">Run</button>
+		<span id="status"></span>
+	</div>
+	<div class="editor">
+		<pre id="highlight"></pre>
+		<textarea id="code" spellcheck="false"></textarea>
+	</div>
+</div>
+
+<div class="pane right" id="render"></div>
+
+<script src="system.min.js"></script>
+<script src="system_named_register_ext.js"></script>
+<script src="lib/three.js"></script>
+<script src="lib/TrackballControls.js"></script>
+<script src="lib/tween.ums.js"></script>
+<script src="wasm_exec.js"></script>
+<script src="dashboard.js"></script>
+<script>System.import("dashboard/ts/dashboard");</script>
+
+</body>
+</html>

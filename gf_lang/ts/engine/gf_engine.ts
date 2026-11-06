@@ -25,7 +25,12 @@ declare var THREE;
 declare var TWEEN;
 
 //-------------------------------------------------
-export function init(p_shader_defs_map) {
+// p_container_element - optional. if given the canvas is added to it and sized to it (and follows its size),
+//                       otherwise the canvas is added to <body> and fills the window.
+export function init(p_shader_defs_map, p_container_element :HTMLElement = null) {
+
+	const get_width  = ()=> p_container_element ? p_container_element.clientWidth  : window.innerWidth;
+	const get_height = ()=> p_container_element ? p_container_element.clientHeight : window.innerHeight;
 
 	// SHADERS
 	const compiled_shaders_map = gf_shaders.create_all(p_shader_defs_map);
@@ -36,7 +41,7 @@ export function init(p_shader_defs_map) {
 	// CAMERA
 	const render_dinstance_int = 10000;
 	const camera = new THREE.PerspectiveCamera(75,
-		window.innerWidth / window.innerHeight,
+		get_width() / get_height(),
 		0.1,
 		render_dinstance_int);
 	camera.position.y = 10;
@@ -48,12 +53,12 @@ export function init(p_shader_defs_map) {
 	const renderer = new THREE.WebGLRenderer({
 		antialias: true
 	});
-	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.setSize(get_width(), get_height());
 
 	// const bg_color = new THREE.Color(0.9, 0.9, 0.9); // 0x5f2f00;
 	// renderer.setClearColor(bg_color, 1);
 
-	document.body.appendChild(renderer.domElement);
+	(p_container_element || document.body).appendChild(renderer.domElement);
 
 
 	// TRACKING
@@ -81,7 +86,10 @@ export function init(p_shader_defs_map) {
 
 	//-------------------------------------------------
 	var lt = new Date();
+	var render_loop_active_bool = true;
 	function render(p_time) {
+
+		if (!render_loop_active_bool) return;
 
 		/*var now = new Date(),
         secs = (now.getTime() - lt.getTime()) / 1000;
@@ -99,6 +107,17 @@ export function init(p_shader_defs_map) {
 
 	//-------------------------------------------------
 	requestAnimationFrame(render);
+
+	// keep the canvas sized to its container
+	var resize_observer = null;
+	if (p_container_element) {
+		resize_observer = new ResizeObserver(()=>{
+			camera.aspect = get_width() / get_height();
+			camera.updateProjectionMatrix();
+			renderer.setSize(get_width(), get_height());
+		});
+		resize_observer.observe(p_container_element);
+	}
 
     
     const cube_geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -310,6 +329,15 @@ export function init(p_shader_defs_map) {
 	const api_map = {
 
 		"scene_3d":                scene_3d,
+
+		// stops the render loop and removes the canvas, so that a new engine can be init()-ed
+		"dispose_fun": ()=>{
+			render_loop_active_bool = false;
+			if (resize_observer) resize_observer.disconnect();
+			controls.dispose();
+			renderer.dispose();
+			renderer.domElement.remove();
+		},
 		"coord_origins_stack_lst": coord_origins_stack_lst,
 
 		//-------------------------------------------------

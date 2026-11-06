@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # Builds gf_lang: the Go parts (interpreter server, scene recorder CLI, WASM), the Rust headless
-# renderer (wgpu), and the TS code of the experiments/examples (browser test page).
+# renderer (wgpu), the TS code of the experiments/examples (browser test page), and the dev dashboard.
 #
-# Usage: ./run_build_gf_lang.sh [--skip-go] [--skip-rust] [--skip-ts] [--debug] [--clean] [--verbose]
-#   --skip-go    don't build the Go binaries/WASM
-#   --skip-rust  don't build the Rust renderer
-#   --skip-ts    don't build the TS experiments/examples
+# Usage: ./run_build_gf_lang.sh [--skip-go] [--skip-rust] [--skip-ts] [--skip-dashboard] [--debug] [--clean] [--verbose]
+#   --skip-go        don't build the Go binaries/WASM
+#   --skip-rust      don't build the Rust renderer
+#   --skip-ts        don't build the TS experiments/examples
+#   --skip-dashboard don't build the dev dashboard (TS/SCSS)
 #   --debug      debug build of the Rust renderer instead of release
 #   --clean      "cargo clean" the renderer first
 #   --verbose    verbose cargo/go/tsc output
@@ -16,8 +17,10 @@
 #   gf_lang/go/build/gf_lang_web.wasm    interpreter for the browser (+ wasm_exec.js in gf_lang/build/)
 #   gf_lang/rust/build/gf_lang_render    headless wgpu renderer: scene JSON -> PNG
 #   gf_lang/build/                       gf_lang.js (TS experiments/examples), gf_lang_test.html, gf_ide.css, gf_lang_web.wasm
+#   gf_lang/build/                       dev dashboard: index.html, dashboard.js, dashboard.css, lib/ (three.js...), system*.js.
+#                                        served by the gf_lang server (./run_gf_lang_server.sh) at http://localhost:5010/
 #
-# Needs: go, cargo (Rust), tsc. The Rust renderer needs a Vulkan driver at runtime; on machines without
+# Needs: go, cargo (Rust), tsc, sass (for the dashboard). The Rust renderer needs a Vulkan driver at runtime; on machines without
 # a GPU install a software one (Ubuntu: apt install mesa-vulkan-drivers).
 
 set -euo pipefail
@@ -29,16 +32,17 @@ RUST_CRATE_DIR="$LANG_DIR/rust/gf_lang_render"
 RUST_BUILD_DIR="$LANG_DIR/rust/build"
 WEB_BUILD_DIR="$LANG_DIR/build"
 
-DO_GO=1; DO_RUST=1; DO_TS=1; DEBUG=0; CLEAN=0; VERBOSE=0
+DO_GO=1; DO_RUST=1; DO_TS=1; DO_DASH=1; DEBUG=0; CLEAN=0; VERBOSE=0
 for arg in "$@"; do
     case "$arg" in
         --skip-go)   DO_GO=0 ;;
         --skip-rust) DO_RUST=0 ;;
         --skip-ts)   DO_TS=0 ;;
+        --skip-dashboard) DO_DASH=0 ;;
         --debug)     DEBUG=1 ;;
         --clean)     CLEAN=1 ;;
         --verbose)   VERBOSE=1 ;;
-        -h|--help)   sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help)   sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *) echo "unknown option: $arg" >&2; exit 1 ;;
     esac
 done
@@ -59,6 +63,8 @@ need() {
 [ "$DO_GO" = 1 ]   && need go    "Install Go (https://go.dev/dl/)."
 [ "$DO_RUST" = 1 ] && need cargo "Install Rust (https://rustup.rs)."
 [ "$DO_TS" = 1 ]   && need tsc   "Install TypeScript: npm install -g typescript."
+[ "$DO_DASH" = 1 ] && need tsc   "Install TypeScript: npm install -g typescript."
+[ "$DO_DASH" = 1 ] && need sass  "Install Sass: npm install -g sass."
 
 mkdir -p "$GO_BUILD_DIR" "$RUST_BUILD_DIR" "$WEB_BUILD_DIR"
 
@@ -82,7 +88,8 @@ if [ "$DO_GO" = 1 ]; then
     # JS glue code for the WASM (location depends on the Go version)
     GOROOT_DIR="$(go env GOROOT)"
     for f in "$GOROOT_DIR/lib/wasm/wasm_exec.js" "$GOROOT_DIR/misc/wasm/wasm_exec.js"; do
-        if [ -f "$f" ]; then cp "$f" "$WEB_BUILD_DIR/wasm_exec.js"; break; fi
+        # cp -f: the copy in build/ is read-only (444) from a previous run, plain cp can't overwrite it
+        if [ -f "$f" ]; then cp -f "$f" "$WEB_BUILD_DIR/wasm_exec.js"; break; fi
     done
     [ -f "$WEB_BUILD_DIR/wasm_exec.js" ] || echo "WARNING!! - wasm_exec.js not found in GOROOT" >&2
 fi
@@ -115,6 +122,24 @@ if [ "$DO_TS" = 1 ]; then
 
     cp test/gf_lang_test.html "$WEB_BUILD_DIR/gf_lang_test.html"
     cp css/gf_ide.css         "$WEB_BUILD_DIR/gf_ide.css"
+fi
+
+#------------------------------------------------------------
+# DASHBOARD - TS + SCSS, the interpreter (WASM) and the engine's libs. all into build/, which the gf_lang server serves.
+# (gf_lang_web.wasm and wasm_exec.js get there from the GO step above)
+if [ "$DO_DASH" = 1 ]; then
+    echo ">>> BUILD DASHBOARD"
+    cd "$LANG_DIR"
+    tsc --module system --target es2016 --outFile "$WEB_BUILD_DIR/dashboard.js" \
+        dashboard/ts/dashboard.ts
+
+    sass --no-source-map dashboard/scss/dashboard.scss "$WEB_BUILD_DIR/dashboard.css"
+
+    # cp -f: files in build/ may be read-only from a previous run
+    mkdir -p "$WEB_BUILD_DIR/lib"
+    cp -f dashboard/index.html "$WEB_BUILD_DIR/index.html"
+    cp -f lib/three.js lib/TrackballControls.js lib/tween.ums.js "$WEB_BUILD_DIR/lib/"
+    cp -f "$ROOT_DIR/web/libs/js/system.min.js" "$ROOT_DIR/web/libs/js/system_named_register_ext.js" "$WEB_BUILD_DIR/"
 fi
 
 echo ">>> DONE"

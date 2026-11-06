@@ -32,8 +32,13 @@ Build the web code (ts/js/css/html) of the user UI with `./run_build_web.sh` (re
 
 Build all of gf_lang with `./run_build_gf_lang.sh` (repo root): the Go binaries/WASM (`gf_lang/go/build/`), the Rust headless
 renderer `gf_lang_render` (`gf_lang/rust/gf_lang_render`, wgpu, output `gf_lang/rust/build/`) and the TS experiments/examples (`gf_lang/build/`).
-Options: `--skip-go`, `--skip-rust`, `--skip-ts`, `--debug`, `--clean`, `--verbose`. Needs `go`, `cargo` and `tsc`.
+It also builds the dev dashboard (`gf_lang/dashboard/`, TS + SCSS, no frameworks) into `gf_lang/build/`.
+Options: `--skip-go`, `--skip-rust`, `--skip-ts`, `--skip-dashboard`, `--debug`, `--clean`, `--verbose`. Needs `go`, `cargo`, `tsc` and `sass`.
 Server-side rendering is documented in `gf_lang/docs/scene.md`. If you add an output, update `run_build_gf_lang.sh`.
+
+Run the gf_lang server with `./run_gf_lang_server.sh` (port 5010, or `GF_LANG_PORT`; `--no-build` skips `go build`).
+It serves the dev dashboard at `http://localhost:5010/`: an editable, syntax highlighted gf code pane (with a picker for the
+programs in `gf_lang/examples/`) next to a render of the program (Go WASM interpreter driving the three.js engine).
 The gf_lang Rust crate is not built by `run_build_rust.sh`.
 
 ## Building Rust code

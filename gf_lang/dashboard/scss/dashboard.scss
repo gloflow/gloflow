@@ -1,0 +1,116 @@
+// gf_lang dashboard styles
+
+$bg:        #1e1e24;
+$bg-bar:    #2a2a32;
+$fg:        #d4d4d8;
+$font:      13px/1.5 "DejaVu Sans Mono", Menlo, Consolas, monospace;
+$pad:       12px;
+
+// syntax highlighting colors (classes made by dashboard/ts/gf_syntax.ts)
+$syntax: (
+	comment: #6a737d,
+	string:  #a5d6a7,
+	number:  #f2a65a,
+	literal: #f2a65a,
+	bracket: #8a8fa3,
+	kw:      #c792ea,
+	shape:   #ffcb6b,
+	prop:    #82aaff,
+	var:     #f78c6c,
+);
+
+* { box-sizing: border-box; }
+
+html, body {
+	height: 100%;
+	margin: 0;
+}
+
+body {
+	display: flex;
+	background: $bg;
+	color: $fg;
+	font: $font;
+}
+
+.pane {
+	flex: 1 1 50%;
+	min-width: 0;
+}
+
+//-------------------------------------------------
+.left {
+	display: flex;
+	flex-direction: column;
+	border-right: 1px solid #000;
+}
+
+.toolbar {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px $pad;
+	background: $bg-bar;
+
+	select, button {
+		font: inherit;
+		color: $fg;
+		background: $bg;
+		border: 1px solid #555;
+		border-radius: 3px;
+		padding: 3px 8px;
+	}
+	button { cursor: pointer; }
+
+	#status {
+		color: #6a737d;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		&.error { color: #ff6b6b; }
+	}
+}
+
+//-------------------------------------------------
+// a transparent <textarea> on top of a <pre> with the highlighted code.
+// both have to have exactly the same font, padding and wrapping.
+.editor {
+	position: relative;
+	flex: 1;
+
+	pre, textarea {
+		position: absolute;
+		inset: 0;
+		margin: 0;
+		padding: $pad;
+		border: 0;
+		font: $font;
+		tab-size: 2;
+		white-space: pre;
+		overflow: auto;
+	}
+	pre {
+		overflow: hidden;
+		pointer-events: none;
+
+		@each $name, $color in $syntax {
+			.#{$name} { color: $color; }
+		}
+	}
+	textarea {
+		resize: none;
+		outline: none;
+		background: transparent;
+		color: transparent;
+		caret-color: $fg;
+	}
+}
+
+//-------------------------------------------------
+.right {
+	position: relative;
+	overflow: hidden;
+
+	canvas { display: block; }
+}
