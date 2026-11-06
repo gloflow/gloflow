@@ -28,6 +28,14 @@ Build the web code (ts/js/css/html) of the user UI with `./run_build_web.sh` (re
 - Options: `--in-cont` (build in the `gf_builder_web` container, needs docker), `--page <name>` (one page only), `--app <name>`.
 - Host builds need `tsc`, `sass` and `uglifyjs` in PATH.
 
+## Building gf_lang
+
+Build all of gf_lang with `./run_build_gf_lang.sh` (repo root): the Go binaries/WASM (`gf_lang/go/build/`), the Rust headless
+renderer `gf_lang_render` (`gf_lang/rust/gf_lang_render`, wgpu, output `gf_lang/rust/build/`) and the TS experiments/examples (`gf_lang/build/`).
+Options: `--skip-go`, `--skip-rust`, `--skip-ts`, `--debug`, `--clean`, `--verbose`. Needs `go`, `cargo` and `tsc`.
+Server-side rendering is documented in `gf_lang/docs/scene.md`. If you add an output, update `run_build_gf_lang.sh`.
+The gf_lang Rust crate is not built by `run_build_rust.sh`.
+
 ## Building Rust code
 
 Build the Rust crates in `rust/` with `./run_build_rust.sh` (repo root). Do not run `cargo build` by hand

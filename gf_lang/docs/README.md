@@ -37,6 +37,17 @@ gf_lang is a domain-specific language (DSL) for generative 3D graphics and distr
 - State management and merging
 - Iteration limits and recursion control
 
+### [scene.md](scene.md)
+**Scene graph and headless (server-side) rendering:**
+- `GFsceneRecorder` extern API, scene JSON format
+- `gf_lang_scene` CLI and the Rust wgpu renderer `gf_lang_render`
+- Custom shader translation, differences from the browser engine
+
+### [headless_rendering.md](headless_rendering.md)
+**Design notes for server-side rendering:**
+- Why scene recording + a Rust wgpu renderer, options considered
+- Go to Rust handoff, design points, known issues, next steps
+
 ## Quick Start
 
 ### Basic Program Structure

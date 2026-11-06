@@ -6,6 +6,13 @@ and the project uses [Semantic Versioning](https://semver.org/) (while below 1.0
 Newest entry first; its version must equal the contents of `VERSION`. See [AGENTS.md](AGENTS.md).
 The Go code reports `VERSION` (embedded by the root `gloflow` package, `gloflow.go`) in `gf_core.GetSysReleseInfo`.
 
+## [0.18.0] - 2026-11-07
+
+### Added
+- gf_lang headless rendering: the interpreter can record the scene it builds as a JSON scene graph (`GFsceneRecorder`, `gf_lang.SceneRun`, new CLI `gf_lang_scene`), and a new Rust renderer `gf_lang_render` (`gf_lang/rust/gf_lang_render`, wgpu, no window needed) renders it to a PNG on the server, including custom GLSL shaders. Animations and video are not supported yet. See `gf_lang/docs/scene.md`.
+- `run_build_gf_lang.sh` builds all of gf_lang: Go binaries and WASM, the Rust renderer, and the TS experiments/examples.
+- `gf_lang/examples/shader_scene.gf` example with a custom shader.
+
 ## [0.17.1] - 2026-11-03
 
 ### Changed

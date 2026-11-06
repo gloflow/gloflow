@@ -1,0 +1,25 @@
+[package]
+name    = "gf_lang_render"
+version = "0.1.0"
+authors = ["Ivan Trajkovic <ivan.ebiz@gmail.com>"]
+edition = "2021"
+
+# Headless wgpu renderer for gf_lang scenes (see gf_lang/docs/scene.md).
+# Standalone crate (no Cargo workspace), builds a lib and the "gf_lang_render" binary.
+
+[lib]
+name = "gf_lang_render"
+
+[[bin]]
+name = "gf_lang_render"
+path = "src/main.rs"
+
+[dependencies]
+# "glsl" - GLSL frontend, needed to run the user shaders embedded in gf_lang programs
+wgpu       = { version = "30", features = ["glsl"] }
+pollster   = "1"
+bytemuck   = { version = "1", features = ["derive"] }
+glam       = "0.34"
+serde      = { version = "1", features = ["derive"] }
+serde_json = "1"
+png        = "0.18"

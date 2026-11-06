@@ -49,6 +49,11 @@ Additional structural notes (general context and host integration)
 ---
 
 # Build
+all parts (Go, Rust headless renderer, TS experiments/examples) with `./run_build_gf_lang.sh` in the gloflow root.
+Headless server-side rendering (scene graph + wgpu renderer): see docs/scene.md.
+
+individual builds:
+
 regular build for server execution:
 ```console
 foo@bar:~$ cd gf_lang_server
