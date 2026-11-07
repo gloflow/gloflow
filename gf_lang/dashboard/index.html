@@ -11,6 +11,7 @@
 	<div class="toolbar">
 		<select id="examples"></select>
 		<button id="run" title="Ctrl+Enter">Run</button>
+		<button id="render_server" title="Render the program on the server (headless Rust renderer) to a PNG">Render PNG</button>
 		<span id="status"></span>
 	</div>
 	<div class="editor">
@@ -20,6 +21,16 @@
 </div>
 
 <div class="pane right" id="render"></div>
+
+<!-- the PNG rendered on the server ("Render PNG" button). closed by the close button, Esc or a click on the backdrop -->
+<dialog id="server_render" class="server_render">
+	<div class="bar">
+		<span>rendered on the server</span>
+		<a id="server_render_download" download="gf_lang_render.png">download</a>
+		<button id="server_render_close">close</button>
+	</div>
+	<img id="server_render_img" alt="server render">
+</dialog>
 
 <script src="system.min.js"></script>
 <script src="system_named_register_ext.js"></script>

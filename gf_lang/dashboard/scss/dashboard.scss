@@ -114,3 +114,48 @@ body {
 
 	canvas { display: block; }
 }
+
+//-------------------------------------------------
+// the PNG rendered on the server ("Render PNG" button), in a modal dialog
+.server_render {
+	padding: 0;
+	border: 1px solid #000;
+	background: $bg;
+	color: $fg;
+	width: min(92vw, 1400px);
+	height: min(88vh, 900px);
+	flex-direction: column;
+
+	&[open] { display: flex; }
+
+	&::backdrop { background: rgba(0, 0, 0, 0.7); }
+
+	.bar {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 8px $pad;
+		background: $bg-bar;
+		color: #6a737d;
+
+		a { color: $fg; }
+		button {
+			margin-left: auto;
+			font: inherit;
+			color: $fg;
+			background: $bg;
+			border: 1px solid #555;
+			border-radius: 3px;
+			padding: 3px 8px;
+			cursor: pointer;
+		}
+	}
+
+	img {
+		flex: 1;
+		min-height: 0;
+		width: 100%;
+		object-fit: contain;
+		background: #000;
+	}
+}

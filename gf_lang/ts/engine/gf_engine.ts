@@ -630,6 +630,17 @@ export function init(p_shader_defs_map, p_container_element :HTMLElement = null)
 		//-------------------------------------------------
 		// CAMERA
 
+		// CAMERA__GET_VIEW - the view the user currently sees. the trackball controls move the camera,
+		// rotate its up vector and keep its target, so all three are needed to reproduce the view (ex. on the server).
+		"camera__get_view_fun": ()=>{
+			return {
+				"position_lst": [camera.position.x, camera.position.y, camera.position.z],
+				"target_lst":   [controls.target.x, controls.target.y, controls.target.z],
+				"up_lst":       [camera.up.x, camera.up.y, camera.up.z],
+				"fov_deg_f":    camera.fov,
+			};
+		},
+
 		// GET_CAMERA_PROPS
 		"camera__get_props_fun": ()=>{
 			const camera_props_map = {

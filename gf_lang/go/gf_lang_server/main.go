@@ -236,6 +236,7 @@ func main() {
 	config := &gf_lang_service.GFconfig{
 		DashboardDirStr: "./../../build/",
 		ExamplesDirStr:  "./../../examples/",
+		RendererBinPathStr: "./../../rust/build/gf_lang_render",
 	}
 
 	HTTPmux := http.NewServeMux()

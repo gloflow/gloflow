@@ -24,9 +24,12 @@ cd gf_lang/go/build
 `-fit`, `-max-entities` (default 1,000,000; the scene gets `"truncated": true` if hit).
 
 `gf_lang_render` reads the scene from `--scene FILE` (or stdin), flags: `--out`, `--width`, `--height`,
-`--samples 1|2|4` (MSAA, default 4), `--fit`.
+`--samples 1|2|4` (MSAA, default 4), `--fit`, and the explicit camera `--camera-pos x,y,z --camera-target x,y,z
+[--camera-up x,y,z] [--fov DEG]` (up defaults to +Y, fov to 75). `--camera-pos` and `--camera-target` go together,
+and the explicit camera takes precedence over `--fit`.
 
-`--fit` frames all entities, looking from the scene camera's direction. The browser engine has interactive
+`--fit` frames all entities, looking from the scene camera's direction. The camera flags render from an exact
+view instead (the dashboard passes the user's trackball view this way, through the `camera` field of `POST /v1/lang/render`). The browser engine has interactive
 trackball controls, a static render does not, so without `--fit` you get the fixed default camera
 (position 10,10,10 looking at the origin, fov 75).
 

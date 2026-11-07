@@ -12,7 +12,7 @@ pub mod renderer;
 pub mod scene;
 pub mod shader;
 
-pub use renderer::{render, Image, Options};
+pub use renderer::{camera_setup, render, CameraSetup, CameraView, Image, Options};
 pub use scene::Scene;
 
 /// Encodes an RGBA8 image as PNG bytes.

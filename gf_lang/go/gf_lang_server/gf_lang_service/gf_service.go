@@ -45,6 +45,7 @@ func InitService(pHTTPmux *http.ServeMux,
 	}
 
 	initDashboard(pHTTPmux, pConfig, pRuntimeSys)
+	initRender(pHTTPmux, pConfig, pRuntimeSys)
 
 	return nil
 }

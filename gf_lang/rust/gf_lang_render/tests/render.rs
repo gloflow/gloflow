@@ -2,7 +2,7 @@
 //! The render test is skipped if no adapter is available (set GF_RENDER_REQUIRE_GPU=1 to make it fail instead).
 
 use gf_lang_render::scene::{Material, Scene, ShaderDef};
-use gf_lang_render::{render, shader, Options};
+use gf_lang_render::{camera_setup, render, shader, CameraView, Options};
 use std::collections::HashMap;
 
 const SCENE: &str = r#"{
@@ -79,7 +79,7 @@ fn rejects_unmatched_varying() {
 #[test]
 fn renders_cube() {
     let scene = Scene::from_json(SCENE.as_bytes()).unwrap();
-    let opts = Options { width: 64, height: 64, samples: 1, fit: false };
+    let opts = Options { width: 64, height: 64, samples: 1, fit: false, camera: None };
     let img = match render(&scene, &opts) {
         Ok(i) => i,
         Err(e) if e.contains("no GPU adapter") && std::env::var("GF_RENDER_REQUIRE_GPU").is_err() => {
@@ -92,4 +92,57 @@ fn renders_cube() {
     let px = |x: usize, y: usize| &img.rgba[(y * 64 + x) * 4..(y * 64 + x) * 4 + 4];
     assert_eq!(px(32, 32), &[255, 0, 0, 255], "cube in the center is red");
     assert_eq!(px(1, 1), &[255, 255, 255, 255], "corner is background");
+}
+
+//-------------------------------------------------
+// camera selection (no GPU needed)
+
+fn view(pos: [f32; 3], target: [f32; 3], up: [f32; 3], fov: f32) -> CameraView {
+    CameraView { position: pos, target, up, fov_deg: fov }
+}
+
+#[test]
+fn scene_camera_used_without_override() {
+    let s = Scene::from_json(SCENE.as_bytes()).unwrap();
+    let setup = camera_setup(&s, &Options::default()).unwrap();
+    assert_eq!(setup.eye.to_array(), [0.0, 0.0, 5.0]);
+    assert_eq!(setup.target.to_array(), [0.0, 0.0, 0.0]);
+    assert_eq!(setup.fov_deg, 60.0);
+}
+
+#[test]
+fn explicit_camera_overrides_scene_camera_and_fit() {
+    let s = Scene::from_json(SCENE.as_bytes()).unwrap();
+    let opts = Options {
+        fit: true, // ignored when a camera is given
+        camera: Some(view([3.0, 4.0, 5.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], 75.0)),
+        ..Options::default()
+    };
+    let setup = camera_setup(&s, &opts).unwrap();
+    assert_eq!(setup.eye.to_array(), [3.0, 4.0, 5.0]);
+    assert_eq!(setup.target.to_array(), [1.0, 0.0, 0.0]);
+    assert_eq!(setup.up.to_array(), [0.0, 1.0, 0.0]);
+    assert_eq!(setup.fov_deg, 75.0);
+}
+
+#[test]
+fn explicit_camera_up_is_kept_when_rolled() {
+    // the trackball rotates `up`, so it is not always +Y. it must be passed through as-is
+    let s = Scene::from_json(SCENE.as_bytes()).unwrap();
+    let opts = Options { camera: Some(view([10.0, 10.0, 10.0], [0.0; 3], [0.3, 0.9, 0.1], 75.0)), ..Options::default() };
+    let setup = camera_setup(&s, &opts).unwrap();
+    assert_eq!(setup.up.to_array(), [0.3, 0.9, 0.1]);
+}
+
+#[test]
+fn invalid_cameras_are_rejected() {
+    let same_point = view([1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0], 75.0);
+    let parallel_up = view([0.0, 0.0, 5.0], [0.0, 0.0, 0.0], [0.0, 0.0, 1.0], 75.0);
+    let bad_fov = view([0.0, 0.0, 5.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0], 180.0);
+    let not_finite = view([f32::NAN, 0.0, 5.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0], 75.0);
+    let zero_up = view([0.0, 0.0, 5.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], 75.0);
+    for bad in [same_point, parallel_up, bad_fov, not_finite, zero_up] {
+        assert!(bad.validate().is_err(), "expected error for {bad:?}");
+    }
+    assert!(view([0.0, 0.0, 5.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0], 75.0).validate().is_ok());
 }

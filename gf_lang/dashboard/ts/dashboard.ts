@@ -35,8 +35,14 @@ const status_el       = document.getElementById("status");
 const code_el         = document.getElementById("code")     as HTMLTextAreaElement;
 const highlight_el    = document.getElementById("highlight");
 const render_el       = document.getElementById("render");
+const render_server_btn   = document.getElementById("render_server")       as HTMLButtonElement;
+const server_render_el    = document.getElementById("server_render") as HTMLDialogElement;
+const server_render_img   = document.getElementById("server_render_img")    as HTMLImageElement;
+const server_render_dl    = document.getElementById("server_render_download") as HTMLAnchorElement;
+const server_render_close = document.getElementById("server_render_close")  as HTMLButtonElement;
 
-var engine_api_map = null;
+var engine_api_map       = null;
+var server_render_url_str = null;
 
 //-------------------------------------------------
 async function main() {
@@ -57,6 +63,12 @@ async function main() {
 	// UI
 	examples_select.onchange = ()=> { set_code(examples_select.value); run(); };
 	run_btn.onclick          = run;
+	render_server_btn.onclick  = render_on_server;
+	server_render_close.onclick = hide_server_render;
+	// a click on the backdrop targets the dialog itself (the image fills it), so it closes
+	server_render_el.onclick    = (p_e)=> { if (p_e.target === server_render_el) hide_server_render(); };
+	// Esc and the close button both end up here, so the object URL is always released
+	server_render_el.onclose    = release_server_render_url;
 	code_el.oninput          = update_highlight;
 	code_el.onscroll         = sync_scroll;
 	code_el.onkeydown        = (p_e)=> {
@@ -98,6 +110,8 @@ function set_status(p_msg_str :string, p_error_bool = false) {
 //-------------------------------------------------
 function run() {
 
+	hide_server_render();
+
 	// PARSE
 	var program_ast_lst;
 	try {
@@ -116,6 +130,77 @@ function run() {
 	const error_str = gf_lang_run(program_ast_lst, extern_api_map);
 	if (error_str) set_status("run error: " + error_str, true);
 	else           set_status("ok");
+}
+
+//-------------------------------------------------
+// POST the program AST to the server, which runs it and renders it to a PNG (headless wgpu renderer).
+// the PNG is sized to the render pane and shown over the live render until the next run or close.
+async function render_on_server() {
+
+	var program_ast_lst;
+	try {
+		program_ast_lst = parse_program(code_el.value);
+	} catch (e) {
+		set_status("parse error: " + e.message, true);
+		return;
+	}
+
+	const width_int  = Math.max(1, Math.min(4096, Math.round(render_el.clientWidth)));
+	const height_int = Math.max(1, Math.min(4096, Math.round(render_el.clientHeight)));
+
+	// the camera the user has set up in the editor's live render (the trackball view).
+	// without an engine yet (nothing ran), the server frames the scene itself.
+	const camera_map = engine_api_map ? engine_api_map["camera__get_view_fun"]() : null;
+	const body_map   = {"program_ast_lst": program_ast_lst};
+	if (camera_map) {
+		body_map["camera"] = {
+			"position": camera_map["position_lst"],
+			"target":   camera_map["target_lst"],
+			"up":       camera_map["up_lst"],
+			"fov_deg":  camera_map["fov_deg_f"],
+		};
+	}
+
+	render_server_btn.disabled = true;
+	set_status("rendering on the server...");
+	try {
+		const response = await fetch(`/v1/lang/render?width=${width_int}&height=${height_int}&fit=1`, {
+			method:  "POST",
+			headers: {"Content-Type": "application/json"},
+			body:    JSON.stringify(body_map),
+		});
+		if (!response.ok) {
+			set_status("server render error: " + (await response.text()).trim(), true);
+			return;
+		}
+		show_server_render(await response.blob());
+		set_status("rendered on the server");
+	} catch (e) {
+		set_status("server render error: " + e.message, true);
+	} finally {
+		render_server_btn.disabled = false;
+	}
+}
+
+function show_server_render(p_blob :Blob) {
+	release_server_render_url();
+	server_render_url_str = URL.createObjectURL(p_blob);
+	server_render_img.src = server_render_url_str;
+	server_render_dl.href = server_render_url_str;
+	if (!server_render_el.open) server_render_el.showModal();
+}
+
+function hide_server_render() {
+	if (server_render_el.open) server_render_el.close(); // fires "close" -> release_server_render_url()
+	release_server_render_url();
+}
+
+function release_server_render_url() {
+	if (server_render_url_str) {
+		URL.revokeObjectURL(server_render_url_str);
+		server_render_url_str = null;
+	}
+	server_render_img.removeAttribute("src");
 }
 
 //-------------------------------------------------

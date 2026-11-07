@@ -60,11 +60,11 @@ Separate process, scene as JSON on stdin or a file (`gf_lang_scene -render` runs
 - `GFstateChange` has duplicate JSON tags (`RotationXf` and `RotationZf` are both `rotation_x_f`), so `encoding/json` drops both fields. The recorder reads the struct directly and is unaffected; the WASM/JS path may be.
 - Animations are recorded (`animation` on cubes) but ignored by the renderer; `rpc_call`/`rpc_serve` are no-ops while recording.
 - `.gf` files are JSON, so shaders must be single-line strings with `\n` escapes.
-- No HTTP endpoint yet (`/v1/lang/run` is still a stub).
+- `/v1/lang/run` is still a stub. `POST /v1/lang/render` (used by the dashboard's "Render PNG" button) runs one renderer process per request, max 2 at a time, with a 60s timeout, and no cache.
 
 ## Next steps
 
-1. HTTP endpoint `/v1/lang/render`: run, render via a pool of renderer processes with timeouts, return PNG; cache by hash of (code, seed, params).
+1. Cache `/v1/lang/render` results by hash of (program, camera, size); the renderer runs as a process per request for now.
 2. Seed for the interpreter RNG, for reproducible renders.
 3. Golden-image tests against the browser output.
 4. Animation sampling by time, then video (ffmpeg) frames.

@@ -6,6 +6,17 @@ and the project uses [Semantic Versioning](https://semver.org/) (while below 1.0
 Newest entry first; its version must equal the contents of `VERSION`. See [AGENTS.md](AGENTS.md).
 The Go code reports `VERSION` (embedded by the root `gloflow` package, `gloflow.go`) in `gf_core.GetSysReleseInfo`.
 
+## [0.20.0] - 2026-11-08
+
+### Added
+- gf_lang dashboard "Render PNG" button: the program is rendered on the server with the headless Rust renderer (`gf_lang_render`) and the PNG is shown in a modal (close with the button, Esc or a backdrop click; download link included).
+- `POST /v1/lang/render` on the gf_lang server (`?width=`, `?height=`, `?fit=`): runs the program with the scene recorder and returns a PNG. The dashboard sends the program AST and the camera the user has in the live preview, so the server image has the same view as the preview.
+- `gf_lang_render` camera flags `--camera-pos`, `--camera-target`, `--camera-up`, `--fov`, to render from an explicit view. They take precedence over `--fit`.
+- The three.js engine reports the current camera view (`camera__get_view_fun`: position, trackball target, up vector, fov).
+
+### Changed
+- `gf_lang_render` derives the `cameraPosition` built-in of user shaders from the actual camera position.
+
 ## [0.19.0] - 2026-11-07
 
 ### Added

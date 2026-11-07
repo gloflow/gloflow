@@ -27,12 +27,89 @@ pub struct Options {
     /// ignore the scene camera position and frame all entities, looking from the scene camera's direction
     /// (the browser engine has interactive trackball controls, a static render has no such luxury)
     pub fit: bool,
+    /// the view to render from, instead of the scene camera (ex. the view the user has in the dashboard).
+    /// takes precedence over `fit`.
+    pub camera: Option<CameraView>,
 }
 
 impl Default for Options {
     fn default() -> Self {
-        Options { width: 1024, height: 768, samples: 4, fit: false }
+        Options { width: 1024, height: 768, samples: 4, fit: false, camera: None }
     }
+}
+
+/// An explicit camera: the same three.js-style values the browser engine has (position, look-at
+/// target, up vector, vertical fov in degrees).
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct CameraView {
+    pub position: [f32; 3],
+    pub target: [f32; 3],
+    pub up: [f32; 3],
+    pub fov_deg: f32,
+}
+
+impl CameraView {
+    pub fn validate(&self) -> Result<(), String> {
+        let all_finite = |v: &[f32; 3]| v.iter().all(|x| x.is_finite());
+        if !(all_finite(&self.position) && all_finite(&self.target) && all_finite(&self.up)) {
+            return Err("camera values must be finite numbers".into());
+        }
+        if !(self.fov_deg > 0.0 && self.fov_deg < 180.0) {
+            return Err("camera fov_deg must be between 0 and 180".into());
+        }
+        let dir = Vec3::from(self.target) - Vec3::from(self.position);
+        if dir.length_squared() < 1e-12 {
+            return Err("camera position and target are the same point".into());
+        }
+        let up = Vec3::from(self.up).normalize_or_zero();
+        if up == Vec3::ZERO {
+            return Err("camera up must not be zero".into());
+        }
+        if dir.normalize().cross(up).length_squared() < 1e-12 {
+            return Err("camera up must not be parallel to the view direction".into());
+        }
+        Ok(())
+    }
+}
+
+/// Where the camera is and how it is oriented, for given options and scene.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct CameraSetup {
+    pub eye: Vec3,
+    pub target: Vec3,
+    pub up: Vec3,
+    pub fov_deg: f32,
+}
+
+/// The camera for `opts`: the explicit camera if given, else the scene camera (framed on the
+/// entities with `fit`).
+pub fn camera_setup(scene: &Scene, opts: &Options) -> Result<CameraSetup, String> {
+    if let Some(c) = &opts.camera {
+        c.validate()?;
+        return Ok(CameraSetup {
+            eye: Vec3::from(c.position),
+            target: Vec3::from(c.target),
+            up: Vec3::from(c.up),
+            fov_deg: c.fov_deg,
+        });
+    }
+
+    let cam = &scene.camera;
+    let mut eye = Vec3::from(cam.position);
+    let mut target = Vec3::from(cam.target);
+    if opts.fit {
+        if let Some((center, radius)) = scene_bounds(scene) {
+            let dir = (eye - target).normalize_or(Vec3::ONE.normalize());
+            let dist = radius / (cam.fov_deg.to_radians() * 0.5).sin().min((cam.fov_deg.to_radians() * 0.5 * opts.width as f32 / opts.height as f32).sin()) * 1.1;
+            target = center;
+            eye = center + dir * dist;
+        }
+    }
+    let mut up = Vec3::Y;
+    if (target - eye).normalize_or_zero().dot(up).abs() > 0.9999 {
+        up = Vec3::Z;
+    }
+    Ok(CameraSetup { eye, target, up, fov_deg: cam.fov_deg })
 }
 
 pub struct Image {
@@ -217,24 +294,10 @@ pub fn render(scene: &Scene, opts: &Options) -> Result<Image, String> {
 
     //------------------------
     // CAMERA
-    let cam = &scene.camera;
-    let mut eye = Vec3::from(cam.position);
-    let mut target = Vec3::from(cam.target);
-    if opts.fit {
-        if let Some((center, radius)) = scene_bounds(scene) {
-            let dir = (eye - target).normalize_or(Vec3::ONE.normalize());
-            let dist = radius / (cam.fov_deg.to_radians() * 0.5).sin().min((cam.fov_deg.to_radians() * 0.5 * opts.width as f32 / opts.height as f32).sin()) * 1.1;
-            target = center;
-            eye = center + dir * dist;
-        }
-    }
-    let mut up = Vec3::Y;
-    if (target - eye).normalize_or_zero().dot(up).abs() > 0.9999 {
-        up = Vec3::Z;
-    }
-    let view = look_at_rh(eye, target, up);
+    let setup = camera_setup(scene, opts)?;
+    let view = look_at_rh(setup.eye, setup.target, setup.up);
     let aspect = opts.width as f32 / opts.height as f32;
-    let proj = perspective_rh(cam.fov_deg.to_radians(), aspect, cam.near, cam.far);
+    let proj = perspective_rh(setup.fov_deg.to_radians(), aspect, scene.camera.near, scene.camera.far);
     let view_proj = proj * view;
 
     let cam_buf = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
@@ -494,7 +557,7 @@ pub fn render(scene: &Scene, opts: &Options) -> Result<Image, String> {
         for c in [normal_m.x_axis, normal_m.y_axis, normal_m.z_axis] {
             b.extend_from_slice(&[c.x, c.y, c.z, 0.0]);
         }
-        b.extend_from_slice(&[eye.x, eye.y, eye.z, 0.0]);
+        b.extend_from_slice(&[setup.eye.x, setup.eye.y, setup.eye.z, 0.0]);
         debug_assert_eq!(b.len() * 4, shader::BUILTIN_BLOCK_SIZE);
 
         let builtin_buf = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
