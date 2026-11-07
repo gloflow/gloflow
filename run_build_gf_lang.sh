@@ -117,7 +117,6 @@ if [ "$DO_TS" = 1 ]; then
     echo ">>> BUILD TS gf_lang (experiments/examples)"
     cd "$LANG_DIR"
     tsc --module system --target es2016 --outFile "$WEB_BUILD_DIR/gf_lang.js" \
-        ts/gf_lang.ts \
         test/gf_lang_test.ts
 
     cp test/gf_lang_test.html "$WEB_BUILD_DIR/gf_lang_test.html"

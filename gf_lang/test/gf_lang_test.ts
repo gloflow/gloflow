@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="./../../web/src/d/jquery.d.ts" />
 
-import * as gf_lang     from "../ts/gf_lang";
 import * as gf_engine   from "../ts/engine/gf_engine";
 import * as gf_ide      from "../ts/ide/gf_ide";
 
@@ -300,5 +299,4 @@ async function run() {
     }
 
     gf_lang_run(shader_test__program_ast_lst, extern_api_map);
-    // gf_lang.run(form_experiment__ast_lst);
 }

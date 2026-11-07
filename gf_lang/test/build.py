@@ -10,7 +10,6 @@ print('RUNNING TS COMPILE...')
 
 output_file_str = f'{modd_str}/build/gf_lang.js'
 ts_files_lst = [
-	f'{modd_str}/../ts/gf_lang.ts',
     f'{modd_str}/gf_lang_test.ts'
 ]
 
