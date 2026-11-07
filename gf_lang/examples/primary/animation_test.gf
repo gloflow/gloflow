@@ -1,0 +1,6 @@
+[
+    ["lang_v", "0.0.4"],
+    ["set", "color-background", ["rgb", 0.9, 0.9, 0.9]],
+    [["set", "color", ["rgb", 0.2, 0.2, 0.2]], ["set", "material", ["shader", "gf_shader_test"]], ["set", "material_prop", ["gf_shader_test", "shader_uniform", ["i", 0.8]]], ["set", "material_prop", ["gf_shader_test", "shader_uniform", ["cr", "$cr"]]], ["set", "material_prop", ["gf_shader_test", "shader_uniform", ["cg", "$cg"]]], ["set", "material_prop", ["gf_shader_test", "shader_uniform", ["cb", "$cb"]]], ["x", 2, "y", 2, "z", 2], ["animate", [["x", 10], ["z", 2], ["y", 20]], 2, "repeat"], "cube"],
+    ["shader", "gf_shader_test", ["uniforms", [["i", "float", 0.1], ["cr", "float", 0.5], ["cg", "float", 0.5], ["cb", "float", 0.5]]], ["vertex", "varying vec3 normal_f;\nvarying vec3 local_pos_v3;\nvoid main() {\nnormal_f     = normalize(normalMatrix * normal);\nlocal_pos_v3 = position;\nvec4 pos     = modelViewMatrix * vec4(position, 1.0);\ngl_Position  = projectionMatrix * pos;\n}"], ["fragment", "precision highp float;\nuniform float i;\nuniform float cr;\nuniform float cg;\nuniform float cb;\nvarying vec3 normal_f;\nvarying vec3 local_pos_v3;\nvoid main() {\nvec3 light_direction_v3 = vec3(0.8, 1, 0.8);\nvec3 color_v3           = vec3(cr, cg, cb);\nfloat diffuse_f = .5 + dot(normal_f, light_direction_v3);\ngl_FragColor    = vec4(diffuse_f * color_v3, 1.0);\n}"]]
+]

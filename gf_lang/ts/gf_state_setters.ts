@@ -79,6 +79,11 @@ export function exec__expr(p_setter_type_str :string,
         }
 
         else {
+            // color can be a reference to a user-defined variable holding a hex string
+            if (typeof p_vals == "string" && p_vals.startsWith("$")) {
+                p_vals = gf_lang_utils.var_eval(p_vals, p_state_map);
+                if (p_vals === undefined) throw "color variable is not defined";
+            }
             if (typeof p_vals != "string") throw "setting color has to be either an array or string";
             if (!p_vals.startsWith("#")) throw "setting color with a string has to be done in hex format starting with #";
 

@@ -63,6 +63,8 @@ func initDashboard(pHTTPmux *http.ServeMux,
 
 //-------------------------------------------------
 
+// loads example programs from the dir itself, and from its "primary/" subdir.
+// examples from the subdir are named "primary/<name>".
 func loadExamples(pDirPathStr string) ([]*GFexample, error) {
 
 	filesLst, err := filepath.Glob(filepath.Join(pDirPathStr, "*.gf"))
@@ -71,6 +73,13 @@ func loadExamples(pDirPathStr string) ([]*GFexample, error) {
 	}
 	sort.Strings(filesLst)
 
+	primaryFilesLst, err := filepath.Glob(filepath.Join(pDirPathStr, "primary", "*.gf"))
+	if err != nil {
+		return nil, err
+	}
+	sort.Strings(primaryFilesLst)
+	filesLst = append(filesLst, primaryFilesLst...)
+
 	examplesLst := []*GFexample{}
 	for _, fileStr := range filesLst {
 		codeBytesLst, err := os.ReadFile(fileStr)
@@ -78,6 +87,9 @@ func loadExamples(pDirPathStr string) ([]*GFexample, error) {
 			return nil, err
 		}
 		nameStr := strings.TrimSuffix(filepath.Base(fileStr), ".gf")
+		if filepath.Base(filepath.Dir(fileStr)) == "primary" {
+			nameStr = "primary/" + nameStr
+		}
 		examplesLst = append(examplesLst, &GFexample{nameStr, string(codeBytesLst)})
 	}
 	return examplesLst, nil

@@ -1,0 +1,12 @@
+[
+    ["lang_v", "0.0.3"],
+    ["$extrusion_color", "#6881cf"],
+    ["$extrusion_color_2", "#42b0f5"],
+    ["$extrusion_color_3", "#f5bf42"],
+    ["$extrusion_color_4", "#f59842"],
+    ["set", "color-background", ["rgb", 0.9, 0.9, 0.9]],
+    [["set", "color", "$extrusion_color"], ["R1"], ["set", "material", ["wireframe", true]], ["set", "color", "$extrusion_color_2"], ["set", "scale", [1.2, 1.2, 1.2]], [["x", 10], "R1"], ["set", "material", ["wireframe", false]], ["set", "color", "$extrusion_color_3"], ["set", "scale", [1.3, 1.3, 1.3]], [["x", 20], "R1"], ["set", "color", "$extrusion_color_4"], ["set", "scale", [1.4, 1.4, 1.4]], [["x", 40], "R1"]],
+    ["rule", "R1", [["iters_max", 200]], [[["y", 3, "z", -1, "rz", 0.1, "sx", -0.01, "sy", -0.01, "sz", -0.01, "cr", -0.002, "cg", -0.002, "cb", -0.002], "sphere"], ["R1"]]],
+    ["rule", "R1", [["iters_max", 200]], [[["y", 3.5, "z", 1, "rz", 0.1, "sx", -0.01, "sy", -0.01, "sz", -0.01, "cr", -0.002, "cg", -0.002, "cb", -0.002], "sphere"], ["R1"]]],
+    ["rule", "R1", [["iters_max", 200]], [[["y", -3.5, "z", -1, "rz", 0.1, "sx", -0.01, "sy", -0.01, "sz", -0.01, "cr", -0.002, "cg", -0.002, "cb", -0.002], "sphere"], ["R1"]]]
+]

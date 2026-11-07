@@ -128,6 +128,18 @@ func execStateSetterExpr(pSetterTypeStr string,
         }
 
     } else if pPropertyNameStr == "color" {
+
+        // color can be a reference to a user-defined variable holding a hex string
+        if varRefStr, ok := pVals.(string); ok && isVar(varRefStr) {
+            varVal, err := varEval(varRefStr, pState)
+            if err != nil {
+                return nil, err
+            }
+            if varVal == nil {
+                return nil, errors.New("color variable " + varRefStr + " is not defined")
+            }
+            pVals = varVal.Val
+        }
         
         //------------------------------------
         // COLOR

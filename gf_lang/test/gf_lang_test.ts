@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="./../../web/src/d/jquery.d.ts" />
 
 import * as gf_lang     from "../ts/gf_lang";
-import * as gf_examples from "./gf_examples";
 import * as gf_engine   from "../ts/engine/gf_engine";
 import * as gf_ide      from "../ts/ide/gf_ide";
 
@@ -53,21 +52,44 @@ function test_global() {
 }
 
 //-------------------------------------------------
-function run() {
-    const examples_map                        = gf_examples.get();
-    const first_scene__program_ast_lst        = examples_map["first_scene__program_ast_lst"];
-    const rules_test__program_ast_lst         = examples_map["rules_test__program_ast_lst"];
-    const multi_rule_test__program_ast_lst    = examples_map["multi_rule_test__program_ast_lst"];
-    const color_test__program_ast_lst         = examples_map["color_test__program_ast_lst"];
-    const conditional_test__program_ast_lst   = examples_map["conditional_test__program_ast_lst"];
-    const conditional_test_2__program_ast_lst = examples_map["conditional_test_2__program_ast_lst"];
-    const form_experiment__ast_lst            = examples_map["form_experiment__ast_lst"];
-    const sphere_test__program_ast_lst        = examples_map["sphere_test__program_ast_lst"];
-    const shader_test__program_ast_lst        = examples_map["shader_test__program_ast_lst"];
-    const shader_example__program_ast_lst     = examples_map["shader_example__program_ast_lst"];
-    const planes_world__program_ast_lst       = examples_map["planes_world__program_ast_lst"];
-    const gray_fabric__program_ast_lst        = examples_map["gray_fabric__program_ast_lst"];
-    const rotation_pivot_setters_test__program_ast_lst = examples_map["rotation_pivot_setters_test__program_ast_lst"];
+const EXAMPLES_DIR_STR = "./../examples/primary";
+
+// loads .gf programs (JSON with // comments) and returns a map of name -> program AST
+async function load_examples(p_names_lst :string[]) {
+    const examples_map = {};
+    for (const name_str of p_names_lst) {
+        const resp = await fetch(`${EXAMPLES_DIR_STR}/${name_str}.gf`);
+        if (!resp.ok) throw `failed to load example ${name_str}`;
+        const code_str = await resp.text();
+
+        // remove comments, same as the Go loader does
+        const clean_str = code_str.split("\n").map(l => l.replace(/\/\/.*$/, "")).join("\n");
+        examples_map[name_str] = JSON.parse(clean_str);
+    }
+    return examples_map;
+}
+
+//-------------------------------------------------
+async function run() {
+    // the example programs live as .gf files in examples/primary/
+    const examples_map = await load_examples([
+        "first_scene",
+        "rules_test",
+        "multi_rule_test",
+        "color_test",
+        "conditional_test",
+        "conditional_test_2",
+        "form_experiment",
+        "sphere_test",
+        "shader_test",
+        "shader_example",
+        "planes_world",
+        "shader_colors_and_sys_funs_test",
+        "animation_test",
+        "gray_fabric",
+        "rotation_pivot_setters_test",
+    ]);
+    const shader_test__program_ast_lst = examples_map["shader_test"];
 
 
     const stripe_color_str   = "#ff4400";

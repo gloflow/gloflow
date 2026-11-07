@@ -57,9 +57,25 @@ export function run(p_program_ast_lst) {
     // AST_EXECUTION
 
     var i=0;
+
+    // GLOBAL_VARS - top-level variable declarations (["$name", value]),
+    // visible to all following root expressions and rules.
+    const global_vars_map = {};
+
     for (let root_expression_lst of expanded_program_ast_lst) {
 
+        // VAR_DECLARATION
+        if (root_expression_lst.length == 2 &&
+            typeof root_expression_lst[0] == "string" &&
+            root_expression_lst[0].startsWith("$") &&
+            !Array.isArray(root_expression_lst[1])) {
+            global_vars_map[root_expression_lst[0]] = root_expression_lst[1];
+            i+=1;
+            continue;
+        }
+
         const root_state_map = gf_state.create_new(null);
+        Object.assign(root_state_map["vars_map"], global_vars_map);
 
         //------------------------------------
         // STATE_FAMILY_STACK

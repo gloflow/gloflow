@@ -1,0 +1,20 @@
+[
+    ["lang_v", "0.0.3"],
+    ["set", "color-background", ["rgb", 0.9, 0.9, 0.9]],
+    [["set", "material", ["wireframe", true]], ["set", "material", ["shader", "gf_shader_test"]], ["set", "material_prop", ["gf_shader_test", "shader_uniform", ["i", 0.3]]], ["y", -5], ["sx", -0.7, "sy", -0.7, "sz", -0.7], ["sphere"]],
+    [["set", "material", ["shader", "gf_shader_test"]], ["set", "material_prop", ["gf_shader_test", "shader_uniform", ["i", 0.8]]], ["cube"]],
+    [["sx", -0.8, "sy", -0.8, "sz", -0.8], ["y", 1.5, "x", 2], "R1"],
+    [["sx", -0.8, "sy", -0.8, "sz", -0.8], ["y", 1.5, "x", -2], "R1"],
+    [["sx", -0.8, "sy", -0.8, "sz", -0.8], ["y", 1.5, "z", -2], "R1"],
+    [["sx", -0.8, "sy", -0.8, "sz", -0.8], ["y", 1.5, "z", 2], "R1"],
+    [["set", "scale", [0.13, 0.13, 0.13]], ["x", 1], "R2"],
+    [["set", "scale", [0.1, 0.1, 0.1]], ["x", 2], "R2"],
+    [["set", "scale", [0.05, 0.05, 0.05]], ["x", 3], "R3"],
+    ["rule", "R1", [["iters_max", 40]], [["set", "color", "#42b0f5"], [["sx", -0.005, "sy", -0.005, "sz", -0.005], ["y", 0.2, "ry", 0.01]], ["x", -0.1, "z", -0.1], ["cube"], ["R1"]]],
+    ["rule", "R1", [["iters_max", 40]], [["set", "color", "#42b0f5"], [["sx", -0.005, "sy", -0.005, "sz", -0.005], ["y", 0.2, "ry", 0.01]], ["x", 0.1, "z", 0.1], ["cube"], ["R1"]]],
+    ["rule", "R1", [["iters_max", 40]], [["set", "color", "#42b0f5"], [["sx", -0.005, "sy", -0.005, "sz", -0.005], ["y", 0.2, "ry", 0.01]], ["x", -0.1, "z", 0.1], ["cube"], ["R1"]]],
+    ["rule", "R1", [["iters_max", 40]], [["set", "color", "#42b0f5"], [["sx", -0.005, "sy", -0.005, "sz", -0.005], ["y", 0.2, "ry", 0.01]], ["x", 0.1, "z", -0.1], ["cube"], ["R1"]]],
+    ["rule", "R2", [["iters_max", 31]], [["ry", 0.2], ["cube"], ["R2"]]],
+    ["rule", "R3", [["iters_max", 31]], [["ry", 0.2], ["cube"], ["R3"]]],
+    ["shader", "gf_shader_test", ["uniforms", [["i", "float", 0.1]]], ["vertex", "varying vec3 fNormal;\nvarying vec3 worldPos;\nvarying vec3 localPos;\nvoid main() {\nfNormal  = normalize(normalMatrix * normal);\nvec4 pos = modelViewMatrix * vec4(position, 1.0);\nworldPos = pos.xyz;\nlocalPos = position;\ngl_Position = projectionMatrix * pos;\n}"], ["fragment", "precision highp float;\nuniform float i;\nvarying vec3 fNormal;\nvarying vec3 localPos;\nfloat pulse(float val, float dst) {\nreturn floor(mod(val * dst, 1.0) + i);\n}\nvoid main() {\nvec3 dir   = vec3(0, 1, 0);\nvec3 cpos  = localPos;\nvec3 color = vec3(1, pulse(cpos.y, 2.0), 0);\nfloat diffuse = .5 + dot(fNormal, dir);\ngl_FragColor  = vec4(diffuse * color, 1.0);\n}\n/*void main() {\ngl_FragColor = vec4(1, 1, 0, 1.0);\n}*/"]]
+]
