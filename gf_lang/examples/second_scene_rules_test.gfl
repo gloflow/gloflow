@@ -1,0 +1,21 @@
+lang_v 0.1
+cube
+R1
+R2
+R3
+R4
+rule R1:
+    repeat 2:
+        x=1 y=1.5 rz=0.05 cube
+    R1
+rule R2:
+    repeat 3:
+        x=2 y=2.5 z=0.5 rz=0.1 cube
+    R2
+rule R3:
+    repeat 4:
+        x=0.5 z=0.5 rz=0.2 cube
+    R3
+rule R4:
+    x=1 z=1 y=0.5 rz=0.4 cube
+    R4

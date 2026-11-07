@@ -1,0 +1,41 @@
+lang_v 0.3
+color-background = rgb(0.9 0.9 0.9)
+material = wireframe(true) | color = rgb(0.2 0.3 0.8) | sphere()
+material = shader(gf_shader_test) | material_prop = gf_shader_test(shader_uniform i(0.3)) | x=30 sphere
+material = shader(gf_shader_test) |
+    material_prop = gf_shader_test(shader_uniform i(0.7)) |
+    sx=-0.4 sy=-0.4 sz=-0.4 |
+    x=50 rz=0.6 sphere
+material = shader(gf_shader_test) |
+    material_prop = gf_shader_test(shader_uniform i(0.5)) |
+    x=-25 y=15 rx=1 cube
+shader gf_shader_test:
+    uniform i float 0.1
+    vertex """
+        varying vec3 fNormal;
+        varying vec3 worldPos;
+        varying vec3 localPos;
+        void main() {
+        fNormal  = normalize(normalMatrix * normal);
+        vec4 pos = modelViewMatrix * vec4(position, 1.0);
+        worldPos = pos.xyz;
+        localPos = position;
+        gl_Position = projectionMatrix * pos;
+        }
+    """
+    fragment """
+        precision highp float;
+        uniform float i;
+        varying vec3 fNormal;
+        varying vec3 localPos;
+        float pulse(float val, float dst) {
+        return floor(mod(val * dst, 1.0) + i);
+        }
+        void main() {
+        vec3 dir   = vec3(0.5, 1, 0);
+        vec3 cpos  = localPos;
+        vec3 color = vec3(1, pulse(cpos.y, 10.0), 1);
+        float diffuse = .5 + dot(fNormal, dir);
+        gl_FragColor  = vec4(diffuse * color, 1.0);
+        }
+    """

@@ -1,0 +1,41 @@
+lang_v 0.0.4
+color-background = rgb(0.9 0.9 0.9)
+color = rgb(0.2 0.2 0.2) |
+    material = shader(gf_shader_test) |
+    material_prop = gf_shader_test(shader_uniform i(0.8)) |
+    material_prop = gf_shader_test(shader_uniform cr($cr)) |
+    material_prop = gf_shader_test(shader_uniform cg($cg)) |
+    material_prop = gf_shader_test(shader_uniform cb($cb)) |
+    x=2 y=2 z=2 |
+    animate {x=10 | z=2 | y=20} 2 "repeat" |
+    cube
+shader gf_shader_test:
+    uniform i float 0.1
+    uniform cr float 0.5
+    uniform cg float 0.5
+    uniform cb float 0.5
+    vertex """
+        varying vec3 normal_f;
+        varying vec3 local_pos_v3;
+        void main() {
+        normal_f     = normalize(normalMatrix * normal);
+        local_pos_v3 = position;
+        vec4 pos     = modelViewMatrix * vec4(position, 1.0);
+        gl_Position  = projectionMatrix * pos;
+        }
+    """
+    fragment """
+        precision highp float;
+        uniform float i;
+        uniform float cr;
+        uniform float cg;
+        uniform float cb;
+        varying vec3 normal_f;
+        varying vec3 local_pos_v3;
+        void main() {
+        vec3 light_direction_v3 = vec3(0.8, 1, 0.8);
+        vec3 color_v3           = vec3(cr, cg, cb);
+        float diffuse_f = .5 + dot(normal_f, light_direction_v3);
+        gl_FragColor    = vec4(diffuse_f * color_v3, 1.0);
+        }
+    """

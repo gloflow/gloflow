@@ -1,0 +1,86 @@
+lang_v 0.0.3
+$feather_color_1 #e2b31d
+$feather_color_3 #761f25
+$feather_color_9 #ac8c7c
+color-background = rgb(0.9 0.9 0.9)
+iters_max = 500000
+color = #42b0f5 |
+    material = wireframe(true) |
+    {scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane}
+color = $feather_color_1 |
+    material = wireframe(true) |
+    y=5.3 x=0.6 rz=0.3 |
+    {scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane}
+color = $feather_color_3 |
+    material = wireframe(true) |
+    y=10.6 x=3 rz=0.6 |
+    {scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane}
+color = $feather_color_9 |
+    material = wireframe(true) |
+    y=15.6 x=6 rz=0.9 |
+    {scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane} |
+    {z=2 | scale = (0.1 5 1) | feather_plane}
+rule feather_plane max=20:
+    x=0.4 rx=-0.03 | cr=-0.03 cg=-0.03 cb=-0.03 cube
+    feather_plane
+rule feather_plane max=20:
+    x=0.4 rx=-0.03 | cr=-0.005 cg=-0.005 cb=-0.005 cube
+    if $i == 19:
+        y=-1 sy=-4 feather_child_plane
+    feather_plane
+rule feather_plane max=20:
+    x=0.4 rx=-0.03 | cr=0.01 cg=0.01 cb=0.01 cube
+    if $i == 19:
+        y=-1 sy=-4 feather_child_plane
+    feather_plane
+rule feather_child_plane max=60:
+    y=1 x=0.02 rz=-0.01 cube
+    if $i > 55:
+        scale = (1 1 1) | y=1 child
+    feather_child_plane
+rule feather_child_plane max=60:
+    y=0.7 x=0.08 rz=-0.015 | cr=0.01 cg=0.01 cb=0.01 cube
+    feather_child_plane
+rule child max=25:
+    y=0.6 x=0.2 z=-0.2 cube
+    child
+rule child max=25:
+    cr=0.01 cg=0.01 cb=0.01 | y=0.7 x=-0.2 y=0.2 cube
+    child
+rule child max=25:
+    cr=-0.01 cg=-0.01 cb=-0.01 | y=0.5 x=-0.2 z=0.2 cube
+    if $i > 24:
+        scale = (0.2 0.2 0.2) | y=0.1 seed
+    child
+rule child max=25:
+    cr=0.01 cg=0.01 cb=0.01 | y=0.4 x=0.2 z=-0.2 cube
+    child
+rule seed max=120:
+    color = rgb(0.2 0.2 0.2) | y=0.2 cube
+    seed
+rule seed max=120:
+    color = rgb(0.2 0.2 0.2) | z=0.2 cube
+    seed
+rule seed max=120:
+    color = rgb(0.2 0.2 0.2) | z=-0.2 cube
+    seed

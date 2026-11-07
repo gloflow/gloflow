@@ -40,6 +40,18 @@ func ParseProgramASTfromFile(pLocalFilePathStr string,
 		return nil, gfErr
 	}
 
+	// indentation-based syntax (.gfl)
+	if strings.HasSuffix(pLocalFilePathStr, ".gfl") {
+		codeLst, err := gf_lang.ParseSyntax(programCodeStr)
+		if err != nil {
+			return nil, gf_core.ErrorCreate("failed to parse .gfl program",
+				"verify__invalid_value_error",
+				map[string]interface{}{"file_path_str": pLocalFilePathStr},
+				err, "gf_lang_server", pRuntimeSys)
+		}
+		return codeLst, nil
+	}
+
 	//------------------------
 	// REMOVE_COMMENTS
 	commentRegex := regexp.MustCompile(`(?m)(.*)//.*$`)

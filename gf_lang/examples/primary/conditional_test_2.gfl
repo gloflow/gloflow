@@ -1,0 +1,113 @@
+lang_v 0.0.3
+$main_branches_color_1 #334ea2
+$main_branches_color_2 #4b69c6
+$main_branches_color_3 #6881cf
+$secondary_branches_color_1 #118984
+$secondary_branches_color_2 #79bd5e
+$offshots_color_1 #ed3f21
+$offshots_color_2 #e38623
+color-background = rgb(0.9 0.9 0.9)
+color = $main_branches_color_1 |
+    material = wireframe(true) |
+    iters_max = 250 |
+    scale = (1.7 1.7 1.7) |
+    {x=0 R1} |
+    {x=2 R1} |
+    {x=4 R1} |
+    {x=6 R1} |
+    {x=8 R1} |
+    {x=10 R1} |
+    {x=12 R1} |
+    {x=14 R1} |
+    {x=16 R1} |
+    {x=18 R1} |
+    {x=20 R1} |
+    {x=22 R1}
+rule R1 max=60:
+    color = $main_branches_color_1
+    y=2.4 x=0.4 z=0.4 cube
+    R1
+rule R1 max=60:
+    color = $main_branches_color_2
+    y=2.4 x=-0.4 z=-0.4 cube
+    R1
+rule R1 max=60:
+    color = $main_branches_color_3
+    y=2.4 x=-0.4 z=-0.4 cube
+    R1
+rule R1 max=60:
+    color = $main_branches_color_2
+    y=2.4 x=-0.4 z=-0.4 cube
+    R1
+rule R1 max=60:
+    color = $main_branches_color_3
+    if $i > 8:
+        R2
+        scale = (3 3 3)
+    y=2.4 x=-0.4 z=0.4 cube
+    if $i > 8:
+        scale = (1.7 1.7 1.7)
+    R1
+rule R1 max=60:
+    color = $main_branches_color_1
+    if $i > 13:
+        R2
+        scale = (3 3 3)
+    y=2.4 x=0.4 z=-0.4 cube
+    if $i > 13:
+        scale = (1.7 1.7 1.7)
+    R1
+rule R2 max=30:
+    color = $secondary_branches_color_1
+    scale = (1 1 1)
+    if $i > 15:
+        R4
+    x=0.4 y=0.2 z=1.2 cg=0.05 cube
+    R2
+rule R2 max=30:
+    color = $secondary_branches_color_2
+    scale = (1 1 1)
+    if $i == 29:
+        scale = (0.7 0.7 0.7)
+        color = $offshots_color_1
+        R3
+        R3
+        R3
+        scale = (1 1 1)
+        color = $secondary_branches_color_2
+    x=-0.4 y=0.2 z=1.2 cg=0.05 cube
+    R2
+rule R2 max=30:
+    color = $secondary_branches_color_2
+    scale = (1 1 1)
+    if $i == 29:
+        scale = (0.7 0.7 0.7)
+        color = $offshots_color_2
+        R3
+        R3
+        scale = (1 1 1)
+        color = $secondary_branches_color_2
+    x=0.4 y=-0.2 z=1.2 cg=0.05 cube
+    R2
+rule R2 max=30:
+    color = $secondary_branches_color_2
+    scale = (1 1 1)
+    x=-0.4 y=-0.2 z=1.2 cg=0.05 cube
+    R2
+rule R3 max=20:
+    x=0.3 y=0.2 z=0.5 cr=-0.02 | sx=-0.03 sy=-0.03 sz=-0.03 cube
+    R3
+rule R3 max=20:
+    x=-0.3 y=-0.2 z=0.5 cr=-0.02 | sx=-0.03 sy=-0.03 sz=-0.03 cube
+    R3
+rule R3 max=20:
+    x=0.3 y=-0.2 z=0.5 cr=-0.02 | sx=-0.03 sy=-0.03 sz=-0.03 cube
+    R3
+rule R3 max=20:
+    x=-0.3 y=0.2 z=0.5 cr=-0.02 | sx=-0.03 sy=-0.03 sz=-0.03 cube
+    R3
+rule R4 max=3:
+    scale = (0.3 0.3 0.3)
+    color = $secondary_branches_color_2
+    y=0.3 cube
+    R4

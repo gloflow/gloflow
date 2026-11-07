@@ -1,0 +1,12 @@
+lang_v 0.1
+cube
+x=2 cube
+x=4 cube
+x=6 cube
+x=9 z=2 | y=3 cube
+repeat 3:
+    y=-2 z=-2 x=-2 cube
+repeat 3:
+    x=5
+    repeat 6:
+        y=2 cube

@@ -22,6 +22,7 @@ package main
 import (
 	"fmt"
 	"syscall/js"
+	"encoding/json"
 	"reflect"
 	"github.com/gloflow/gloflow/gf_lang/go/gf_lang"
 	// "github.com/davecgh/go-spew/spew"
@@ -76,9 +77,30 @@ func main() {
 
 	//-------------------------------------------------
 
+	// parses .gfl source (indentation syntax) into the program AST.
+	// returns {"ast_json_str": "<JSON list>", "error_str": ""}
+	jsLangParseGFLfun := func(pThis js.Value, p []js.Value) interface{} {
+
+		resultMap := map[string]interface{}{"ast_json_str": "", "error_str": ""}
+
+		ast, err := gf_lang.ParseSyntax(p[0].String())
+		if err != nil {
+			resultMap["error_str"] = err.Error()
+			return js.ValueOf(resultMap)
+		}
+		astJSONbytesLst, err := json.Marshal(ast)
+		if err != nil {
+			resultMap["error_str"] = err.Error()
+			return js.ValueOf(resultMap)
+		}
+		resultMap["ast_json_str"] = string(astJSONbytesLst)
+		return js.ValueOf(resultMap)
+	}
+
 	//----------------------
 	// register functions with the global browser object
 	js.Global().Set("gf_lang_run", js.FuncOf(jsLangRunFun))
+	js.Global().Set("gf_lang_parse_gfl", js.FuncOf(jsLangParseGFLfun))
 
 	//----------------------
 

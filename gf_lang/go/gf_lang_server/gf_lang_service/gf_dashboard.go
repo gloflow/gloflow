@@ -35,8 +35,9 @@ import (
 // the server serves its files at "/" and the list of example programs at /v1/lang/examples.
 
 type GFexample struct {
-	NameStr string `json:"name_str"`
-	CodeStr string `json:"code_str"`
+	NameStr    string `json:"name_str"`
+	CodeStr    string `json:"code_str"`     // .gf  (JSON-like AST form), "" if the example has no .gf file
+	GFLCodeStr string `json:"gfl_code_str"` // .gfl (indentation syntax), "" if the example has no .gfl file
 }
 
 //-------------------------------------------------
@@ -65,32 +66,46 @@ func initDashboard(pHTTPmux *http.ServeMux,
 
 // loads example programs from the dir itself, and from its "primary/" subdir.
 // examples from the subdir are named "primary/<name>".
+// an example is a <name>.gf and/or a <name>.gfl file (the same program in the two syntaxes).
 func loadExamples(pDirPathStr string) ([]*GFexample, error) {
 
-	filesLst, err := filepath.Glob(filepath.Join(pDirPathStr, "*.gf"))
-	if err != nil {
-		return nil, err
-	}
-	sort.Strings(filesLst)
-
-	primaryFilesLst, err := filepath.Glob(filepath.Join(pDirPathStr, "primary", "*.gf"))
-	if err != nil {
-		return nil, err
-	}
-	sort.Strings(primaryFilesLst)
-	filesLst = append(filesLst, primaryFilesLst...)
-
 	examplesLst := []*GFexample{}
-	for _, fileStr := range filesLst {
-		codeBytesLst, err := os.ReadFile(fileStr)
-		if err != nil {
-			return nil, err
+	for _, subdirStr := range []string{"", "primary"} {
+
+		byNameMap := map[string]*GFexample{}
+		namesLst  := []string{}
+
+		for _, extStr := range []string{".gf", ".gfl"} {
+			filesLst, err := filepath.Glob(filepath.Join(pDirPathStr, subdirStr, "*"+extStr))
+			if err != nil {
+				return nil, err
+			}
+			for _, fileStr := range filesLst {
+				codeBytesLst, err := os.ReadFile(fileStr)
+				if err != nil {
+					return nil, err
+				}
+				nameStr := strings.TrimSuffix(filepath.Base(fileStr), extStr)
+				if subdirStr != "" {
+					nameStr = subdirStr + "/" + nameStr
+				}
+				e, ok := byNameMap[nameStr]
+				if !ok {
+					e = &GFexample{NameStr: nameStr}
+					byNameMap[nameStr] = e
+					namesLst = append(namesLst, nameStr)
+				}
+				if extStr == ".gf" {
+					e.CodeStr = string(codeBytesLst)
+				} else {
+					e.GFLCodeStr = string(codeBytesLst)
+				}
+			}
 		}
-		nameStr := strings.TrimSuffix(filepath.Base(fileStr), ".gf")
-		if filepath.Base(filepath.Dir(fileStr)) == "primary" {
-			nameStr = "primary/" + nameStr
+		sort.Strings(namesLst)
+		for _, nameStr := range namesLst {
+			examplesLst = append(examplesLst, byNameMap[nameStr])
 		}
-		examplesLst = append(examplesLst, &GFexample{nameStr, string(codeBytesLst)})
 	}
 	return examplesLst, nil
 }

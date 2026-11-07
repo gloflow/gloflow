@@ -1,0 +1,81 @@
+lang_v 0.0.3
+color-background = rgb(0.9 0.9 0.9)
+material = wireframe(true) |
+    material = shader(gf_shader_test) |
+    material_prop = gf_shader_test(shader_uniform i(0.3)) |
+    y=-5 |
+    sx=-0.7 sy=-0.7 sz=-0.7 |
+    sphere()
+material = shader(gf_shader_test) | material_prop = gf_shader_test(shader_uniform i(0.8)) | cube()
+sx=-0.8 sy=-0.8 sz=-0.8 | y=1.5 x=2 R1
+sx=-0.8 sy=-0.8 sz=-0.8 | y=1.5 x=-2 R1
+sx=-0.8 sy=-0.8 sz=-0.8 | y=1.5 z=-2 R1
+sx=-0.8 sy=-0.8 sz=-0.8 | y=1.5 z=2 R1
+scale = (0.13 0.13 0.13) | x=1 R2
+scale = (0.1 0.1 0.1) | x=2 R2
+scale = (0.05 0.05 0.05) | x=3 R3
+rule R1 max=40:
+    color = #42b0f5
+    sx=-0.005 sy=-0.005 sz=-0.005 | y=0.2 ry=0.01
+    x -0.1 z -0.1
+    cube
+    R1
+rule R1 max=40:
+    color = #42b0f5
+    sx=-0.005 sy=-0.005 sz=-0.005 | y=0.2 ry=0.01
+    x 0.1 z 0.1
+    cube
+    R1
+rule R1 max=40:
+    color = #42b0f5
+    sx=-0.005 sy=-0.005 sz=-0.005 | y=0.2 ry=0.01
+    x -0.1 z 0.1
+    cube
+    R1
+rule R1 max=40:
+    color = #42b0f5
+    sx=-0.005 sy=-0.005 sz=-0.005 | y=0.2 ry=0.01
+    x 0.1 z -0.1
+    cube
+    R1
+rule R2 max=31:
+    ry 0.2
+    cube
+    R2
+rule R3 max=31:
+    ry 0.2
+    cube
+    R3
+shader gf_shader_test:
+    uniform i float 0.1
+    vertex """
+        varying vec3 fNormal;
+        varying vec3 worldPos;
+        varying vec3 localPos;
+        void main() {
+        fNormal  = normalize(normalMatrix * normal);
+        vec4 pos = modelViewMatrix * vec4(position, 1.0);
+        worldPos = pos.xyz;
+        localPos = position;
+        gl_Position = projectionMatrix * pos;
+        }
+    """
+    fragment """
+        precision highp float;
+        uniform float i;
+        varying vec3 fNormal;
+        varying vec3 localPos;
+        float pulse(float val, float dst) {
+        return floor(mod(val * dst, 1.0) + i);
+        }
+        void main() {
+        vec3 dir   = vec3(0, 1, 0);
+        vec3 cpos  = localPos;
+        vec3 color = vec3(1, pulse(cpos.y, 2.0), 0);
+        float diffuse = .5 + dot(fNormal, dir);
+        gl_FragColor  = vec4(diffuse * color, 1.0);
+        }
+        /*void main() {
+        gl_FragColor = vec4(1, 1, 0, 1.0);
+        }*/
+    """

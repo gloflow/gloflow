@@ -28,8 +28,11 @@ import * as gf_syntax from "./gf_syntax";
 
 declare var Go;           // wasm_exec.js
 declare var gf_lang_run;  // set by the WASM module
+declare var gf_lang_parse_gfl; // set by the WASM module, parses .gfl source into an AST (JSON)
 
 const examples_select = document.getElementById("examples") as HTMLSelectElement;
+const form_gf_btn     = document.getElementById("form_gf")  as HTMLButtonElement;
+const form_gfl_btn    = document.getElementById("form_gfl") as HTMLButtonElement;
 const run_btn         = document.getElementById("run")      as HTMLButtonElement;
 const status_el       = document.getElementById("status");
 const code_el         = document.getElementById("code")     as HTMLTextAreaElement;
@@ -41,6 +44,12 @@ const server_render_img   = document.getElementById("server_render_img")    as H
 const server_render_dl    = document.getElementById("server_render_download") as HTMLAnchorElement;
 const server_render_close = document.getElementById("server_render_close")  as HTMLButtonElement;
 
+// the program is shown in one of two syntaxes: "gf" (JSON-like AST) or "gfl" (indentation syntax)
+type GFform = "gf" | "gfl";
+var examples_lst :any[]   = [];
+var current_form :GFform  = "gf";
+const edited_map          = new Map<string, string>(); // edits of the examples, per example+form, kept when switching
+
 var engine_api_map       = null;
 var server_render_url_str = null;
 
@@ -50,9 +59,8 @@ async function main() {
 	// EXAMPLES
 	const response   = await fetch("/v1/lang/examples");
 	const examples   = (await response.json())["examples_lst"];
-	for (const e of examples) {
-		examples_select.add(new Option(e["name_str"], e["code_str"]));
-	}
+	examples_lst     = examples;
+	examples.forEach((e, i)=> examples_select.add(new Option(e["name_str"], String(i))));
 
 	// WASM - the gf_lang interpreter
 	set_status("loading interpreter...");
@@ -61,7 +69,9 @@ async function main() {
 	go.run(result.instance); // never returns (the Go main() blocks), so not awaited
 
 	// UI
-	examples_select.onchange = ()=> { set_code(examples_select.value); run(); };
+	examples_select.onchange = ()=> { select_example(); run(); };
+	form_gf_btn.onclick      = ()=> switch_form("gf");
+	form_gfl_btn.onclick     = ()=> switch_form("gfl");
 	run_btn.onclick          = run;
 	render_server_btn.onclick  = render_on_server;
 	server_render_close.onclick = hide_server_render;
@@ -77,7 +87,7 @@ async function main() {
 	};
 
 	if (examples.length > 0) {
-		set_code(examples_select.value);
+		select_example();
 		run();
 	} else {
 		set_status("no examples found");
@@ -85,6 +95,46 @@ async function main() {
 }
 
 //-------------------------------------------------
+function current_example() {
+	return examples_lst[Number(examples_select.value)];
+}
+
+function form_code(p_example, p_form :GFform) :string {
+	return p_form === "gf" ? p_example["code_str"] : p_example["gfl_code_str"];
+}
+
+function edit_key(p_form :GFform) :string {
+	return examples_select.value + ":" + p_form;
+}
+
+// a new example is shown in the current form, or in the other one if it only has that
+function select_example() {
+	const e = current_example();
+	var form :GFform = current_form;
+	if (!form_code(e, form)) form = form === "gf" ? "gfl" : "gf";
+	show_form(form);
+}
+
+// the edit buffer of the form being left is kept
+function switch_form(p_form :GFform) {
+	if (p_form === current_form) return;
+	edited_map.set(edit_key(current_form), code_el.value);
+	show_form(p_form);
+	run();
+}
+
+function show_form(p_form :GFform) {
+	const e = current_example();
+	current_form = p_form;
+	const edited_str = edited_map.get(edit_key(p_form));
+	set_code(edited_str !== undefined ? edited_str : form_code(e, p_form));
+
+	form_gf_btn.disabled  = !e["code_str"];
+	form_gfl_btn.disabled = !e["gfl_code_str"];
+	form_gf_btn.classList.toggle("active",  p_form === "gf");
+	form_gfl_btn.classList.toggle("active", p_form === "gfl");
+}
+
 function set_code(p_code_str :string) {
 	code_el.value = p_code_str;
 	update_highlight();
@@ -93,7 +143,8 @@ function set_code(p_code_str :string) {
 // the highlighted <pre> is shown under a transparent <textarea>, so they have to show the same text
 function update_highlight() {
 	// trailing newline - otherwise the last (empty) line of the textarea is not scrollable in the <pre>
-	highlight_el.innerHTML = gf_syntax.highlight(code_el.value) + "\n ";
+	const highlight_fun = current_form === "gfl" ? gf_syntax.highlight_gfl : gf_syntax.highlight;
+	highlight_el.innerHTML = highlight_fun(code_el.value) + "\n ";
 	sync_scroll();
 }
 
@@ -207,6 +258,12 @@ function release_server_render_url() {
 // a program is a list of expressions. the example files are either that list in "[ ]",
 // or just the expressions separated by commas.
 function parse_program(p_code_str :string) {
+
+	if (current_form === "gfl") {
+		const result = gf_lang_parse_gfl(p_code_str); // the Go parser, in the WASM module
+		if (result["error_str"]) throw new Error(result["error_str"]);
+		return JSON.parse(result["ast_json_str"]);
+	}
 
 	const json_str = gf_syntax.strip_comments(p_code_str);
 	var parsed;

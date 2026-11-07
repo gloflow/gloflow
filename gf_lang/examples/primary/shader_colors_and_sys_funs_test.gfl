@@ -1,0 +1,61 @@
+lang_v 0.0.4
+color-background = rgb(0.9 0.9 0.9)
+color = rgb(0.2 0.2 0.2) |
+    material = shader(gf_shader_test) |
+    material_prop = gf_shader_test(shader_uniform i(0.8)) |
+    material_prop = gf_shader_test(shader_uniform cr($cr)) |
+    material_prop = gf_shader_test(shader_uniform cg($cg)) |
+    material_prop = gf_shader_test(shader_uniform cb($cb)) |
+    y=2 z=2 cube
+material = shader(gf_shader_test) | color = rgb(0.2 0.8 0.2) | x=2 seed
+material = shader(gf_shader_test) | color = rgb(0.5 0.8 0.2) | x=4 seed
+material = shader(gf_shader_test) | color = rgb(0.5 0.8 0.6) | x=6 seed
+x=8 y=4 | line = start() | scale = (0.3 0.3 0.3) | line_draw
+x=8.5 y=4 | line = start() | scale = (0.3 0.3 0.3) | line_draw
+x=9 y=4 | line = start() | scale = (0.3 0.3 0.3) | line_draw
+x=9.5 y=4 | line = start() | scale = (0.3 0.3 0.3) | line_draw
+x=10 y=4 | line = start() | scale = (0.3 0.3 0.3) | line_draw
+x=10.5 y=4 | line = start() | scale = (0.3 0.3 0.3) | line_draw
+x=11 y=4 | line = start() | scale = (0.3 0.3 0.3) | line_draw
+rule line_draw max=30:
+    if $i == 20:
+        line = start()
+    z=rand((0 2)) x=rand((-1 1)) y=rand((-0.7 0.7)) rz=0.3 line
+    cube
+    line_draw
+rule seed max=10:
+    material_prop = gf_shader_test(shader_uniform cr($cr)) |
+        material_prop = gf_shader_test(shader_uniform cg($cg)) |
+        material_prop = gf_shader_test(shader_uniform cb($cb)) |
+        z=(1 + rand((0 0.5))) cg=-0.05 cube
+    seed
+shader gf_shader_test:
+    uniform i float 0.1
+    uniform cr float 0.5
+    uniform cg float 0.5
+    uniform cb float 0.5
+    vertex """
+        varying vec3 normal_f;
+        varying vec3 local_pos_v3;
+        void main() {
+        normal_f     = normalize(normalMatrix * normal);
+        local_pos_v3 = position;
+        vec4 pos     = modelViewMatrix * vec4(position, 1.0);
+        gl_Position  = projectionMatrix * pos;
+        }
+    """
+    fragment """
+        precision highp float;
+        uniform float i;
+        uniform float cr;
+        uniform float cg;
+        uniform float cb;
+        varying vec3 normal_f;
+        varying vec3 local_pos_v3;
+        void main() {
+        vec3 light_direction_v3 = vec3(0.8, 1, 0.8);
+        vec3 color_v3           = vec3(cr, cg, cb);
+        float diffuse_f = .5 + dot(normal_f, light_direction_v3);
+        gl_FragColor    = vec4(diffuse_f * color_v3, 1.0);
+        }
+    """
